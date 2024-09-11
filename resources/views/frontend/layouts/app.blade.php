@@ -12,64 +12,88 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
+    <meta name="theme-color" content="#ffffff">
 
     <!-- Favicon -->
     <link rel="icon" href="{{ asset('images/company/' . $company->fav_icon) }}">
 
-    <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">  
+    <link rel="stylesheet" href="{{ asset('frontend/css/line-awesome/css/line-awesome.min.css') }}">
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="{{ asset('assets/admin/plugins/fontawesome-free/css/all.min.css')}}">
+    <link rel="stylesheet" href="{{ asset('frontend/css/bootstrap.min.css') }}">
 
-    <!-- Libraries Stylesheet -->
-    <link rel="stylesheet" href="{{ asset('assets/frontend/lib/animate/animate.min.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('assets/frontend/lib/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('frontend/css/owl-carousel/owl.carousel.css') }}">
 
-    <!-- Customized Stylesheet -->
-    <link rel="stylesheet" href="{{ asset('assets/frontend/css/style.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('assets/frontend/css/custom.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('assets/frontend/lib/jquery/jquery.dataTables.min.css')}}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('frontend/css/magnific-popup/magnific-popup.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('frontend/css/jquery.countdown.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('frontend/css/style.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('frontend/css/skin-demo-4.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('frontend/css/demo-4.css') }}">
+
 </head>
 
+@php
+    $company = \App\Models\CompanyDetails::select('footer_content', 'address1', 'email1', 'phone1', 'company_logo')->first();
+    $categories = \App\Models\Category::where('status', 1)
+        ->with(['products' => function($query) {
+            $query->orderBy('watch', 'desc')->limit(20);
+        }])
+        ->get();
+    $advertisements = \App\Models\Ad::where('status', 1)->select('type', 'link', 'image')->get();
+@endphp
+
 <body>
-    <!-- Topbar Start -->
-    @include('frontend.inc.topbar')
-    <!-- Topbar End -->
+    <div class="page-wrapper">
+
+        <!-- Header Start -->
+        @include('frontend.inc.header')
+
+        <!-- Topbar Start -->
+        <!-- @include('frontend.inc.topbar') -->
+        <!-- Topbar End -->
 
 
-    <!-- Navbar Start -->
-    @include('frontend.inc.navbar')
-    <!-- Navbar End -->
+        <!-- Navbar Start -->
+        <!-- @include('frontend.inc.navbar') -->
+        <!-- Navbar End -->
 
 
-    <!-- Main Content Start -->
-    @yield('content')
-    <!-- Main Content End -->
-   
+        <!-- Main Content Start -->
+        @yield('content')
+        <!-- Main Content End -->
+    
 
-    <!-- Footer Start -->
-    @include('frontend.inc.footer')
-    <!-- Footer End -->
+        <!-- Footer Start -->
+        @include('frontend.inc.footer')
+        <!-- Footer End -->
+    </div>
 
+    <script src="{{ asset('frontend/js/jquery.min.js') }}"></script>
 
-    <!-- Back to Top -->
-    <a class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+    <script src="{{ asset('frontend/js/bootstrap.bundle.min.js') }}"></script>
 
+    <script src="{{ asset('frontend/js/jquery.hoverIntent.min.js') }}"></script>
 
-    <!-- JavaScript Libraries -->
-    <script src="{{ asset('assets/admin/js/jquery.min.js')}}"></script>
-    <script src="{{ asset('assets/admin/js/bootstrap.bundle.min.js')}}"></script>
-    <script src="{{ asset('assets/frontend/lib/easing/easing.min.js')}}"></script>
-    <script src="{{ asset('assets/frontend/lib/owlcarousel/owl.carousel.min.js')}}"></script>
-    <script src="{{ asset('assets/frontend/lib/sweet-alert/sweetalert.min.js')}}"></script>
-    <script src="{{ asset('assets/frontend/lib/jquery/jquery.dataTables.min.js')}}"></script>
-    <script src="{{ asset('assets/frontend/lib/moment/moment.min.js')}}"></script>
+    <script src="{{ asset('frontend/js/jquery.waypoints.min.js') }}"></script>
 
+    <script src="{{ asset('frontend/js/superfish.min.js') }}"></script>
 
-    <!-- Main Javascript -->
-    <script src="{{ asset('assets/frontend/js/main.js')}}"></script>
+    <script src="{{ asset('frontend/js/owl.carousel.min.js') }}"></script>
+
+    <script src="{{ asset('frontend/js/bootstrap-input-spinner.js') }}"></script>
+
+    <script src="{{ asset('frontend/js/jquery.plugin.min.js') }}"></script>
+
+    <script src="{{ asset('frontend/js/jquery.magnific-popup.min.js') }}"></script>
+
+    <script src="{{ asset('frontend/js/jquery.countdown.min.js') }}"></script>
+
+    <script src="{{ asset('frontend/js/main.js') }}"></script>
+
+    <script src="{{ asset('frontend/js/demo-4.js') }}"></script>
 
     @yield('script')
 

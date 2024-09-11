@@ -1,60 +1,82 @@
-@php
-    $company = \App\Models\CompanyDetails::select('footer_content', 'address1', 'email1', 'phone1')->first();
-@endphp
+<footer class="footer">
 
-<div class="container-fluid bg-dark text-secondary mt-5 pt-5">
-    <div class="row px-xl-5 pt-5">
-        <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
-            <h5 class="text-secondary text-uppercase mb-4">Get In Touch</h5>
-            <p class="mb-4">{{ $company->footer_content }}</p>
-            <a class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>{{ $company->address1 }}</a> <br>
-            <a href="mailto:{{ $company->email1 }}" class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>{{ $company->email1 }}</a> <br>
-            <a href="tel:{{ $company->phone1 }}" class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>{{ $company->phone1 }}</a>
+    <div class="cta bg-image bg-dark pt-4 pb-5 mb-0" style="background-image: url('{{ asset('frontend/images/demo-4/bg-5.jpg') }}');">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-sm-10 col-md-8 col-lg-6">
+                    <div class="cta-heading text-center">
+                        <h3 class="cta-title text-white">Get The Latest Deals</h3>
+                        <p class="cta-desc text-white">and receive <span class="font-weight-normal">$20 coupon</span> for first shopping</p>
+                    </div>
+                    <form action="#">
+                        <div class="input-group input-group-round">
+                            <input type="email" class="form-control form-control-white" placeholder="Enter your Email Address" aria-label="Email Adress" required>
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="submit"><span>Subscribe</span><i class="icon-long-arrow-right"></i></button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
+    </div>
 
-        @php
-            $categories = \App\Models\Category::where('status', 1)->select('id', 'name', 'slug')->get();
-        @endphp
-
-        <div class="col-lg-8 col-md-12">
+    <div class="footer-middle">
+        <div class="container">
             <div class="row">
-                <div class="col-md-4 mb-5">
-                    <h5 class="text-secondary text-uppercase mb-4">Categories</h5>
-                    <div class="d-flex flex-column justify-content-start">
-                        @foreach($categories as $category)
-                            <a class="text-secondary mb-2" href="{{ route('category.show', $category->slug) }}">
-                                <i class="fa fa-angle-right mr-2"></i>{{ $category->name }}
-                            </a>
-                        @endforeach
+                <!-- Get In Touch Section -->
+                <div class="col-sm-6 col-lg-3">
+                    <div class="widget widget-about">
+                        <img src="{{ asset('images/company/' . $company->company_logo) }}" alt="Footer Logo" width="105" height="25">
+                        <p>{{ $company->footer_content }}</p>
+                        <div class="widget-call">
+                            <i class="icon-phone"></i>
+                            Got Question? Call us 24/7
+                            <a href="tel:{{ $company->phone1 }}">{{ $company->phone1 }}</a>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-5 mb-5">
-                    <h5 class="text-secondary text-uppercase mb-4">My Account</h5>
-                    <div class="d-flex flex-column justify-content-start">
-                        <a class="text-secondary mb-2" href="{{ route('frontend.homepage') }}"><i class="fa fa-angle-right mr-2"></i>Home</a>
-                        <a class="text-secondary mb-2" href="{{ route('frontend.shop') }}"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
-                        <a class="text-secondary mb-2" href="{{ route('frontend.shopdetail') }}"><i class="fa fa-angle-right mr-2"></i>About Us</a>
-                        <a class="text-secondary mb-2 cartBtn" href="{{ route('cart.index') }}"><i class="fa fa-angle-right mr-2"></i>Shopping Cart</a>
-                        <a class="text-secondary mb-2 wishlistBtn" href="{{ route('wishlist.index') }}"><i class="fa fa-angle-right mr-2"></i>WishList</a>
-                        <a class="text-secondary" href="{{ route('frontend.contact') }}"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+
+                <!-- Useful Links Section -->
+                <div class="col-sm-6 col-lg-3">
+                    <div class="widget">
+                        <h4 class="widget-title">Useful Links</h4>
+                        <ul class="widget-list">
+                            <li><a href="{{ route('frontend.homepage') }}">Home</a></li>
+                            <li><a href="{{ route('frontend.shop') }}">Our Shop</a></li>
+                            <li><a href="{{ route('frontend.shopdetail') }}">About Us</a></li>                        
+                            <li><a href="{{ route('frontend.contact') }}">Contact us</a></li>
+                        </ul>
                     </div>
                 </div>
-                <div class="col-md-3 mb-5">
-                    <h6 class="text-secondary text-uppercase mt-4 mb-3">Follow Us</h6>
-                    <div class="d-flex">
-                        <a class="btn btn-primary btn-square mr-2"><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-primary btn-square mr-2"><i class="fab fa-linkedin-in"></i></a>
-                        <a class="btn btn-primary btn-square"><i class="fab fa-instagram"></i></a>
+
+                <!-- Categories Section -->
+                <div class="col-sm-6 col-lg-3">
+                    <div class="widget">
+                        <h4 class="widget-title">Categories</h4>
+                        <ul class="widget-list">
+                            @foreach($categories as $category)
+                                <li><a href="{{ route('category.show', $category->slug) }}">{{ $category->name }}</a></li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- My Account Section -->
+                <div class="col-sm-6 col-lg-3">
+                    <div class="widget">
+                        <h4 class="widget-title">My Account</h4>
+                        <ul class="widget-list">
+                            <li><a href="{{ route('cart.index') }}" class="cartBtn">Shopping Cart</a></li>
+                            <li><a href="{{ route('wishlist.index') }}" class="wishlistBtn">Wishlist</a></li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    @php
-        $advertisements = \App\Models\Ad::where('status', 1)->select('type', 'link', 'image')->get();
-    @endphp
-
+    <!-- Advertisement Section -->
     @foreach($advertisements as $advertisement)
         @if($advertisement->type == 'home_footer')
             <div class="advertisement-image custom-ad-image">
@@ -65,14 +87,14 @@
         @endif
     @endforeach
 
-    <div class="row border-top mx-xl-5 py-4" style="border-color: rgba(256, 256, 256, .1) !important;">
-        <div class="col-md-6 px-xl-0">
-            <p class="mb-md-0 text-center text-md-left text-secondary">
-                &copy; <a class="text-primary"></a>All Rights Reserved. Designed by
-                <a class="text-primary">Mento Software</a>
+    <div class="footer-bottom">
+        <div class="container">
+            <p class="footer-copyright">
+                &copy; <a class="text-primary">Sakib</a>. All Rights Reserved. Designed by <a class="text-primary">Mento Software</a>.
             </p>
-        </div>
-        <div class="col-md-6 px-xl-0 text-center text-md-right">
+            <figure class="footer-payments">
+                <img src="{{ asset('frontend/images/payments.png') }}" alt="Payment methods" width="272" height="20">
+            </figure>
         </div>
     </div>
-</div>
+</footer>
