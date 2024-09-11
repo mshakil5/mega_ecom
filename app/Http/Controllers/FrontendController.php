@@ -135,10 +135,16 @@ class FrontendController extends Controller
                         ->get();
 
          $sliders = Slider::orderBy('id', 'desc')
-                 ->select('title', 'sub_title', 'image')
+                 ->select('title', 'sub_title', 'image', 'link')
                  ->get();
 
-        $categories = Category::where('status', 1)->select('name', 'image', 'slug')->orderBy('id', 'desc')->take(2)->get();
+        $categories = Category::where('status', 1)
+        ->with(['products' => function ($query) {
+            $query->select('id', 'category_id', 'name', 'price', 'slug', 'feature_image', 'watch');
+        }])
+        ->select('id', 'name', 'image', 'slug')
+        ->orderBy('id', 'desc')
+        ->get();
 
         return view('frontend.index', compact('specialOffers','flashSells','featuredProducts', 'trendingProducts', 'currency', 'recentProducts', 'popularProducts', 'initialCategoryProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns'));
     }
@@ -408,16 +414,19 @@ class FrontendController extends Controller
             return response()->json('<div class="p-2">No products found</div>');
         }
 
-        $output = '<ul class="list-group">';
+        $output = '<li class="dropdown">
+                        <a class="sf-with-ul">Search Results</a>
+                        <ul>';
         foreach ($products as $product) {
-            $output .= '<li class="list-group-item">
+            $output .= '<li>
                             <a href="'.route('product.show', $product->slug).'">
                                 '.$product->name.'
                             </a>
                         </li>';
         }
-        $output .= '</ul>';
-
+        $output .= '</ul>
+                    </li>';
+    
         return response()->json($output);
     }
 

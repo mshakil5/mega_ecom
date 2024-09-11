@@ -90,7 +90,7 @@
     <div class="footer-bottom">
         <div class="container">
             <p class="footer-copyright">
-                &copy; <a class="text-primary">Sakib</a>. All Rights Reserved. Designed by <a class="text-primary">Mento Software</a>.
+                &copy; <a class="text-primary"></a> All Rights Reserved. Designed by <a class="text-primary">Mento Software</a>.
             </p>
             <figure class="footer-payments">
                 <img src="{{ asset('frontend/images/payments.png') }}" alt="Payment methods" width="272" height="20">
