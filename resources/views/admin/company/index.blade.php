@@ -195,6 +195,19 @@
 
                 <div class="col-sm-12">
                     <div class="form-group">
+                    <label>Frontend Design</label>
+                    <select class="form-control" id="design" name="design">
+                            <option value="" disabled selected>Please choose design</option>
+                            <option value="1" @if (!empty($data->design) && $data->design == '1') selected @endif>Design 1</option>
+                            <option value="2" @if (!empty($data->design) && $data->design == '2') selected @endif>Design 2</option>
+                            <option value="3" @if (!empty($data->design) && $data->design == '3') selected @endif>Design 3</option>
+                            <option value="4" @if (!empty($data->design) && $data->design == '4') selected @endif>Design 4</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-12">
+                    <div class="form-group">
                     <label>About Us</label>
                         <textarea name="about_us" id="about_us" class="form-control @error('about_us') is-invalid @enderror summernote" cols="30" rows="3">{{$data->about_us}}</textarea>
                     </div>
