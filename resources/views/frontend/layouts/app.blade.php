@@ -64,7 +64,9 @@
 
 
         <!-- Main Content Start -->
+        <main class="main">
         @yield('content')
+        </main>
         <!-- Main Content End -->
     
 

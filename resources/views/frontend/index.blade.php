@@ -1,8 +1,6 @@
 @extends('frontend.layouts.app')
 
 @section('content')
-<main class="main">
-
     <!-- Intro Slider Start-->
     <div class="container">
         <div class="intro-slider-container mb-5">
@@ -599,5 +597,4 @@
         </div><!-- End .container -->
     </div>
     @endif
-</main
 @endsection

@@ -179,25 +179,33 @@ class FrontendController extends Controller
     public function showCategoryProducts($slug)
     {
         $currency = CompanyDetails::value('currency');
-        $category = Category::where('slug', $slug)
-                        ->with(['products:id,category_id,name,feature_image,price,slug'])
-                        ->firstOrFail();
-        $company = CompanyDetails::select('company_name')
-                             ->first();
+
+        $category = Category::where('slug', $slug)->firstOrFail();
+
+        $products = Product::where('category_id', $category->id)
+                            ->select('id', 'category_id', 'name', 'feature_image', 'price', 'slug')
+                            ->paginate(20);
+        
+        $company = CompanyDetails::select('company_name')->first();
         $title = $company->company_name . ' - ' . $category->name;
-        return view('frontend.category_products', compact('category', 'title', 'currency'));
-    }
+        
+        return view('frontend.category_products', compact('category', 'products', 'title', 'currency'));
+    }    
 
     public function showSubCategoryProducts($slug)
     {
         $currency = CompanyDetails::value('currency');
-        $sub_category = SubCategory::where('slug', $slug)
-                        ->with(['products:id,sub_category_id,name,feature_image,price,slug'])
-                        ->firstOrFail();
-        $company = CompanyDetails::select('company_name')
-                             ->first();
+
+        $sub_category = SubCategory::where('slug', $slug)->firstOrFail();
+
+        $products = Product::where('sub_category_id', $sub_category->id)
+                            ->select('id', 'sub_category_id', 'name', 'feature_image', 'price', 'slug')
+                            ->paginate(20);
+
+        $company = CompanyDetails::select('company_name')->first();
         $title = $company->company_name . ' - ' . $sub_category->name;
-        return view('frontend.sub_category_products', compact('sub_category', 'title', 'currency'));
+
+        return view('frontend.sub_category_products', compact('sub_category', 'products', 'title', 'currency'));
     }
 
     public function showProduct($slug, $offerId = null)
