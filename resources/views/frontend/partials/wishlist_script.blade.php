@@ -9,8 +9,11 @@
         function updateHeartIcon(productId, offerId) {
             var wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
             var isInWishlist = wishlist.some(item => item.productId === productId && item.offerId === offerId);
-            var heartIcon = isInWishlist ? '<i class="fas fa-heart text-primary"></i>' : '<i class="fa fa-heart"></i>';
-            $('.add-to-wishlist[data-product-id="' + productId + '"][data-offer-id="' + offerId + '"] i').replaceWith(heartIcon);
+            // if (isInWishlist) {
+            //     $('.add-to-wishlist[data-product-id="' + productId + '"][data-offer-id="' + offerId + '"]').removeClass('btn-wishlist').html('<i class="fas fa-heart text-primary"></i>');
+            // } else {
+            //     $('.add-to-wishlist[data-product-id="' + productId + '"][data-offer-id="' + offerId + '"]').addClass('btn-wishlist').html('<i class="fa fa-heart"></i>');
+            // }
         }
 
         updateWishlistCount();

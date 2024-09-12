@@ -140,11 +140,15 @@ class FrontendController extends Controller
 
         $categories = Category::where('status', 1)
         ->with(['products' => function ($query) {
-            $query->select('id', 'category_id', 'name', 'price', 'slug', 'feature_image', 'watch');
+            $query->select('id', 'category_id', 'name', 'price', 'slug', 'feature_image', 'watch')
+                ->orderBy('watch', 'desc');
         }])
         ->select('id', 'name', 'image', 'slug')
         ->orderBy('id', 'desc')
-        ->get();
+        ->get()
+        ->each(function ($category) {
+            $category->setRelation('products', $category->products->take(6));
+        });
 
         return view('frontend.index', compact('specialOffers','flashSells','featuredProducts', 'trendingProducts', 'currency', 'recentProducts', 'popularProducts', 'initialCategoryProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns'));
     }
