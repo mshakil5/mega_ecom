@@ -19,7 +19,7 @@
 
             var selectedSize = $('input[name="size"]:checked').val() || 'M';
             var selectedColor = $('input[name="color"]:checked').val() || 'Black'; 
-            var quantity = parseInt($('.quantity input').val()) || 1;
+            var quantity = parseInt($('.quantity-input').val()) || 1;
 
             var cart = JSON.parse(localStorage.getItem('cart')) || [];
 
