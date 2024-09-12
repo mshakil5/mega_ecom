@@ -490,7 +490,6 @@
     </div>
     <!-- Suppliers end -->
 
-
     @if($section_status->bundle_products == 1)
     <div class="container for-you">
         <div class="heading heading-flex mb-3">
