@@ -15,6 +15,7 @@
                                 <tr>
                                     <th>Sl</th>
                                     <th>Name</th>
+                                    <th>Phone</th>
                                     <th>Email</th>
                                     <th>Subject</th>
                                     <th>Message</th>
@@ -25,6 +26,7 @@
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
                                     <td>{{ $message->name }}</td>
+                                    <td>{{ $message->phone }}</td>
                                     <td>{{ $message->email }}</td>
                                     <td>{{ $message->subject }}</td>
                                     <td>{!! $message->message !!}</td>

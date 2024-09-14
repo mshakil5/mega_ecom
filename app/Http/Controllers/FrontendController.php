@@ -533,6 +533,7 @@ class FrontendController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
+            'phone' => 'required',
             'subject' => 'nullable|string|max:255',
             'message' => 'required|string',
         ]);
@@ -540,6 +541,7 @@ class FrontendController extends Controller
         $contact = new Contact();
         $contact->name = $request->input('name');
         $contact->email = $request->input('email');
+        $contact->phone = $request->input('phone');
         $contact->subject = $request->input('subject');
         $contact->message = $request->input('message');
         $contact->save();
