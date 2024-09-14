@@ -3,66 +3,55 @@
 @section('title', $title)
 
 @section('content')
+<div class="container for-you">
+    <h2 class="title text-center mb-5 mt-4">Explore Products in {{ $title }}</h2>
 
-<div class="container-fluid pt-5 pb-3">
-    <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4">
-        <span class="bg-secondary pr-3">{{ $campaign->title }}</span>
-    </h2>
-    <div class="row px-xl-5">
-        @php
-            $currency = \App\Models\CompanyDetails::value('currency');
-        @endphp
-
-        @foreach($campaignRequests as $request)
-            @foreach($request->campaignRequestProducts as $detail)
+    <div class="products">
+        <div class="row justify-content-center">
+            @foreach($campaignRequests as $request)
+                @foreach($request->campaignRequestProducts as $detail)
                 @if($detail->product)
-                    @php
-                        $originalPrice = $detail->product->price;
-                        $campaignPrice = $detail->campaign_price;
-                        $discount = 100 * (($originalPrice - $campaignPrice) / $originalPrice);
-                    @endphp
-                    <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
-                        <div class="product-item bg-light mb-4">
-                            <div class="product-img position-relative overflow-hidden" style="height: 250px;">
-                                <x-image-with-loader class="img-fluid w-100" src="{{ asset('/images/products/' . $detail->product->feature_image) }}" alt="{{ $detail->product->name }}"/>
-                                <div class="product-action">
-                                    @if ($detail->quantity > 0)
-                                    <a class="btn btn-outline-dark btn-square add-to-cart" data-product-id="{{ $detail->product->id }}" data-price="{{ $campaignPrice }}" data-offer-id="0" data-campaign-id="{{ $detail->id }}" >
-                                        <i class="fa fa-shopping-cart"></i>
-                                    </a>
-                                    @else
-                                    <a class="btn btn-outline-dark btn-square disabled" aria-disabled="true">
-                                        <i class="fa fa-shopping-cart"></i>
-                                    </a>
-                                    @endif
-                                    <a class="btn btn-outline-dark btn-square add-to-wishlist" data-product-id="{{ $detail->product->id }}" data-price="{{ $campaignPrice }}" data-offer-id="0" data-campaign-id="{{ $detail->id }}">
-                                        <i class="far fa-heart"></i>
-                                    </a>
-                                </div>
+                @php
+                    $originalPrice = $detail->product->price;
+                    $campaignPrice = $detail->campaign_price;
+                    $discount = 100 * (($originalPrice - $campaignPrice) / $originalPrice);
+                @endphp
+                <div class="col-6 col-md-4 col-lg-3">
+                <div class="product product-2">
+                    <figure class="product-media">
+                        <a href="{{ route('product.show.campaign', ['slug' => $detail->product->slug, 'supplierId' => $request->supplier_id]) }}">
+                            <x-image-with-loader src="{{ asset('/images/products/' . $detail->product->feature_image) }}" alt="{{ $detail->product->name }}" class="product-image" />
+                        </a>
+
+                        @if ($detail->quantity > 0)
+                            <div class="product-action-vertical">
+                                <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist" title="Add to wishlist" data-product-id="{{ $detail->product->id }}" data-offer-id="0" data-price="{{ $campaignPrice }}"
+                                data-campaign-id="{{ $detail->id }}"></a>
                             </div>
-                            <div class="text-center py-4">
-                                <a class="h6 text-decoration-none text-truncate" href="{{ route('product.show.campaign', ['slug' => $detail->product->slug, 'supplierId' => $request->supplier_id]) }}">{{ $detail->product->name }}</a>
-                                <div class="d-flex align-items-center justify-content-center mt-2">
-                                    <h5>
-                                        <del>{{ $currency }} {{ number_format($originalPrice, 2) }}</del>
-                                        {{ $currency }} {{ number_format($campaignPrice, 2) }} 
-                                        <small>({{ round($discount, 0) }}% off)</small>
-                                    </h5>    
-                                </div>
-                                <div class="d-flex align-items-center justify-content-center mt-2">
-                                    @if ($detail->quantity > 0)
-                                        <p>Available: {{ $detail->quantity }}</p>
-                                    @else
-                                        <p>Out of Stock</p>
-                                    @endif
-                                </div>
+
+                            <div class="product-action">
+                                <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $detail->product->id }}" data-price="{{ $campaignPrice }}" data-offer-id="0" data-campaign-id="{{ $detail->id }}"><span>add to cart</span></a>
                             </div>
+                        @else
+                            <span class="product-label label-out-stock">Out of stock</span>
+                        @endif
+                    </figure>
+
+                    <div class="product-body">
+                        <h3 class="product-title"><a href="{{ route('product.show.campaign', ['slug' => $detail->product->slug, 'supplierId' => $request->supplier_id]) }}">{{ $detail->product->name }}</a></h3>
+                        <div class="product-price">
+                        <del>{{ $currency }} {{ number_format($originalPrice, 2) }}</del>
+                            {{ $currency }} {{ number_format($campaignPrice, 2) }} 
+                            <small>({{ round($discount, 0) }}% off)</small>
                         </div>
                     </div>
+                </div>
+                </div>
                 @endif
+                @endforeach
             @endforeach
-        @endforeach
+        </div>
     </div>
-</div>
 
+</div>
 @endsection

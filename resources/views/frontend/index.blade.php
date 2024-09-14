@@ -424,15 +424,7 @@
 
     @if($section_status->buy_one_get_one == 1)
     <div class="container for-you">
-        <div class="heading heading-flex mb-3">
-            <div class="heading-left">
-                <h2 class="title">Buy One Get One</h2>
-            </div>
-
-            <!-- <div class="heading-right">
-                <a href="#" class="title-link">View All Recommendadion <i class="icon-long-arrow-right"></i></a>
-            </div> -->
-        </div>
+        <h2 class="title text-center mb-4">Buy One Get One</h2>
 
         <div class="products">
             <div class="row justify-content-center">
@@ -492,15 +484,7 @@
 
     @if($section_status->bundle_products == 1)
     <div class="container for-you">
-        <div class="heading heading-flex mb-3">
-            <div class="heading-left">
-                <h2 class="title">Bundle Products</h2>
-            </div>
-
-            <!-- <div class="heading-right">
-                <a href="#" class="title-link">View All Recommendadion <i class="icon-long-arrow-right"></i></a>
-            </div> -->
-        </div>
+        <h2 class="title text-center mb-4">Buy One Get One</h2>
 
         <div class="products">
             <div class="row justify-content-center">
@@ -531,6 +515,32 @@
             </div>
         </div>
 
+    </div>
+    @endif
+    
+
+    @if($section_status->campaigns == 1)
+    <div class="row justify-content-center mt-5">
+        @foreach($campaigns as $campaign)
+        <div class="col-md-6 col-lg-4">
+            <div class="banner banner-overlay banner-overlay-light">
+                <a href="{{ route('campaign.details.frontend', $campaign->slug) }}">
+                    <img src="{{ asset('images/campaign_banner/' . $campaign->banner_image) }}" alt="{{ $campaign->title }}">
+                </a>
+
+                <div class="banner-content">
+                    <h3 class="banner-title">
+                        <a href="{{ route('flash-sells.show', $flashSell->slug) }}">
+                            <strong>{{ $campaign->title }}</strong>
+                        </a>
+                    </h3>
+                    <a href="{{ route('campaign.details.frontend', $campaign->slug) }}" class="banner-link">
+                        Shop Now<i class="icon-long-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        @endforeach
     </div>
     @endif
 

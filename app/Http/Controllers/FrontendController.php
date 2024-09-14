@@ -605,8 +605,9 @@ class FrontendController extends Controller
         $company = CompanyDetails::select('company_name')
                     ->first();
         $title = $company->company_name . ' - ' . $campaign->title;
+        $currency = CompanyDetails::value('currency');
 
-        return view('frontend.campaign', compact('campaign', 'campaignRequests', 'title'));
+        return view('frontend.campaign', compact('campaign', 'campaignRequests', 'title', 'currency'));
     }
 
     public function showCampaignProduct($slug, $supplierId = null)
