@@ -4,7 +4,6 @@
 
 @section('content')
 
-{{--  
     <style>
         #search-results li {
             padding: 10px;
@@ -34,48 +33,55 @@
             </div>
         </form>
         <div id="supplier-search-results" class="bg-light position-absolute w-100" style="z-index: 1000;"></div>
-    </div> --}}
+    </div>
 
 
-<div class="container for-you">
-    <h2 class="title text-center mb-5 mt-4">Explore Products from {{ $supplier->name }}</h2>
-    <div class="products">
-        <div class="row justify-content-center">
+<div class="container-fluid pt-5 pb-3">
+    <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4">
+        <span class="bg-secondary pr-3">Explore Products from {{ $supplier->name }}</span>
+    </h2>
+    <div class="row px-xl-5">
         @foreach($products as $product)
-            <div class="col-6 col-md-4 col-lg-3">
-                <div class="product product-2">
-                    <figure class="product-media">
-                        <a href="{{ route('product.show.supplier', [$product->slug, $supplier->id]) }}">
-                            <x-image-with-loader src="{{ asset('/images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image" />
-                        </a>
-                        @php
-                            $stock = $product->supplierStocks->first();
-                        @endphp
-                        @if ($stock && $stock->quantity > 0)
-                        <div class="product-action-vertical">                  
-                            <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $stock->price }}" data-supplier-id="{{ $supplier->id }}">
+            <div class="col-lg-3 col-md-4 col-sm-6 pb-1 mb-4">
+                <div class="product-item bg-light d-flex flex-column h-100">
+                    <div class="product-img position-relative overflow-hidden" style="height: 250px;">
+                        <x-image-with-loader class="img-fluid w-100 h-100" src="{{ asset('/images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" style="object-fit: cover;"/>
+                        <div class="product-action">
+                            @php
+                                $stock = $product->supplierStocks->first();
+                            @endphp
+                            @if ($stock && $stock->quantity > 0)
+                                <a class="btn btn-outline-dark btn-square add-to-cart" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $stock->price }}" data-supplier-id="{{ $supplier->id }}">
+                                    <i class="fa fa-shopping-cart"></i>
+                                </a>
+                            @else
+                                <a class="btn btn-outline-dark btn-square disabled" aria-disabled="true">
+                                    <i class="fa fa-shopping-cart"></i>
+                                </a>
+                            @endif
+                            <a class="btn btn-outline-dark btn-square add-to-wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $stock ? $stock->price : $product->price }}">
+                                <i class="fa fa-heart"></i>
                             </a>
                         </div>
-                        <div class="product-action">
-                            <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $stock->price }}" data-supplier-id="{{ $supplier->id }}"><span>add to cart</span></a>
+                    </div>
+                    <div class="text-center py-4 mt-auto">
+                       <a class="h6 text-decoration-none text-truncate" href="{{ route('product.show.supplier', [$product->slug, $supplier->id]) }}">{{ $product->name }}</a>
+                        <div class="d-flex align-items-center justify-content-center mt-2">
+                            <h5>{{ $currency }} {{ $stock ? $stock->price : $product->price }}</h5>
                         </div>
-                        @else
-                        <span class="product-label label-out-stock">Out of stock</span>
-                        @endif
-                    </figure>
-                    <div class="product-body">
-                        <h3 class="product-title"><a href="{{ route('product.show.supplier', [$product->slug, $supplier->id]) }}">{{ $product->name }}</a></h3>
-                        <div class="product-price">
-                        {{ $currency }} {{ $stock ? number_format($stock->price, 2) : number_format($product->price, 2) }}
+                        <div class="d-flex align-items-center justify-content-center mt-2">
+                            @if (!$stock || $stock->quantity <= 0)
+                                <p>Out of Stock</p>
+                            @else
+                                <span>&nbsp;</span>
+                            @endif
                         </div>
                     </div>
                 </div>
             </div>
         @endforeach
-        </div>
     </div>
 </div>
-
 @endsection
 
 @section('script')
