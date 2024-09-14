@@ -576,19 +576,20 @@ class FrontendController extends Controller
         $endPrice = $request->input('end_price');
         $categoryId = $request->input('category');
 
-        $productsQuery = Product::select('id', 'name', 'price', 'slug', 'feature_image')
-                                ->where('status', 1)
-                                ->orderBy('id', 'desc')
+        $productsQuery = Product::select('products.id', 'products.name', 'products.price', 'products.slug', 'products.feature_image')
+                                ->where('products.status', 1)
+                                ->leftJoin('stocks', 'products.id', '=', 'stocks.product_id')
                                 ->whereDoesntHave('specialOfferDetails')
                                 ->whereDoesntHave('flashSellDetails')
+                                ->orderByRaw('COALESCE(stocks.quantity, 0) DESC')  //treating NULL stock values as 0
                                 ->with('stock');
-
+    
         if ($startPrice !== null && $endPrice !== null) {
-            $productsQuery->whereBetween('price', [$startPrice, $endPrice]);
+            $productsQuery->whereBetween('products.price', [$startPrice, $endPrice]);
         }
-
+    
         if (!empty($categoryId)) {
-            $productsQuery->where('category_id', $categoryId);
+            $productsQuery->where('products.category_id', $categoryId);
         }
 
         $products = $productsQuery->get();
