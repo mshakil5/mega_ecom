@@ -484,7 +484,7 @@
 
     @if($section_status->bundle_products == 1)
     <div class="container for-you">
-        <h2 class="title text-center mb-4">Buy One Get One</h2>
+        <h2 class="title text-center mb-4">Bundle Products</h2>
 
         <div class="products">
             <div class="row justify-content-center">
