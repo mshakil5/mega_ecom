@@ -51,13 +51,13 @@
                                 @else
                                     <div class="header-dropdown">
                                         <a>
-                                            Sign in / Sign Up
+                                            Log In / Register
                                         </a>
                                         <div class="header-menu">
                                             <ul>
-                                                <li><a href="{{ route('login') }}">Sign in</a></li>
-                                                <li><a href="{{ route('register') }}">Sign up</a></li>
-                                                <li><a href="{{ route('supplier.login') }}">Sign in As Supplier</a></li>
+                                                <li><a href="{{ route('login') }}">Log In</a></li>
+                                                <li><a href="{{ route('register') }}">Register</a></li>
+                                                <li><a href="{{ route('supplier.login') }}">Log In As Supplier</a></li>
                                             </ul>
                                         </div>
                                     </div>

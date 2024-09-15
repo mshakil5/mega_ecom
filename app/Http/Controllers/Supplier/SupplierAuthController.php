@@ -47,14 +47,10 @@ class SupplierAuthController extends Controller
                 Auth::guard('supplier')->login($supplier);
                 return redirect()->route('supplier.dashboard');
             } else {
-                return view('supplier.login')
-                    ->with('message', 'Wrong password. Please try again.')
-                    ->with('email', $email);
+                return redirect()->back()->withInput($request->only('email'))->with('message', 'Wrong Password.');
             }
         } else {
-            return view('supplier.login')
-                ->with('message', 'Credential error. User not found.')
-                ->with('email', $email);
+            return redirect()->back()->withInput($request->only('email'))->with('message', 'No account found with the provided credentials.');
         }
     }
 
@@ -70,31 +66,6 @@ class SupplierAuthController extends Controller
         }
         return view('supplier.register');
     }
-
-    // public function register(Request $request)
-    // {
-    //     // dd($request->all());
-    //     $validator = Validator::make($request->all(), [
-    //         'name' => 'required|string|max:255',
-    //         'email' => 'required|string|email|max:255|unique:suppliers',
-    //         'phone' => 'nullable|string|max:20',
-    //         'password' => 'required|string|min:6|confirmed',
-    //     ]);
-
-    //     if ($validator->fails()) {
-    //         return redirect()->back()->withErrors($validator)->withInput();
-    //     }
-    //     $supplier = new Supplier();
-    //     $supplier->name = $request->name;
-    //     $supplier->email = $request->email;
-    //     $supplier->phone = $request->phone;
-    //     $supplier->password = Hash::make($request->password);
-    //     $supplier->slug = Str::slug($request->name);
-    //     $supplier->status = 0;
-    //     $supplier->save();
-
-    //     return redirect()->route('supplier.login')->with('status', 'Registration successful! Please login.');
-    // }
 
     public function register(Request $request)
     {

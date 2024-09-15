@@ -23,13 +23,17 @@
                         <div class="form-group mt-2">
                             <label for="email">Your Email*</label>
                             <input type="email" class="form-control" id="email" name="email" placeholder="john@example.com" value="{{ old('email', $email ?? '') }}" required />
-                            <p class="help-block text-danger"></p>
+                            @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="form-group">
                             <label for="password">Password *</label>
                             <input type="password" class="form-control" id="password" name="password" placeholder="123456" required>
-                            <p class="help-block text-danger"></p>
+                            @error('password')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="form-footer">
