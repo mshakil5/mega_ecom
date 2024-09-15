@@ -2,44 +2,63 @@
 
 @section('content')
 
-<div class="container-fluid">
-    <h2 class="position-relative text-uppercase text-center mb-4">
-        <span class="bg-secondary pr-3">Register</span>
-    </h2>
-    <div class="d-flex justify-content-center align-items-center" style="min-height: 50px;">
-        <div class="col-lg-5 mb-5">
-            <div class="contact-form bg-light p-30">
-                <form name="registerForm" id="registerForm" method="POST" action="{{ route('register') }}">
-                    @csrf
-                    <div class="control-group mb-3">
-                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" placeholder="Your Name"
-                            value="{{ old('name') }}" required="required" data-validation-required-message="Please enter your name" />
-                        @error('name')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="control-group mb-3">
-                        <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" placeholder="Your Email"
-                            value="{{ old('email') }}" required="required" data-validation-required-message="Please enter your email" />
-                        @error('email')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="control-group mb-3">
-                        <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" placeholder="Your Password"
-                            required="required" data-validation-required-message="Please enter your password" />
-                        @error('password')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="control-group mb-3">
-                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Confirm Password"
-                            required="required" data-validation-required-message="Please confirm your password" />
-                    </div>
-                    <div class="text-center">
-                        <button class="btn btn-primary py-2 px-4" type="submit" id="registerButton">Register</button>
-                    </div>
-                </form>
+<div class="container mt-5 mb-5">
+    <div class="form-box">
+        <div class="form-tab">
+            <ul class="nav nav-pills nav-fill" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link">Register</a>
+                </li>  
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade show active">
+                    @if (session('message'))
+                        <div class="alert alert-danger" role="alert">
+                            {{ session('message') }}
+                        </div>
+                    @endif
+                    <form name="registerForm" id="registerForm" method="POST" action="{{ route('register') }}">
+                         @csrf
+                        <div class="form-group mt-2">
+                            <label for="email">Your Name *</label>
+                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" placeholder="John Doe" value="{{ old('name') }}" required />
+                            @error('name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group mt-2">
+                            <label for="email">Your Email Address *</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="john@example.com" value="{{ old('email') }}" required />
+                            @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Password *</label>
+                            <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" placeholder="123456" required>
+                            @error('password')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Confirm Password *</label>
+                            <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="123456" required>
+                            @error('password_confirmation')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="form-footer">
+                            <button type="submit" class="btn btn-outline-primary-2" id="loginButton">
+                                <span>Register</span>
+                                <i class="icon-long-arrow-right"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
