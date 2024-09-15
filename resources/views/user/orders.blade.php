@@ -3,7 +3,7 @@
 @section('user_content')
 <div class="container">
     <div class="row">
-        <div class="col-lg-12">
+        <div class="col-lg-10">
             <h2 class="section-title position-relative text-uppercase mb-4">
                 <span class="bg-secondary pr-3">Order History</span>
             </h2>
