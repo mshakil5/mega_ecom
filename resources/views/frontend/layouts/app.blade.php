@@ -33,7 +33,12 @@
 
     <link rel="stylesheet" href="{{ asset('frontend/css/demo-4.css') }}">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ asset('frontend/css/fontawesome/css/all.min.css')}}">
+
+    <!-- Data table css -->
+    <link rel="stylesheet" href="{{ asset('assets/admin/datatables/dataTables.bootstrap4.min.css')}}">
+    <link rel="stylesheet" href="{{ asset('assets/admin/datatables-responsive/css/responsive.bootstrap4.min.css')}}">
+    <link rel="stylesheet" href="{{ asset('assets/admin/datatables-buttons/css/buttons.bootstrap4.min.css')}}">
 
 </head>
 
@@ -99,7 +104,26 @@
 
     <script src="{{ asset('frontend/js/demo-4.js') }}"></script>
 
+    <script src="{{ asset('frontend/js/moment.min.js')}}"></script>
+
     <script src="{{ asset('assets/admin/js/sweetalert.min.js')}}"></script>
+
+    <!-- Data table js -->
+    <script src="{{ asset('assets/admin/datatables/jquery.dataTables.min.js')}}"></script>
+    <script src="{{ asset('assets/admin/datatables/dataTables.bootstrap4.min.js')}}"></script>
+
+    <script src="{{ asset('assets/admin/datatables-responsive/js/dataTables.responsive.min.js')}}"></script>
+    <script src="{{ asset('assets/admin/datatables-responsive/js/responsive.bootstrap4.min.js')}}"></script>
+
+    <script src="{{ asset('assets/admin/datatables-buttons/js/dataTables.buttons.min.js')}}"></script>
+    <script src="{{ asset('assets/admin/datatables-buttons/js/buttons.bootstrap4.min.js')}}"></script>
+    <script src="{{ asset('assets/admin/datatables/jszip/jszip.min.js')}}"></script>
+    <script src="{{ asset('assets/admin/datatables/pdfmake/pdfmake.min.js')}}"></script>
+    <script src="{{ asset('assets/admin/datatables/pdfmake/vfs_fonts.js')}}"></script>
+
+    <script src="{{ asset('assets/admin/datatables-buttons/js/buttons.html5.min.js')}}"></script>
+    <script src="{{ asset('assets/admin/datatables-buttons/js/buttons.print.min.js')}}"></script>
+    <script src="{{ asset('assets/admin/datatables-buttons/js/buttons.colVis.min.js')}}"></script>
 
     @yield('script')
 

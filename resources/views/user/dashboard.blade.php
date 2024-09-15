@@ -17,7 +17,7 @@
                             <a class="nav-link {{ Request::routeIs('user.dashboard') ? 'active' : '' }}" href="{{ route('user.dashboard') }}">Dashboard</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ Request::routeIs('orders.index') ? 'active' : '' }}" href="{{ route('orders.index') }}">Orders</a>
+                            <a class="nav-link {{ Request::routeIs('orders.index') || Request::routeIs('orders.details') ? 'active' : '' }}" href="{{ route('orders.index') }}">Orders</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ Request::routeIs('user.profile') ? 'active' : '' }}" href="{{ route('user.profile') }}">Account Details</a>
