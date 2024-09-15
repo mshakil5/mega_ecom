@@ -7,7 +7,7 @@
         <div class="form-tab">
             <ul class="nav nav-pills nav-fill" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link">Sign In</a>
+                    <a class="nav-link">Log In</a>
                 </li>  
             </ul>
             <div class="tab-content">
