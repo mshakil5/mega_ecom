@@ -33,6 +33,44 @@
 
                 <div class="col-md-8 col-lg-9">
                     @section('user_content')
+                    <div class="row justify-content-center">
+
+                    @php
+                        use Carbon\Carbon;
+                        $today = Carbon::today()->toDateString();
+                        $user = auth()->user();
+                        $todayOrdersCount = $user->orders()->whereDate('created_at', $today)->count();
+                    @endphp
+
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="icon-box text-center">
+                            <span class="icon-box-icon">
+                                <i class="icon-info-circle"></i>
+                            </span>
+                            <div class="icon-box-content">
+                                <h3 class="icon-box-title">Today's Orders</h3>
+                                <p>{{ $todayOrdersCount }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    @php
+                        $startOfWeek = Carbon::now()->startOfWeek()->toDateString();
+                        $endOfWeek = Carbon::now()->endOfWeek()->toDateString();
+                        $thisWeekOrdersCount = $user->orders()->whereBetween('created_at', [$startOfWeek, $endOfWeek])->count();
+                    @endphp
+
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="icon-box text-center">
+                            <span class="icon-box-icon">
+                                <i class="icon-info-circle"></i>
+                            </span>
+                            <div class="icon-box-content">
+                                <h3 class="icon-box-title">This Week's Orders</h3>
+                                <p>{{ $thisWeekOrdersCount }}</p>
+                            </div>
+                        </div>
+                    </div>
                     @show
                 </div>
             </div>
