@@ -11,7 +11,6 @@
                     <div class="row">
                         <div class="col-sm-7">
                             <div class="contact-info">
-
                                 <ul class="contact-list">
                                     <li>
                                         <i class="icon-map-marker"></i>
@@ -27,6 +26,11 @@
                                     </li>
                                 </ul>
                             </div>
+
+                            <iframe style="width: 100%; height: 250px;"
+                                src="{{ $companyDetails->google_map }}"
+                                frameborder="0" allowfullscreen="" aria-hidden="false" tabindex="0">
+                            </iframe>
                         </div>
                     </div>
                 </div>
@@ -53,7 +57,7 @@
                     </div>
 
                     <form name="sentMessage" id="contactForm" action="{{ route('contact.store') }}" method="POST" class="contact-form mb-3">
-                    @csrf
+                        @csrf
 
                         <div class="row">
                             <div class="col-sm-6">
@@ -83,7 +87,7 @@
                             <div class="col-sm-6">
                                 <label for="phone" class="sr-only">Phone *</label>
                                 <input type="text" class="form-control" id="phone" name="phone" placeholder="Your Phone"
-                                    required="required" data-validation-required-message="Please enter your email"
+                                    required="required" data-validation-required-message="Please enter your phone number"
                                     @auth
                                         value="{{ auth()->user()->phone }}"
                                     @endauth
