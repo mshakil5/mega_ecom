@@ -219,7 +219,7 @@
                           pagetop();
                       }else if(d.status == 300){
                           swal({
-                            text: "Created successfully",
+                            text: "Updated successfully",
                             icon: "success",
                             button: {
                                 text: "OK",
