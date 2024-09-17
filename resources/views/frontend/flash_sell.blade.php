@@ -24,7 +24,7 @@
 
                             @if ($detail->product->stock && $detail->product->stock->quantity > 0)
                                 <div class="product-action-vertical">
-                                    <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist" title="Add to wishlist" data-product-id="{{ $detail->product->id }}" data-offer-id="2" data-price="{{ $detail->flash_sell_price }}"></a>
+                                    <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $detail->product->id }}" data-offer-id="2" data-price="{{ $detail->flash_sell_price }}"><span>Add to wishlist</span></a>
                                 </div>
 
                                 <div class="product-action">

@@ -122,7 +122,7 @@
 
                                     @if ($product->stock && $product->stock->quantity > 0)
                                         <div class="product-action-vertical">
-                                            <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $product->price }}"></a>
+                                            <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $product->price }}"><span>Add to wishlist</span></a>
                                         </div>
 
                                         <div class="product-action">
@@ -209,7 +209,7 @@
                                             </a>
                                             ${product.stock && product.stock.quantity > 0 ? `
                                                 <div class="product-action-vertical">
-                                                    <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist" title="Add to wishlist" data-product-id="${product.id}" data-offer-id="0" data-price="${product.price}"></a>
+                                                    <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="${product.id}" data-offer-id="0" data-price="${product.price}"><span>Add to wishlist</span></a>
                                                 </div>
                                                 <div class="product-action">
                                                     <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="${product.id}" data-offer-id="0" data-price="${product.price}"><span>add to cart</span></a>
