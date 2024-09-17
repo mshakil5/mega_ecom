@@ -21,12 +21,12 @@
                                 }
                             }'>
                             @foreach($sliders as $slider)
-                                <div class="intro-slide" style="background-image: url('{{ asset('images/slider/' . $slider->image) }}'); background-size: cover; background-position: center; height: 500px; display: flex; align-items: center; justify-content: flex-end;">
-                                    <div class="container intro-content">
-                                        <div class="row justify-content-end">
-                                            <div class="col-auto col-sm-7 col-md-6 col-lg-5">
-                                                <h3 class="intro-subtitle text-third">{{ $slider->sub_title }}</h3>
-                                                <h1 class="intro-title">{{ $slider->title }}</h1>
+                                <div class="intro-slide" style="background-image: url('{{ asset('images/slider/' . $slider->image) }}'); background-size: cover; background-position: center; height: 500px; display: flex; align-items: center; justify-content: center;">
+                                    <div class="container intro-content" style="width: 100%; max-width: 100%; padding: 20px;">
+                                        <div class="row justify-content-center">
+                                            <div class="col-auto col-sm-7 col-md-6 col-lg-5" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
+                                                <h3 class="intro-subtitle text-third" style="color: #fff;">{{ $slider->sub_title }}</h3>
+                                                <h1 class="intro-title" style="color: #fff;">{{ $slider->title }}</h1>
                                                 @if($slider->link)
                                                     <a href="{{ $slider->link }}" class="btn btn-primary btn-round">
                                                         <span>Shop More</span>
@@ -57,9 +57,6 @@
                                 <h4 class="banner-title d-lg-none d-xl-block">
                                     <a href="{{ route('category.show', $category->slug) }}">{{ $category->name }}</a>
                                 </h4>
-                                <a href="{{ route('category.show', $category->slug) }}" class="banner-link">
-                                    Shop Now<i class="icon-long-arrow-right"></i>
-                                </a>
                             </div>
                         </div>
                     @endforeach
@@ -120,9 +117,6 @@
                                 <strong>{{ $specialOffer->offer_title }}</strong>
                             </a>
                         </h3>
-                        <a href="{{ route('special-offers.show', $specialOffer->slug) }}" class="banner-link">
-                            Shop Now<i class="icon-long-arrow-right"></i>
-                        </a>
                     </div>
                 </div>
             </div>
@@ -334,9 +328,6 @@
                             <strong>{{ $campaign->title }}</strong>
                         </a>
                     </h3>
-                    <a href="{{ route('campaign.details.frontend', $campaign->slug) }}" class="banner-link">
-                        Shop Now<i class="icon-long-arrow-right"></i>
-                    </a>
                 </div>
             </div>
         </div>
@@ -457,9 +448,6 @@
                                 <strong>{{ $flashSell->flash_sell_title }}</strong>
                             </a>
                         </h3>
-                        <a href="{{ route('flash-sells.show', $flashSell->slug) }}" class="banner-link">
-                            Shop Now<i class="icon-long-arrow-right"></i>
-                        </a>
                     </div>
                 </div>
             </div>
