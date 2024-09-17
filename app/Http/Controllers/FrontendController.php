@@ -92,22 +92,6 @@ class FrontendController extends Controller
             ->take(12)
             ->get();
 
-        $initialCategoryProducts = Category::where('status', 1)
-            ->with(['products' => function($query) {
-                $query->select('id', 'name', 'feature_image', 'price', 'slug', 'category_id')
-                    ->where('status', 1)
-                    ->whereDoesntHave('specialOfferDetails')
-                    ->whereDoesntHave('flashSellDetails')
-                    ->orderBy('id', 'desc');
-            }])
-            ->select('id', 'name')
-            ->get();
-
-        $initialCategoryProducts->transform(function ($category) {
-            $category->setRelation('products', $category->products->take(6));
-            return $category;
-        });
-
         $buyOneGetOneProducts = BuyOneGetOne::where('status', 1)
             ->with(['product' => function($query) {
                 $query->select('id', 'name', 'feature_image', 'price', 'slug');
@@ -150,7 +134,15 @@ class FrontendController extends Controller
             $category->setRelation('products', $category->products->take(6));
         });
 
-        return view('frontend.index', compact('specialOffers','flashSells','featuredProducts', 'trendingProducts', 'currency', 'recentProducts', 'popularProducts', 'initialCategoryProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns'));
+        $companyDesign = CompanyDetails::value('design');
+        if ($companyDesign == '1') {
+            return view('frontend.index', compact('specialOffers','flashSells','featuredProducts', 'trendingProducts', 'currency', 'recentProducts', 'popularProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns'));
+        } elseif ($companyDesign == '2') {
+            return view('frontend.index2', compact('specialOffers','flashSells','featuredProducts', 'trendingProducts', 'currency', 'recentProducts', 'popularProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns'));
+        } else{
+            return view('frontend.index', compact('specialOffers','flashSells','featuredProducts', 'trendingProducts', 'currency', 'recentProducts', 'popularProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns'));
+        }
+
     }
 
     public function getCategoryProducts(Request $request)

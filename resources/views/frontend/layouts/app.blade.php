@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale())}}">
 
     @php
-        $company = \App\Models\CompanyDetails::select('fav_icon', 'company_name')->first();
+        $company = \App\Models\CompanyDetails::select('fav_icon', 'company_name', 'design')->first();
     @endphp  
 
 <head>
@@ -29,9 +29,19 @@
 
     <link rel="stylesheet" href="{{ asset('frontend/css/style.css') }}">
 
+    @if($company->design == '1')
+
     <link rel="stylesheet" href="{{ asset('frontend/css/skin-demo-4.css') }}">
 
     <link rel="stylesheet" href="{{ asset('frontend/css/demo-4.css') }}">
+
+    @elseif ($company->design == '2')
+
+    <link rel="stylesheet" href="{{ asset('frontend/css/skin-demo-3.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('frontend/css/demo-3.css') }}">
+
+    @endif
 
     <link rel="stylesheet" href="{{ asset('frontend/css/fontawesome/css/all.min.css')}}">
 
