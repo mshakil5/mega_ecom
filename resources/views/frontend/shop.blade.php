@@ -6,7 +6,7 @@
     <div class="container">
         <div class="row">
             <!-- Shop Sidebar Start -->
-            <aside class="col-lg-3 order-lg-first mt-9">
+            <aside class="col-lg-3 mt-9">
                 <div class="sidebar sidebar-shop">
                     <!-- Price Filter Start -->
                     <div class="widget widget-collapsible">
@@ -113,7 +113,7 @@
 
                     <div class="row" id="product-list">
                         @foreach($products as $product)
-                        <div class="col-6 col-md-4 col-lg-3">
+                        <div class="col-6 col-md-4 col-lg-4">
                             <div class="product product-2">
                                 <figure class="product-media">
                                     <a href="{{ route('product.show', $product->slug) }}">
@@ -201,7 +201,7 @@
                     } else {
                         $.each(products, function(index, product) {
                             productListHtml += `
-                                <div class="col-6 col-md-4 col-lg-3">
+                                <div class="col-6 col-md-4 col-lg-4">
                                     <div class="product product-2">
                                         <figure class="product-media">
                                             <a href="{{ route('product.show', '') }}/${product.slug}">
