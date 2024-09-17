@@ -2,7 +2,17 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale())}}">
 
     @php
-        $company = \App\Models\CompanyDetails::select('fav_icon', 'company_name', 'design')->first();
+
+        $company = \App\Models\CompanyDetails::select('fav_icon', 'company_name', 'design', 'footer_content', 'address1', 'email1', 'phone1', 'company_logo')->first();
+
+        $categories = \App\Models\Category::where('status', 1)
+        ->with(['products' => function($query) {
+            $query->orderBy('watch', 'desc')->limit(20);
+        }])
+        ->get();
+
+        $advertisements = \App\Models\Ad::where('status', 1)->select('type', 'link', 'image')->get();
+
     @endphp  
 
 <head>
@@ -41,6 +51,12 @@
 
     <link rel="stylesheet" href="{{ asset('frontend/css/demo-3.css') }}">
 
+    @elseif ($company->design == '3')
+
+    <link rel="stylesheet" href="{{ asset('frontend/css/skin-demo-17.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('frontend/css/demo-17.css') }}">
+
     @endif
 
     <link rel="stylesheet" href="{{ asset('frontend/css/fontawesome/css/all.min.css')}}">
@@ -52,32 +68,14 @@
 
 </head>
 
-@php
-    $company = \App\Models\CompanyDetails::select('footer_content', 'address1', 'email1', 'phone1', 'company_logo')->first();
-    $categories = \App\Models\Category::where('status', 1)
-        ->with(['products' => function($query) {
-            $query->orderBy('watch', 'desc')->limit(20);
-        }])
-        ->get();
-    $advertisements = \App\Models\Ad::where('status', 1)->select('type', 'link', 'image')->get();
-@endphp
-
 <body>
     <div class="page-wrapper">
 
         <!-- Header Start -->
         @include('frontend.inc.header')
+        <!-- Header End -->
 
-        <!-- Topbar Start -->
-        <!-- @include('frontend.inc.topbar') -->
-        <!-- Topbar End -->
-
-
-        <!-- Navbar Start -->
-        <!-- @include('frontend.inc.navbar') -->
-        <!-- Navbar End -->
-
-
+        
         <!-- Main Content Start -->
         <main class="main">
         @yield('content')
