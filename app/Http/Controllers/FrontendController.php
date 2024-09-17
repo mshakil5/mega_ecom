@@ -141,6 +141,8 @@ class FrontendController extends Controller
             return view('frontend.index2', compact('specialOffers','flashSells','featuredProducts', 'trendingProducts', 'currency', 'recentProducts', 'popularProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns'));
         } elseif ($companyDesign == '3') {
             return view('frontend.index3', compact('specialOffers','flashSells','featuredProducts', 'trendingProducts', 'currency', 'recentProducts', 'popularProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns'));
+        } elseif ($companyDesign == '4') {
+            return view('frontend.index4', compact('specialOffers','flashSells','featuredProducts', 'trendingProducts', 'currency', 'recentProducts', 'popularProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns'));
         } else{
             return view('frontend.index', compact('specialOffers','flashSells','featuredProducts', 'trendingProducts', 'currency', 'recentProducts', 'popularProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns'));
         }
