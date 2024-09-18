@@ -42,22 +42,27 @@
     @if($company->design == '1')
 
     <link rel="stylesheet" href="{{ asset('frontend/css/skin-demo-4.css') }}">
+    <link rel="stylesheet" href="{{ asset('frontend/css/demo-4.css') }}">
 
     @elseif ($company->design == '2')
 
     <link rel="stylesheet" href="{{ asset('frontend/css/skin-demo-3.css') }}">
+    <link rel="stylesheet" href="{{ asset('frontend/css/demo-3.css') }}">
 
     @elseif ($company->design == '3')
 
     <link rel="stylesheet" href="{{ asset('frontend/css/skin-demo-17.css') }}">
+    <link rel="stylesheet" href="{{ asset('frontend/css/demo-17.css') }}">
 
     @elseif ($company->design == '4')
 
     <link rel="stylesheet" href="{{ asset('frontend/css/skin-demo-10.css') }}">
+    <link rel="stylesheet" href="{{ asset('frontend/css/demo-10.css') }}">
 
     @elseif ($company->design == '5')
 
     <link rel="stylesheet" href="{{ asset('frontend/css/skin-demo-14.css') }}">
+    <!-- <link rel="stylesheet" href="{{ asset('frontend/css/demo-14.css') }}"> -->
 
     @endif
 

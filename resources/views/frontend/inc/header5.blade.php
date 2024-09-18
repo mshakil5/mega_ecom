@@ -137,7 +137,7 @@
                         <div class="dropdown-menu show">
                             <nav class="side-nav">
                                 <ul class="menu-vertical sf-arrows">
-                                @foreach($categories as $category)
+                                @foreach($categories->slice(0, 13) as $category)
                                     <li>
                                         <a href="{{ route('category.show', $category->slug) }}">{{ $category->name }}</a>
                                         @if(count($category->subcategories) > 0)
