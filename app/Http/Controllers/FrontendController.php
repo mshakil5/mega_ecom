@@ -137,6 +137,8 @@ class FrontendController extends Controller
         $companyDesign = CompanyDetails::value('design');
         if (in_array($companyDesign, ['2', '3', '4'])) {
             return view('frontend.index2', compact('specialOffers', 'flashSells', 'featuredProducts', 'trendingProducts', 'currency', 'recentProducts', 'popularProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns'));
+        } elseif ($companyDesign == '5') {
+            return view('frontend.index5', compact('specialOffers', 'flashSells', 'featuredProducts', 'trendingProducts', 'currency', 'recentProducts', 'popularProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns'));
         } else {
             return view('frontend.index', compact('specialOffers', 'flashSells', 'featuredProducts', 'trendingProducts', 'currency', 'recentProducts', 'popularProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns'));
         }

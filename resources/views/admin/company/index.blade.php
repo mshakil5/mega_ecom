@@ -202,6 +202,7 @@
                             <option value="2" @if (!empty($data->design) && $data->design == '2') selected @endif>Design 2</option>
                             <option value="3" @if (!empty($data->design) && $data->design == '3') selected @endif>Design 3</option>
                             <option value="4" @if (!empty($data->design) && $data->design == '4') selected @endif>Design 4</option>
+                            <option value="5" @if (!empty($data->design) && $data->design == '5') selected @endif>Design 5</option>
                         </select>
                     </div>
                 </div>

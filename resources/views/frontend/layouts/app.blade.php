@@ -3,7 +3,7 @@
 
     @php
 
-        $company = \App\Models\CompanyDetails::select('fav_icon', 'company_name', 'design', 'footer_content', 'address1', 'email1', 'phone1', 'company_logo')->first();
+        $company = \App\Models\CompanyDetails::select('fav_icon', 'company_name', 'design', 'footer_content', 'address1', 'email1', 'phone1', 'company_logo', 'facebook', 'twitter', 'instagram', 'youtube')->first();
 
         $categories = \App\Models\Category::where('status', 1)
         ->with(['products' => function($query) {
@@ -55,6 +55,10 @@
 
     <link rel="stylesheet" href="{{ asset('frontend/css/skin-demo-10.css') }}">
 
+    @elseif ($company->design == '5')
+
+    <link rel="stylesheet" href="{{ asset('frontend/css/skin-demo-14.css') }}">
+
     @endif
 
     <link rel="stylesheet" href="{{ asset('frontend/css/fontawesome/css/all.min.css')}}">
@@ -70,7 +74,15 @@
     <div class="page-wrapper">
 
         <!-- Header Start -->
+        @if($company->design == '5')
+
+        @include('frontend.inc.header5')
+
+        @else
+
         @include('frontend.inc.header')
+        
+        @endif
         <!-- Header End -->
 
         
@@ -82,7 +94,15 @@
     
 
         <!-- Footer Start -->
+        @if($company->design == '5')
+
+        @include('frontend.inc.footer5')
+
+        @else
+
         @include('frontend.inc.footer')
+        
+        @endif
         <!-- Footer End -->
     </div>
 
