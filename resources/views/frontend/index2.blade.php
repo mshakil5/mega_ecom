@@ -136,7 +136,7 @@
             </div>
             <div class="heading-right" style="width: 100%; text-align: center;">
                 <ul class="nav nav-pills nav-border-anim nav-big justify-content-center" role="tablist">
-                    @foreach($categories as $index => $category)
+                    @foreach($categories->sortBy('id')->take(3) as $index => $category)
                         <li class="nav-item">
                             <a class="nav-link {{ $index == 0 ? 'active' : '' }}" 
                             id="category-{{ $category->id }}-link" 
@@ -205,7 +205,7 @@
                                 </div>
                                 <h3 class="product-title"><a href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></h3>
                                 <div class="product-price">
-                                    ${{ number_format($product->price, 2) }}
+                                {{ $currency }}{{ number_format($product->price, 2) }}
                                 </div>
                             </div>
                         </div>
@@ -300,7 +300,7 @@
                             </div>
                             <h3 class="product-title"><a href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></h3>
                             <div class="product-price">
-                                ${{ number_format($product->price, 2) }}
+                            {{ $currency }}{{ number_format($product->price, 2) }}
                             </div>
                         </div>
                     </div>
@@ -416,7 +416,7 @@
                             </div>
                             <h3 class="product-title"><a href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></h3>
                             <div class="product-price">
-                                ${{ number_format($product->price, 2) }}
+                            {{ $currency }}{{ number_format($product->price, 2) }}
                             </div>
                         </div>
                     </div>
@@ -480,7 +480,7 @@
                                     <span class="new-price">{{ $currency }}{{ number_format($bogo->price, 2) }}</span>
                                 </div>                               
                                 <div class="product-info mt-2">
-                                    <span class="badge badge-primary">Get {{ $bogo->get_products->count() }} extra products</span>
+                                    <span class="badge badge-primary">Get {{ $bogo->get_products_count }} extra products</span>
                                 </div>
                             </div>
                         </div>
@@ -516,7 +516,7 @@
                                     <span class="new-price">{{ $currency }}{{ number_format($bundle->price, 2) }}</span>
                                 </div>                               
                                 <div class="product-info mt-2">
-                                    <span class="badge badge-primary">Includes {{ count($bundle->product_ids) }} products</span>
+                                    <span class="badge badge-primary">Includes {{ $bundle->product_ids_count }} products</span>
                                 </div>
                             </div>
                         </div>

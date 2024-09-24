@@ -51,17 +51,6 @@ class FrontendController extends Controller
             ->whereDate('end_date', '>=', now())
             ->latest()
             ->get();
-
-        $featuredProducts = Product::where('status', 1)
-            ->where('is_featured', 1)
-            ->whereDoesntHave('specialOfferDetails')
-            ->whereDoesntHave('flashSellDetails')
-            ->with('stock')
-            ->orderBy('id', 'desc')
-            ->select('id', 'name', 'feature_image', 'price', 'slug')
-            ->take(12)
-            ->get();
-
         $trendingProducts = Product::where('status', 1)
             ->where('is_trending', 1)
             ->orderByDesc('id')
@@ -81,34 +70,22 @@ class FrontendController extends Controller
             ->select('id', 'name', 'feature_image', 'price', 'slug')
             ->take(12)
             ->get();
-
-        $popularProducts = Product::where('status', 1)
-            ->where('is_popular', 1)
-            ->orderBy('watch', 'desc')
-            ->whereDoesntHave('specialOfferDetails')
-            ->whereDoesntHave('flashSellDetails')
-            ->with('stock')
-            ->select('id', 'name', 'feature_image', 'price', 'slug', 'watch')
-            ->take(12)
-            ->get();
-
         $buyOneGetOneProducts = BuyOneGetOne::where('status', 1)
             ->with(['product' => function($query) {
                 $query->select('id', 'name', 'feature_image', 'price', 'slug');
             }])
             ->get()
-            
-        ->map(function($bogo) {
-            $bogo->get_products = Product::whereIn('id', json_decode($bogo->get_product_ids))
-                ->select('id', 'name', 'feature_image', 'price', 'slug')
-                ->get();
-            return $bogo;
-        });
+            ->map(function($bogo) {
+                $bogo->get_products_count = Product::whereIn('id', json_decode($bogo->get_product_ids))->count();
+                return $bogo;
+            });
 
-        $bundleProducts = BundleProduct::all();
-        foreach ($bundleProducts as $bundle) {
-            $bundle->product_ids = json_decode($bundle->product_ids);
-        }
+        $bundleProducts = BundleProduct::select('id', 'name', 'feature_image', 'price', 'slug', 'product_ids')
+            ->get()
+            ->map(function($bundle) {
+                $bundle->product_ids_count = json_decode($bundle->product_ids, true) ? count(json_decode($bundle->product_ids, true)) : 0;
+                return $bundle;
+            });
 
         $section_status = SectionStatus::first();
         $advertisements = Ad::where('status', 1)->select('type', 'link', 'image')->get();
@@ -118,7 +95,7 @@ class FrontendController extends Controller
                         ->select('id', 'name', 'image', 'slug')
                         ->get();
 
-         $sliders = Slider::orderBy('id', 'desc')
+        $sliders = Slider::orderBy('id', 'desc')
                  ->select('title', 'sub_title', 'image', 'link')
                  ->get();
 
@@ -136,11 +113,11 @@ class FrontendController extends Controller
 
         $companyDesign = CompanyDetails::value('design');
         if (in_array($companyDesign, ['2', '3', '4'])) {
-            return view('frontend.index2', compact('specialOffers', 'flashSells', 'featuredProducts', 'trendingProducts', 'currency', 'recentProducts', 'popularProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns'));
+            return view('frontend.index2', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns'));
         } elseif ($companyDesign == '5') {
-            return view('frontend.index5', compact('specialOffers', 'flashSells', 'featuredProducts', 'trendingProducts', 'currency', 'recentProducts', 'popularProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns'));
+            return view('frontend.index5', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns'));
         } else {
-            return view('frontend.index', compact('specialOffers', 'flashSells', 'featuredProducts', 'trendingProducts', 'currency', 'recentProducts', 'popularProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns'));
+            return view('frontend.index', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns'));
         }
 
     }

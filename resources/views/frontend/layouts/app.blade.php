@@ -3,11 +3,16 @@
 
     @php
 
-        $company = \App\Models\CompanyDetails::select('fav_icon', 'company_name', 'design', 'footer_content', 'address1', 'email1', 'phone1', 'company_logo', 'facebook', 'twitter', 'instagram', 'youtube')->first();
+        $company = \App\Models\CompanyDetails::select('fav_icon', 'company_name', 'design', 'footer_content', 'address1', 'email1', 'phone1', 'company_logo', 'facebook', 'twitter', 'instagram', 'youtube', 'currency')->first();
+
+        $currency = $company->currency;
 
         $categories = \App\Models\Category::where('status', 1)
+        ->select('id', 'name', 'slug')
         ->with(['products' => function($query) {
-            $query->orderBy('watch', 'desc')->limit(20);
+            $query->select('id', 'category_id', 'name', 'slug')
+                ->orderBy('watch', 'desc')
+                ->limit(20);
         }])
         ->get();
 
@@ -70,8 +75,6 @@
 
     <!-- Data table css -->
     <link rel="stylesheet" href="{{ asset('assets/admin/datatables/dataTables.bootstrap4.min.css')}}">
-    <link rel="stylesheet" href="{{ asset('assets/admin/datatables-responsive/css/responsive.bootstrap4.min.css')}}">
-    <link rel="stylesheet" href="{{ asset('assets/admin/datatables-buttons/css/buttons.bootstrap4.min.css')}}">
 
 </head>
 
@@ -142,19 +145,6 @@
     <!-- Data table js -->
     <script src="{{ asset('assets/admin/datatables/jquery.dataTables.min.js')}}"></script>
     <script src="{{ asset('assets/admin/datatables/dataTables.bootstrap4.min.js')}}"></script>
-
-    <script src="{{ asset('assets/admin/datatables-responsive/js/dataTables.responsive.min.js')}}"></script>
-    <script src="{{ asset('assets/admin/datatables-responsive/js/responsive.bootstrap4.min.js')}}"></script>
-
-    <script src="{{ asset('assets/admin/datatables-buttons/js/dataTables.buttons.min.js')}}"></script>
-    <script src="{{ asset('assets/admin/datatables-buttons/js/buttons.bootstrap4.min.js')}}"></script>
-    <script src="{{ asset('assets/admin/datatables/jszip/jszip.min.js')}}"></script>
-    <script src="{{ asset('assets/admin/datatables/pdfmake/pdfmake.min.js')}}"></script>
-    <script src="{{ asset('assets/admin/datatables/pdfmake/vfs_fonts.js')}}"></script>
-
-    <script src="{{ asset('assets/admin/datatables-buttons/js/buttons.html5.min.js')}}"></script>
-    <script src="{{ asset('assets/admin/datatables-buttons/js/buttons.print.min.js')}}"></script>
-    <script src="{{ asset('assets/admin/datatables-buttons/js/buttons.colVis.min.js')}}"></script>
 
     @yield('script')
 
