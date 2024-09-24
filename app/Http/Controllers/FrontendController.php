@@ -100,16 +100,16 @@ class FrontendController extends Controller
                  ->get();
 
         $categories = Category::where('status', 1)
-        ->with(['products' => function ($query) {
-            $query->select('id', 'category_id', 'name', 'price', 'slug', 'feature_image', 'watch')
-                ->orderBy('watch', 'desc');
-        }])
-        ->select('id', 'name', 'image', 'slug')
-        ->orderBy('id', 'desc')
-        ->get()
-        ->each(function ($category) {
-            $category->setRelation('products', $category->products->take(6));
-        });
+            ->with(['products' => function ($query) {
+                $query->select('id', 'category_id', 'name', 'price', 'slug', 'feature_image', 'watch')
+                    ->orderBy('watch', 'desc');
+            }])
+            ->select('id', 'name', 'image', 'slug')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->each(function ($category) {
+                $category->setRelation('products', $category->products->take(6));
+            });
 
         $companyDesign = CompanyDetails::value('design');
         if (in_array($companyDesign, ['2', '3', '4'])) {
