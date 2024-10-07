@@ -40,6 +40,7 @@ use App\Http\Controllers\Admin\IncomeController;
 use App\Http\Controllers\Admin\LiabilityController;
 use App\Http\Controllers\Admin\EquityController;
 use App\Http\Controllers\Admin\AssetController;
+use App\Http\Controllers\Admin\ExpenseController;
 
 
 Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], function(){
@@ -377,13 +378,6 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('liabilities/{id}', [LiabilityController::class, 'edit']);
     Route::put('liabilities/{id}', [LiabilityController::class, 'update']);
 
-    //Liability
-    Route::get('liabilities', [LiabilityController::class, 'index'])->name('admin.liabilities');
-    Route::post('liability', [LiabilityController::class, 'index'])->name('admin.liability.filter');
-    Route::post('liabilities', [LiabilityController::class, 'store']);
-    Route::get('liabilities/{id}', [LiabilityController::class, 'edit']);
-    Route::put('liabilities/{id}', [LiabilityController::class, 'update']);
-
     //Equity
     Route::get('equity', [EquityController::class, 'index'])->name('admin.equity');
     Route::post('equities', [EquityController::class, 'index'])->name('admin.equity.filter');
@@ -397,6 +391,13 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('asset', [AssetController::class, 'store']);
     Route::get('asset/{id}', [AssetController::class, 'edit']);
     Route::put('asset/{id}', [AssetController::class, 'update']); 
+
+    //Expense
+    Route::get('expense', [ExpenseController::class, 'index'])->name('admin.expense');
+    Route::post('expenses', [ExpenseController::class, 'index'])->name('admin.expense.filter');
+    Route::post('expense', [ExpenseController::class, 'store']);
+    Route::get('expense/{id}', [ExpenseController::class, 'edit']);
+    Route::put('expense/{id}', [ExpenseController::class, 'update']); 
 
 });
   
