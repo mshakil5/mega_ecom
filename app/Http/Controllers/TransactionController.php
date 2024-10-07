@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Transaction;
 use App\Models\Supplier;
+use App\Models\SupplierTransaction;
 
 class TransactionController extends Controller
 {
@@ -16,7 +16,7 @@ class TransactionController extends Controller
             'note' => 'nullable',
         ]);
 
-        $transaction = new Transaction();
+        $transaction = new SupplierTransaction();
         $transaction->supplier_id = $request->supplier_id;
         $transaction->amount = $request->amount;
         $transaction->note = $request->note;

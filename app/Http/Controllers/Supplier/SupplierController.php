@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\Purchase;
 use App\Models\OrderDetails;
 use App\Models\Order;
-use App\Models\Transaction;
+use App\Models\SupplierTransaction;
 use App\Models\PurchaseReturn;
 use App\Models\CampaignRequestProduct;
 use Illuminate\Support\Facades\Crypt;
@@ -148,7 +148,7 @@ class SupplierController extends Controller
     public function supplierTransaction()
     {
         $supplierId = Auth::guard('supplier')->user()->id;
-        $transactions = Transaction::where('supplier_id', $supplierId)
+        $transactions = SupplierTransaction::where('supplier_id', $supplierId)
                                 ->orderBy('id', 'desc')
                                 ->select('id', 'amount', 'date', 'note')
                                 ->get();

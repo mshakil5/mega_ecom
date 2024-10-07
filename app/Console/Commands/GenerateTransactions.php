@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
-use App\Models\Transaction;
+use App\Models\SupplierTransaction;
 
 class GenerateTransactions extends Command
 {
@@ -29,7 +29,7 @@ class GenerateTransactions extends Command
     {
         $now = Carbon::now();
 
-        $transactions = Transaction::all();
+        $transactions = SupplierTransaction::all();
         
         foreach ($transactions as $transaction) {
             $shouldRun = false;

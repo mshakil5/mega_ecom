@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Supplier;
 use Illuminate\Support\Str;
-use App\Models\Transaction;
+use App\Models\SupplierTransaction;
 use Illuminate\Support\Facades\Hash;
 use App\Models\SupplierStock;
 
@@ -177,7 +177,7 @@ class SupplierController extends Controller
 
     public function supplierTransactions($supplierId)
     {
-        $transactions = Transaction::where('supplier_id', $supplierId)
+        $transactions = SupplierTransaction::where('supplier_id', $supplierId)
                                 ->orderBy('id', 'desc')
                                 ->select('id', 'amount', 'date', 'note')
                                 ->get();

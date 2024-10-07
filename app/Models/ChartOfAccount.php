@@ -16,6 +16,6 @@ class ChartOfAccount extends Model
 
     public function transactions()
     {
-        return $this->hasMany(Transaction::class, 'chart_of_account_id');
+        return $this->hasMany(SupplierTransaction::class, 'chart_of_account_id');
     }
 }
