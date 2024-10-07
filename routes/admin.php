@@ -38,6 +38,8 @@ use App\Http\Controllers\Admin\ChartOfAccountController;
 use App\Http\Controllers\Admin\BranchController;
 use App\Http\Controllers\Admin\IncomeController;
 use App\Http\Controllers\Admin\LiabilityController;
+use App\Http\Controllers\Admin\EquityController;
+use App\Http\Controllers\Admin\AssetController;
 
 
 Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], function(){
@@ -381,6 +383,20 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('liabilities', [LiabilityController::class, 'store']);
     Route::get('liabilities/{id}', [LiabilityController::class, 'edit']);
     Route::put('liabilities/{id}', [LiabilityController::class, 'update']);
+
+    //Equity
+    Route::get('equity', [EquityController::class, 'index'])->name('admin.equity');
+    Route::post('equities', [EquityController::class, 'index'])->name('admin.equity.filter');
+    Route::post('equity', [EquityController::class, 'store']);
+    Route::get('equity/{id}', [EquityController::class, 'edit']);
+    Route::put('equity/{id}', [EquityController::class, 'update']);
+    
+    //Asset
+    Route::get('asset', [AssetController::class, 'index'])->name('admin.asset');
+    Route::post('assets', [AssetController::class, 'index'])->name('admin.asset.filter');
+    Route::post('asset', [AssetController::class, 'store']);
+    Route::get('asset/{id}', [AssetController::class, 'edit']);
+    Route::put('asset/{id}', [AssetController::class, 'update']); 
 
 });
   
