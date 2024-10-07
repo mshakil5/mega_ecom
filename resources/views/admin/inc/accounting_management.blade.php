@@ -16,6 +16,20 @@
             </button>
         </form>
 
+        <li class="nav-item">
+            <a href="{{ route('admin.addchartofaccount') }}" class="nav-link {{ (request()->is('admin/chart-of-account*')) ? 'active' : '' }}">
+                <i class="fa fa-users"></i>
+                <p>Chart Of Accounts</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="{{ route('view_branch') }}" class="nav-link {{ (request()->is('admin/branch*')) ? 'active' : '' }}">
+                <i class="fa fa-users"></i>
+                <p>Branch</p>
+            </a>
+        </li>
+
         
     </ul>
   </nav>
