@@ -36,6 +36,7 @@ use App\Http\Controllers\Admin\MailContentController;
 use App\Http\Controllers\Admin\CampaignController;
 use App\Http\Controllers\Admin\ChartOfAccountController;
 use App\Http\Controllers\Admin\BranchController;
+use App\Http\Controllers\Admin\IncomeController;
 
 
 Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], function(){
@@ -358,6 +359,21 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/published-branch/{id}', [BranchController::class, 'published_branch']);
     Route::get('/unpublished-branch/{id}', [BranchController::class, 'unpublished_branch']);
     Route::post('/edit-branch/{id}', [BranchController::class, 'edit_branch']);
+
+    //Income
+    Route::get('income', [IncomeController::class, 'index'])->name('admin.income');
+    Route::post('incomes', [IncomeController::class, 'index'])->name('admin.income.filter');
+    Route::post('income', [IncomeController::class, 'store']);
+    Route::get('income/{id}', [IncomeController::class, 'edit']);
+    Route::put('income/{id}', [IncomeController::class, 'update']); 
+
+    //Liability
+    Route::get('liabilities', [LiabilityController::class, 'index'])->name('admin.liabilities');
+    Route::post('liability', [LiabilityController::class, 'index'])->name('admin.liability.filter');
+    Route::post('liabilities', [LiabilityController::class, 'store']);
+    Route::get('liabilities/{id}', [LiabilityController::class, 'edit']);
+    Route::put('liabilities/{id}', [LiabilityController::class, 'update']);
+    
 
 });
   
