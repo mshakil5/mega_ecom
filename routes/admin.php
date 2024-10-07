@@ -37,6 +37,7 @@ use App\Http\Controllers\Admin\CampaignController;
 use App\Http\Controllers\Admin\ChartOfAccountController;
 use App\Http\Controllers\Admin\BranchController;
 use App\Http\Controllers\Admin\IncomeController;
+use App\Http\Controllers\Admin\LiabilityController;
 
 
 Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], function(){
@@ -373,7 +374,13 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('liabilities', [LiabilityController::class, 'store']);
     Route::get('liabilities/{id}', [LiabilityController::class, 'edit']);
     Route::put('liabilities/{id}', [LiabilityController::class, 'update']);
-    
+
+    //Liability
+    Route::get('liabilities', [LiabilityController::class, 'index'])->name('admin.liabilities');
+    Route::post('liability', [LiabilityController::class, 'index'])->name('admin.liability.filter');
+    Route::post('liabilities', [LiabilityController::class, 'store']);
+    Route::get('liabilities/{id}', [LiabilityController::class, 'edit']);
+    Route::put('liabilities/{id}', [LiabilityController::class, 'update']);
 
 });
   
