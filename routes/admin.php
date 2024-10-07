@@ -35,6 +35,7 @@ use App\Http\Controllers\Admin\PaymentGatewayController;
 use App\Http\Controllers\Admin\MailContentController;
 use App\Http\Controllers\Admin\CampaignController;
 use App\Http\Controllers\Admin\ChartOfAccountController;
+use App\Http\Controllers\Admin\BranchController;
 
 
 Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], function(){
@@ -349,6 +350,14 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('chart-of-account/{id}', [ChartOfAccountController::class, 'edit']);
     Route::put('chart-of-account/{id}', [ChartOfAccountController::class, 'update']);
     Route::get('chart-of-account/{id}/change-status', [ChartOfAccountController::class, 'changeStatus']);
+
+    //Branch
+    Route::get('/branch', [BranchController::class, 'view_branch'])->name('view_branch');
+    Route::get('/branch-all', [BranchController::class, 'get_all_branch']);
+    Route::post('/branch', [BranchController::class, 'save_branch']);
+    Route::get('/published-branch/{id}', [BranchController::class, 'published_branch']);
+    Route::get('/unpublished-branch/{id}', [BranchController::class, 'unpublished_branch']);
+    Route::post('/edit-branch/{id}', [BranchController::class, 'edit_branch']);
 
 });
   
