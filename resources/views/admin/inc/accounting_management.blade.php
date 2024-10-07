@@ -22,14 +22,14 @@
                 <p>Chart Of Accounts</p>
             </a>
         </li>
-
+        {{--  
         <li class="nav-item">
             <a href="{{ route('view_branch') }}" class="nav-link {{ (request()->is('admin/branch*')) ? 'active' : '' }}">
                 <i class="fa fa-users"></i>
                 <p>Branch</p>
             </a>
         </li>
-
+        --}}
         
     </ul>
   </nav>

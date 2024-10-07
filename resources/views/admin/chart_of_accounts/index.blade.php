@@ -84,14 +84,14 @@
 </section>
 
 <!-- Modal -->
-<div class="modal fade" id="chartModal">
-    <div class="modal-dialog">
+<div class="modal fade" id="chartModal" tabindex="-1" role="dialog" aria-labelledby="chartModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title">Chart Of Account</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title">Chart Of Account</h4>
+                </button>   
             </div>
             <form class="form-horizontal" id="customer-form">
                 <div class="modal-body">
@@ -99,46 +99,61 @@
 
                     <div id="alert-container1"></div>
 
-                    <div class="form-group">
-                        <label for="account_head" class="col-form-label">Account Head</label>
-                        <select class="form-control" name="account_head" id="account_head">
-                            <option value="">Select</option>
-                            <option value="Assets">Assets</option>
-                            <option value="Expenses">Expenses</option>
-                            <option value="Income">Income</option>
-                            <option value="Liabilities">Liabilities</option>
-                            <option value="Equity">Equity</option>
-                        </select>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="account_head" class="col-form-label">Account Head</label>
+                                <select class="form-control" name="account_head" id="account_head">
+                                    <option value="">Select</option>
+                                    <option value="Assets">Assets</option>
+                                    <option value="Expenses">Expenses</option>
+                                    <option value="Income">Income</option>
+                                    <option value="Liabilities">Liabilities</option>
+                                    <option value="Equity">Equity</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="sub_account_head" class="col-form-label">Account Sub Head</label>
+                                <select class="form-control" name="sub_account_head" id="sub_account_head">
+                                    <!-- Options will be populated based on selected Account Head -->
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="sub_account_head" class="col-form-label">Account Sub Head</label>
-                        <select class="form-control" name="sub_account_head" id="sub_account_head">
-                            <!-- Options will be populated based on selected Account Head -->
-                        </select>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="contingent" class="col-form-label">Contingent</label>
+                                <select class="form-control" name="contingent" id="contingent">
+                                    <option value="Non-Contingent">Non-Contingent</option>
+                                    <option value="Contingent">Contingent</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="serial" class="col-form-label">Serial</label>
+                                <input type="number" name="serial" class="form-control" id="serial" placeholder="Ex: 1">
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="contingent" class="col-form-label">Contingent</label>
-                        <select class="form-control" name="contingent" id="contingent">
-                            <option value="Non-Contingent">Non-Contingent</option>
-                            <option value="Contingent">Contingent</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="serial" class="col-form-label">Serial</label>
-                        <input type="number" name="serial" class="form-control" id="serial" placeholder="Ex: 1">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="account_name" class="col-form-label">Account Name</label>
-                        <input type="text" name="account_name" class="form-control" id="account_name" placeholder="John Doe">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="description" class="col-form-label">Description</label>
-                        <textarea class="form-control" id="description" rows="3" placeholder="Description" name="description"></textarea>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="account_name" class="col-form-label">Account Name</label>
+                                <input type="text" name="account_name" class="form-control" id="account_name" placeholder="John Doe">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="description" class="col-form-label">Description</label>
+                                <textarea class="form-control" id="description" rows="3" placeholder="Description" name="description"></textarea>
+                            </div>
+                        </div>
                     </div>
 
                 </div>
@@ -158,7 +173,9 @@
 <script>
 
     $(document).ready(function() {
-        $('.select2').select2();
+        $('.select2').select2({
+            width: '100%'
+        });
     });
     
     var charturl = "{{URL::to('/admin/chart-of-account')}}";
@@ -215,33 +232,29 @@
     });
 
     $(document).on('click', '.status-btn', function () {
-        let confirmation = confirm("Are you sure to change the status?");
-        if (confirmation) {
-            let id = $(this).val();
-            // console.log(id);
-            $.ajax({
-                url: charturl + '/' + id + '/change-status',
-                type: 'GET',
-                beforeSend: function (request) {
-                    return request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
-                },
-                success: function (response) {
-                    swal({
-                        text: "Updated successfully",
-                        icon: "success",
-                        button: {
-                            text: "OK",
-                            className: "swal-button--confirm"
-                        }
-                    });
-                    customerTBL.draw();
-                },
-                error: function (err) {
-                    console.log(err);
-                    alert("Something Went Wrong, Please check again");
-                }
-            });
-        }
+        let id = $(this).val();
+        $.ajax({
+            url: charturl + '/' + id + '/change-status',
+            type: 'GET',
+            beforeSend: function (request) {
+                return request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
+            },
+            success: function (response) {
+                swal({
+                    text: "Updated successfully",
+                    icon: "success",
+                    button: {
+                        text: "OK",
+                        className: "swal-button--confirm"
+                    }
+                });
+                customerTBL.draw();
+            },
+            error: function (err) {
+                console.log(err);
+                alert("Something Went Wrong, Please check again");
+            }
+        });
     });
 
     $('#chartModal').on('show.bs.modal', function (event) {
@@ -322,8 +335,14 @@
             success: function (response) {
                 if (response.status === 200) {
                     $('#chartModal').modal('toggle');
-                    let alertMessage = `<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>${response.message}</b></div>`;
-                    $('#alert-container').html(alertMessage);
+                    swal({
+                        text: "Saved successfully",
+                        icon: "success",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    });
                     customerTBL.draw();
                 } else if (response.status === 303) {
                     let alertMessage = `<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>${response.message}</b></div>`;
@@ -351,8 +370,14 @@
             success: function (response) {
                 if (response.status === 200) {
                     $('#chartModal').modal('toggle');
-                    let alertMessage = `<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>${response.message}</b></div>`;
-                    $('#alert-container').html(alertMessage);
+                    swal({
+                        text: "Updated successfully",
+                        icon: "success",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    });
                     customerTBL.draw();
                 } else if (response.status === 303) {
                     let alertMessage = `<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>${response.message}</b></div>`;
