@@ -32,6 +32,7 @@
   <link rel="stylesheet" href="{{ asset('assets/admin/datatables-buttons/css/buttons.bootstrap4.min.css')}}">
   <link rel="stylesheet" href="{{ asset('assets/admin/select2/select2.min.css')}}">
   <link rel="stylesheet" href="{{ asset('assets/admin/summernote/summernote-bs4.min.css')}}">
+  <link rel="stylesheet" href="{{ asset('assets/admin/css/customize.css')}}">
   
 
 </head>
@@ -163,18 +164,8 @@
 <script src="{{ asset('assets/admin/select2/select2.min.js')}}"></script>
 <script src="{{ asset('assets/admin/moment/moment.min.js')}}"></script>
 <script src="{{ asset('assets/admin/summernote/summernote.min.js')}}"></script>
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote.min.js"></script> -->
-
-<script>
-  // page schroll top
-  function pagetop() {
-          window.scrollTo({
-              top: 130,
-              behavior: 'smooth',
-          });
-      }
-</script>
 
 @yield('script')
+
 </body>
 </html>

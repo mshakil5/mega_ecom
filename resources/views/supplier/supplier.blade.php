@@ -155,17 +155,6 @@
 <script src="{{ asset('assets/admin/select2/select2.min.js')}}"></script>
 <script src="{{ asset('assets/admin/moment/moment.min.js')}}"></script>
 <script src="{{ asset('assets/admin/summernote/summernote.min.js')}}"></script>
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote.min.js"></script> -->
-
-<script>
-  // page schroll top
-  function pagetop() {
-          window.scrollTo({
-              top: 130,
-              behavior: 'smooth',
-          });
-      }
-</script>
 
 @yield('script')
 </body>

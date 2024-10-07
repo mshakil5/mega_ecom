@@ -34,6 +34,7 @@ use App\Http\Controllers\Admin\BuyOneGetOneController;
 use App\Http\Controllers\Admin\PaymentGatewayController;
 use App\Http\Controllers\Admin\MailContentController;
 use App\Http\Controllers\Admin\CampaignController;
+use App\Http\Controllers\Admin\ChartOfAccountController;
 
 
 Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], function(){
@@ -340,6 +341,14 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     //Toggle sidebar
     Route::post('/toggle-sidebar', [HomeController::class, 'toggleSidebar'])->name('toggle.sidebar');
+
+    //Chart of account
+    Route::get('chart-of-account', [ChartOfAccountController::class, 'index'])->name('admin.addchartofaccount');
+    Route::post('chart-of-accounts', [ChartOfAccountController::class, 'index'])->name('admin.addchartofaccount.filter');
+    Route::post('chart-of-account', [ChartOfAccountController::class, 'store']);
+    Route::get('chart-of-account/{id}', [ChartOfAccountController::class, 'edit']);
+    Route::put('chart-of-account/{id}', [ChartOfAccountController::class, 'update']);
+    Route::get('chart-of-account/{id}/change-status', [ChartOfAccountController::class, 'changeStatus']);
 
 });
   
