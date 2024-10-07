@@ -338,5 +338,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/mail-content/{id}/edit', [MailContentController::class, 'edit']);
     Route::post('/mail-content-update', [MailContentController::class, 'update']);
 
+    //Toggle sidebar
+    Route::post('/toggle-sidebar', [HomeController::class, 'toggleSidebar'])->name('toggle.sidebar');
+
 });
   

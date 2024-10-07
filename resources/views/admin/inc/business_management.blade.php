@@ -8,6 +8,14 @@
             </a>
         </li>
 
+        <form action="{{ route('toggle.sidebar') }}" method="POST">
+            @csrf
+            <input type="hidden" name="sidebar" value="0">
+            <button type="submit" class="btn btn-info my-2">
+                Switch to Accounting <i class="fas fa-arrow-right"></i>
+            </button>
+        </form>
+
         <li class="nav-item dropdown {{ request()->is('admin/*-orders*') ? 'menu-open' : '' }}">
             <a href="#" class="nav-link dropdown-toggle {{ request()->is('admin/*-orders*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-truck"></i>

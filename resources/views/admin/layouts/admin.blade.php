@@ -32,9 +32,7 @@
   <link rel="stylesheet" href="{{ asset('assets/admin/datatables-buttons/css/buttons.bootstrap4.min.css')}}">
   <link rel="stylesheet" href="{{ asset('assets/admin/select2/select2.min.css')}}">
   <link rel="stylesheet" href="{{ asset('assets/admin/summernote/summernote-bs4.min.css')}}">
-  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs4.min.css"> -->
   
-
 
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -89,8 +87,15 @@
     </a>
 
     <div class="sidebar">
+      @if (Auth::user() && Auth::user()->sidebar == 1)
 
-      @include('admin.inc.sidebar')
+      @include('admin.inc.business_management')
+
+      @else
+
+      @include('admin.inc.accounting_management')
+
+      @endif
 
     </div>
 
