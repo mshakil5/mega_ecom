@@ -41,6 +41,7 @@ use App\Http\Controllers\Admin\LiabilityController;
 use App\Http\Controllers\Admin\EquityController;
 use App\Http\Controllers\Admin\AssetController;
 use App\Http\Controllers\Admin\ExpenseController;
+use App\Http\Controllers\Admin\EquityHolderController;
 
 
 Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], function(){
@@ -398,6 +399,13 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('expense', [ExpenseController::class, 'store']);
     Route::get('expense/{id}', [ExpenseController::class, 'edit']);
     Route::put('expense/{id}', [ExpenseController::class, 'update']); 
+
+    //Equity holders
+    Route::get('share-holders', [EquityHolderController::class, 'index'])->name('admin.equityholders');
+    Route::post('share-holders', [EquityHolderController::class, 'store']);
+    Route::get('share-holders/{id}', [EquityHolderController::class, 'edit']);
+    Route::put('share-holders/{id}', [EquityHolderController::class, 'update']);
+    Route::get('share-holders/{id}/change-status', [EquityHolderController::class, 'changeStatus']);
 
 });
   
