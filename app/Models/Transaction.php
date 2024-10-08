@@ -13,4 +13,9 @@ class Transaction extends Model
     {
         return $this->belongsTo(ChartOfAccount::class, 'chart_of_account_id');
     }
+
+    public function equityHolder()
+    {
+        return $this->belongsTo(EquityHolder::class, 'share_holder_id');
+    }
 }
