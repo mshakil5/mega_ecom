@@ -20,18 +20,6 @@
                         <div class="row mb-3">
                             <form class="form-inline" role="form" method="POST" action="{{ route('admin.addchartofaccount.filter') }}">
                                 {{ csrf_field() }}
-                                
-                                <div class="form-group mx-sm-3">
-                                    <label class="sr-only">Branch</label>
-                                    <select class="form-control select2" name="branch_id">
-                                        <option value="">Select Branch..</option>
-                                        @foreach ($branches as $branch)
-                                            <option value="{{ $branch->id }}" {{ request()->input('branch_id') == $branch->id ? 'selected' : '' }}>
-                                                {{ $branch->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
 
                                 <div class="form-group mx-sm-3">
                                     <label class="sr-only">Account Head</label>
@@ -69,7 +57,6 @@
                                 <th>Account Name</th>
                                 <th>Account Head</th>
                                 <th>Sub Account Head</th>
-                                <th>Branch</th>
                                 <th>Serial</th>
                                 <th>Description</th>
                                 <th>Status</th>
@@ -196,7 +183,6 @@
             {data: 'account_name', name: 'account_name'},
             {data: 'account_head', name: 'account_head'},
             {data: 'sub_account_head', name: 'sub_account_head'},
-            { data: 'branch_name', name: 'branch_name' },
             { data: 'serial', name: 'serial' },
             {data: 'description', name: 'description'},
             {

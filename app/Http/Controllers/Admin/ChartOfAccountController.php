@@ -19,10 +19,6 @@ class ChartOfAccountController extends Controller
         if ($request->ajax()) {
             $query = ChartOfAccount::with('branch');
 
-            if ($branchId = $request->input('branch_id')) {
-                $query->where('branch_id', $branchId);
-            }
-
             if ($accountHead = $request->input('account_head')) {
                 $query->where('account_head', $accountHead);
             }
