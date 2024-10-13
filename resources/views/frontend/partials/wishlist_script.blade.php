@@ -9,11 +9,14 @@
         function updateHeartIcon(productId, offerId) {
             var wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
             var isInWishlist = wishlist.some(item => item.productId === productId && item.offerId === offerId);
-            // if (isInWishlist) {
-            //     $('.add-to-wishlist[data-product-id="' + productId + '"][data-offer-id="' + offerId + '"]').removeClass('btn-wishlist').html('<i class="fas fa-heart text-primary"></i>');
-            // } else {
-            //     $('.add-to-wishlist[data-product-id="' + productId + '"][data-offer-id="' + offerId + '"]').addClass('btn-wishlist').html('<i class="fa fa-heart"></i>');
-            // }
+            var wishlistButton = $('.add-to-wishlist[data-product-id="' + productId + '"][data-offer-id="' + offerId + '"]');
+            if (isInWishlist) {
+                wishlistButton.attr('title', 'Remove from wishlist'); 
+                wishlistButton.find('span').text('Remove from wishlist');
+            } else {
+                wishlistButton.attr('title', 'Add to wishlist');
+                wishlistButton.find('span').text('Add to wishlist');
+            }
         }
 
         updateWishlistCount();
