@@ -7,12 +7,12 @@
         <div class="container">
             <div class="row">
                 <!-- First Column (Slider) -->
-                <div class="col-lg-8">
+                <div class="col-12 col-lg-8 mb-3 mb-lg-0">
                     <div class="intro-slider-container slider-container-ratio mb-2 mb-lg-0">
-                        <div class="intro-slider owl-carousel owl-simple owl-dark owl-nav-inside" data-toggle="owl" 
+                        <div class="intro-slider owl-carousel owl-simple owl-dark owl-nav-inside" data-toggle="owl"
                             data-owl-options='{
                                 "dots": true,
-                                "nav": false, 
+                                "nav": false,
                                 "responsive": {
                                     "1200": {
                                         "nav": true,
@@ -21,22 +21,22 @@
                                 }
                             }'>
                             @foreach($sliders as $slider)
-                                <div class="intro-slide" style="background-image: url('{{ asset('images/slider/' . $slider->image) }}'); background-size: cover; background-position: center; height: 500px; display: flex; align-items: center; justify-content: center;">
-                                    <div class="container intro-content" style="width: 100%; max-width: 100%; padding: 20px;">
-                                        <div class="row justify-content-center">
-                                            <div class="col-auto col-sm-7 col-md-6 col-lg-5" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
-                                                <h3 class="intro-subtitle text-third" style="color: #fff;">{{ $slider->sub_title }}</h3>
-                                                <h1 class="intro-title" style="color: #fff;">{{ $slider->title }}</h1>
-                                                @if($slider->link)
-                                                    <a href="{{ $slider->link }}" class="btn btn-primary btn-round">
-                                                        <span>Shop More</span>
-                                                        <i class="icon-long-arrow-right"></i>
-                                                    </a>
-                                                @endif
-                                            </div>
+                            <div class="intro-slide" style="background-image: url('{{ asset('images/slider/' . $slider->image) }}'); background-size: cover; background-position: center; height: 300px; display: flex; align-items: center; justify-content: center;">
+                                <div class="container intro-content" style="padding: 20px;">
+                                    <div class="row justify-content-center">
+                                        <div class="col-auto col-sm-7 col-md-6 col-lg-5" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
+                                            <h3 class="intro-subtitle text-third" style="color: #fff;">{{ $slider->sub_title }}</h3>
+                                            <h1 class="intro-title" style="color: #fff;">{{ $slider->title }}</h1>
+                                            @if($slider->link)
+                                            <a href="{{ $slider->link }}" class="btn btn-primary btn-round">
+                                                <span>Shop More</span>
+                                                <i class="icon-long-arrow-right"></i>
+                                            </a>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
+                            </div>
                             @endforeach
                         </div>
                         <span class="slider-loader"></span>
@@ -45,21 +45,21 @@
                 <!-- End of First Column -->
 
                 <!-- Second Column (Categories) -->
-                <div class="col-lg-4">
+                <div class="col-12 col-lg-4">
                     <div class="intro-banners">
-                    @foreach($categories->take(3) as $category)
-                        <div class="banner mb-lg-1 mb-xl-2">
+                        @foreach($categories->take(3) as $category)
+                        <div class="banner mb-3">
                             <a href="{{ route('category.show', $category->slug) }}">
-                            <img src="{{ asset('images/category/' . $category->image) }}" alt="{{ $category->name }}"style="width: 370px; height: 153px; object-fit: cover;">
+                                <img src="{{ asset('images/category/' . $category->image) }}" alt="{{ $category->name }}" class="img-fluid" style="object-fit: cover; height: 153px; width: 100%;">
                             </a>
 
-                            <div class="banner-content">
-                                <h4 class="banner-title d-lg-none d-xl-block">
-                                    <a href="{{ route('category.show', $category->slug) }}">{{ $category->name }}</a>
+                            <div class="banner-content" style="background: rgba(0, 0, 0, 0.5); padding: 10px; border-radius: 10px;">
+                                <h4 class="banner-title text-center">
+                                    <a href="{{ route('category.show', $category->slug) }}" style="color: #fff;">{{ $category->name }}</a>
                                 </h4>
                             </div>
                         </div>
-                    @endforeach
+                        @endforeach
                     </div>
                 </div>
                 <!-- End of Second Column -->
@@ -104,16 +104,16 @@
             <div class="col-md-6 col-lg-4">
                 <div class="banner banner-overlay banner-overlay-light">
                     <a href="{{ route('special-offers.show', $specialOffer->slug) }}">
-                        <img src="{{ asset('images/special_offer/' . $specialOffer->offer_image) }}" alt="Banner">
+                        <img src="{{ asset('images/special_offer/' . $specialOffer->offer_image) }}" alt="Banner" style="height: 300px; object-fit: cover;">
                     </a>
-                    <div class="banner-content">
+                    <div class="banner-content" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
                         <h4 class="banner-subtitle">
-                            <a href="{{ route('special-offers.show', $specialOffer->slug) }}">
+                            <a href="{{ route('special-offers.show', $specialOffer->slug) }}" style="color: #fff;">
                                 {{ $specialOffer->offer_name }}
                             </a>
                         </h4>
                         <h3 class="banner-title">
-                            <a href="{{ route('special-offers.show', $specialOffer->slug) }}">
+                            <a href="{{ route('special-offers.show', $specialOffer->slug) }}" style="color: #fff;">
                                 <strong>{{ $specialOffer->offer_title }}</strong>
                             </a>
                         </h3>
@@ -136,7 +136,7 @@
             </div>
             <div class="heading-right" style="width: 100%; text-align: center;">
                 <ul class="nav nav-pills nav-border-anim nav-big justify-content-center" role="tablist">
-                    @foreach($categories->sortBy('id')->take(3) as $index => $category)
+                     @foreach($categories->take(3) as $index => $category)
                         <li class="nav-item">
                             <a class="nav-link {{ $index == 0 ? 'active' : '' }}" 
                             id="category-{{ $category->id }}-link" 
@@ -144,7 +144,8 @@
                             href="#category-{{ $category->id }}-tab" 
                             role="tab" 
                             aria-controls="category-{{ $category->id }}-tab" 
-                            aria-selected="{{ $index == 0 ? 'true' : 'false' }}">
+                            aria-selected="{{ $index == 0 ? 'true' : 'false' }}"
+                            index="{{ $index }}">
                                 {{ $category->name }}
                             </a>
                         </li>
@@ -205,7 +206,7 @@
                                 </div>
                                 <h3 class="product-title"><a href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></h3>
                                 <div class="product-price">
-                                {{ $currency }}{{ number_format($product->price, 2) }}
+                                    {{ $currency }}{{ number_format($product->price, 2) }}
                                 </div>
                             </div>
                         </div>
@@ -319,12 +320,12 @@
         <div class="col-md-6 col-lg-4">
             <div class="banner banner-overlay banner-overlay-light">
                 <a href="{{ route('campaign.details.frontend', $campaign->slug) }}">
-                    <img src="{{ asset('images/campaign_banner/' . $campaign->banner_image) }}" alt="{{ $campaign->title }}">
+                    <img src="{{ asset('images/campaign_banner/' . $campaign->banner_image) }}" alt="{{ $campaign->title }}" style="height: 300px; object-fit: cover;">
                 </a>
 
-                <div class="banner-content">
+                <div class="banner-content" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
                     <h3 class="banner-title">
-                        <a href="{{ route('campaign.details.frontend', $campaign->slug) }}">
+                        <a href="{{ route('campaign.details.frontend', $campaign->slug) }}" style="color: #fff;">
                             <strong>{{ $campaign->title }}</strong>
                         </a>
                     </h3>
@@ -435,16 +436,16 @@
             <div class="col-md-6 col-lg-4">
                 <div class="banner banner-overlay banner-overlay-light">
                     <a href="{{ route('flash-sells.show', $flashSell->slug) }}">
-                        <img src="{{ asset('images/flash_sell/' . $flashSell->flash_sell_image) }}" alt="Banner">
+                        <img src="{{ asset('images/flash_sell/' . $flashSell->flash_sell_image) }}" alt="Banner" style="height: 300px; object-fit: cover;">
                     </a>
-                    <div class="banner-content">
+                    <div class="banner-content" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
                         <h4 class="banner-subtitle">
-                            <a href="{{ route('flash-sells.show', $flashSell->slug) }}">
+                            <a href="{{ route('flash-sells.show', $flashSell->slug) }}" style="color: #fff;">
                                 {{ $flashSell->flash_sell_name }}
                             </a>
                         </h4>
                         <h3 class="banner-title">
-                            <a href="{{ route('flash-sells.show', $flashSell->slug) }}">
+                            <a href="{{ route('flash-sells.show', $flashSell->slug) }}" style="color: #fff;">
                                 <strong>{{ $flashSell->flash_sell_title }}</strong>
                             </a>
                         </h3>
@@ -465,7 +466,7 @@
         <div class="products">
             <div class="row justify-content-center">
                 @foreach($buyOneGetOneProducts as $bogo)
-                    <div class="col-6 col-md-4 col-lg-3">
+                    <div class="col-6 col-md-4 col-lg-3 mx-2">
                         <div class="product product-2">
                             <figure class="product-media">
                                 <a href="{{ route('product.show.bogo', $bogo->product->slug) }}">
@@ -501,7 +502,7 @@
         <div class="products">
             <div class="row justify-content-center">
                 @foreach($bundleProducts as $bundle)
-                    <div class="col-6 col-md-4 col-lg-3">
+                    <div class="col-6 col-md-4 col-lg-3 mx-2">
                         <div class="product product-2">
                             <figure class="product-media">
                                 <a href="{{ route('bundle_product.show', $bundle->slug) }}">
@@ -531,19 +532,19 @@
     <!-- Suppliers start -->
     @if($section_status->vendors == 1)
     <div class="container">   
-        <h2 class="title text-center mb-4 mt-4">Explore To Our Suppliers</h2>
+        <h2 class="title text-center mb-4 mt-4">Explore Our Suppliers</h2>
         <div class="cat-blocks-container">
             <div class="row justify-content-center">
-            @foreach($suppliers as $supplier)
-                <div class="col-6 col-sm-4 col-lg-3 mb-4 d-flex justify-content-center">
-                    <a href="{{ route('supplier.show', $supplier->slug) }}" class="cat-block text-center d-block">
-                        <figure class="mb-3">
-                            <img src="{{ asset('/images/supplier/' . $supplier->image) }}" alt="{{ $supplier->name }}" class="img-fluid rounded" style="max-width: 250px;">
-                        </figure>
-                        <h3 class="h5">{{ $supplier->name }}</h3>
-                    </a>
-                </div>
-            @endforeach
+                @foreach($suppliers as $supplier)
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-4 d-flex justify-content-center">
+                        <a href="{{ route('supplier.show', $supplier->slug) }}" class="cat-block text-center d-block">
+                            <figure class="mb-3">
+                                <img src="{{ asset('/images/supplier/' . $supplier->image) }}" alt="{{ $supplier->name }}" class="img-fluid rounded" style="max-width: 100%; height: auto; object-fit: cover;">
+                            </figure>
+                            <h3 class="h5">{{ $supplier->name }}</h3>
+                        </a>
+                    </div>
+                @endforeach
             </div>
         </div>
     </div>

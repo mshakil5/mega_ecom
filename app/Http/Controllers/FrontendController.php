@@ -105,7 +105,7 @@ class FrontendController extends Controller
                     ->orderBy('watch', 'desc');
             }])
             ->select('id', 'name', 'image', 'slug')
-            ->orderBy('id', 'desc')
+            ->orderBy('id', 'asc')
             ->get()
             ->each(function ($category) {
                 $category->setRelation('products', $category->products->take(6));
