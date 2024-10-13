@@ -62,7 +62,6 @@
                                 <tr>
                                     <th>Sl</th>
                                     <th>Name</th>
-                                    <th>Slug</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -72,7 +71,6 @@
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
                                     <td>{{ $data->name }}</td>
-                                    <td>{{ $data->slug }}</td>
                                     <td>
                                         <div class="custom-control custom-switch">
                                             <input type="checkbox" class="custom-control-input toggle-status" id="customSwitchStatus{{ $data->id }}" data-id="{{ $data->id }}" {{ $data->status == 1 ? 'checked' : '' }}>

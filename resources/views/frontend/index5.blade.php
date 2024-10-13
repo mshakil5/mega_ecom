@@ -47,7 +47,6 @@
 
 <div class="mb-15 mt-5"></div>
 
-
 <div class="container-fluid">
     <div class="row">
 
@@ -116,7 +115,7 @@
 
 
         <!-- Category products slider Start-->
-        @if ($section_status->category_products == 1)
+        @if ($section_status->category_products == 1 && count($categories) > 0)
         <div class="trending-products">   
             <div class="heading heading-flex mb-3">
                 <div class="heading-left">
@@ -234,7 +233,7 @@
         <div class="mb-5"></div>
 
         <!-- Recent Products Start -->
-        @if($section_status->recent_products == 1)
+        @if($section_status->recent_products == 1 && $recentProducts->count() > 0)
         <div class="trending-products">
             <div class="heading heading-flex mb-3">
                 <div class="heading-left">
@@ -354,7 +353,7 @@
         <div class="mb-3"></div>
 
         <!-- Trending Products Start -->
-        @if($section_status->trending_products == 1)
+        @if($section_status->trending_products == 1 && $trendingProducts->count() > 0)
         <div class="trending-products">
             <div class="heading heading-flex mb-3">
                 <div class="heading-left">
@@ -465,7 +464,7 @@
                 <div class="row">
 
                     <!-- Buy One Get One Start -->
-                    @if($section_status->buy_one_get_one == 1)
+                    @if($section_status->buy_one_get_one == 1 && count($buyOneGetOneProducts) > 0)
                     <div class="col-12">
                         <div class="widget widget-deals">
                             <h4 class="widget-title"><span>Buy One Get One</span></h4>
@@ -500,7 +499,7 @@
                     <!-- Buy One Get One End -->
 
                     <!-- Bundle Products Start -->
-                    @if($section_status->bundle_products == 1)
+                    @if($section_status->bundle_products == 1 && count($bundleProducts) > 0)
                     <div class="col-12">
                         <div class="widget widget-deals">
                             <h4 class="widget-title"><span>Bundle Products</span></h4>
@@ -567,9 +566,6 @@
                 </div>
             </div>
         </aside>
-
-
-
     </div>
 </div>
 

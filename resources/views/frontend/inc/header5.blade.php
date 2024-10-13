@@ -142,7 +142,7 @@
                         <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" title="Browse Categories">
                             Browse Categories
                         </a>
-                        <div class="dropdown-menu show">
+                        <div class="dropdown-menu {{ Route::currentRouteName() === 'frontend.homepage' ? 'show' : '' }}">
                             <nav class="side-nav">
                                 <ul class="menu-vertical sf-arrows">
                                 @foreach($categories->slice(0, 13) as $category)

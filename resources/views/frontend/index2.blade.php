@@ -21,22 +21,22 @@
                                 }
                             }'>
                             @foreach($sliders as $slider)
-                            <div class="intro-slide" style="background-image: url('{{ asset('images/slider/' . $slider->image) }}'); background-size: cover; background-position: center; height: 300px; display: flex; align-items: center; justify-content: center;">
-                                <div class="container intro-content" style="padding: 20px;">
-                                    <div class="row justify-content-center">
-                                        <div class="col-auto col-sm-7 col-md-6 col-lg-5" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
-                                            <h3 class="intro-subtitle text-third" style="color: #fff;">{{ $slider->sub_title }}</h3>
-                                            <h1 class="intro-title" style="color: #fff;">{{ $slider->title }}</h1>
-                                            @if($slider->link)
-                                            <a href="{{ $slider->link }}" class="btn btn-primary btn-round">
-                                                <span>Shop More</span>
-                                                <i class="icon-long-arrow-right"></i>
-                                            </a>
-                                            @endif
+                                <div class="intro-slide" style="background-image: url('{{ asset('images/slider/' . $slider->image) }}'); background-size: cover; background-position: center; height: 500px; display: flex; align-items: center; justify-content: center;">
+                                    <div class="container intro-content" style="padding: 20px;">
+                                        <div class="row justify-content-left">
+                                            <div class="col-auto col-sm-7 col-md-6 col-lg-5" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
+                                                <h3 class="intro-subtitle text-third" style="color: #fff;">{{ $slider->sub_title }}</h3>
+                                                <h1 class="intro-title" style="color: #fff;">{{ $slider->title }}</h1>
+                                                @if($slider->link)
+                                                <a href="{{ $slider->link }}" class="btn btn-primary btn-round">
+                                                    <span>Shop More</span>
+                                                    <i class="icon-long-arrow-right"></i>
+                                                </a>
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
                             @endforeach
                         </div>
                         <span class="slider-loader"></span>
@@ -128,7 +128,7 @@
     <div class="mb-3"></div>
 
     <!-- Category products slider Start-->
-    @if ($section_status->category_products == 1)
+    @if ($section_status->category_products == 1 && count($categories) > 0)
     <div class="container new-arrivals">   
         <div class="heading heading-flex mb-3">
             <div class="heading-left" style="display:none;">
@@ -460,7 +460,7 @@
     <div class="mb-5"></div>
 
     <!-- Buy One Get One Start -->
-    @if($section_status->buy_one_get_one == 1)
+    @if($section_status->buy_one_get_one == 1 && count($buyOneGetOneProducts) > 0)
     <div class="container for-you">
         <h2 class="title text-center mb-4">Buy One Get One</h2>
         <div class="products">
@@ -496,7 +496,7 @@
     <div class="mb-4"></div>
 
     <!-- Bundle Products Start -->
-    @if($section_status->bundle_products == 1)
+    @if($section_status->bundle_products == 1 && count($bundleProducts) > 0)
     <div class="container for-you">
         <h2 class="title text-center mb-4">Bundle Products</h2>
         <div class="products">
@@ -530,7 +530,7 @@
     <!-- Bundle Products End -->
 
     <!-- Suppliers start -->
-    @if($section_status->vendors == 1)
+    @if($section_status->vendors == 1 && count($suppliers) > 0)
     <div class="container">   
         <h2 class="title text-center mb-4 mt-4">Explore Our Suppliers</h2>
         <div class="cat-blocks-container">

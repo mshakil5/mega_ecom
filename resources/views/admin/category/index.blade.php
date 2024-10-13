@@ -32,7 +32,7 @@
                                 <div class="col-sm-12">
                                     <div class="form-group">
                                         <label>Name</label>
-                                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter brand name">
+                                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter category name">
                                     </div>
                                 </div>
                                 <div class="col-sm-12">

@@ -44,12 +44,12 @@
     <div class="mb-15"></div>
 
     <!-- Categories Start -->
-    @if($section_status->categories == 1)
+    @if($section_status->categories == 1 && count($categories) > 0)
     <div class="container">
         <h2 class="title text-center mb-4">Explore Popular Categories</h2>
         <div class="cat-blocks-container">
             <div class="row justify-content-center">            
-                @foreach($categories->sortBy('id')->take(3) as $category)
+                @foreach($categories->sortBy('id')->take(6) as $category)
                     <div class="col-6 col-sm-4 col-lg-2 mb-4 d-flex justify-content-center">
                         <a href="{{ route('category.show', $category->slug) }}" class="cat-block text-center">
                             <figure>
@@ -100,7 +100,7 @@
     <div class="mb-3"></div>
 
     <!-- Category products slider Start-->
-    @if ($section_status->category_products == 1)
+    @if ($section_status->category_products == 1 && count($categories) > 0)
     <div class="container new-arrivals">   
         <div class="heading heading-flex mb-3">
             <div class="heading-left">
@@ -216,7 +216,7 @@
     <!-- Recent advertisements end-->
 
     <!-- Recent Products Start -->
-    @if($section_status->recent_products == 1)
+    @if($section_status->recent_products == 1 && $recentProducts->count() > 0)
     <div class="pt-5 pb-6">
         <div class="container trending-products">
             <div class="heading heading-flex mb-3">
@@ -332,7 +332,7 @@
     <!-- Supplier advertisements end-->
 
     <!-- Trending Products Start -->
-    @if($section_status->trending_products == 1)
+    @if($section_status->trending_products == 1 && $trendingProducts->count() > 0)
     <div class="pt-5 pb-6">
         <div class="container trending-products">
             <div class="heading heading-flex mb-3">
@@ -435,7 +435,7 @@
     <div class="mb-5"></div>
 
     <!-- Buy One Get One Start -->
-    @if($section_status->buy_one_get_one == 1)
+    @if($section_status->buy_one_get_one == 1 && count($buyOneGetOneProducts) > 0)
     <div class="container for-you">
         <h2 class="title text-center mb-4">Buy One Get One</h2>
         <div class="products">
@@ -471,7 +471,7 @@
     <div class="mb-4"></div>
 
     <!-- Bundle Products Start -->
-    @if($section_status->bundle_products == 1)
+    @if($section_status->bundle_products == 1 && count($bundleProducts) > 0)
     <div class="container for-you">
         <h2 class="title text-center mb-4">Bundle Products</h2>
         <div class="products">
@@ -505,7 +505,7 @@
     <!-- Bundle Products End -->
 
     <!-- Suppliers start -->
-    @if($section_status->vendors == 1)
+    @if($section_status->vendors == 1 && count($suppliers) > 0)
     <div class="container">   
         <h2 class="title text-center mb-4 mt-4">Explore Our Suppliers</h2>
         <div class="cat-blocks-container">

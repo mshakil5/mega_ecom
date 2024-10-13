@@ -26,7 +26,7 @@ return new class extends Migration
             $table->unsignedBigInteger('unit_id')->nullable();
             $table->unsignedBigInteger('size_id')->nullable();
             $table->unsignedBigInteger('color_id')->nullable(); 
-            $table->integer('sku')->default(0);
+            $table->integer('sku')->nullable();
             $table->boolean('is_featured')->default(0);
             $table->boolean('is_recent')->default(0);
             $table->boolean('is_popular')->default(0);
