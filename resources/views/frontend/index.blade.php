@@ -76,7 +76,7 @@
             <div class="col-md-6 col-lg-4">
                 <div class="banner banner-overlay banner-overlay-light">
                     <a href="{{ route('special-offers.show', $specialOffer->slug) }}">
-                        <img src="{{ asset('images/special_offer/' . $specialOffer->offer_image) }}" alt="Banner">
+                        <img src="{{ asset('images/special_offer/' . $specialOffer->offer_image) }}" alt="Banner" style="height: 300px; object-fit: cover;">
                     </a>
                     <div class="banner-content" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
                         <h4 class="banner-subtitle">
@@ -89,9 +89,6 @@
                                 <strong style="color: #fff;">{{ $specialOffer->offer_title }}</strong>
                             </a>
                         </h3>
-                        <a href="{{ route('special-offers.show', $specialOffer->slug) }}" class="banner-link">
-                            Shop Now<i class="icon-long-arrow-right"></i>
-                        </a>
                     </div>
                 </div>
             </div>
@@ -295,7 +292,7 @@
         <div class="col-md-6 col-lg-4">
             <div class="banner banner-overlay banner-overlay-light">
                 <a href="{{ route('campaign.details.frontend', $campaign->slug) }}">
-                    <img src="{{ asset('images/campaign_banner/' . $campaign->banner_image) }}" alt="{{ $campaign->title }}">
+                    <img src="{{ asset('images/campaign_banner/' . $campaign->banner_image) }}" alt="{{ $campaign->title }}" style="height: 300px; object-fit: cover;">
                 </a>
 
                 <div class="banner-content" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
@@ -304,9 +301,6 @@
                             <strong style="color: #fff;">{{ $campaign->title }}</strong>
                         </a>
                     </h3>
-                    <a href="{{ route('campaign.details.frontend', $campaign->slug) }}" class="banner-link">
-                        Shop Now<i class="icon-long-arrow-right"></i>
-                    </a>
                 </div>
             </div>
         </div>
@@ -414,7 +408,7 @@
             <div class="col-md-6 col-lg-4">
                 <div class="banner banner-overlay banner-overlay-light">
                     <a href="{{ route('flash-sells.show', $flashSell->slug) }}">
-                        <img src="{{ asset('images/flash_sell/' . $flashSell->flash_sell_image) }}" alt="Banner">
+                        <img src="{{ asset('images/flash_sell/' . $flashSell->flash_sell_image) }}" alt="Banner" style="height: 300px; object-fit: cover;">
                     </a>
                     <div class="banner-content" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
                         <h4 class="banner-subtitle">

@@ -113,8 +113,8 @@
                             </a>
                         </h4>
                         <h3 class="banner-title">
-                            <a href="{{ route('special-offers.show', $specialOffer->slug) }}" style="color: #fff;">
-                                <strong>{{ $specialOffer->offer_title }}</strong>
+                            <a href="{{ route('special-offers.show', $specialOffer->slug) }}">
+                                <strong style="color: #fff;">{{ $specialOffer->offer_title }}</strong>
                             </a>
                         </h3>
                     </div>
@@ -325,8 +325,8 @@
 
                 <div class="banner-content" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
                     <h3 class="banner-title">
-                        <a href="{{ route('campaign.details.frontend', $campaign->slug) }}" style="color: #fff;">
-                            <strong>{{ $campaign->title }}</strong>
+                        <a href="{{ route('campaign.details.frontend', $campaign->slug) }}">
+                            <strong style="color: #fff;">{{ $campaign->title }}</strong>
                         </a>
                     </h3>
                 </div>
@@ -445,8 +445,8 @@
                             </a>
                         </h4>
                         <h3 class="banner-title">
-                            <a href="{{ route('flash-sells.show', $flashSell->slug) }}" style="color: #fff;">
-                                <strong>{{ $flashSell->flash_sell_title }}</strong>
+                            <a href="{{ route('flash-sells.show', $flashSell->slug) }}">
+                                <strong style="color: #fff;">{{ $flashSell->flash_sell_title }}</strong>
                             </a>
                         </h3>
                     </div>

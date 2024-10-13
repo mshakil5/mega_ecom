@@ -31,7 +31,15 @@
 
                 <ul class="top-menu">
                     <li>
-                        <a href="#">Links</a>
+                        <a href="#">
+                            @if(Auth::check())
+                            {{ auth()->user()->name }}
+                            @elseif(Auth::guard('supplier')->check())
+                            {{ Auth::guard('supplier')->user()->name }}
+                            @else
+                            Log In / Register
+                            @endif
+                        </a>
                         <ul>
                             <li>
                                 @if(Auth::check())

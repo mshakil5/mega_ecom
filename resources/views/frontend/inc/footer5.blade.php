@@ -43,7 +43,7 @@
                         <h4 class="widget-title">Categories</h4>
 
                         <ul class="widget-list">
-                            @foreach($categories as $category)
+                            @foreach($categories->take(3) as $category)
                                 <li><a href="{{ route('category.show', $category->slug) }}">{{ $category->name }}</a></li>
                             @endforeach
                         </ul>

@@ -33,7 +33,7 @@
                     <div class="widget">
                         <h4 class="widget-title">Categories</h4>
                         <ul class="widget-list">
-                            @foreach($categories as $category)
+                            @foreach($categories->take(3) as $category)
                                 <li><a href="{{ route('category.show', $category->slug) }}">{{ $category->name }}</a></li>
                             @endforeach
                         </ul>
@@ -76,3 +76,5 @@
         </div>
     </div>
 </footer>
+
+<button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>

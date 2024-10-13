@@ -114,6 +114,12 @@
         <!-- Footer End -->
     </div>
 
+        <!-- Mobile Menu Start -->
+
+        @include('frontend.inc.mobile-menu')
+
+        <!-- Mobile Menu End -->
+
     <script src="{{ asset('frontend/js/jquery.min.js') }}"></script>
 
     <script src="{{ asset('frontend/js/bootstrap.bundle.min.js') }}"></script>
