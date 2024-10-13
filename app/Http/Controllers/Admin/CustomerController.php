@@ -130,7 +130,7 @@ class CustomerController extends Controller
         } 
     }
 
-    public function adminDelete($id)
+    public function customerDelete($id)
     {
 
         if(User::destroy($id)){
