@@ -13,7 +13,10 @@ return new class extends Migration
     {
         Schema::create('sizes', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->nullable();
+            $table->string('size')->nullable();
+            $table->string('image')->nullable();
+            $table->string('price')->nullable();
+            $table->boolean('status')->default(1); 
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->timestamps();

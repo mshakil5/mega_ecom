@@ -31,8 +31,21 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="form-group">
-                                        <label>Name</label>
-                                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter group name">
+                                        <label>Size</label>
+                                        <input type="text" class="form-control" id="size" name="size" placeholder="Enter size">
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label>Price</label>
+                                        <input type="number" class="form-control" id="price" name="price" placeholder="Enter price">
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="feature-img">Size Image</label>
+                                        <input type="file" class="form-control-file" id="image" accept="image/*">
+                                        <img id="preview-image" src="#" alt="" style="max-width: 300px; width: 100%; height: auto; margin-top: 20px;">
                                     </div>
                                 </div>
                             </div>
@@ -61,7 +74,9 @@
                             <thead>
                                 <tr>
                                     <th>Sl</th>
-                                    <th>Name</th>
+                                    <th>Size</th>
+                                    <th>Price</th>
+                                    <th>Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -69,7 +84,14 @@
                                 @foreach ($data as $key => $data)
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
-                                    <td>{{ $data->name }}</td>
+                                    <td>{{ $data->size }}</td>
+                                    <td>{{ $data->price }}</td>
+                                    <td>
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input toggle-status" id="customSwitchStatus{{ $data->id }}" data-id="{{ $data->id }}" {{ $data->status == 1 ? 'checked' : '' }}>
+                                            <label class="custom-control-label" for="customSwitchStatus{{ $data->id }}"></label>
+                                        </div>
+                                    </td>
                                     <td>
                                         <a id="EditBtn" rid="{{ $data->id }}">
                                             <i class="fa fa-edit" style="color: #2196f3; font-size:16px;"></i>
@@ -88,7 +110,6 @@
         </div>
     </div>
 </section>
-
 
 @endsection
 
@@ -129,15 +150,21 @@
 
       $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
       //
-      var url = "{{URL::to('/admin/group')}}";
-      var upurl = "{{URL::to('/admin/group-update')}}";
+      var url = "{{URL::to('/admin/size')}}";
+      var upurl = "{{URL::to('/admin/size-update')}}";
 
       $("#addBtn").click(function(){
 
           //create
           if($(this).val() == 'Create') {
               var form_data = new FormData();
-              form_data.append("name", $("#name").val());
+              form_data.append("size", $("#size").val());
+              form_data.append("price", $("#price").val());
+
+              var featureImgInput = document.getElementById('image');
+                if(featureImgInput.files && featureImgInput.files[0]) {
+                    form_data.append("image", featureImgInput.files[0]);
+                }
 
               $.ajax({
                 url: url,
@@ -171,7 +198,13 @@
           //Update
           if($(this).val() == 'Update'){
               var form_data = new FormData();
-              form_data.append("name", $("#name").val());
+              form_data.append("size", $("#size").val());
+              form_data.append("price", $("#price").val());
+
+              var featureImgInput = document.getElementById('image');
+                if(featureImgInput.files && featureImgInput.files[0]) {
+                    form_data.append("image", featureImgInput.files[0]);
+                }
               form_data.append("codeid", $("#codeid").val());
               
               $.ajax({
@@ -250,8 +283,17 @@
         });
       //Delete  
       function populateForm(data){
-          $("#name").val(data.name);
+          $("#size").val(data.size);
+          $("#price").val(data.price);
           $("#codeid").val(data.id);
+
+          var featureImagePreview = document.getElementById('preview-image');
+            if (data.image) { 
+                featureImagePreview.src = data.image;
+            } else {
+                featureImagePreview.src = "#";
+            }
+
           $("#addBtn").val('Update');
           $("#addBtn").html('Update');
           $("#addThisFormContainer").show(300);
@@ -261,8 +303,53 @@
           $('#createThisForm')[0].reset();
           $("#addBtn").val('Create');
           $("#addBtn").html('Create');
+          $('#preview-image').attr('src', '#');
           $("#cardTitle").text('Add new data');
       }
   });
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('.toggle-status').change(function() {
+            var size_id = $(this).data('id');
+            var status = $(this).prop('checked') ? 1 : 0;
+
+            $.ajax({
+                url: '/admin/size-status',
+                method: "POST",
+                data: {
+                    size_id: size_id,
+                    status: status,
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(d) {
+                    swal({
+                        text: "Status chnaged",
+                        icon: "success",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function(){
+        $("#image").change(function(e){
+            var reader = new FileReader();
+            reader.onload = function(e){
+                $("#preview-image").attr("src", e.target.result);
+            };
+            reader.readAsDataURL(this.files[0]);
+        });
+    });
 </script>
 @endsection

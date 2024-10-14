@@ -42,6 +42,8 @@ use App\Http\Controllers\Admin\EquityController;
 use App\Http\Controllers\Admin\AssetController;
 use App\Http\Controllers\Admin\ExpenseController;
 use App\Http\Controllers\Admin\EquityHolderController;
+use App\Http\Controllers\Admin\ColorController;
+use App\Http\Controllers\Admin\SizeController;
 
 
 Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], function(){
@@ -110,6 +112,24 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/group/{id}/edit', [GroupController::class, 'groupEdit']);
     Route::post('/group-update', [GroupController::class, 'groupUpdate']);
     Route::get('/group/{id}', [GroupController::class, 'groupDelete']);
+
+    // Color crud
+    Route::get('/color', [ColorController::class, 'index'])->name('allcolor');
+    Route::post('/color', [ColorController::class, 'store']);
+    Route::get('/color/{id}/edit', [ColorController::class, 'edit']);
+    Route::post('/color-update', [ColorController::class, 'update']);
+    Route::get('/color/{id}', [ColorController::class, 'delete']);
+
+    Route::post('/color-status', [ColorController::class, 'toggleStatus']);
+
+    // Size crud
+    Route::get('/size', [SizeController::class, 'index'])->name('allsize');
+    Route::post('/size', [SizeController::class, 'store']);
+    Route::get('/size/{id}/edit', [SizeController::class, 'edit']);
+    Route::post('/size-update', [SizeController::class, 'update']);
+    Route::get('/size/{id}', [SizeController::class, 'delete']);
+
+    Route::post('/size-status', [SizeController::class, 'toggleStatus']);
 
     // company information
     Route::get('/company-details', [CompanyDetailsController::class, 'index'])->name('admin.companyDetail');
