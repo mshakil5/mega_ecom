@@ -173,6 +173,13 @@
         </li>
 
         <li class="nav-item">
+            <a href="{{ route('allwholesaleproduct') }}" class="nav-link {{ (request()->is('admin/whole-sale-product*')) ? 'active' : '' }}">
+            <i class="nav-icon fas fa-tags"></i>
+                <p>Whole Sale Products</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
             <a href="{{ route('allslider') }}" class="nav-link {{ (request()->is('admin/slider*')) ? 'active' : '' }}">
                 <i class="nav-icon fas fa-sliders-h"></i>
                 <p>Slider</p>

@@ -48,7 +48,7 @@
                                     <input type="checkbox" class="form-control" id="is_featured" name="is_featured">
                                 </div>
                                 <div class="form-group col-md-1">
-                                    <label for="is_featured">Recent</label>
+                                    <label for="is_recent">Recent</label>
                                     <input type="checkbox" class="form-control" id="is_recent" name="is_recent">
                                 </div>
                             </div>

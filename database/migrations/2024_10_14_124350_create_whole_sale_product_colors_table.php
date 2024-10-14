@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreign('whole_sale_product_id')->references('id')->on('whole_sale_products')->onDelete('cascade');
             $table->unsignedBigInteger('color_id')->nullable();
             $table->foreign('color_id')->references('id')->on('colors')->onDelete('cascade');
+            $table->string('image')->nullable();
             $table->boolean('status')->default(1);
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();

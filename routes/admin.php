@@ -44,7 +44,7 @@ use App\Http\Controllers\Admin\ExpenseController;
 use App\Http\Controllers\Admin\EquityHolderController;
 use App\Http\Controllers\Admin\ColorController;
 use App\Http\Controllers\Admin\SizeController;
-
+use App\Http\Controllers\Admin\WholeSaleProductController;
 
 Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], function(){
   
@@ -353,6 +353,9 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/bundle-product/{id}/edit', [BundleProductController::class, 'bundleProductEdit']);
     Route::post('/bundle-product-update', [BundleProductController::class, 'bundleProductUpdate']);
     Route::get('/bundle-product/{id}', [BundleProductController::class, 'bundleProductDelete']);
+
+    //Whole Sale Product
+    Route::get('/whole-sale-product', [WholeSaleProductController::class, 'getWholeSaleProduct'])->name('allwholesaleproduct');
 
     // roles and permission
     Route::get('role', [RoleController::class, 'index'])->name('admin.role');
