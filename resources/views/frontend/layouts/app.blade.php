@@ -73,6 +73,8 @@
 
     <link rel="stylesheet" href="{{ asset('frontend/css/fontawesome/css/all.min.css')}}">
 
+    <link rel="stylesheet" href="{{ asset('frontend/css/nouislider.css')}}">
+
     <!-- Data table css -->
     <link rel="stylesheet" href="{{ asset('assets/admin/datatables/dataTables.bootstrap4.min.css')}}">
 
@@ -147,6 +149,10 @@
     <script src="{{ asset('frontend/js/moment.min.js')}}"></script>
 
     <script src="{{ asset('assets/admin/js/sweetalert.min.js')}}"></script>
+
+    <script src="{{ asset('frontend/js/nouislider.min.js')}}"></script>
+
+    <script src="{{ asset('frontend/js/wNumb.js')}}"></script>
 
     <!-- Data table js -->
     <script src="{{ asset('assets/admin/datatables/jquery.dataTables.min.js')}}"></script>

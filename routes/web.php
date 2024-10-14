@@ -70,7 +70,6 @@ Route::get('/category-products', [FrontendController::class, 'getCategoryProduct
 //Check Coupon
 Route::get('/check-coupon', [FrontendController::class, 'checkCoupon']);
 
-
 Route::get('/special-offers/{slug}', [SpecialOfferController::class, 'show'])->name('special-offers.show');
 
 Route::get('flash-sells/{slug}', [FlashSellController::class, 'show'])->name('flash-sells.show');

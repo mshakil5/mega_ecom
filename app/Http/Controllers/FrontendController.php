@@ -27,6 +27,7 @@ use App\Models\BundleProduct;
 use App\Models\Campaign;
 use App\Models\CampaignRequest;
 use App\Models\CampaignRequestProduct;
+use App\Models\Brand;
 
 class FrontendController extends Controller
 {
@@ -415,11 +416,21 @@ class FrontendController extends Controller
     {
         $currency = CompanyDetails::value('currency');
         $categories = Category::where('status', 1)
+            ->with('products')
+            ->orderBy('id', 'desc')
+            ->select('id', 'name')
+            ->get();
+
+        $brands = Brand::where('status', 1)
+            ->with('products')
             ->orderBy('id', 'desc')
             ->select('id', 'name')
             ->get();
 
         $perPage = $request->input('per_page', 10);
+
+        $minPrice = Product::where('status', 1)->min('price'); 
+        $maxPrice = Product::where('status', 1)->max('price');
 
         $products = Product::where('status', 1)
             ->orderBy('id', 'desc')
@@ -429,7 +440,7 @@ class FrontendController extends Controller
             ->select('id', 'name', 'feature_image', 'price', 'slug')
             ->paginate($perPage);
 
-        return view('frontend.shop', compact('currency', 'products', 'categories'));
+        return view('frontend.shop', compact('currency', 'products', 'categories', 'brands', 'minPrice', 'maxPrice'));
     }
 
     public function supplierPage($slug)
@@ -544,6 +555,9 @@ class FrontendController extends Controller
         $startPrice = $request->input('start_price');
         $endPrice = $request->input('end_price');
         $categoryId = $request->input('category');
+        // $brandId = $request->input('brand');
+        // $selectedSize = $request->input('size');
+        $selectedColor = $request->input('color');
 
         $productsQuery = Product::select('products.id', 'products.name', 'products.price', 'products.slug', 'products.feature_image')
                                 ->where('products.status', 1)
@@ -560,6 +574,18 @@ class FrontendController extends Controller
         if (!empty($categoryId)) {
             $productsQuery->where('products.category_id', $categoryId);
         }
+
+        if (!empty($brandId)) {
+            $productsQuery->where('products.brand_id', $brandId);
+        }
+
+        // if (!empty($selectedSize)) {
+        //     $productsQuery->where('stocks.size', $selectedSize);
+        // }
+
+        // if (!empty($selectedColor)) {
+        //     $productsQuery->where('stocks.color', $selectedColor);
+        // }
 
         $products = $productsQuery->get();
 

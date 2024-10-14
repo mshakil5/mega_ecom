@@ -8,52 +8,6 @@
             <!-- Shop Sidebar Start -->
             <aside class="col-lg-3 mt-9">
                 <div class="sidebar sidebar-shop">
-                    <!-- Price Filter Start -->
-                    <div class="widget widget-collapsible">
-                        <h3 class="widget-title">
-                            <a data-toggle="collapse" href="#widget-price" role="button" aria-expanded="true" aria-controls="widget-price">
-                                Filter by Price
-                            </a>
-                        </h3>
-
-                        <div class="collapse show" id="widget-price">
-                            <div class="widget-body">
-                                <form id="filterForm">
-                                    <div class="filter-items">
-                                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
-                                            <input type="radio" class="custom-control-input" name="price" value="0" checked id="price-all" start_value="" end_value="">
-                                            <label class="custom-control-label" for="price-all">All Price</label>
-                                        </div>
-                                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
-                                            <input type="radio" class="custom-control-input" name="price" value="1" id="price-1" start_value="0" end_value="99">
-                                            <label class="custom-control-label" for="price-1">$0 - $99</label>
-                                        </div>
-                                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
-                                            <input type="radio" class="custom-control-input" name="price" value="2" id="price-2" start_value="100" end_value="199">
-                                            <label class="custom-control-label" for="price-2">$100 - $199</label>
-                                        </div>
-                                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
-                                            <input type="radio" class="custom-control-input" name="price" value="3" id="price-3" start_value="200" end_value="299">
-                                            <label class="custom-control-label" for="price-3">$200 - $299</label>
-                                        </div>
-                                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
-                                            <input type="radio" class="custom-control-input" name="price" value="4" id="price-4" start_value="300" end_value="399">
-                                            <label class="custom-control-label" for="price-4">$300 - $399</label>
-                                        </div>
-                                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
-                                            <input type="radio" class="custom-control-input" name="price" value="5" id="price-5" start_value="400" end_value="499">
-                                            <label class="custom-control-label" for="price-5">$400 - $499</label>
-                                        </div>
-                                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
-                                            <input type="radio" class="custom-control-input" name="price" value="6" id="price-6" start_value="500" end_value="599">
-                                            <label class="custom-control-label" for="price-6">$500 - $599</label>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Price Filter End -->
 
                     <!-- Category Filter Start -->
                     <div class="widget widget-collapsible">
@@ -72,10 +26,13 @@
                                             <label class="custom-control-label" for="category-all">All Categories</label>
                                         </div>
                                         @foreach($categories as $category)
-                                            <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
-                                                <input type="radio" class="custom-control-input" id="category-{{ $category->id }}" name="category" value="{{ $category->id }}">
-                                                <label class="custom-control-label" for="category-{{ $category->id }}">{{ $category->name }}</label>
-                                            </div>
+                                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                                            <input type="radio" class="custom-control-input" id="category-{{ $category->id }}" name="category" value="{{ $category->id }}">
+                                            <label class="custom-control-label d-flex justify-content-between w-100" for="category-{{ $category->id }}">
+                                                <span>{{ $category->name }}</span>
+                                                <span class="ml-auto">{{ $category->products->count() }}</span>
+                                            </label>
+                                        </div>
                                         @endforeach
                                     </div>
                                 </form>
@@ -83,6 +40,156 @@
                         </div>
                     </div>
                     <!-- Category Filter End -->
+
+                    <!-- Size Filter Start -->
+                    <div class="widget widget-collapsible">
+                        <h3 class="widget-title">
+                            <a data-toggle="collapse" href="#widget-size" role="button" aria-expanded="true" aria-controls="widget-size">
+                                Filter by Size
+                            </a>
+                        </h3>
+
+                        <div class="collapse" id="widget-size">
+                            <div class="widget-body">
+                                <form id="sizeFilterForm">
+                                    <div class="filter-items">
+                                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                                            <input type="radio" class="custom-control-input" id="size-xs" name="size" value="XS">
+                                            <label class="custom-control-label" for="size-xs">
+                                                <span>XS</span>
+                                            </label>
+                                        </div>
+                                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                                            <input type="radio" class="custom-control-input" id="size-s" name="size" value="S">
+                                            <label class="custom-control-label" for="size-s">
+                                                <span>S</span>
+                                            </label>
+                                        </div>
+                                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                                            <input type="radio" class="custom-control-input" id="size-m" name="size" value="M">
+                                            <label class="custom-control-label" for="size-m">
+                                                <span>M</span>
+                                            </label>
+                                        </div>
+                                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                                            <input type="radio" class="custom-control-input" id="size-l" name="size" value="L">
+                                            <label class="custom-control-label" for="size-l">
+                                                <span>L</span>
+                                            </label>
+                                        </div>
+                                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                                            <input type="radio" class="custom-control-input" id="size-xl" name="size" value="XL">
+                                            <label class="custom-control-label" for="size-xl">
+                                                <span>XL</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Size Filter End -->
+
+                    <!-- Color Filter Start -->
+                    <div class="widget widget-collapsible">
+                        <h3 class="widget-title">
+                            <a data-toggle="collapse" href="#widget-color" role="button" aria-expanded="true" aria-controls="widget-color">
+                                Filter by Color
+                            </a>
+                        </h3>
+
+                        <div class="collapse" id="widget-color">
+                            <div class="widget-body">
+                                <form id="colorFilterForm">
+                                    <div class="filter-items">
+                                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                                            <input type="radio" class="custom-control-input" id="color-black" name="color" value="Black">
+                                            <label class="custom-control-label" for="color-black">
+                                                <span>Black</span>
+                                            </label>
+                                        </div>
+                                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                                            <input type="radio" class="custom-control-input" id="color-white" name="color" value="White">
+                                            <label class="custom-control-label" for="color-white">
+                                                <span>White</span>
+                                            </label>
+                                        </div>
+                                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                                            <input type="radio" class="custom-control-input" id="color-red" name="color" value="Red">
+                                            <label class="custom-control-label" for="color-red">
+                                                <span>Red</span>
+                                            </label>
+                                        </div>
+                                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                                            <input type="radio" class="custom-control-input" id="color-blue" name="color" value="Blue">
+                                            <label class="custom-control-label" for="color-blue">
+                                                <span>Blue</span>
+                                            </label>
+                                        </div>
+                                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                                            <input type="radio" class="custom-control-input" id="color-green" name="color" value="Green">
+                                            <label class="custom-control-label" for="color-green">
+                                                <span>Green</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Color Filter End -->
+
+                    <!-- Brand Filter Start -->
+                    <div class="widget widget-collapsible">
+                        <h3 class="widget-title">
+                            <a data-toggle="collapse" href="#widget-brand" role="button" aria-expanded="false" aria-controls="widget-brand">
+                                Filter by Brand
+                            </a>
+                        </h3>
+
+                        <div class="collapse" id="widget-brand">
+                            <div class="widget-body">
+                                <form id="brandFilterForm">
+                                    <div class="filter-items">
+                                        @foreach($brands as $brand)
+                                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                                            <input type="radio" class="custom-control-input" id="brand-{{ $brand->id }}" name="brand" value="{{ $brand->id }}">
+                                            <label class="custom-control-label d-flex justify-content-between w-100" for="brand-{{ $brand->id }}">
+                                                <span>{{ $brand->name }}</span>
+                                                <span class="ml-auto">{{ $brand->products->count() }}</span>
+                                            </label>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Brand Filter End -->
+
+                    <!-- Price Filter Start -->
+                    <div class="widget widget-collapsible">
+                        <h3 class="widget-title">
+                            <a data-toggle="collapse" href="#widget-price" role="button" aria-expanded="true" aria-controls="widget-price">
+                                Filter by Price
+                            </a>
+                        </h3>
+
+                        <div class="collapse" id="widget-price">
+                            <div class="widget-body">
+                                <div class="filter-price">
+                                    <div class="filter-price-text">
+                                        Price Range: <span id="filter-price-range">{{ $currency }}{{ $minPrice }} - ${{ $maxPrice }}</span>
+                                    </div>
+                                    <input type="hidden" id="price-min" name="price-min" value="{{ $minPrice }}">
+                                    <input type="hidden" id="price-max" name="price-max" value="{{ $maxPrice }}">
+                                    <div id="price-slider"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Price Filter End -->
+
                 </div>
             </aside>
             <!-- Shop Sidebar End -->
@@ -113,34 +220,36 @@
 
                     <div class="row" id="product-list">
                         @foreach($products as $product)
-                        <div class="col-6 col-md-4 col-lg-4">
-                            <div class="product product-2">
-                                <figure class="product-media">
-                                    <a href="{{ route('product.show', $product->slug) }}">
-                                        <x-image-with-loader src="{{ asset('/images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image" />
-                                    </a>
+                            <div class="col-6 col-md-4 col-lg-4 mb-4">
+                                <div class="product product-2" style="height: 100%; display: flex; flex-direction: column;">
+                                    <figure class="product-media">
+                                        <a href="{{ route('product.show', $product->slug) }}">
+                                            <x-image-with-loader src="{{ asset('/images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image" style="height: 200px; object-fit: cover;" />
+                                        </a>
 
-                                    @if ($product->stock && $product->stock->quantity > 0)
-                                        <div class="product-action-vertical">
-                                            <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $product->price }}"><span>Add to wishlist</span></a>
+                                        @if ($product->stock && $product->stock->quantity > 0)
+                                            <div class="product-action-vertical">
+                                                <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $product->price }}"><span>Add to wishlist</span></a>
+                                            </div>
+
+                                            <div class="product-action">
+                                                <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $product->price }}"><span>add to cart</span></a>
+                                            </div>
+                                        @else
+                                            <span class="product-label label-out-stock">Out of stock</span>
+                                        @endif
+                                    </figure>
+
+                                    <div class="product-body" style="flex-grow: 1;">
+                                        <h3 class="product-title">
+                                            <a href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a>
+                                        </h3>
+                                        <div class="product-price">
+                                            {{ $currency }} {{ number_format($product->price, 2) }}
                                         </div>
-
-                                        <div class="product-action">
-                                            <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $product->price }}"><span>add to cart</span></a>
-                                        </div>
-                                    @else
-                                        <span class="product-label label-out-stock">Out of stock</span>
-                                    @endif
-                                </figure>
-
-                                <div class="product-body">
-                                    <h3 class="product-title"><a href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></h3>
-                                    <div class="product-price">
-                                        {{ $currency }} {{ number_format($product->price, 2) }}
                                     </div>
                                 </div>
                             </div>
-                        </div>
                         @endforeach
                     </div>
 
@@ -156,11 +265,11 @@
     </div>
 </div>
 
-<!-- <style>
+<style>
     .col-lg-4 {
-        min-width: 350px;
+        min-width: 300px;
     }
-</style> -->
+</style>
 
 @endsection
 
@@ -168,12 +277,48 @@
 
 <script>
     $(document).ready(function() {
-        $('#filterForm input[type="radio"]').on('change', function() {
-            var selectedPriceInput = $('input[name="price"]:checked');
-            var startValue = selectedPriceInput.attr('start_value');
-            var endValue = selectedPriceInput.attr('end_value');
-            var selectedCategoryId = $('input[name="category"]:checked').val();
-            var csrfToken = $('meta[name="csrf-token"]').attr('content');
+        var priceSlider = document.getElementById('price-slider');
+        var minPrice = {{ $minPrice }};
+        var maxPrice = {{ $maxPrice }};
+        var currencySymbol = "{{ $currency }}";
+
+        if (priceSlider) {
+            noUiSlider.create(priceSlider, {
+                start: [minPrice, maxPrice],
+                connect: true,
+                step: 100,
+                range: {
+                    'min': minPrice,
+                    'max': maxPrice
+                },
+                tooltips: true,
+                format: wNumb({
+                    decimals: 0,
+                    prefix: currencySymbol
+                })
+            });
+
+            priceSlider.noUiSlider.on('update', function(values, handle) {
+                $('#filter-price-range').text(values.join(' - '));
+                $('#price-min').val(values[0]);
+                $('#price-max').val(values[1]);
+            });
+        }
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('#filterForm, #brandFilterForm, #price-min, #price-max').on('change', function() {
+            let startValue = $('#price-min').val().replace('$', '');
+            let endValue = $('#price-max').val().replace('$', '');
+            let selectedCategoryId = $('input[name="category"]:checked').val();
+            // let selectedSize = $('input[name="size"]:checked').val();
+            // let selectedColor = $('input[name="color"]:checked').val();
+            let selectedBrandId = $('input[name="brand"]:checked').val();
+            let csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+            // console.log(startValue, endValue, selectedCategoryId, selectedSize, selectedColor, selectedBrandId);
 
             $.ajax({
                 url: '/products/filter',
@@ -185,7 +330,10 @@
                 data: {
                     start_price: startValue,
                     end_price: endValue,
-                    category: selectedCategoryId
+                    category: selectedCategoryId,
+                    // size: selectedSize,
+                    // color: selectedColor,
+                    brand: selectedBrandId
                 },
                 success: function(response) {
                     var products = response.products;
@@ -200,32 +348,42 @@
                         });
                     } else {
                         $.each(products, function(index, product) {
-                            productListHtml += `
-                                <div class="col-6 col-md-4 col-lg-4">
-                                    <div class="product product-2">
-                                        <figure class="product-media">
-                                            <a href="{{ route('product.show', '') }}/${product.slug}">
-                                                <x-image-with-loader src="{{ asset('/images/products/') }}/${product.feature_image}" alt="${product.name}" class="product-image" />
-                                            </a>
-                                            ${product.stock && product.stock.quantity > 0 ? `
-                                                <div class="product-action-vertical">
-                                                    <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="${product.id}" data-offer-id="0" data-price="${product.price}"><span>Add to wishlist</span></a>
+                            if (product.slug && product.feature_image && product.name && product.price !== undefined) {
+                                productListHtml += `
+                                    <div class="col-6 col-md-4 col-lg-4 mb-4">
+                                        <div class="product product-2" style="height: 100%; display: flex; flex-direction: column;">
+                                            <figure class="product-media">
+                                                <a href="{{ route('product.show', '') }}/${product.slug}">
+                                                    <x-image-with-loader src="{{ asset('/images/products/') }}/${product.feature_image}" alt="${product.name}" class="product-image" style="height: 200px; object-fit: cover;" />
+                                                </a>
+                                                ${product.stock && product.stock.quantity > 0 ? `
+                                                    <div class="product-action-vertical">
+                                                        <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="${product.id}" data-offer-id="0" data-price="${product.price}">
+                                                            <span>Add to wishlist</span>
+                                                        </a>
+                                                    </div>
+                                                    <div class="product-action">
+                                                        <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="${product.id}" data-offer-id="0" data-price="${product.price}">
+                                                            <span>add to cart</span>
+                                                        </a>
+                                                    </div>
+                                                ` : `<span class="product-label label-out-stock">Out of stock</span>`}
+                                            </figure>
+                                            <div class="product-body" style="flex-grow: 1;">
+                                                <h3 class="product-title">
+                                                    <a href="{{ route('product.show', '') }}/${product.slug}">${product.name}</a>
+                                                </h3>
+                                                <div class="product-price">
+                                                    {{ $currency }} ${parseFloat(product.price).toFixed(2)}
                                                 </div>
-                                                <div class="product-action">
-                                                    <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="${product.id}" data-offer-id="0" data-price="${product.price}"><span>add to cart</span></a>
-                                                </div>
-                                            ` : `<span class="product-label label-out-stock">Out of stock</span>`}
-                                        </figure>
-                                        <div class="product-body">
-                                            <h3 class="product-title"><a href="{{ route('product.show', '') }}/${product.slug}">${product.name}</a></h3>
-                                            <div class="product-price">
-                                                {{$currency}} ${parseFloat(product.price).toFixed(2)}
                                             </div>
                                         </div>
-                                    </div>
-                                </div>`;
+                                    </div>`;
+                            }
                         });
-                        $('#product-list').html(productListHtml);
+
+                    $('#product-list').html(productListHtml);
+
                     }
                 },
                 error: function(xhr, status, error) {
