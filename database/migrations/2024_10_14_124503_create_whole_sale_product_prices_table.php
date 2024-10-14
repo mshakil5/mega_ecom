@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('whole_sale_product_id')->nullable();
             $table->foreign('whole_sale_product_id')->references('id')->on('whole_sale_products')->onDelete('cascade');
-            $table->decimal('price', 8, 2)->nullable();
+            $table->integer('min_quantity')->nullable();
+            $table->integer('max_quantity')->nullable();
+            $table->double('price', 8, 2)->nullable();
             $table->boolean('status')->default(1);
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
