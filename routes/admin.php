@@ -45,6 +45,8 @@ use App\Http\Controllers\Admin\EquityHolderController;
 use App\Http\Controllers\Admin\ColorController;
 use App\Http\Controllers\Admin\SizeController;
 use App\Http\Controllers\Admin\WholeSaleProductController;
+use App\Http\Controllers\Admin\IncomestatementController;
+use App\Http\Controllers\Admin\FinancialStatementController;
 
 Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], function(){
   
@@ -435,6 +437,16 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('share-holders/{id}', [EquityHolderController::class, 'edit']);
     Route::put('share-holders/{id}', [EquityHolderController::class, 'update']);
     Route::get('share-holders/{id}/change-status', [EquityHolderController::class, 'changeStatus']);
+
+    // income statement
+    Route::get('income-statement', [IncomestatementController::class, 'incomeStatement'])->name('admin.incomestatement');
+    Route::post('income-statement', [IncomestatementController::class, 'incomeStatementSearch'])->name('admin.incomestatement.report');
+
+
+    // Balance Sheet
+    Route::get('balance-sheet', [FinancialStatementController::class, 'balanceSheet'])->name('admin.balancesheet');
+    Route::post('balance-sheet', [FinancialStatementController::class, 'balanceSheetReport'])->name('admin.balancesheet.report');
+
 
 });
   

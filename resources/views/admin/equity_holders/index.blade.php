@@ -23,9 +23,9 @@
                                     <th>ID</th>
                                     <th>Name</th>
                                     <th>Company Name</th>
-                                    <th>Balance</th>
+                                    <th>Tax Number</th>
+                                    <th>Tin Number</th>
                                     <th>Phone</th>
-                                    <th>Branch</th>
                                     <th>Ledger</th>
                                     <th><i class=""></i> Action</th>
                                 @endslot
@@ -131,9 +131,9 @@
             {data: 'id', name: 'id'},
             {data: 'name', name: 'name'},
             {data: 'company_name', name: 'company_name'},
-            {data: 'balance', name: 'balance'},
+            {data: 'tax_number', name: 'tax_number'},
+            {data: 'tin', name: 'tin'},
             {data: 'phone', name: 'phone'},
-            {data: 'branch_name', name: 'branch_name'},
             {
                 data: null,
                 name: 'ledger_action',

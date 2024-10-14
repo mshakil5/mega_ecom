@@ -51,9 +51,7 @@ class EquityHolderController extends Controller
         $equityHolder->phone = $request->phone;
         $equityHolder->tax_number = $request->tax_number;
         $equityHolder->tin = $request->tin;
-        $equityHolder->branch_id = $request->branch_id;
         $equityHolder->address = $request->address;
-        $equityHolder->branch_id = Auth::user()->branch_id;
         $equityHolder->created_by = Auth::user()->id;
         $equityHolder->save();
 
