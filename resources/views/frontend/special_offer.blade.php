@@ -18,7 +18,7 @@
                 <div class="col-6 col-md-4 col-lg-3">
                     <div class="product product-2">
                         <figure class="product-media">
-                            <a href="{{ route('product.show', ['slug' => $detail->product->slug, 'offerId' => 1]) }}">
+                            <a href="{{ route('product.show.offer', ['slug' => $detail->product->slug, 'offerId' => 1]) }}">
                                 <x-image-with-loader src="{{ asset('/images/products/' . $detail->product->feature_image) }}" alt="{{ $detail->product->name }}" class="product-image" />
                             </a>
 
@@ -36,7 +36,7 @@
                         </figure>
 
                         <div class="product-body">
-                            <h3 class="product-title"><a href="{{ route('product.show', ['slug' => $detail->product->slug, 'offerId' => 1]) }}">{{ $detail->product->name }}</a></h3>
+                            <h3 class="product-title"><a href="{{ route('product.show.offer', ['slug' => $detail->product->slug, 'offerId' => 1]) }}">{{ $detail->product->name }}</a></h3>
                             <div class="product-price">
                                 {{ $currency }} {{ number_format($detail->offer_price, 2) }}
                                 <del>{{ $currency }} {{ number_format($detail->old_price, 2) }}</del>

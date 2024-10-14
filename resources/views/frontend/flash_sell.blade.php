@@ -18,7 +18,7 @@
                 <div class="col-6 col-md-4 col-lg-3">
                     <div class="product product-2">
                         <figure class="product-media">
-                            <a href="{{ route('product.show', ['slug' => $detail->product->slug, 'offerId' => 2]) }}">
+                            <a href="{{ route('product.show.offer', ['slug' => $detail->product->slug, 'offerId' => 2]) }}">
                                 <x-image-with-loader src="{{ asset('/images/products/' . $detail->product->feature_image) }}" alt="{{ $detail->product->name }}" class="product-image" />
                             </a>
 

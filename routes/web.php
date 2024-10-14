@@ -55,7 +55,7 @@ Route::get('/', [FrontendController::class, 'index'])->name('frontend.homepage')
 Route::get('/category/{slug}', [FrontendController::class, 'showCategoryProducts'])->name('category.show');
 Route::get('/sub-category/{slug}', [FrontendController::class, 'showSubCategoryProducts'])->name('subcategory.show');
 Route::get('/product/{slug}', [FrontendController::class, 'showProduct'])->name('product.show');
-Route::get('/product/{slug}/{offerId?}', [FrontendController::class, 'showProduct'])->name('product.show');
+Route::get('/product/{slug}/{offerId?}', [FrontendController::class, 'showProduct'])->name('product.show.offer');
 Route::get('/sup-product/{slug}/{supplierId?}', [FrontendController::class, 'showSupplierProduct'])->name('product.show.supplier');
 Route::get('/campaign/product/{slug}/{supplierId?}', [FrontendController::class, 'showCampaignProduct'])->name('product.show.campaign');
 

@@ -237,6 +237,7 @@ class SupplierController extends Controller
         $supplier = new Supplier();
         $supplier->id_number = $request->id_number;
         $supplier->name = $request->name;
+        $supplier->slug = Str::slug($request->name);
         $supplier->email = $request->email;
         $supplier->phone = $request->phone;
         $supplier->password = bcrypt($request->password);
