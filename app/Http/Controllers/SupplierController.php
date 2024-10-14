@@ -223,4 +223,36 @@ class SupplierController extends Controller
 
         return response()->json(['message' => 'Supplier status updated successfully']);
     }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'id_number' => 'required|unique:suppliers',
+            'name' => 'required|string|max:255',
+            'email' => 'nullable|email',
+            'phone' => 'nullable|numeric',
+            'password' => 'nullable|string|min:6',
+        ]);
+
+        $supplier = new Supplier();
+        $supplier->id_number = $request->id_number;
+        $supplier->name = $request->name;
+        $supplier->email = $request->email;
+        $supplier->phone = $request->phone;
+        $supplier->password = bcrypt($request->password);
+        $supplier->vat_reg = $request->vat_reg;
+        $supplier->contract_date = $request->contract_date;
+        $supplier->address = $request->address;
+        $supplier->company = $request->company;
+
+        if ($supplier->save()) {
+            return response()->json([
+                'success' => true,
+                'data' => $supplier,
+            ]);
+        } else {
+            return response()->json(['success' => false], 500);
+        }
+    }
+
 }

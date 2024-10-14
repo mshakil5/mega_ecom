@@ -140,4 +140,23 @@ class ColorController extends Controller
 
         return response()->json(['status' => 200, 'message' => 'Color status updated successfully']);
     }
+
+    public function storeColor(Request $request)
+    {
+        $request->validate([
+            'color_name' => 'required|string|max:255|unique:colors,color',
+            'color_code' => 'nullable|string|max:255',
+            'price' => 'nullable|numeric',
+        ]);
+
+        $color = new Color();
+        $color->color = $request->color_name;
+        $color->color_code = $request->color_code;
+        $color->price = $request->price;
+        $color->save();
+
+        return response()->json(['success' => true, 'data' => $color]);
+    }
+
+
 }

@@ -139,4 +139,20 @@ class SizeController extends Controller
         return response()->json(['status' => 200, 'message' => 'Color status updated successfully']);
     }
 
+    public function storeSize(Request $request)
+    {
+        $request->validate([
+            'size' => 'required|string|max:255|unique:sizes,size',
+            'price' => 'nullable|numeric',
+        ]);
+
+        $size = new Size();
+        $size->size = $request->size;
+        $size->price = $request->price;
+        $size->save();
+
+        return response()->json(['success' => true, 'data' => $size]);
+    }
+
+
 }

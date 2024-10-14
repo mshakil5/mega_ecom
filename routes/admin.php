@@ -122,6 +122,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::post('/color-status', [ColorController::class, 'toggleStatus']);
 
+    Route::post('/color/store', [ColorController::class, 'storeColor'])->name('color.store');
+
     // Size crud
     Route::get('/size', [SizeController::class, 'index'])->name('allsize');
     Route::post('/size', [SizeController::class, 'store']);
@@ -130,6 +132,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/size/{id}', [SizeController::class, 'delete']);
 
     Route::post('/size-status', [SizeController::class, 'toggleStatus']);
+
+    Route::post('/size/store', [SizeController::class, 'storeSize'])->name('size.store');
 
     // company information
     Route::get('/company-details', [CompanyDetailsController::class, 'index'])->name('admin.companyDetail');
@@ -180,6 +184,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/supplier/{id}/edit', [SupplierController::class, 'supplierEdit']);
     Route::post('/supplier-update', [SupplierController::class, 'supplierUpdate']);
     Route::get('/supplier/{id}', [SupplierController::class, 'supplierDelete']);
+
+    Route::post('/supplier/store', [SupplierController::class, 'store'])->name('supplier.store');
 
     Route::get('/supplier/transactions/{supplierId}', [SupplierController::class, 'supplierTransactions'])->name('supplier.transactions');
 

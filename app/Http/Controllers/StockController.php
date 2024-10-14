@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Color;
 use Illuminate\Http\Request;
 use App\Models\Stock;
 use App\Models\Product;
@@ -14,6 +15,7 @@ use App\Models\PurchaseReturn;
 use DataTables;
 use App\Models\SystemLose;
 use App\Models\OrderReturn;
+use App\Models\Size;
 
 class StockController extends Controller
 {
@@ -49,7 +51,9 @@ class StockController extends Controller
     {
         $products = Product::orderby('id','DESC')->get();
         $suppliers = Supplier::orderby('id','DESC')->get();
-        return view('admin.stock.create', compact('products', 'suppliers'));
+        $colors = Color::orderby('id','DESC')->get();
+        $sizes = Size::orderby('id','DESC')->get();
+        return view('admin.stock.create', compact('products', 'suppliers', 'colors', 'sizes'));
     }
 
     public function stockStore(Request $request)

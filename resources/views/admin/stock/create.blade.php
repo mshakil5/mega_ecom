@@ -21,7 +21,7 @@
                                         <input type="date" class="form-control" id="purchase_date" name="purchase_date" placeholder="Enter purchase date">
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="supplier_id">Select Supplier</label>
                                         <select class="form-control" id="supplier_id" name="supplier_id">
@@ -30,6 +30,14 @@
                                                 <option value="{{ $supplier->id }}" data-balance="{{ $supplier->balance }}">{{ $supplier->name }}</option>
                                             @endforeach
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-1">
+                                    <div class="form-group">
+                                        <label>New</label>
+                                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#newSupplierModal">
+                                            <i class="fas fa-plus"></i> Add
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
@@ -99,26 +107,24 @@
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="product_size">Size</label>
+                                        <button type="button" class="btn btn-success btn-sm ml-2" id="addSizeBtn" data-toggle="modal" data-target="#addSizeModal"> + Add</button>
                                         <select class="form-control" id="product_size" name="product_size">
                                             <option value="">Select...</option>
-                                            <option value="XS">XS</option>
-                                            <option value="S">S</option>
-                                            <option value="M">M</option>
-                                            <option value="L">L</option>
-                                            <option value="XL">XL</option>
+                                            @foreach ($sizes as $size)
+                                                <option value="{{ $size->size }}">{{ $size->size }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
                                  <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="product_color">Color</label>
+                                        <button type="button" class="btn btn-success btn-sm ml-2" id="addColorBtn" data-toggle="modal" data-target="#addColorModal"><i class="fas fa-plus"></i> Add</button>
                                         <select class="form-control" id="product_color" name="product_color">
                                             <option value="">Select...</option>
-                                            <option value="Black">Black</option>
-                                            <option value="White">White</option>
-                                            <option value="Red">Red</option>
-                                            <option value="Blue">Blue</option>
-                                            <option value="Green">Green</option>                                     
+                                            @foreach ($colors as $color)
+                                                <option value="{{ $color->color }}">{{ $color->color }}</option>
+                                            @endforeach                                  
                                         </select>
                                     </div>
                                 </div>
@@ -201,6 +207,157 @@
         </div>
     </div>
 </section>
+
+<!-- New Supplier Modal -->
+<div class="modal fade" id="newSupplierModal" tabindex="-1" aria-labelledby="newSupplierModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newSupplierModalLabel">Add New Supplier</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- New Supplier Form -->
+                <form id="newSupplierForm">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Code*</label>
+                                <input type="number" class="form-control" id="supplier_id_number" name="id_number" placeholder="Enter code" required>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Name*</label>
+                                <input type="text" class="form-control" id="supplier_name" name="name" placeholder="Enter name" required>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" class="form-control" id="supplier_email" name="email" placeholder="Enter email">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <input type="number" class="form-control" id="supplier_phone" name="phone" placeholder="Enter phone">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Password</label>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Confirm Password</label>
+                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Enter password">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Vat Reg</label>
+                                <input type="number" class="form-control" id="vat_reg1" name="vat_reg" placeholder="Enter vat reg">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Contract Date</label>
+                                <input type="date" class="form-control" id="contract_date" name="contract_date" placeholder="Enter contract date">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Address</label>
+                                <textarea class="form-control" id="address" name="address" rows="3" placeholder="Enter address"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Company</label>
+                                <textarea class="form-control" id="company" name="company" rows="3" placeholder="Enter company"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Submit Button -->
+                    <button type="button" class="btn btn-success" id="saveSupplierBtn">Save Supplier</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Color Modal -->
+<div class="modal fade" id="addColorModal" tabindex="-1" role="dialog" aria-labelledby="addColorModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addColorModalLabel">Add New Color</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="newColorForm">
+                    <div class="form-group">
+                        <label for="color_name">Color</label>
+                        <input type="text" class="form-control" id="color_name" name="color_name" placeholder="Enter color">
+                    </div>
+                    <div class="form-group">
+                        <label for="color_code">Color Code</label>
+                        <input type="color" class="form-control" id="color_code" name="color_code" placeholder="Enter color code">
+                    </div>
+                    <div class="form-group">
+                        <label for="color_price">Price</label>
+                        <input type="number" class="form-control" id="color_price" name="color_price" placeholder="Enter price">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveColorBtn">Save Color</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Size Modal -->
+<div class="modal fade" id="addSizeModal" tabindex="-1" role="dialog" aria-labelledby="addSizeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addSizeModalLabel">Add New Size</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="newSizeForm">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="size_name">Size</label>
+                            <input type="text" class="form-control" id="size_name" name="size_name" placeholder="Enter size">
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="size_price">Price</label>
+                            <input type="number" class="form-control" id="size_price" name="size_price" placeholder="Enter price">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveSizeBtn">Save Size</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @endsection
 
@@ -458,6 +615,188 @@
     window.onload = function() {
         document.getElementById("purchase_date").value = new Date().toISOString().split('T')[0];
     };
+</script>
+
+<script>
+
+$(document).ready(function() {
+    $('#saveSupplierBtn').on('click', function() {
+
+        let password = $('#password').val();
+        let confirmPassword = $('#confirm_password').val();
+
+        if (password !== confirmPassword) {
+            
+            swal({
+                text: "Passwords do not match !",
+                icon: "error",
+                button: {
+                    text: "OK",
+                    className: "swal-button--confirm"
+                }
+            });
+
+            return false;
+        }
+
+        let formData = {
+            id_number: $('#supplier_id_number').val(),
+            name: $('#supplier_name').val(),
+            email: $('#supplier_email').val(),
+            phone: $('#supplier_phone').val(),
+            password: $('#password').val(),
+            vat_reg: $('#vat_reg1').val(),
+            contract_date: $('#contract_date').val(),
+            address: $('#address').val(),
+            company: $('#company').val(),
+            _token: '{{ csrf_token() }}'
+        };
+
+        $.ajax({
+            url: '{{ route('supplier.store') }}',
+            type: 'POST',
+            data: formData,
+            success: function(response) {
+                if (response.success) {
+                    $('#supplier_id').append(`<option value="${response.data.id}">${response.data.name}</option>`);
+                    $('#newSupplierModal').modal('hide');
+                    $('#newSupplierForm')[0].reset();
+                    swal({
+                        text: "Created successfully",
+                        icon: "success",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    });
+                } else {
+                    alert('Failed to add supplier.');
+                }
+            },
+            error: function(xhr, status, error) {
+                // console.log(xhr.responseText);
+                alert('Error adding supplier. Please try again.');
+            }
+        });
+    });
+
+    $('#saveColorBtn').click(function() {
+        let colorName = $('#color_name').val();
+        let color_code = $('#color_code').val();
+        let price = $('#color_price').val();
+
+        $.ajax({
+            url: '{{ route('color.store') }}',
+            type: 'POST',
+            data: {
+                color_name: colorName,
+                color_code: color_code,
+                price: price,
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    swal({
+                        text: "Color added successfully",
+                        icon: "success",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    }).then(() => {
+                        $('#product_color').append(`<option value="${response.data.color}">${response.data.color}</option>`);
+                        $('#addColorModal').modal('hide');
+                        $('#newColorForm')[0].reset();
+                    });
+                } else {
+                    swal({
+                        text: "Failed to add color",
+                        icon: "error",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--error"
+                        }
+                    });
+                }
+            },
+            error: function(xhr) {
+                let errorMessage = "Error adding color. Please try again.";
+                
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    errorMessage = Object.values(xhr.responseJSON.errors).join("\n");
+                }
+                
+                swal({
+                    text: errorMessage,
+                    icon: "error",
+                    button: {
+                        text: "OK",
+                        className: "swal-button--error"
+                    }
+                });
+            }
+        });
+    });
+
+    $('#saveSizeBtn').click(function() {
+
+        let size = $('#size_name').val();
+        let price = $('#size_price').val();
+
+        $.ajax({
+            url: '{{ route('size.store') }}',
+            type: 'POST',
+            data: {
+                size: size,
+                price: price,
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    swal({
+                        text: "Size added successfully",
+                        icon: "success",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    }).then(() => {
+                        $('#product_size').append(`<option value="${response.data.size}">${response.data.size}</option>`);
+                        
+                        $('#addSizeModal').modal('hide');
+                        $('#newSizeForm')[0].reset();
+                    });
+                } else {
+                    swal({
+                        text: "Failed to add size",
+                        icon: "error",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--error"
+                        }
+                    });
+                }
+            },
+            error: function(xhr) {
+                let errorMessage = "Error adding size. Please try again.";
+                
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    errorMessage = Object.values(xhr.responseJSON.errors).join("\n");
+                }
+                
+                swal({
+                    text: errorMessage,
+                    icon: "error",
+                    button: {
+                        text: "OK",
+                        className: "swal-button--error"
+                    }
+                });
+            }
+        });
+    });
+});
+
 </script>
 
 @endsection
