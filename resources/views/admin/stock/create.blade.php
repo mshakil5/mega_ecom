@@ -107,7 +107,7 @@
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="product_size">Size</label>
-                                        <button type="button" class="btn btn-success btn-sm ml-2" id="addSizeBtn" data-toggle="modal" data-target="#addSizeModal"> + Add</button>
+                                        <button type="button" class="btn btn-success btn-sm ml-2" id="addSizeBtn" data-toggle="modal" data-target="#addSizeModal"> <i class="fas fa-plus"></i> Add</button>
                                         <select class="form-control" id="product_size" name="product_size">
                                             <option value="">Select...</option>
                                             @foreach ($sizes as $size)
