@@ -76,6 +76,7 @@
                                     <th>Sl</th>
                                     <th>Size</th>
                                     <th>Price</th>
+                                    <th>Image</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -86,6 +87,7 @@
                                     <td>{{ $key + 1 }}</td>
                                     <td>{{ $data->size }}</td>
                                     <td>{{ $data->price }}</td>
+                                    <td><img src="{{ asset($data->image) }}" alt="" style="max-width: 100px; width: 100%; height: auto;"></td>
                                     <td>
                                         <div class="custom-control custom-switch">
                                             <input type="checkbox" class="custom-control-input toggle-status" id="customSwitchStatus{{ $data->id }}" data-id="{{ $data->id }}" {{ $data->status == 1 ? 'checked' : '' }}>
