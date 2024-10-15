@@ -22,6 +22,10 @@
                                 </div>
                                 <div class="col-6">
                                     <input type="date" class="form-control" name="start_date" value="{{ request()->input('start_date') }}">
+                                    @if ($errors->has('start_date'))
+                                        <span class="text-danger">{{ $errors->first('start_date') }}</span>
+                                    @endif
+
                                 </div>
                                 <div class="col-3">
                                     <button type="submit" class="btn btn-primary">Search</button>

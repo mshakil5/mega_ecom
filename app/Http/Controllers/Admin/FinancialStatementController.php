@@ -20,6 +20,10 @@ class FinancialStatementController extends Controller
 
     public function balanceSheetReport(Request $request)
     {
+
+        $validatedData = $request->validate([
+            'start_date' => 'required',
+        ]);
         $startDate = $request->input('start_date');
         if ($startDate) {
             $yest = Carbon::parse($startDate)->subDay()->format('Y-m-d');
@@ -49,10 +53,10 @@ class FinancialStatementController extends Controller
             }])->get();
 
         //Debit till yesterday   
-        $currentAssets->each(function ($asset) use ($yest) {
+        $currentAssets->each(function ($asset) use ($yest, $today) {
             $asset->total_debit_yesterday = $asset->transactions()
                 ->where('transaction_type', 'Received')
-                ->whereDate('date', '<=', $yest)
+                ->whereDate('', '<=', $yest)
                 ->where('status', 0)
                 ->sum('at_amount');
         });
@@ -67,19 +71,19 @@ class FinancialStatementController extends Controller
         });
 
         //Debit Today
-        $currentAssets->each(function ($asset) use ($today) {
+        $currentAssets->each(function ($asset) use ($today, $startDate) {
             $asset->total_debit_today = $asset->transactions()
                 ->where('transaction_type', 'Received')
-                ->whereDate('date', $today)
+                ->whereBetween('date', [$startDate, $today])
                 ->where('status', 0)
                 ->sum('at_amount');
         });
 
         //Credit Today
-        $currentAssets->each(function ($asset) use ($today) {
+        $currentAssets->each(function ($asset) use ($today, $startDate) {
             $asset->total_credit_today = $asset->transactions()
                 ->where('transaction_type', 'Payment')
-                ->whereDate('date', $today)
+                ->whereBetween('date', [$startDate, $today])
                 ->where('status', 0)
                 ->sum('at_amount');
         });
@@ -112,20 +116,20 @@ class FinancialStatementController extends Controller
         });
 
         //Debit Today
-        $fixedAssets->each(function ($asset) use ($today) {
+        $fixedAssets->each(function ($asset) use ($today, $startDate) {
             $asset->total_debit_today = $asset->transactions()
                 ->where('transaction_type', 'Purchase')
-                ->whereDate('date', $today)
+                ->whereBetween('date', [$startDate, $today])
                 ->where('status', 0)
                 ->sum('at_amount');
         });
 
         
         //Credit Today
-        $fixedAssets->each(function ($asset) use ($today) {
+        $fixedAssets->each(function ($asset) use ($today, $startDate) {
             $asset->total_credit_today = $asset->transactions()
                 ->whereIn('transaction_type', ['Sold', 'Depreciation'])
-                ->whereDate('date', $today)
+                ->whereBetween('date', [$startDate, $today])
                 ->where('status', 0)
                 ->sum('at_amount');
         });
@@ -138,7 +142,7 @@ class FinancialStatementController extends Controller
         $todaysAccountReceivableCredit = Transaction::whereIn('chart_of_account_id', $accountReceiveableIds)
             ->where('status', 0)
             ->where('transaction_type', 'Received')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
         //Sales Return Credit   
@@ -146,7 +150,7 @@ class FinancialStatementController extends Controller
             ->where('status', 0)
             ->where('payment_type', 'Account Receivable')
             ->where('transaction_type', 'Return')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
         //Total Todays Account Receivable    
@@ -156,14 +160,14 @@ class FinancialStatementController extends Controller
         $todaysAccountReceivableDebit = Transaction::whereIn('chart_of_account_id', $accountReceiveableIds)
             ->where('status', 0)
             ->whereIn('transaction_type', ['Purchase', 'Payment'])
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
         //Todays Asset Sold Account Receivable    
         $todaysAssetSoldAR = Transaction::whereIn('asset_id', $accountReceiveableIds)
             ->where('status', 0)
             ->where('transaction_type', 'Sold')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
 
@@ -217,14 +221,14 @@ class FinancialStatementController extends Controller
         $todaysAccountPayableCredit = Transaction::whereIn('chart_of_account_id', $accountPayableIds)
             ->where('status', 0)
             ->where('transaction_type', 'Payment')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
         //Todays Purchase Return Account Payable
         $todaysPurchaseReturnAP = Transaction::where('table_type', 'Cogs')
             ->where('transaction_type', 'Return')
             ->where('status', 0)
             ->where('payment_type', 'Account Payable')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
         //Todays total Account Payable Credit
@@ -234,7 +238,7 @@ class FinancialStatementController extends Controller
         $todaysAccountPayableDebit = Transaction::whereIn('chart_of_account_id', $accountPayableIds)
             ->where('status', 0)
             ->whereIn('transaction_type', ['Received'])
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
         //Today's product purchse by credit
@@ -242,14 +246,14 @@ class FinancialStatementController extends Controller
             ->where('status', 0)
             ->where('payment_type', 'Account Payable')
             ->where('transaction_type', 'Current')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
         //Todays due account payable debit   
         $todaysDueAccountPayableDebit = Transaction::whereIn('liability_id', $accountPayableIds)
             ->where('status', 0)
             ->whereIn('transaction_type', ['Payment', 'Due', 'Purchase'])
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
 
@@ -258,7 +262,7 @@ class FinancialStatementController extends Controller
             ->whereNotNull('order_id')
             ->where('transaction_type', 'Current')
             ->where('payment_type', 'Account Receivable')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
         //Yesterday's account payable credit    
@@ -335,21 +339,21 @@ class FinancialStatementController extends Controller
         });
 
         //Today credit
-        $shortTermLiabilities->each(function ($liability) use ($today) {
+        $shortTermLiabilities->each(function ($liability) use ($today, $startDate) {
             $liability->total_debit_today = $liability->transactions()
                 
                 ->where('transaction_type', 'Received')
-                ->whereDate('date', $today)
+                ->whereBetween('date', [$startDate, $today])
                 ->where('status', 0)
                 ->sum('at_amount');
         });
 
         //Today debit
-        $shortTermLiabilities->each(function ($liability) use ($today) {
+        $shortTermLiabilities->each(function ($liability) use ($today, $startDate) {
             $liability->total_credit_today = $liability->transactions()
                 
                 ->where('transaction_type', 'Payment')
-                ->whereDate('date', $today)
+                ->whereBetween('date', [$startDate, $today])
                 ->where('status', 0)
                 ->sum('at_amount');
         });
@@ -385,21 +389,21 @@ class FinancialStatementController extends Controller
         });
 
         //Today credit
-        $longTermLiabilities->each(function ($liability) use ($today) {
+        $longTermLiabilities->each(function ($liability) use ($today, $startDate) {
             $liability->total_debit_today = $liability->transactions()
                 
                 ->where('transaction_type', 'Received')
-                ->whereDate('date', $today)
+                ->whereBetween('date', [$startDate, $today])
                 ->where('status', 0)
                 ->sum('at_amount');
         });
 
         //Today debit
-        $longTermLiabilities->each(function ($liability) use ($today) {
+        $longTermLiabilities->each(function ($liability) use ($today, $startDate) {
             $liability->total_credit_today = $liability->transactions()
                 
                 ->where('transaction_type', 'Payment')
-                ->whereDate('date', $today)
+                ->whereBetween('date', [$startDate, $today])
                 ->where('status', 0)
                 ->sum('at_amount');
         });
@@ -435,31 +439,31 @@ class FinancialStatementController extends Controller
         });
 
         //Today credit    
-        $currentLiabilities->each(function ($liability) use ($today) {
+        $currentLiabilities->each(function ($liability) use ($today, $startDate) {
             $liability->total_debit_today = $liability->transactions()
                 
                 ->where('transaction_type', 'Received')
-                ->whereDate('date', $today)
+                ->whereBetween('date', [$startDate, $today])
                 ->where('status', 0)
                 ->sum('at_amount');
         });
 
         //Today debit
-        $currentLiabilities->each(function ($liability) use ($today) {
+        $currentLiabilities->each(function ($liability) use ($today, $startDate) {
             $liability->total_credit_today = $liability->transactions()
                 
                 ->where('transaction_type', 'Payment')
-                ->whereDate('date', $today)
+                ->whereBetween('date', [$startDate, $today])
                 ->where('status', 0)
                 ->sum('at_amount');
         });
 
         //Equity Capital
         $equityCapitals = ChartOfAccount::where('sub_account_head', 'Equity Capital')
-            ->withSum(['transactions' => function ($query) use ( $today) {
-                $query->where('transaction_type', 'Payment')
-                    ->whereDate('date', '!=', $today);
-            }], 'at_amount')
+            // ->withSum(['transactions' => function ($query) use ( $today) {
+            //     $query->where('transaction_type', 'Payment')
+            //         ->whereDate('date', '!=', $today);
+            // }], 'at_amount')
             ->get();
 
         //yesterday credit
@@ -481,22 +485,23 @@ class FinancialStatementController extends Controller
         });
 
         //Today debit
-        $equityCapitals->each(function ($equity) use ($today) {
+        $equityCapitals->each(function ($equity) use ($startDate, $today) {
             $equity->total_debit_today = $equity->transactions()
                 ->where('status', 0)
                 ->where('transaction_type', 'Received')
-                ->whereDate('date', $today)
+                ->whereBetween('date', [$startDate, $today])
                 ->sum('at_amount');
         });
 
         //Today credit
-        $equityCapitals->each(function ($equity) use ($today) {
+        $equityCapitals->each(function ($equity) use ($today, $startDate) {
             $equity->total_credit_today = $equity->transactions()
                 ->where('status', 0)
                 ->where('transaction_type', 'Payment')
-                ->whereDate('date', $today)
+                ->whereBetween('date', [$startDate, $today])
                 ->sum('at_amount');
         });
+
 
         //Retained Earnings
         $retainedEarnings = ChartOfAccount::where('sub_account_head', 'Retained Earnings')
@@ -529,21 +534,21 @@ class FinancialStatementController extends Controller
         });
 
         //Today debit
-        $retainedEarnings->each(function ($liability) use ($today) {
+        $retainedEarnings->each(function ($liability) use ($today, $startDate) {
             $liability->total_debit_today = $liability->transactions()
                 
                 ->where('transaction_type', 'Received')
-                ->whereDate('date', $today)
+                ->whereBetween('date', [$startDate, $today])
                 ->where('status', 0)
                 ->sum('at_amount');
         });
 
         //Today credit
-        $retainedEarnings->each(function ($liability) use ($today) {
+        $retainedEarnings->each(function ($liability) use ($today, $startDate) {
             $liability->total_credit_today = $liability->transactions()
                 
                 ->where('transaction_type', 'Payment')
-                ->whereDate('date', $today)
+                ->whereBetween('date', [$startDate, $today])
                 ->where('status', 0)
                 ->sum('at_amount');
         });
@@ -576,17 +581,16 @@ class FinancialStatementController extends Controller
         }
 
         //Inventory 
-        $inventory = PurchaseHistoryLog::when($request->has('startDate') && $request->has('endDate'), function ($query) use ($request) {
-            $query->whereBetween('log_date', [$request->input('startDate'), $request->input('endDate')]);
-        })
-            ->sum('total_amount');
+        $inventory = PurchaseHistoryLog::when($request->has('startDate'), function ($query) use ($request, $today) {
+            $query->whereBetween('log_date', [$request->input('startDate'), $today]);
+        })->sum('total_amount');
 
         $yesInventory = PurchaseHistoryLog::whereDate('log_date', $yest)->sum('total_amount');
 
         $purchaseDues = Purchase::all();
 
-        if (request()->has('startDate') && request()->has('endDate')) {
-            $purchaseDues->whereBetween('date', [request()->input('startDate'), request()->input('endDate')]);
+        if (request()->has('startDate')) {
+            $purchaseDues->whereBetween('date', [request()->input('startDate'), $today]);
         }
 
         //Total account payable
@@ -633,7 +637,7 @@ class FinancialStatementController extends Controller
             ->whereIn('transaction_type', ['Current', 'Advance'])
             ->where('status', 0)
             ->where('payment_type', 'Cash')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             
             ->sum('at_amount');
 
@@ -642,7 +646,7 @@ class FinancialStatementController extends Controller
             ->whereIn('transaction_type', ['Sold', 'Received'])
             ->where('status', 0)
             ->where('payment_type', 'Cash')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             
             ->sum('at_amount');
 
@@ -651,7 +655,7 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Received')
             ->where('status', 0)
             ->where('payment_type', 'Cash')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             
             ->sum('at_amount');
 
@@ -660,7 +664,7 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Received')
             ->where('status', 0)
             ->where('payment_type', 'Cash')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             
             ->sum('at_amount');
 
@@ -668,7 +672,7 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Return')
             ->where('status', 0)
             ->where('payment_type', 'Cash')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             
             ->sum('at_amount');
 
@@ -680,7 +684,7 @@ class FinancialStatementController extends Controller
             ->whereIn('transaction_type', ['Current', 'Advance'])
             ->where('status', 0)
             ->where('payment_type', 'Bank')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
         //Bank Asset Increment today
@@ -688,7 +692,7 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Sold')
             ->where('status', 0)
             ->where('payment_type', 'Bank')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
         //Bank Liabilities Increment today
@@ -696,7 +700,7 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Received')
             ->where('status', 0)
             ->where('payment_type', 'Bank')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
         //Bank Equity Increment today
@@ -704,7 +708,7 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Received')
             ->where('status', 0)
             ->where('payment_type', 'Bank')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
         //Purchase Return Bank Increment
@@ -712,7 +716,7 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Return')
             ->where('status', 0)
             ->where('payment_type', 'Bank')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             
             ->sum('at_amount');
 
@@ -724,8 +728,7 @@ class FinancialStatementController extends Controller
             ->whereIn('transaction_type', ['Current', 'Prepaid'])
             ->where('status', 0)
             ->where('payment_type', 'Cash')
-            ->whereDate('date', $today)
-            
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
         //Cash Asset Decrement today
@@ -733,8 +736,7 @@ class FinancialStatementController extends Controller
             ->whereIn('transaction_type', ['Payment', 'Purchase'])
             ->where('status', 0)
             ->where('payment_type', 'Cash')
-            ->whereDate('date', $today)
-            
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
         //Cash Liabilities Decrement today
@@ -742,8 +744,7 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Payment')
             ->where('status', 0)
             ->where('payment_type', 'Cash')
-            ->whereDate('date', $today)
-            
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
         //Cash Equity Decrement today
@@ -751,8 +752,7 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Payment')
             ->where('status', 0)
             ->where('payment_type', 'Cash')
-            ->whereDate('date', $today)
-            
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
         //Cash Income Decrement today
@@ -760,8 +760,7 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Refund')
             ->where('status', 0)
             ->where('payment_type', 'Cash')
-            ->whereDate('date', $today)
-            
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
         //Cash Purchase Decrement today
@@ -769,8 +768,7 @@ class FinancialStatementController extends Controller
             ->where('status', 0)
             ->where('payment_type', 'Cash')
             ->where('transaction_type', 'Current')
-            ->whereDate('date', $today)
-            
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
         //Cash Sales Return Decrement today    
@@ -778,8 +776,7 @@ class FinancialStatementController extends Controller
             ->where('status', 0)
             ->where('payment_type', 'Cash')
             ->where('transaction_type', 'Return')
-            ->whereDate('date', $today)
-            
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
         //Total Today Cash Decrement
@@ -790,7 +787,7 @@ class FinancialStatementController extends Controller
             ->whereIn('transaction_type', ['Current', 'Prepaid'])
             ->where('status', 0)
             ->where('payment_type', 'Bank')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
         //Bank Asset Decrement today
@@ -798,7 +795,7 @@ class FinancialStatementController extends Controller
             ->whereIn('transaction_type', ['Payment', 'Purchase'])
             ->where('status', 0)
             ->where('payment_type', 'Bank')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
 
@@ -807,7 +804,7 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Payment')
             ->where('status', 0)
             ->where('payment_type', 'Bank')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
 
@@ -816,7 +813,7 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Payment')
             ->where('status', 0)
             ->where('payment_type', 'Bank')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
 
@@ -825,7 +822,7 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Refund')
             ->where('status', 0)
             ->where('payment_type', 'Bank')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
         //Bank Purchase Decrement today    
@@ -833,8 +830,7 @@ class FinancialStatementController extends Controller
             ->where('status', 0)
             ->where('payment_type', 'Bank')
             ->where('transaction_type', 'Current')
-            ->whereDate('date', $today)
-            
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
         //Bank Sales Return Decrement today         
@@ -842,8 +838,7 @@ class FinancialStatementController extends Controller
             ->where('status', 0)
             ->where('payment_type', 'Bank')
             ->where('transaction_type', 'Return')
-            ->whereDate('date', $today)
-            
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
 
@@ -859,7 +854,6 @@ class FinancialStatementController extends Controller
             ->whereIn('transaction_type', ['Current', 'Advance'])
             ->where('status', 0)
             ->where('payment_type', 'Cash')
-            
             ->where('date', '<=', $yest)
             ->sum('at_amount');
 
@@ -868,7 +862,6 @@ class FinancialStatementController extends Controller
             ->whereIn('transaction_type', ['Received', 'Sold'])
             ->where('status', 0)
             ->where('payment_type', 'Cash')
-            
             ->where('date', '<=', $yest)
             ->sum('at_amount');
 
@@ -877,7 +870,6 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Received')
             ->where('status', 0)
             ->where('payment_type', 'Cash')
-            
             ->where('date', '<=', $yest)
             ->sum('at_amount');
 
@@ -886,7 +878,6 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Received')
             ->where('status', 0)
             ->where('payment_type', 'Cash')
-            
             ->where('date', '<=', $yest)
             ->sum('at_amount');
 
@@ -896,7 +887,6 @@ class FinancialStatementController extends Controller
             ->where('status', 0)
             ->where('payment_type', 'Cash')
             ->where('date', '<=', $yest)
-            
             ->sum('at_amount');
 
         //Total Till Yesterday Cash Increment
@@ -907,7 +897,6 @@ class FinancialStatementController extends Controller
             ->whereIn('transaction_type', ['Current', 'Prepaid'])
             ->where('status', 0)
             ->where('payment_type', 'Cash')
-            
             ->where('date', '<=', $yest)
             ->sum('at_amount');
 
@@ -916,7 +905,6 @@ class FinancialStatementController extends Controller
             ->whereIn('transaction_type', ['Payment', 'Purchase'])
             ->where('status', 0)
             ->where('payment_type', 'Cash')
-            
             ->where('date', '<=', $yest)
             ->sum('at_amount');
 
@@ -925,7 +913,6 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Payment')
             ->where('status', 0)
             ->where('payment_type', 'Cash')
-            
             ->where('date', '<=', $yest)
             ->sum('at_amount');
 
@@ -934,7 +921,6 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Payment')
             ->where('status', 0)
             ->where('payment_type', 'Cash')
-            
             ->where('date', '<=', $yest)
             ->sum('at_amount');
 
@@ -943,7 +929,6 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Refund')
             ->where('status', 0)
             ->where('payment_type', 'Cash')
-            
             ->where('date', '<=', $yest)
             ->sum('at_amount');
 
@@ -952,7 +937,6 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Current')
             ->where('status', 0)
             ->where('payment_type', 'Cash')
-            
             ->where('date', '<=', $yest)
             ->sum('at_amount');
 
@@ -962,7 +946,6 @@ class FinancialStatementController extends Controller
             ->where('payment_type', 'Cash')
             ->where('transaction_type', 'Return')
             ->where('date', '<=', $yest)
-            
             ->sum('at_amount');
 
         //Total Till Yesterday Cash Decrement
@@ -974,7 +957,6 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Sold')
             ->where('status', 0)
             ->where('payment_type', 'Bank')
-            
             ->where('date', '<=', $yest)
             ->sum('at_amount');
 
@@ -983,7 +965,6 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Received')
             ->where('status', 0)
             ->where('payment_type', 'Bank')
-            
             ->where('date', '<=', $yest)
             ->sum('at_amount');
 
@@ -992,7 +973,6 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Received')
             ->where('status', 0)
             ->where('payment_type', 'Bank')
-            
             ->where('date', '<=', $yest)
             ->sum('at_amount');
 
@@ -1001,7 +981,6 @@ class FinancialStatementController extends Controller
             ->whereIn('transaction_type', ['Current', 'Advance'])
             ->where('status', 0)
             ->where('payment_type', 'Bank')
-            
             ->where('date', '<=', $yest)
             ->sum('at_amount');
 
@@ -1011,7 +990,6 @@ class FinancialStatementController extends Controller
             ->where('status', 0)
             ->where('payment_type', 'Bank')
             ->where('date', '<=', $yest)
-            
             ->sum('at_amount');
 
 
@@ -1025,7 +1003,6 @@ class FinancialStatementController extends Controller
             ->whereIn('transaction_type', ['Current', 'Prepaid'])
             ->where('status', 0)
             ->where('payment_type', 'Bank')
-            
             ->where('date', '<=', $yest)
             ->sum('at_amount');
 
@@ -1034,7 +1011,6 @@ class FinancialStatementController extends Controller
             ->whereIn('transaction_type', ['Payment', 'Purchase'])
             ->where('status', 0)
             ->where('payment_type', 'Bank')
-            
             ->where('date', '<=', $yest)
             ->sum('at_amount');
 
@@ -1043,7 +1019,6 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Payment')
             ->where('status', 0)
             ->where('payment_type', 'Bank')
-            
             ->where('date', '<=', $yest)
             ->sum('at_amount');
 
@@ -1052,7 +1027,6 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Payment')
             ->where('status', 0)
             ->where('payment_type', 'Bank')
-            
             ->where('date', '<=', $yest)
             ->sum('at_amount');
 
@@ -1061,7 +1035,6 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Refund')
             ->where('status', 0)
             ->where('payment_type', 'Bank')
-            
             ->where('date', '<=', $yest)
             ->sum('at_amount');
 
@@ -1070,7 +1043,6 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Current')
             ->where('status', 0)
             ->where('payment_type', 'Bank')
-            
             ->where('date', '<=', $yest)
             ->sum('at_amount');
 
@@ -1079,7 +1051,6 @@ class FinancialStatementController extends Controller
             ->where('transaction_type', 'Return')
             ->where('status', 0)
             ->where('payment_type', 'Bank')
-            
             ->where('date', '<=', $yest)
             ->sum('at_amount');
 
@@ -1092,7 +1063,7 @@ class FinancialStatementController extends Controller
         //Yesterday Bank In Hand
         $yesBankInHand = $totalYestBankIncrement - $totalYestBankDecrement;
 
-        return view('admin.balance_sheet.index', compact('currentAssetIds', 'currentBankAsset', 'currentCashAsset', 'currentLiability', 'longTermLiabilities', 'equityCapital', 'retainedEarning', 'currentAssets', 'fixedAssets', 'fixedAsset', 'shortTermLiabilities', 'currentLiabilities', 'equityCapitals', 'retainedEarnings', 'cashInHand', 'cashInBank', 'inventory', 'netProfit', 'yesCashInHand', 'yesBankInHand', 'yesAccountReceiveable', 'yesInventory', 'netProfitTillYesterday', 'totalTodayCashIncrements', 'totalTodayCashDecrements', 'totalTodayBankIncrements', 'totalTodayBankDecrements', 'todaysAccountReceivableDebit', 'todaysAssetSoldAR', 'yesAccountPayable', 'totalTodaysAccountPayableCredit', 'todaysAccountPayableDebit', 'todaysProductCreditSold', 'todaysDueAccountPayableDebit', 'todaysCreditPurchaseAP', 'totalTodaysAccountReceivableCredit'));
+        return view('admin.accounts.balance_sheet.index', compact('currentAssetIds', 'currentBankAsset', 'currentCashAsset', 'currentLiability', 'longTermLiabilities', 'equityCapital', 'retainedEarning', 'currentAssets', 'fixedAssets', 'shortTermLiabilities', 'currentLiabilities', 'equityCapitals', 'retainedEarnings', 'cashInHand', 'cashInBank', 'inventory', 'netProfit', 'yesCashInHand', 'yesBankInHand', 'yesAccountReceiveable', 'yesInventory', 'netProfitTillYesterday', 'totalTodayCashIncrements', 'totalTodayCashDecrements', 'totalTodayBankIncrements', 'totalTodayBankDecrements', 'todaysAccountReceivableDebit', 'todaysAssetSoldAR', 'yesAccountPayable', 'totalTodaysAccountPayableCredit', 'todaysAccountPayableDebit', 'todaysProductCreditSold', 'todaysDueAccountPayableDebit', 'todaysCreditPurchaseAP', 'totalTodaysAccountReceivableCredit','startDate'));
     }
 
     public function calculateNetProfit(Request $request)
@@ -1115,8 +1086,8 @@ class FinancialStatementController extends Controller
             ->sum('amount');
 
         // Sales Discount
-        $salesDiscount = Order::when($request->has('startDate') && $request->has('endDate'), function ($query) use ($request) {
-                $query->whereBetween('created_at', [$request->input('startDate'), $request->input('endDate')]);
+        $salesDiscount = Order::when($request->has('startDate'), function ($query) use ($request, $today) {
+                $query->whereBetween('created_at', [$request->input('startDate'), $today]);
             })
             ->sum('discount_amount');
 

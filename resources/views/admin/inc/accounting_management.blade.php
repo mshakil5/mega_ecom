@@ -59,6 +59,13 @@
             </a>
         </li>
 
+        <li class="nav-item">
+            <a href="{{ route('admin.ledgeraccount') }}" class="nav-link {{ (request()->is('admin/ledger-accounts*')) ? 'active' : '' }}">
+                <i class="fa fa-users"></i>
+                <p>Ledger</p>
+            </a>
+        </li>
+
         <li class="nav-item dropdown {{ request()->is('admin/income-statement') || request()->is('admin/balance-sheet')  ? 'menu-open' : '' }}">
 
             <a href="#" class="nav-link dropdown-toggle {{ request()->is('admin/income-statement') || request()->is('admin/balance-sheet') ? 'active' : '' }}">

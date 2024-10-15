@@ -47,6 +47,7 @@ use App\Http\Controllers\Admin\SizeController;
 use App\Http\Controllers\Admin\WholeSaleProductController;
 use App\Http\Controllers\Admin\IncomestatementController;
 use App\Http\Controllers\Admin\FinancialStatementController;
+use App\Http\Controllers\Admin\LedgerController;
 
 Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], function(){
   
@@ -447,6 +448,12 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('balance-sheet', [FinancialStatementController::class, 'balanceSheet'])->name('admin.balancesheet');
     Route::post('balance-sheet', [FinancialStatementController::class, 'balanceSheetReport'])->name('admin.balancesheet.report');
 
-
+    // ledger
+    Route::get('ledger-accounts', [LedgerController::class, 'showLedgerAccounts'])->name('admin.ledgeraccount');
+    Route::get('ledger/asset-details/{id}', [LedgerController::class, 'asset']);
+    Route::get('ledger/expense-details/{id}', [LedgerController::class, 'expense']);
+    Route::get('ledger/income-details/{id}', [LedgerController::class, 'income']);
+    Route::get('ledger/liability-details/{id}', [LedgerController::class, 'liability']);
+    Route::get('ledger/equity-details/{id}', [LedgerController::class, 'equity']);
 });
   
