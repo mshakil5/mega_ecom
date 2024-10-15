@@ -23,7 +23,7 @@ class WholeSaleProductController extends Controller
         return view('admin.whole_sale_products.index', compact('wholeSaleProducts', 'products', 'sizes', 'colors'));
     }
 
-    public function storeWholeSaleProduct(Request $request)
+    public function wholeSaleProductStore(Request $request)
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
