@@ -420,6 +420,68 @@
         @endif
         <!-- Trending Products End -->
 
+        <div class="mb-3"></div>
+
+        <!-- Wholesale Products Start -->
+        <div class="trending-products">
+            <div class="heading heading-flex mb-3">
+                <div class="heading-left">
+                    <h2 class="title">Wholesale Products</h2>
+                </div>
+            </div>
+
+            <div class="owl-carousel owl-full carousel-equal-height carousel-with-shadow" data-toggle="owl" 
+                data-owl-options='{
+                    "nav": false, 
+                    "dots": true,
+                    "margin": 20,
+                    "loop": false,
+                    "responsive": {
+                        "0": {
+                            "items":2
+                        },
+                        "480": {
+                            "items":2
+                        },
+                        "768": {
+                            "items":3
+                        },
+                        "992": {
+                            "items":4
+                        }
+                    }
+                }'>
+                @if ($wholeSaleProducts->count() > 0)
+                    @foreach($wholeSaleProducts as $product)
+                    <div class="product product-2">
+                        <figure class="product-media">
+                            <a href="{{ route('wh.product.details', $product->product->slug) }}">
+                                <img src="{{ asset($product->feature_image) }}" alt="{{ $product->product->name }}" class="product-image">
+                            </a>
+                            @if($product->is_new_arrival)
+                                <span class="product-label label-new">New Arrival</span>
+                            @endif
+                            @if($product->is_top_rated)
+                                <span class="product-label label-circle label-top">Top</span>
+                            @endif
+                        </figure>
+
+                        <div class="product-body">
+                            <div class="product-cat">
+                                <a href="{{ route('category.show', $product->product->category->slug) }}">{{ $product->product->category->name }}</a>
+                            </div>
+                            <h3 class="product-title"><a href="{{ route('wh.product.details', $product->product->slug) }}">{{ $product->product->name }}</a></h3>
+                            <div class="product-price">
+                            {{ $currency }}{{ number_format($product->product->price, 2) }}
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                @endif
+            </div>
+        </div>
+        <!-- Wholesale Products End -->
+
         <div class="mb-8"></div>
 
         <!-- Flash Sell Start -->

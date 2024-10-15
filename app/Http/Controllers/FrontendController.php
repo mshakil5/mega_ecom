@@ -28,6 +28,7 @@ use App\Models\Campaign;
 use App\Models\CampaignRequest;
 use App\Models\CampaignRequestProduct;
 use App\Models\Brand;
+use App\Models\WholeSaleProduct;
 
 class FrontendController extends Controller
 {
@@ -113,12 +114,19 @@ class FrontendController extends Controller
             });
 
         $companyDesign = CompanyDetails::value('design');
+
+        $wholeSaleProducts = WholeSaleProduct::with('product')
+                        ->where('status', 1)
+                        ->orderBy('id', 'desc')
+                        ->has('prices')
+                        ->get();
+
         if (in_array($companyDesign, ['2', '3', '4'])) {
-            return view('frontend.index2', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns'));
+            return view('frontend.index2', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns', 'wholeSaleProducts'));
         } elseif ($companyDesign == '5') {
-            return view('frontend.index5', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns'));
+            return view('frontend.index5', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns', 'wholeSaleProducts'));
         } else {
-            return view('frontend.index', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns'));
+            return view('frontend.index', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns', 'wholeSaleProducts'));
         }
 
     }
@@ -654,6 +662,18 @@ class FrontendController extends Controller
         $currency = CompanyDetails::value('currency');
 
         return view('frontend.product.campaign_single_product', compact('product', 'campaignProduct', 'title', 'campaignPrice', 'currency', 'campaignQuantity'));
+    }
+
+    public function wholesaleProductDetails($slug)
+    {
+        $product = Product::where('slug', $slug)->firstOrFail();
+        $title = $product->name;
+        $currency = CompanyDetails::value('currency');
+        $wholeSaleProduct = WholeSaleProduct::with('prices')
+            ->where('product_id', $product->id)
+            ->first();
+
+        return view('frontend.product.wh_single_product', compact('product', 'title', 'currency', 'wholeSaleProduct'));
     }
 
 }

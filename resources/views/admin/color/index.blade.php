@@ -95,7 +95,10 @@
                                     <td>{{ $key + 1 }}</td>
                                     <td>{{ $data->color }}</td>
                                     <td>{{ $data->price }}</td>
-                                    <td>{{ $data->color_code }}</td>
+                                    <td>
+                                        <div style="width: 20px; height: 20px; background-color: {{ $data->color_code }}; display: inline-block; margin-right: 5px; border: 1px solid #000;"></div>
+                                        {{ $data->color }} ({{ $data->color_code }})
+                                    </td>
                                     <td><img src="{{ asset($data->image) }}" alt="" style="max-width: 100px; width: 100%; height: auto;"></td>
                                     
                                     <td>

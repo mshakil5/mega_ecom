@@ -59,6 +59,9 @@ Route::get('/product/{slug}/{offerId?}', [FrontendController::class, 'showProduc
 Route::get('/sup-product/{slug}/{supplierId?}', [FrontendController::class, 'showSupplierProduct'])->name('product.show.supplier');
 Route::get('/campaign/product/{slug}/{supplierId?}', [FrontendController::class, 'showCampaignProduct'])->name('product.show.campaign');
 
+//Wholesale product
+Route::get('/wh-product/{slug}', [FrontendController::class, 'wholesaleProductDetails'])->name('wh.product.details');
+
 // Buy One Get One Single Product
 Route::get('/bogo/{slug}', [FrontendController::class, 'bogoShowProduct'])->name('product.show.bogo');
 
