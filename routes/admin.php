@@ -362,6 +362,9 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/whole-sale-product', [WholeSaleProductController::class, 'wholeSaleProductStore'])->name('whole_sale_product.store');
     Route::delete('/whole-sale-product/{id}', [WholeSaleProductController::class, 'destroyWholeSaleProduct'])->name('whole_sale_product.destroy');
 
+    Route::get('/whole-sale-product/prices', [WholeSaleProductController::class, 'getWholeSalePrices']);
+    Route::post('/whole-sale-product/prices', [WholeSaleProductController::class, 'saveWholeSalePrices']);
+
     // roles and permission
     Route::get('role', [RoleController::class, 'index'])->name('admin.role');
     Route::post('role', [RoleController::class, 'store'])->name('admin.rolestore');
