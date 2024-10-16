@@ -135,4 +135,32 @@ class CategoryController extends Controller
 
         return response()->json(['status' => 200, 'message' => 'Category status updated successfully']);
     }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $existingCategory = Category::where('name', $request->name)->first();
+
+        if ($existingCategory) {
+            return response()->json([
+                'message' => 'Category already exists!',
+                'id' => $existingCategory->id,
+                'name' => $existingCategory->name,
+            ], 409);
+        }
+
+        $category = Category::create([
+            'name' => $request->name,
+        ]);
+
+        return response()->json([
+            'id' => $category->id,
+            'name' => $category->name,
+        ]);
+    }
+
+
 }

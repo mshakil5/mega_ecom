@@ -107,4 +107,31 @@ class BrandController extends Controller
         return response()->json(['status' => 200, 'message' => 'Brand status updated successfully']);
     }
 
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $existingBrand = Brand::where('name', $request->name)->first();
+
+        if ($existingBrand) {
+            return response()->json([
+                'message' => 'Brand already exists!',
+                'id' => $existingBrand->id,
+                'name' => $existingBrand->name,
+            ], 409);
+        }
+
+        $brand = Brand::create([
+            'name' => $request->name,
+        ]);
+
+        return response()->json([
+            'id' => $brand->id,
+            'name' => $brand->name,
+        ]);
+    }
+
+
 }

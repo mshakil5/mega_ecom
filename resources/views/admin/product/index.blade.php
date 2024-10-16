@@ -32,61 +32,62 @@
 
                             <div class="form-row">
                                 <div class="form-group col-md-6">
-                                    <label for="name">Name</label>
+                                    <label for="name">Name <span style="color: red;">*</span></label>
                                     <input type="text" class="form-control" id="name" name="name" placeholder="Enter product name">
                                 </div>
-                                <div class="form-group col-md-2">
+                                <div class="form-group col-md-3">
                                     <label for="price">Price</label>
                                     <input type="number" class="form-control" id="price" name="price" placeholder="Enter product price">
                                 </div>
-                                <div class="form-group col-md-2">
+                                <div class="form-group col-md-3">
                                     <label for="sku">Sku</label>
                                     <input type="number" class="form-control" id="sku" name="sku" placeholder="Enter sku">
-                                </div>
-                                <div class="form-group col-md-1">
-                                    <label for="is_featured">Featured</label>
-                                    <input type="checkbox" class="form-control" id="is_featured" name="is_featured">
-                                </div>
-                                <div class="form-group col-md-1">
-                                    <label for="is_recent">Recent</label>
-                                    <input type="checkbox" class="form-control" id="is_recent" name="is_recent">
                                 </div>
                             </div>
 
                             <div class="form-row">
                                 <div class="form-group col-md-6">
-                                    <label for="short_description">Short Description</label>
+                                    <label for="short_description">Short Description <span style="color: red;">*</span></label>
                                     <textarea class="form-control" id="short_description" name="short_description" rows="3" placeholder="Enter product short description"></textarea>
                                 </div>
                                 <div class="form-group col-md-6">
-                                    <label for="description">Long Description</label>
+                                    <label for="description">Long Description <span style="color: red;">*</span></label>
                                     <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter product long description"></textarea>
                                 </div>
                             </div>
 
                             <div class="form-row">
                                 <div class="form-group col-md-4">
-                                    <label for="category">Category</label>
+                                    <label for="category">Category
+                                         <span style="color: red;">*</span>
+                                         <span class="badge badge-primary" style="cursor: pointer;" data-toggle="modal" data-target="#addCategoryModal">Add New</span>
+                                    </label>
                                     <select class="form-control" id="category">
                                         <option value="">Select Category</option>
-                                        @foreach(\App\Models\Category::with('subcategories')->get() as $category)
+                                        @foreach($categories as $category)
                                         <option value="{{ $category->id }}">{{ $category->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
 
                                 <div class="form-group col-md-4">
-                                    <label for="subcategory">Sub Category</label>
+                                    <label for="subcategory">
+                                        Sub Category 
+                                        <span class="badge badge-primary" style="cursor: pointer;" data-toggle="modal" data-target="#addSubCategoryModal">Add New</span>
+                                    </label>
                                     <select class="form-control" id="subcategory">
                                         <option value="">Select Sub Category</option>
-                                        @foreach(\App\Models\SubCategory::all() as $subcategory)
+                                        @foreach($subCategories as $subcategory)
                                             <option class="subcategory-option category-{{ $subcategory->category_id }}" value="{{ $subcategory->id }}">{{ $subcategory->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
 
                                 <div class="form-group col-md-4">
-                                    <label for="brand">Brand</label>
+                                    <label for="brand">
+                                        Brand 
+                                        <span class="badge badge-primary" style="cursor: pointer;" data-toggle="modal" data-target="#addBrandModal">Add New</span>
+                                    </label>
                                     <select class="form-control" id="brand">
                                         <option value="">Select Brand</option>
                                         @foreach($brands as $brand)
@@ -96,7 +97,9 @@
                                 </div>
 
                                 <div class="form-group col-md-4">
-                                    <label for="model">Model</label>
+                                    <label for="model">Model 
+                                    <span class="badge badge-primary" style="cursor: pointer;" data-toggle="modal" data-target="#addModelModal">Add New</span>
+                                    </label>
                                     <select class="form-control" id="model">
                                         <option value="">Select Model</option>
                                         @foreach($product_models as $model)
@@ -106,7 +109,9 @@
                                 </div>
 
                                 <div class="form-group col-md-4">
-                                    <label for="unit">Unit</label>
+                                    <label for="unit">
+                                        Unit <span class="badge badge-primary" style="cursor: pointer;" data-toggle="modal" data-target="#addUnitModal">Add New</span>
+                                    </label>
                                     <select class="form-control" id="unit">
                                         <option value="">Select Unit</option>
                                         @foreach($units as $unit)
@@ -116,7 +121,9 @@
                                 </div>
 
                                 <div class="form-group col-md-4">
-                                    <label for="group">Group</label>
+                                    <label for="group">
+                                        Group <span class="badge badge-primary" style="cursor: pointer;" data-toggle="modal" data-target="#addGroupModal">Add New</span>
+                                    </label>
                                     <select class="form-control" id="group">
                                         <option value="">Select Group</option>
                                         @foreach($groups as $group)
@@ -286,9 +293,503 @@
 
 </style>
 
+<!-- Category Create Modal -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCategoryModalLabel">Add New Category</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="newCategoryForm">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="category_name">Category Name</label>
+                            <input type="text" class="form-control" id="category_name" name="category_name" placeholder="Enter category name" required>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveCategoryBtn">Save Category</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add SubCategory Modal -->
+<div class="modal fade" id="addSubCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addSubCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addSubCategoryModalLabel">Add New SubCategory</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="newSubCategoryForm">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="category_id">Category</label>
+                            <select class="form-control" id="category_id">
+                                <option value="">Select Category</option>
+                                @foreach($categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="subcategory_name">Sub Category Name</label>
+                            <input type="text" class="form-control" id="subcategory_name" placeholder="Enter subcategory name">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveSubCategoryBtn">Save SubCategory</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Brand Modal -->
+<div class="modal fade" id="addBrandModal" tabindex="-1" role="dialog" aria-labelledby="addBrandModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addBrandModalLabel">Add New Brand</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="newBrandForm">
+                    <div class="form-group">
+                        <label for="brand_name">Brand Name</label>
+                        <input type="text" class="form-control" id="brand_name" placeholder="Enter brand name">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveBrandBtn">Save Brand</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Model Modal -->
+<div class="modal fade" id="addModelModal" tabindex="-1" role="dialog" aria-labelledby="addModelModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModelModalLabel">Add New Product Model</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="newModelForm">
+                    <div class="form-group">
+                        <label for="model_name">Model Name</label>
+                        <input type="text" class="form-control" id="model_name" placeholder="Enter model name">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveModelBtn">Save Model</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Unit Modal -->
+<div class="modal fade" id="addUnitModal" tabindex="-1" role="dialog" aria-labelledby="addUnitModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addUnitModalLabel">Add New Unit</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="newUnitForm">
+                    <div class="form-group">
+                        <label for="unit_name">Unit Name</label>
+                        <input type="text" class="form-control" id="unit_name" placeholder="Enter unit name">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveUnitBtn">Save Unit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Group Modal -->
+<div class="modal fade" id="addGroupModal" tabindex="-1" role="dialog" aria-labelledby="addGroupModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addGroupModalLabel">Add New Group</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="newGroupForm">
+                    <div class="form-group">
+                        <label for="group_name">Group Name</label>
+                        <input type="text" class="form-control" id="group_name" placeholder="Enter group name">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveGroupBtn">Save Group</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('script')
+
+<script>
+    $(document).ready(function () {
+        $('#saveCategoryBtn').click(function (e) {
+            e.preventDefault();
+            
+            let categoryName = $('#category_name').val();
+
+            if(categoryName === '') {
+                swal({
+                    text: "Category name is required !",
+                    icon: "error",
+                    button: {
+                        text: "OK",
+                        className: "swal-button--confirm"
+                    }
+                })
+                return;
+            }
+
+            $.ajax({
+                url: '{{ route('category.store') }}',
+                type: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "name": categoryName
+                },
+                success: function (response) {
+                    $('#addCategoryModal').modal('hide');
+                    $('#category_name').val('');
+                    $('#category').append(`<option value="${response.id}" selected>${response.name}</option>`);
+                    swal({
+                        text: "Category added successfully",
+                        icon: "success",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    })
+                },
+                error: function (xhr) {
+                    swal({
+                        text: xhr.responseJSON.message,
+                        icon: "error",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    })
+                    // console.error(xhr.responseText);
+                }
+            });
+        });
+
+        $('#saveSubCategoryBtn').click(function (e) {
+            e.preventDefault();
+            
+            let categoryId = $('#category_id').val();
+            let subcategoryName = $('#subcategory_name').val();
+
+            if (categoryId === '') {
+                swal({
+                    text: "Please select a category!",
+                    icon: "error",
+                    button: {
+                        text: "OK",
+                        className: "swal-button--confirm"
+                    }
+                });
+                return;
+            }
+
+            if (subcategoryName === '') {
+                swal({
+                    text: "Subcategory name is required!",
+                    icon: "error",
+                    button: {
+                        text: "OK",
+                        className: "swal-button--confirm"
+                    }
+                });
+                return;
+            }
+
+            $.ajax({
+                url: '{{ route('subcategory.store') }}',
+                type: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "category_id": categoryId,
+                    "name": subcategoryName
+                },
+                success: function (response) {
+                    $('#addSubCategoryModal').modal('hide');
+                    $('#subcategory_name').val('');
+                    $('#category_id').val('');
+
+                    $('#subcategory').append(`<option class="subcategory-option category-${response.category_id}" value="${response.id}" selected>${response.name}</option>`);
+
+                    swal({
+                        text: "Subcategory added successfully!",
+                        icon: "success",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    });
+                },
+                error: function (xhr) {
+                    swal({
+                        text: xhr.responseJSON.message,
+                        icon: "error",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    });
+                }
+            });
+        });
+
+        $('#saveBrandBtn').click(function (e) {
+            e.preventDefault();
+            
+            let brandName = $('#brand_name').val();
+
+            if(brandName === '') {
+                swal({
+                    text: "Brand name is required!",
+                    icon: "error",
+                    button: {
+                        text: "OK",
+                        className: "swal-button--confirm"
+                    }
+                });
+                return;
+            }
+
+            $.ajax({
+                url: '{{ route('brand.store') }}',
+                type: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "name": brandName
+                },
+                success: function (response) {
+                    $('#addBrandModal').modal('hide');
+                    $('#brand_name').val('');
+                    $('#brand').append(`<option value="${response.id}" selected>${response.name}</option>`);
+                    swal({
+                        text: "Brand added successfully!",
+                        icon: "success",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    });
+                },
+                error: function (xhr) {
+                    swal({
+                        text: xhr.responseJSON.message,
+                        icon: "error",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    });
+                }
+            });
+        });
+
+        $('#saveModelBtn').click(function (e) {
+            e.preventDefault();
+            
+            let modelName = $('#model_name').val();
+
+            if(modelName === '') {
+                swal({
+                    text: "Model name is required!",
+                    icon: "error",
+                    button: {
+                        text: "OK",
+                        className: "swal-button--confirm"
+                    }
+                });
+                return;
+            }
+
+            $.ajax({
+                url: '{{ route('product-model.store') }}', // Your route for storing product model
+                type: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "name": modelName
+                },
+                success: function (response) {
+                    $('#addModelModal').modal('hide');
+                    $('#model_name').val('');
+                    $('#model').append(`<option value="${response.id}" selected>${response.name}</option>`);
+                    swal({
+                        text: "Model added successfully!",
+                        icon: "success",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    });
+                },
+                error: function (xhr) {
+                    swal({
+                        text: xhr.responseJSON.message,
+                        icon: "error",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    });
+                }
+            });
+        });
+
+        $('#saveUnitBtn').click(function (e) {
+            e.preventDefault();
+            
+            let unitName = $('#unit_name').val();
+
+            if(unitName === '') {
+                swal({
+                    text: "Unit name is required!",
+                    icon: "error",
+                    button: {
+                        text: "OK",
+                        className: "swal-button--confirm"
+                    }
+                });
+                return;
+            }
+
+            $.ajax({
+                url: '{{ route('unit.store') }}', // Update with your route for storing unit
+                type: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "name": unitName
+                },
+                success: function (response) {
+                    $('#addUnitModal').modal('hide');
+                    $('#unit_name').val('');
+                    $('#unit').append(`<option value="${response.id}" selected>${response.name}</option>`);
+                    swal({
+                        text: "Unit added successfully!",
+                        icon: "success",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    });
+                },
+                error: function (xhr) {
+                    swal({
+                        text: xhr.responseJSON.message,
+                        icon: "error",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    });
+                }
+            });
+        });
+
+        $('#saveGroupBtn').click(function (e) {
+            e.preventDefault();
+            
+            let groupName = $('#group_name').val();
+
+            if(groupName === '') {
+                swal({
+                    text: "Group name is required!",
+                    icon: "error",
+                    button: {
+                        text: "OK",
+                        className: "swal-button--confirm"
+                    }
+                });
+                return;
+            }
+
+            $.ajax({
+                url: '{{ route('group.store') }}', // Update with your route for storing group
+                type: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "name": groupName
+                },
+                success: function (response) {
+                    $('#addGroupModal').modal('hide');
+                    $('#group_name').val('');
+                    $('#group').append(`<option value="${response.id}" selected>${response.name}</option>`);
+                    swal({
+                        text: "Group added successfully!",
+                        icon: "success",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    });
+                },
+                error: function (xhr) {
+                    swal({
+                        text: xhr.responseJSON.message,
+                        icon: "error",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    });
+                }
+            });
+        });
+
+    });
+</script>
 
 <script>
     $(document).ready(function() {

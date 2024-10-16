@@ -113,4 +113,36 @@ class SubCategoryController extends Controller
 
         return response()->json(['status' => 200, 'message' => 'Status updated successfully']);
     }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'name' => 'required|string|max:255',
+        ]);
+
+        $existingSubCategory = SubCategory::where('name', $request->name)
+            ->where('category_id', $request->category_id)
+            ->first();
+
+        if ($existingSubCategory) {
+            return response()->json([
+                'message' => 'Subcategory already exists for this category!',
+                'id' => $existingSubCategory->id,
+                'name' => $existingSubCategory->name,
+            ], 409);
+        }
+
+        $subcategory = SubCategory::create([
+            'category_id' => $request->category_id,
+            'name' => $request->name,
+        ]);
+
+        return response()->json([
+            'id' => $subcategory->id,
+            'name' => $subcategory->name,
+            'category_id' => $subcategory->category_id,
+        ]);
+    }
+
 }

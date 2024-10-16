@@ -95,12 +95,16 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::post('/brand-status', [BrandController::class, 'toggleStatus']);
 
+    Route::post('/brands/store', [BrandController::class, 'store'])->name('brand.store');
+
     // Model crud
     Route::get('/model', [ProductModelController::class, 'getModel'])->name('allmodel');
     Route::post('/model', [ProductModelController::class, 'modelStore']);
     Route::get('/model/{id}/edit', [ProductModelController::class, 'modelEdit']);
     Route::post('/model-update', [ProductModelController::class, 'modelUpdate']);
     Route::get('/model/{id}', [ProductModelController::class, 'modelDelete']);
+
+    Route::post('/product-models/store', [ProductModelController::class, 'store'])->name('product-model.store');
 
     // Unit crud
     Route::get('/unit', [UnitController::class, 'getUnit'])->name('allunit');
@@ -109,12 +113,16 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/unit-update', [UnitController::class, 'unitUpdate']);
     Route::get('/unit/{id}', [UnitController::class, 'unitDelete']);
 
+    Route::post('/units/store', [UnitController::class, 'store'])->name('unit.store');
+
     // Group crud
     Route::get('/group', [GroupController::class, 'getGroup'])->name('allgroup');
     Route::post('/group', [GroupController::class, 'groupStore']);
     Route::get('/group/{id}/edit', [GroupController::class, 'groupEdit']);
     Route::post('/group-update', [GroupController::class, 'groupUpdate']);
     Route::get('/group/{id}', [GroupController::class, 'groupDelete']);
+
+    Route::post('/groups/store', [GroupController::class, 'store'])->name('group.store');
 
     // Color crud
     Route::get('/color', [ColorController::class, 'index'])->name('allcolor');
@@ -151,6 +159,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::post('/category-status', [CategoryController::class, 'toggleStatus']);
 
+    Route::post('/categories/store', [CategoryController::class, 'store'])->name('category.store');
+
     // Sub-Category crud
     Route::get('/sub-category', [SubCategoryController::class, 'getSubCategory'])->name('allsubcategory');
     Route::post('/sub-category', [SubCategoryController::class, 'subCategoryStore']);
@@ -159,6 +169,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/sub-category/{id}', [SubCategoryController::class, 'subCategoryDelete']);
 
     Route::post('/sub-category-status', [SubCategoryController::class, 'toggleStatus']);
+
+    Route::post('/sub-categories/store', [SubCategoryController::class, 'store'])->name('subcategory.store');
 
     // Product crud
     Route::get('/product', [ProductController::class, 'getProduct'])->name('allproduct');

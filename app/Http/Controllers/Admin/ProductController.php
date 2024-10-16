@@ -14,6 +14,7 @@ use App\Models\ProductImage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use App\Models\CompanyDetails;
+use App\Models\SubCategory;
 
 class ProductController extends Controller
 {
@@ -23,8 +24,10 @@ class ProductController extends Controller
         $product_models = ProductModel::select('id', 'name')->orderby('id','DESC')->get();
         $groups = Group::select('id', 'name')->orderby('id','DESC')->get();
         $units = Unit::select('id', 'name')->orderby('id','DESC')->get();
+        $categories = Category::select('id', 'name')->orderby('id','DESC')->get();
+        $subCategories = SubCategory::select('id', 'name')->orderby('id','DESC')->get();
         $data = Product::select('id', 'name', 'price', 'category_id', 'sub_category_id', 'brand_id', 'product_model_id', 'group_id', 'unit_id', 'is_featured', 'is_recent', 'is_popular', 'is_trending')->orderby('id','DESC')->get();
-        return view('admin.product.index', compact('data', 'brands', 'product_models', 'groups', 'units'));
+        return view('admin.product.index', compact('data', 'brands', 'product_models', 'groups', 'units', 'categories', 'subCategories'));
     }
 
     public function productStore(Request $request)

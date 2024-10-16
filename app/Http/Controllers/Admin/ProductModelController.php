@@ -78,4 +78,31 @@ class ProductModelController extends Controller
             return response()->json(['success' => false, 'message' => 'Failed to delete.'], 500);
         }
     }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $existingModel = ProductModel::where('name', $request->name)->first();
+
+        if ($existingModel) {
+            return response()->json([
+                'message' => 'Model already exists!',
+                'id' => $existingModel->id,
+                'name' => $existingModel->name,
+            ], 409);
+        }
+
+        $model = ProductModel::create([
+            'name' => $request->name,
+        ]);
+
+        return response()->json([
+            'id' => $model->id,
+            'name' => $model->name,
+        ]);
+    }
+
 }

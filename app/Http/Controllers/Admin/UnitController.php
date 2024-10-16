@@ -81,4 +81,31 @@ class UnitController extends Controller
             return response()->json(['success' => false, 'message' => 'Failed to delete.'], 500);
         }
     }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $existingUnit = Unit::where('name', $request->name)->first();
+
+        if ($existingUnit) {
+            return response()->json([
+                'message' => 'Unit already exists!',
+                'id' => $existingUnit->id,
+                'name' => $existingUnit->name,
+            ], 409);
+        }
+
+        $unit = Unit::create([
+            'name' => $request->name,
+        ]);
+
+        return response()->json([
+            'id' => $unit->id,
+            'name' => $unit->name,
+        ]);
+    }
+
 }

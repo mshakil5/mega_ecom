@@ -93,4 +93,31 @@ class GroupController extends Controller
             return response()->json(['success' => false, 'message' => 'Failed to delete.'], 500);
         }
     }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $existingGroup = Group::where('name', $request->name)->first();
+
+        if ($existingGroup) {
+            return response()->json([
+                'message' => 'Group already exists!',
+                'id' => $existingGroup->id,
+                'name' => $existingGroup->name,
+            ], 409);
+        }
+
+        $group = Group::create([
+            'name' => $request->name,
+        ]);
+
+        return response()->json([
+            'id' => $group->id,
+            'name' => $group->name,
+        ]);
+    }
+
 }
