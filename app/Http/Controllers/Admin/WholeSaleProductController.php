@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Color;
 use App\Models\Size;
 use Illuminate\Http\Request;
-use App\Models\WholeSaleProduct;
 use App\Models\Product;
 use App\Models\WholeSaleProductSize;
 use App\Models\WholeSaleProductColor;

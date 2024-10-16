@@ -28,7 +28,6 @@ use App\Models\Campaign;
 use App\Models\CampaignRequest;
 use App\Models\CampaignRequestProduct;
 use App\Models\Brand;
-use App\Models\WholeSaleProduct;
 
 class FrontendController extends Controller
 {
@@ -115,8 +114,7 @@ class FrontendController extends Controller
 
         $companyDesign = CompanyDetails::value('design');
 
-        $wholeSaleProducts = WholeSaleProduct::with('product')
-                        ->where('status', 1)
+        $wholeSaleProducts = Product::where('status', 1)
                         ->orderBy('id', 'desc')
                         ->has('prices')
                         ->get();
