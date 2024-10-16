@@ -209,20 +209,6 @@
             </ul>
         </li>
 
-
-
-
-        
-
-        <!-- Whole Sale Products -->
-        <li class="nav-item">
-            <a href="{{ route('allwholesaleproduct') }}" class="nav-link {{ (request()->is('admin/whole-sale-product*')) ? 'active' : '' }}">
-            <i class="nav-icon fas fa-tags"></i>
-                <p>Whole Sale Products</p>
-            </a>
-        </li>
-
-        
         <!-- customer -->
         <li class="nav-item">
             <a href="{{ route('allcustomer') }}" class="nav-link {{ (request()->is('admin/new-customer*')) ? 'active' : '' }}">
