@@ -10,6 +10,8 @@ use App\Models\Brand;
 use App\Models\ProductModel;
 use App\Models\Group;
 use App\Models\Unit;
+use App\Models\Color;
+use App\Models\Size;
 use App\Models\ProductImage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
@@ -26,8 +28,10 @@ class ProductController extends Controller
         $units = Unit::select('id', 'name')->orderby('id','DESC')->get();
         $categories = Category::select('id', 'name')->orderby('id','DESC')->get();
         $subCategories = SubCategory::select('id', 'name')->orderby('id','DESC')->get();
+        $sizes = Size::select('id', 'size')->orderby('id','DESC')->get();
+        $colors = Color::select('id', 'color', 'color_code')->orderby('id','DESC')->get();
         $data = Product::select('id', 'name', 'price', 'category_id', 'sub_category_id', 'brand_id', 'product_model_id', 'group_id', 'unit_id', 'is_featured', 'is_recent', 'is_popular', 'is_trending')->orderby('id','DESC')->get();
-        return view('admin.product.index', compact('data', 'brands', 'product_models', 'groups', 'units', 'categories', 'subCategories'));
+        return view('admin.product.index', compact('data', 'brands', 'product_models', 'groups', 'units', 'categories', 'subCategories', 'sizes', 'colors'));
     }
 
     public function productStore(Request $request)

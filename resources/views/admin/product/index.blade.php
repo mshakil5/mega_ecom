@@ -31,28 +31,41 @@
                             <input type="hidden" class="form-control" id="codeid" name="codeid">
 
                             <div class="form-row">
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-4">
                                     <label for="name">Name <span style="color: red;">*</span></label>
-                                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter product name">
+                                    <input type="text" class="form-control" id="name" name="name" placeholder="Ex. Stylish Running Shoes">
                                 </div>
-                                <div class="form-group col-md-3">
+                                <div class="form-group col-md-2">
+                                    <label for="price">Product Code <span style="color: red;">*</span></label>
+                                    <input type="text" class="form-control" id="product_code" name="product_code" placeholder="Ex. PRD-12345">
+                                </div>
+                                <div class="form-group col-md-2">
                                     <label for="price">Price</label>
-                                    <input type="number" class="form-control" id="price" name="price" placeholder="Enter product price">
+                                    <input type="number" class="form-control" id="price" name="price" placeholder="Ex. 1000">
                                 </div>
-                                <div class="form-group col-md-3">
+                                <div class="form-group col-md-2">
+                                    <label for="size_ids">Sizes <span style="color: red;">*</span></label>
+                                    <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addSizeModal">Add New</span>
+                                    <select class="form-control select2" id="size_ids" name="size_ids[]" multiple="multiple" data-placeholder="Select sizes">
+                                        @foreach($sizes as $size)
+                                            <option value="{{ $size->id }}">{{ $size->size }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-2">
                                     <label for="sku">Sku</label>
-                                    <input type="number" class="form-control" id="sku" name="sku" placeholder="Enter sku">
+                                    <input type="number" class="form-control" id="sku" name="sku" placeholder="Ex. 123">
                                 </div>
                             </div>
 
                             <div class="form-row">
                                 <div class="form-group col-md-6">
                                     <label for="short_description">Short Description <span style="color: red;">*</span></label>
-                                    <textarea class="form-control" id="short_description" name="short_description" rows="3" placeholder="Enter product short description"></textarea>
+                                    <textarea class="form-control" id="short_description" name="short_description"></textarea>
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label for="description">Long Description <span style="color: red;">*</span></label>
-                                    <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter product long description"></textarea>
+                                    <textarea class="form-control" id="long_description" name="long_description"></textarea>
                                 </div>
                             </div>
 
@@ -60,7 +73,7 @@
                                 <div class="form-group col-md-4">
                                     <label for="category">Category
                                          <span style="color: red;">*</span>
-                                         <span class="badge badge-primary" style="cursor: pointer;" data-toggle="modal" data-target="#addCategoryModal">Add New</span>
+                                         <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addCategoryModal">Add New</span>
                                     </label>
                                     <select class="form-control" id="category">
                                         <option value="">Select Category</option>
@@ -73,7 +86,7 @@
                                 <div class="form-group col-md-4">
                                     <label for="subcategory">
                                         Sub Category 
-                                        <span class="badge badge-primary" style="cursor: pointer;" data-toggle="modal" data-target="#addSubCategoryModal">Add New</span>
+                                        <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addSubCategoryModal">Add New</span>
                                     </label>
                                     <select class="form-control" id="subcategory">
                                         <option value="">Select Sub Category</option>
@@ -86,7 +99,7 @@
                                 <div class="form-group col-md-4">
                                     <label for="brand">
                                         Brand 
-                                        <span class="badge badge-primary" style="cursor: pointer;" data-toggle="modal" data-target="#addBrandModal">Add New</span>
+                                        <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addBrandModal">Add New</span>
                                     </label>
                                     <select class="form-control" id="brand">
                                         <option value="">Select Brand</option>
@@ -98,7 +111,7 @@
 
                                 <div class="form-group col-md-4">
                                     <label for="model">Model 
-                                    <span class="badge badge-primary" style="cursor: pointer;" data-toggle="modal" data-target="#addModelModal">Add New</span>
+                                    <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addModelModal">Add New</span>
                                     </label>
                                     <select class="form-control" id="model">
                                         <option value="">Select Model</option>
@@ -110,7 +123,7 @@
 
                                 <div class="form-group col-md-4">
                                     <label for="unit">
-                                        Unit <span class="badge badge-primary" style="cursor: pointer;" data-toggle="modal" data-target="#addUnitModal">Add New</span>
+                                        Unit <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addUnitModal">Add New</span>
                                     </label>
                                     <select class="form-control" id="unit">
                                         <option value="">Select Unit</option>
@@ -122,7 +135,7 @@
 
                                 <div class="form-group col-md-4">
                                     <label for="group">
-                                        Group <span class="badge badge-primary" style="cursor: pointer;" data-toggle="modal" data-target="#addGroupModal">Add New</span>
+                                        Group <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addGroupModal">Add New</span>
                                     </label>
                                     <select class="form-control" id="group">
                                         <option value="">Select Group</option>
@@ -132,30 +145,65 @@
                                     </select>
                                 </div>
                             </div>
-
-                            <!-- Image part start -->
+         
                             <div class="form-row">
+                                <!-- Feature Image part start -->
                                 <div class="form-group col-md-6">
-                                    <label for="feature-img">Feature Image</label>
+                                    <label for="feature-img">Feature Image <span style="color: red;">*</span></label>
                                     <input type="file" class="form-control-file" id="feature-img" accept="image/*">
                                     <img id="preview-image" src="#" alt="" style="max-width: 300px; width: 100%; height: auto; margin-top: 20px;">
                                 </div>
+                                <!-- Feature Image part end -->
 
-                                <div class="form-group col-md-6">
-                                    <label>Slider Images</label>
-                                    <div id="dynamicImages">
-                                        <div class="image-input-wrapper">
-                                            <img src="#" alt="Choose image" id="previewImage1" style="width: 150px; height: auto;">
-                                            <div class="image-input-icon">
-                                                <i class="fas fa-times-circle remove-image" title="Remove this image"></i>
-                                            </div>
-                                            <input type="file" class="form-control-file" id="imageUpload1" onchange="loadFile(event)" multiple accept="image/*">
-                                        </div>
-                                    </div>
-                                    <button type="button" class="btn btn-secondary btn-sm" onclick="addMoreImages()">+ Add More</button>
-                                </div>    
+                                <div class="form-group col-md-1">
+                                    <label for="is_featured">Featured</label>
+                                    <input type="checkbox" class="form-control" id="is_featured" name="is_featured">
+                                </div>
+                                <div class="form-group col-md-1">
+                                    <label for="is_recent">Recent</label>
+                                    <input type="checkbox" class="form-control" id="is_recent" name="is_recent">
+                                </div>
+                                <div class="form-group col-md-1">
+                                    <label for="is_new_arrival">New Arriv.</label>
+                                    <input type="checkbox" class="form-control" id="is_new_arrival" name="is_new_arrival">
+                                </div>
+                                <div class="form-group col-md-1">
+                                    <label for="is_top_rated">Top Rated</label>
+                                    <input type="checkbox" class="form-control" id="is_top_rated" name="is_top_rated">
+                                </div>
+                                <div class="form-group col-md-1">
+                                    <label for="is_popular">Popular</label>
+                                    <input type="checkbox" class="form-control" id="is_popular" name="is_popular">
+                                </div>
+                                <div class="form-group col-md-1">
+                                    <label for="is_trending">Trending</label>
+                                    <input type="checkbox" class="form-control" id="is_trending" name="is_trending">
+                                </div>
                             </div>
-                             <!-- Image part end -->
+
+                            <div class="form-row">
+                                <div class="form-group col-md-5">
+                                    <label for="color_id">Select Color <span style="color: red;">*</span></label>
+                                    <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
+                                    <select class="form-control" name="color_id[]" id="color_id">
+                                        <option value="">Choose Color</option>
+                                        @foreach($colors as $color)
+                                        <option value="{{ $color->id }}" style="background-color: {{ $color->color_code }};">
+                                            {{ $color->color }} ({{ $color->color_code }})
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-5">
+                                    <label for="image">Select Image <span style="color: red;">*</span></label>
+                                    <input type="file" class="form-control" name="image[]" accept="image/*">
+                                </div>
+                                <div class="form-group col-md-1">
+                                    <label>Action</label>
+                                    <button type="button" class="btn btn-success add-row"><i class="fas fa-plus"></i></button>
+                                </div>
+                            </div>
+                            <div id="dynamic-rows"></div>
 
                         </form>
                     </div>
@@ -253,45 +301,6 @@
         </div>
     </div>
 </section>
-
-<style>
-    #dynamicImages {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-
-    .image-input-wrapper {
-        flex: 0 0 auto;
-        display: inline-block; 
-        vertical-align: top;
-        text-align: center;
-        width: calc(25% - 10px);
-        margin-bottom: 10px;
-        position: relative;
-    }
-
-    .image-input-wrapper img {
-        max-width: 100%;
-        height: auto;
-    }
-
-    .image-input-icon {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        z-index: 10;
-        background-color: rgba(255, 255, 255, 0.8);
-        border-radius: 50%;
-        padding: 5px;
-        cursor: pointer;
-    }
-
-    .image-input-icon i {
-        color: red;
-    }
-
-</style>
 
 <!-- Category Create Modal -->
 <div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
@@ -464,10 +473,79 @@
     </div>
 </div>
 
+<!-- Add Size Modal -->
+<div class="modal fade" id="addSizeModal" tabindex="-1" role="dialog" aria-labelledby="addSizeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addSizeModalLabel">Add New Size</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="newSizeForm">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="size_name">Size</label>
+                            <input type="text" class="form-control" id="size_name" name="size_name" placeholder="Enter size">
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="size_price">Price</label>
+                            <input type="number" class="form-control" id="size_price" name="size_price" placeholder="Enter price">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveSizeBtn">Save Size</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Color Modal -->
+<div class="modal fade" id="addColorModal" tabindex="-1" role="dialog" aria-labelledby="addColorModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addColorModalLabel">Add New Color</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="newColorForm">
+                    <div class="form-group">
+                        <label for="color_name">Color</label>
+                        <input type="text" class="form-control" id="color_name" name="color_name" placeholder="Enter color">
+                    </div>
+                    <div class="form-group">
+                        <label for="color_code">Color Code</label>
+                        <input type="color" class="form-control" id="color_code" name="color_code" placeholder="Enter color code">
+                    </div>
+                    <div class="form-group">
+                        <label for="color_price">Price</label>
+                        <input type="number" class="form-control" id="color_price" name="color_price" placeholder="Enter price">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveColorBtn">Save Color</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('script')
 
+<!-- Create Modals Start-->
 <script>
     $(document).ready(function () {
         $('#saveCategoryBtn').click(function (e) {
@@ -788,9 +866,126 @@
             });
         });
 
+        $('#saveSizeBtn').click(function() {
+
+            let size = $('#size_name').val();
+            let price = $('#size_price').val();
+
+            $.ajax({
+                url: '{{ route('size.store') }}',
+                type: 'POST',
+                data: {
+                    size: size,
+                    price: price,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        swal({
+                            text: "Size added successfully",
+                            icon: "success",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--confirm"
+                            }
+                        }).then(() => {
+                            $('#size_ids').append(`<option value="${response.data.id}">${response.data.size}</option>`);
+                            
+                            $('#addSizeModal').modal('hide');
+                            $('#newSizeForm')[0].reset();
+                        });
+                    } else {
+                        swal({
+                            text: "Failed to add size",
+                            icon: "error",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--error"
+                            }
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    let errorMessage = "Error adding size. Please try again.";
+                    
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        errorMessage = Object.values(xhr.responseJSON.errors).join("\n");
+                    }
+                    
+                    swal({
+                        text: errorMessage,
+                        icon: "error",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--error"
+                        }
+                    });
+                }
+            });
+        });
+
+        $('#saveColorBtn').click(function() {
+            let colorName = $('#color_name').val();
+            let color_code = $('#color_code').val();
+            let price = $('#color_price').val();
+
+            $.ajax({
+                url: '{{ route('color.store') }}',
+                type: 'POST',
+                data: {
+                    color_name: colorName,
+                    color_code: color_code,
+                    price: price,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        swal({
+                            text: "Color added successfully",
+                            icon: "success",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--confirm"
+                            }
+                        }).then(() => {
+                            $('#color_id').append(`<option value="${response.data.id}" style="background-color: ${response.data.color_code};">${response.data.color} (${response.data.color_code})</option>`);
+                            $('#addColorModal').modal('hide');
+                            $('#newColorForm')[0].reset();
+                        });
+                    } else {
+                        swal({
+                            text: "Failed to add color",
+                            icon: "error",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--error"
+                            }
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    let errorMessage = "Error adding color. Please try again.";
+                    
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        errorMessage = Object.values(xhr.responseJSON.errors).join("\n");
+                    }
+                    
+                    swal({
+                        text: errorMessage,
+                        icon: "error",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--error"
+                        }
+                    });
+                }
+            });
+        });
     });
 </script>
+<!-- Create Modals End-->
 
+<!-- Category Wise Subcategory Start -->
 <script>
     $(document).ready(function() {
         $('#category').change(function() {
@@ -805,13 +1000,68 @@
         });
     });
 </script>
+<!-- Category Wise Subcategory End -->
 
+<!-- Data Table and Select2 -->
 <script>
     $(function () {
       $("#example1").DataTable({
         "responsive": true, "lengthChange": false, "autoWidth": false,
         "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
       }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+
+        $('.select2').select2({
+            placeholder: "Select sizes",
+            width: '100%'
+        });
+
+        $('#long_description, #short_description').summernote({
+            height: 100,
+        });
+
+        $("#feature-img").change(function(e){
+            var reader = new FileReader();
+            reader.onload = function(e){
+                $("#preview-image").attr("src", e.target.result);
+            };
+            reader.readAsDataURL(this.files[0]);
+        });
+    });
+</script>
+
+<!-- Dynamic Row Script -->
+<script>
+    $(document).ready(function() {
+        $(document).on('click', '.add-row', function() {
+            let newRow = `
+            <div class="form-row dynamic-row">
+                <div class="form-group col-md-5">
+                    <label for="color_id">Select Color</label>
+                    <select class="form-control" name="color_id[]" id="color_id">
+                        <option value="">Choose Color</option>
+                        @foreach($colors as $color)
+                            <option value="{{ $color->id }}" style="background-color: {{ $color->color_code }};">
+                                {{ $color->color }} ({{ $color->color_code }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group col-md-5">
+                    <label for="image">Select Image</label>
+                    <input type="file" class="form-control" name="image[]" accept="image/*">
+                </div>
+                <div class="form-group col-md-1">
+                    <label>Action</label>
+                    <button type="button" class="btn btn-danger remove-row"><i class="fas fa-minus"></i></button>
+                </div>
+            </div>`;
+            
+            $('#dynamic-rows').append(newRow);
+        });
+
+        $(document).on('click', '.remove-row', function() {
+            $(this).closest('.dynamic-row').remove();
+        });
     });
 </script>
 
@@ -1111,36 +1361,8 @@
   });
 </script>
 
-<script>
-   let imagesCount = 1;
 
-    function loadFile(event) {
-        const output = document.getElementById('previewImage' + event.target.id.split('imageUpload')[1]);
-        output.src = URL.createObjectURL(event.target.files[0]);
-        output.onload = () => URL.revokeObjectURL(output.src);
-    }
-
-    function addMoreImages() {
-        imagesCount++;
-        const newInputDiv = document.createElement('div');
-        newInputDiv.classList.add('image-input-wrapper');
-
-        newInputDiv.innerHTML = `
-            <img src="#" alt="Choose image" id="previewImage${imagesCount}" style="width: 150px; height: 150px; object-fit: cover;">
-            <div class="image-input-icon">
-                <i class="fas fa-times-circle remove-image" title="Remove this image"></i>
-            </div>
-            <input type="file" class="form-control-file" id="imageUpload${imagesCount}" onchange="loadFile(event)" multiple accept="image/*">`;
-
-        document.getElementById('dynamicImages').appendChild(newInputDiv);
-
-        newInputDiv.querySelector('.remove-image').addEventListener('click', function() {
-            newInputDiv.remove();
-        });
-    }
-
-</script>
-
+<!-- Toggle Status Change -->
 <script>
     $(document).ready(function() {
         // Featured Toggle
@@ -1241,26 +1463,6 @@
                     console.error(xhr.responseText);
                 }
             });
-        });
-    });
-</script>
-
-<script>
-    $(document).ready(function(){
-        $("#feature-img").change(function(e){
-            var reader = new FileReader();
-            reader.onload = function(e){
-                $("#preview-image").attr("src", e.target.result);
-            };
-            reader.readAsDataURL(this.files[0]);
-        });
-    });
-</script>
-
-<script>
-    $(document).ready(function() {
-        $('#description, #short_description').summernote({
-            height: 100,
         });
     });
 </script>
