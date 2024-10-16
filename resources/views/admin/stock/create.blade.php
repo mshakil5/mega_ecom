@@ -107,7 +107,7 @@
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="product_size">Size</label>
-                                        <button type="button" class="btn btn-success btn-sm ml-2" id="addSizeBtn" data-toggle="modal" data-target="#addSizeModal"> <i class="fas fa-plus"></i> Add</button>
+                                        <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addSizeModal">Add New</span>
                                         <select class="form-control" id="product_size" name="product_size">
                                             <option value="">Select...</option>
                                             @foreach ($sizes as $size)
@@ -119,7 +119,7 @@
                                  <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="product_color">Color</label>
-                                        <button type="button" class="btn btn-success btn-sm ml-2" id="addColorBtn" data-toggle="modal" data-target="#addColorModal"><i class="fas fa-plus"></i> Add</button>
+                                        <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
                                         <select class="form-control" id="product_color" name="product_color">
                                             <option value="">Select...</option>
                                             @foreach ($colors as $color)
@@ -246,16 +246,16 @@
                                 <input type="number" class="form-control" id="supplier_phone" name="phone" placeholder="Enter phone">
                             </div>
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-sm-6 d-none">
                             <div class="form-group">
                                 <label>Password</label>
-                                <input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
+                                <input type="password" class="form-control" id="password" name="password" value="123456" placeholder="Enter password">
                             </div>
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-sm-6 d-none">
                             <div class="form-group">
                                 <label>Confirm Password</label>
-                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Enter password">
+                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" value="123456" placeholder="Enter password">
                             </div>
                         </div>
                         <div class="col-sm-6">

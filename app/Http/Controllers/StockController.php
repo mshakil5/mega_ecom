@@ -36,12 +36,15 @@ class StockController extends Controller
             ->addColumn('product_name', function ($row) {
                 return $row->product ? $row->product->name : 'N/A';
             })
+            ->addColumn('product_code', function ($row) {
+                return $row->product ? $row->product->product_code : 'N/A';
+            })
             ->addColumn('quantity_formatted', function ($row) {
                 return number_format($row->quantity, 0);
             })
-            ->addColumn('action', function ($row) {
-            return '<button class="btn btn-sm btn-danger" onclick="openLossModal('.$row->id.')">System Loss</button>';
-            })
+            // ->addColumn('action', function ($row) {
+            // return '<button class="btn btn-sm btn-danger" onclick="openLossModal('.$row->id.')">System Loss</button>';
+            // })
             ->rawColumns(['action'])
 
             ->make(true);

@@ -11,12 +11,50 @@
                         <h3 class="card-title">All Stocks</h3>
                     </div>
                     <div class="card-body">
+
+                    <!-- Filter Form Section -->
+                    <form action="#" method="GET">
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label class="label label-primary">Filter By</label>
+                                <select class="form-control" id="filterBy" name="filterBy">
+                                    <option value="today">Today</option>
+                                    <option value="this_week">This Week</option>
+                                    <option value="this_month">This Month</option>
+                                    <option value="start_of_month">Start of the Month</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="label label-primary">From Date</label>
+                                <input type="date" class="form-control" id="fromDate" name="fromDate">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="label label-primary">To Date</label>
+                                <input type="date" class="form-control" id="toDate" name="toDate">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="label label-primary">Supplier / Customer</label>
+                                <select class="form-control select2" id="supplierCustomer" name="supplierCustomer">
+                                    <option value="">Select...</option>
+                                    <option value="supplier">Supplier</option>
+                                    <option value="customer">Customer</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="label label-primary" style="visibility:hidden;">Action</label>
+                                <button type="submit" class="btn btn-secondary btn-block">Search</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- End of Filter Form Section -->
+
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped" id="stock-table">
                                 <thead>
                                     <tr>
                                         <th>Sl</th>
                                         <th>Product Name</th>
+                                        <th>Product Code</th>
                                         <th>Quantity</th>
                                         <th>Size</th>
                                         <th>Color</th>
@@ -122,19 +160,40 @@
             columns: [
                 { data: 'sl', name: 'sl', orderable: false, searchable: false },
                 { data: 'product_name', name: 'product_name' },
+                { data: 'product_code', name: 'product_code' },
                 { data: 'quantity_formatted', name: 'quantity' },
                 { data: 'size', name: 'size' },
                 { data: 'color', name: 'color' },
+                // { 
+                //     data: 'action', 
+                //     name: 'action', 
+                //     orderable: false, 
+                //     searchable: false,
+                //     render: function (data, type, full, meta) {
+                //         return '<button type="button" class="btn btn-primary btn-open-loss-modal" data-id="' + full.product_id + '" data-quantity="' + full.quantity + '">System Loss</button>';
+                //     }
+                // }
                 { 
                     data: 'action', 
                     name: 'action', 
                     orderable: false, 
                     searchable: false,
                     render: function (data, type, full, meta) {
-                        return '<button type="button" class="btn btn-primary btn-open-loss-modal" data-id="' + full.product_id + '" data-quantity="' + full.quantity + '">System Loss</button>';
+                        return `
+                            <button type="button" class="btn btn-info btn-sm">Purchase History</button>
+                            <button type="button" class="btn btn-warning btn-sm">Supplier History</button>
+                            <button type="button" class="btn btn-success btn-sm">Sold History</button>
+                        `;
                     }
                 }
             ],
+            // columnDefs: [
+            //     {
+            //         targets: [6],
+            //         visible: false,
+            //         searchable: false
+            //     }
+            // ],
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ]
