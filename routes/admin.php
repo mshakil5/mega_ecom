@@ -48,6 +48,7 @@ use App\Http\Controllers\Admin\WholeSaleProductController;
 use App\Http\Controllers\Admin\IncomestatementController;
 use App\Http\Controllers\Admin\FinancialStatementController;
 use App\Http\Controllers\Admin\LedgerController;
+use App\Http\Controllers\Admin\WareHouseController;
 
 Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], function(){
   
@@ -396,6 +397,14 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/payment-gateway', [PaymentGatewayController::class, 'store']);
     Route::get('/payment-gateway/{id}/edit', [PaymentGatewayController::class, 'edit']);
     Route::post('/payment-gateway-update', [PaymentGatewayController::class, 'update']);
+
+    // Payment gateway crud
+    Route::get('/warehouse', [WareHouseController::class, 'index'])->name('allwarehouse');
+    Route::post('/warehouse', [WareHouseController::class, 'store']);
+    Route::get('/warehouse/{id}/edit', [WareHouseController::class, 'edit']);
+    Route::post('/warehouse-update', [WareHouseController::class, 'update']);
+
+    Route::post('/warehouse-status', [WareHouseController::class, 'toggleStatus']);
 
     // mail content
     Route::get('/mail-content', [MailContentController::class, 'index'])->name('admin.mail-content');
