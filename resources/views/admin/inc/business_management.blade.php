@@ -308,7 +308,7 @@
                 <li class="nav-item">
                     <a href="{{ route('inhousesell') }}" class="nav-link {{ (request()->is('admin/in-house-sell*')) ? 'active' : '' }}">
                         <i class="fas fa-industry nav-icon"></i>
-                        <p>In House Sell</p>
+                        <p>In House Sale</p>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -357,7 +357,20 @@
                 request()->is('admin/payment-gateway') ||
                 request()->is('admin/coupon')
                 ? 'menu-open' : '' }}">
-            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/in-house-sell*') || request()->is('admin/in-house-order*')) ? 'active' : '' }}">
+            <a href="#" class="nav-link dropdown-toggle {{ 
+                (request()->is('admin/new-admin*')|| 
+                request()->is('admin/role*')||
+                request()->is('admin/slider*')||
+                request()->is('admin/company-details*')||
+                request()->is('admin/contact-email*')||
+                request()->is('admin/mail-content*')||
+                request()->is('admin/contact-message*')||
+                request()->is('admin/section-status*')||
+                request()->is('admin/ads*')||
+                request()->is('admin/deliveryman*')||
+                request()->is('admin/payment-gateway*')||
+                request()->is('admin/coupon*'))
+                 ? 'active' : '' }}">
                 <i class="nav-icon fas fa-cogs"></i>
                 <p>
                     Settings<i class="fas fa-angle-left right"></i>

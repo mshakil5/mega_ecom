@@ -350,6 +350,7 @@
 
             $('#placeOrderBtn').click(async function() {
                 $('#loader').show();
+                $('#placeOrderBtn').prop('disabled', true);
 
                 var formData = {
                     'name': $('#shipto').is(':checked') ? $('#ship_first_name').val() : $('#first_name').val(),
@@ -492,6 +493,7 @@
                     },
                     complete: function() {
                         $('#loader').hide();
+                        $('#placeOrderBtn').prop('disabled', false);
                     }
                 });
             });

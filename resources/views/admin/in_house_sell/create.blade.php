@@ -8,7 +8,7 @@
             <div class="col-md-12">
                 <div class="card card-secondary">
                     <div class="card-header">
-                        <h3 class="card-title" id="cardTitle">Sell Product</h3>
+                        <h3 class="card-title" id="cardTitle">Sale Product</h3>
                     </div>
                     <div class="card-body">
                         <div class="ermsg"></div>
@@ -186,6 +186,10 @@
                             </div>
                             <div class="card-footer">
                                 <button type="submit" id="addBtn" class="btn btn-secondary" value="Create"><i class="fas fa-plus"></i> Create</button>  
+                                <div id="loader" style="display: none;">
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    Loading...
+                                </div> 
                             </div>
                         </form>
                     </div>
@@ -306,6 +310,9 @@
         $('#createThisForm').submit(function(e) {
             e.preventDefault();
 
+            $(this).attr('disabled', true);
+            $('#loader').show();
+
             var formData = $(this).serializeArray();
             var products = [];
 
@@ -359,7 +366,19 @@
                     });
                 },
                 error: function(xhr) {
+                    swal({
+                        text: xhr.responseJSON.message,
+                        icon: "error",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--error"
+                        }
+                    })
                     console.log(xhr.responseText);
+                },
+                complete: function() {
+                    $('#loader').hide();
+                    $('#addBtn').attr('disabled', false);
                 }
             });
         });

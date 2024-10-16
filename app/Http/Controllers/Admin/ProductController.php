@@ -396,4 +396,11 @@ class ProductController extends Controller
         return response()->json(['message' => 'Product created successfully!', 'product' => $product], 201);
     }
 
+    public function checkProductCode(Request $request)
+    {
+        $productCode = $request->product_code;
+        $exists = Product::where('product_code', $productCode)->exists();
+        return response()->json(['exists' => $exists]);
+    }
+
 }

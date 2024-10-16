@@ -198,7 +198,11 @@
 
                             </div>
                             <div class="card-footer">
-                                <button type="submit" id="addBtn" class="btn btn-secondary" value="Create"><i class="fas fa-plus"></i> Create</button>  
+                                <button type="submit" id="addBtn" class="btn btn-secondary" value="Create"><i class="fas fa-plus"></i> Create</button>
+                                <div id="loader" style="display: none;">
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    Loading...
+                                </div>  
                             </div>
                         </form>
                     </div>
@@ -481,6 +485,9 @@
 
         $('#addBtn').on('click', function(e) {
             e.preventDefault();
+
+            $(this).attr('disabled', true);
+            $('#loader').show();
             var formData = {};
             var selectedProducts = [];
 
@@ -564,6 +571,10 @@
                             }
                         });
                     }
+                },
+                complete: function() {
+                    $('#loader').hide();
+                    $('#addBtn').attr('disabled', false);
                 }
             });
 

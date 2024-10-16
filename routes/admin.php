@@ -181,6 +181,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/product/{id}', [ProductController::class, 'productDelete']);
     Route::get('/product-details/{id}', [ProductController::class, 'showProductDetails'])->name('product.show.admin');
 
+    Route::get('/check-product-code', [ProductController::class, 'checkProductCode'])->name('check.product.code');
+
     Route::post('/toggle-featured', [ProductController::class, 'toggleFeatured'])->name('toggleFeatured');
     Route::post('/toggle-recent', [ProductController::class, 'toggleRecent'])->name('toggle-recent');
     Route::post('/toggle-popular', [ProductController::class, 'togglePopular'])->name('togglePopular');

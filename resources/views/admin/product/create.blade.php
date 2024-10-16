@@ -22,6 +22,7 @@
                                 <div class="form-group col-md-2">
                                     <label for="price">Product Code <span style="color: red;">*</span></label>
                                     <input type="text" class="form-control" id="product_code" name="product_code" placeholder="Ex. PRD-12345">
+                                    <span id="productCodeError" class="text-danger"></span>
                                 </div>
                                 <div class="form-group col-md-2">
                                     <label for="price">Price</label>
@@ -197,6 +198,10 @@
                     </div>
                     <div class="card-footer">
                         <button type="submit" id="addBtn" class="btn btn-secondary" value="Create">Create</button>
+                        <div id="loader" style="display: none;">
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Loading...
+                        </div>
                     </div>
                 </div>
             </div>
@@ -293,6 +298,9 @@
         $(document).on('click', '#addBtn', function(e) {
             e.preventDefault();
 
+            $(this).attr('disabled', true);
+            $('#loader').show();
+
             var formData = new FormData($('#createThisForm')[0]);
 
             $.ajax({
@@ -327,8 +335,36 @@
                         }
                     })
                     console.error(xhr.responseText);
+                },
+                complete: function() {
+                    $('#loader').hide();
+                    $('#addBtn').attr('disabled', false);
                 }
             });
+        });
+
+        $('#product_code').on('keyup', function() {
+            let productCode = $(this).val().trim();
+
+            if (productCode.length >= 2) {
+                $.ajax({
+                    url: "{{ route('check.product.code') }}",
+                    method: "GET",
+                    data: { product_code: productCode },
+                    success: function(response) {
+                        if (response.exists) {
+                            $('#productCodeError').text('This product code is already in use.');
+                            $('#addBtn').attr('disabled', true);
+                        } else {
+                            $('#productCodeError').text('');
+                            $('#addBtn').attr('disabled', false);
+                        }
+                    }
+                });
+            } else {
+                $('#productCodeError').text('');
+                $('#addBtn').attr('disabled', true);
+            }
         });
     });
 </script>
