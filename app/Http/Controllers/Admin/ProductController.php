@@ -22,6 +22,12 @@ class ProductController extends Controller
 {
     public function getProduct()
     {
+        $data = Product::orderby('id','DESC')->get();
+        return view('admin.product.index', compact('data'));
+    }
+
+    public function createProduct()
+    {
         $brands = Brand::select('id', 'name')->orderby('id','DESC')->get();
         $product_models = ProductModel::select('id', 'name')->orderby('id','DESC')->get();
         $groups = Group::select('id', 'name')->orderby('id','DESC')->get();
@@ -30,8 +36,9 @@ class ProductController extends Controller
         $subCategories = SubCategory::select('id', 'name')->orderby('id','DESC')->get();
         $sizes = Size::select('id', 'size')->orderby('id','DESC')->get();
         $colors = Color::select('id', 'color', 'color_code')->orderby('id','DESC')->get();
-        $data = Product::select('id', 'name', 'price', 'category_id', 'sub_category_id', 'brand_id', 'product_model_id', 'group_id', 'unit_id', 'is_featured', 'is_recent', 'is_popular', 'is_trending')->orderby('id','DESC')->get();
-        return view('admin.product.index', compact('data', 'brands', 'product_models', 'groups', 'units', 'categories', 'subCategories', 'sizes', 'colors'));
+
+        return view('admin.product.create', compact('brands', 'product_models', 'groups', 'units', 'categories', 'subCategories', 'sizes', 'colors'));
+
     }
 
     public function productStore(Request $request)

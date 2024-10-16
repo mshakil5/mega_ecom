@@ -174,6 +174,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     // Product crud
     Route::get('/product', [ProductController::class, 'getProduct'])->name('allproduct');
+    Route::get('/create-product', [ProductController::class, 'createProduct'])->name('createproduct');
     Route::post('/product', [ProductController::class, 'productStore']);
     Route::get('/product/{id}/edit', [ProductController::class, 'productEdit']);
     Route::post('/product-update', [ProductController::class, 'productUpdate']);

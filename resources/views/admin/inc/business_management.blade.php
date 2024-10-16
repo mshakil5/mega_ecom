@@ -17,18 +17,24 @@
         </form>
 
         <!-- Inventory -->
-        <li class="nav-item dropdown {{ (request()->is('admin/category*') || request()->is('admin/brand*') || request()->is('admin/model*') || request()->is('admin/unit*') || request()->is('admin/group*') || request()->is('admin/size*') || request()->is('admin/color*') || request()->is('admin/product*') || request()->is('admin/bundle-product*') || request()->is('admin/sub-category*') || request()->is('admin/related-product*') || request()->is('admin/bogo-product*')) ? 'menu-open' : '' }}">
-            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/category*') || request()->is('admin/brand*') || request()->is('admin/model*') || request()->is('admin/unit*') || request()->is('admin/group*') || request()->is('admin/size*') || request()->is('admin/color*') || request()->is('admin/product*') || request()->is('admin/bundle-product*') || request()->is('admin/sub-category*') || request()->is('admin/related-product*') || request()->is('admin/bogo-product*')) ? 'active' : '' }}">
+        <li class="nav-item dropdown {{ (request()->is('admin/category*') || request()->is('admin/brand*') || request()->is('admin/model*') || request()->is('admin/unit*') || request()->is('admin/group*') || request()->is('admin/size*') || request()->is('admin/color*') || request()->is('admin/product*') || request()->is('admin/bundle-product*') || request()->is('admin/sub-category*') || request()->is('admin/related-product*') || request()->is('admin/create-product*') || request()->is('admin/bogo-product*')) ? 'menu-open' : '' }}">
+            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/category*') || request()->is('admin/brand*') || request()->is('admin/model*') || request()->is('admin/unit*') || request()->is('admin/group*') || request()->is('admin/size*') || request()->is('admin/color*') || request()->is('admin/product*') || request()->is('admin/bundle-product*') || request()->is('admin/sub-category*') || request()->is('admin/create-product*') || request()->is('admin/related-product*') || request()->is('admin/bogo-product*')) ? 'active' : '' }}">
                 <i class="nav-icon fas fa-clipboard-list"></i>
                 <p>
-                    Inventory<i class="fas fa-angle-left right"></i>
+                    All Products<i class="fas fa-angle-left right"></i>
                 </p>
             </a>
             <ul class="nav nav-treeview">
                 <li class="nav-item">
+                    <a href="{{ route('createproduct') }}" class="nav-link {{ (request()->is('admin/create-product')) ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-plus-circle"></i>
+                        <p>Create Product</p>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="{{ route('allproduct') }}" class="nav-link {{ (request()->is('admin/product')) ? 'active' : '' }}">
                         <i class="nav-icon fas fa-box-open"></i>
-                        <p>Products</p>
+                        <p>Manage Products</p>
                     </a>
                 </li>
                 <li class="nav-item">

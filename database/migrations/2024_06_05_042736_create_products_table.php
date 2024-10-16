@@ -32,6 +32,7 @@ return new class extends Migration
             $table->boolean('is_recent')->default(0);
             $table->boolean('is_new_arrival')->default(0);
             $table->boolean('is_top_rated')->default(0);
+            $table->boolean('is_whole_sale')->default(0);
             $table->boolean('is_popular')->default(0);
             $table->boolean('is_trending')->default(0);
             $table->string('feature_image')->nullable();
