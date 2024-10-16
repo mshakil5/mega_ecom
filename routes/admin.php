@@ -403,7 +403,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/warehouse', [WareHouseController::class, 'store']);
     Route::get('/warehouse/{id}/edit', [WareHouseController::class, 'edit']);
     Route::post('/warehouse-update', [WareHouseController::class, 'update']);
-
+    Route::get('/warehouse/{id}', [WareHouseController::class, 'delete']);
     Route::post('/warehouse-status', [WareHouseController::class, 'toggleStatus']);
 
     // mail content
