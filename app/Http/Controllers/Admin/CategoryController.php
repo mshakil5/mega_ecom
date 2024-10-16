@@ -154,6 +154,7 @@ class CategoryController extends Controller
 
         $category = Category::create([
             'name' => $request->name,
+            'slug' => Str::slug($request->name),
         ]);
 
         return response()->json([

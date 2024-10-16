@@ -136,6 +136,8 @@ class SubCategoryController extends Controller
         $subcategory = SubCategory::create([
             'category_id' => $request->category_id,
             'name' => $request->name,
+            'slug' => Str::slug($request->name),
+            'created_by' => auth()->id(),
         ]);
 
         return response()->json([

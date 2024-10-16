@@ -345,6 +345,7 @@ class ProductController extends Controller
 
         $product = Product::create([
             'name' => $request->name,
+            'slug' => Str::slug($request->name),
             'product_code' => $request->product_code,
             'price' => $request->price,
             'sku' => $request->sku,
