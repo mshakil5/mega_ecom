@@ -9,25 +9,7 @@ class Product extends Model
 {
     use HasFactory;
     
-     protected $fillable = [
-        'name',
-        'slug',
-        'description',
-        'short_description',
-        'price',
-        'category_id',
-        'brand_id',
-        'product_model_id',
-        'group_id',
-        'unit_id',
-        'size_id',
-        'color_id',
-        'sku',
-        'is_featured',
-        'status',
-        'created_by',
-        'updated_by'
-        ];
+    protected $guarded = [];
 
     public function category()
     {
@@ -69,11 +51,6 @@ class Product extends Model
         return $this->belongsTo(Color::class);
     }
 
-    public function images()
-    {
-        return $this->hasMany(ProductImage::class);
-    }
-
     public function stock()
     {
         return $this->hasOne(Stock::class);
@@ -102,5 +79,10 @@ class Product extends Model
     public function campaignRequestProduct()
     {
         return $this->hasOne(CampaignRequestProduct::class);
+    }
+
+    public function prices()
+    {
+        return $this->hasMany(ProductPrice::class, 'product_id');
     }
 }

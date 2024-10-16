@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class WholeSaleProductPrice extends Model
+class ProductPrice extends Model
 {
     use HasFactory;
 
     protected $guarded = [];
 
-    public function wholeSaleProduct()
+    public function Product()
     {
-        return $this->belongsTo(WholeSaleProduct::class);
+        return $this->belongsTo(Product::class);
     }
 }

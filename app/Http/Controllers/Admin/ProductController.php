@@ -17,6 +17,8 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use App\Models\CompanyDetails;
 use App\Models\SubCategory;
+use App\Models\ProductSize;
+use App\Models\ProductColor;
 
 class ProductController extends Controller
 {
@@ -38,7 +40,6 @@ class ProductController extends Controller
         $colors = Color::select('id', 'color', 'color_code')->orderby('id','DESC')->get();
 
         return view('admin.product.create', compact('brands', 'product_models', 'groups', 'units', 'categories', 'subCategories', 'sizes', 'colors'));
-
     }
 
     public function productStore(Request $request)
@@ -309,6 +310,90 @@ class ProductController extends Controller
         $currency = CompanyDetails::value('currency');
         $product = Product::with('images')->findOrFail($id);
         return view('admin.product.details', compact('product', 'currency'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'product_code' => 'required|string|max:255|unique:products,product_code',
+            'price' => 'nullable|numeric',
+            'size_ids' => 'nullable|array',
+            'size_ids.*' => 'exists:sizes,id',
+            'sku' => 'nullable|string|max:255',
+            'short_description' => 'required|string',
+            'long_description' => 'required|string',
+            'category_id' => 'required|exists:categories,id',
+            'subcategory_id' => 'nullable|exists:subcategories,id',
+            'brand_id' => 'nullable|exists:brands,id',
+            'product_model_id' => 'nullable|exists:product_models,id',
+            'unit_id' => 'nullable|exists:units,id',
+            'group_id' => 'nullable|exists:groups,id',
+            'feature_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'color_id' => 'nullable|array',
+            'color_id.*' => 'exists:colors,id',
+            'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        $imagePath = null;
+        if ($request->hasFile('feature_image')) {
+            $image = $request->file('feature_image');
+            $randomName = mt_rand(10000000, 99999999) . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('images/products'), $randomName);
+            $imagePath = '/images/products/' . $randomName;
+        }
+
+        $product = Product::create([
+            'name' => $request->name,
+            'product_code' => $request->product_code,
+            'price' => $request->price,
+            'sku' => $request->sku,
+            'short_description' => $request->short_description,
+            'long_description' => $request->long_description,
+            'category_id' => $request->category_id,
+            'sub_category_id' => $request->subcategory_id,
+            'brand_id' => $request->brand_id,
+            'product_model_id' => $request->product_model_id,
+            'unit_id' => $request->unit_id,
+            'group_id' => $request->group_id,
+            'feature_image' => $imagePath,
+            'created_by' => auth()->user()->id,
+            'is_whole_sale' => $request->is_whole_sale ? 1 : 0,
+            'is_featured' => $request->is_featured ? 1 : 0,
+            'is_recent' => $request->is_recent ? 1 : 0,
+            'is_new_arrival' => $request->is_new_arrival ? 1 : 0,
+            'is_top_rated' => $request->is_top_rated ? 1 : 0,
+            'is_popular' => $request->is_popular ? 1 : 0,
+            'is_trending' => $request->is_trending ? 1 : 0,
+        ]);
+
+        foreach ($request->size_ids as $sizeId) {
+            ProductSize::create([
+                'product_id' => $product->id,
+                'size_id' => $sizeId,
+                'created_by' => auth()->user()->id,
+            ]);
+        }
+
+        if ($request->has('color_id')) {
+            foreach ($request->color_id as $key => $colorId) {
+                $productColor = new ProductColor();
+                $productColor->product_id = $product->id;
+                $productColor->color_id = $colorId;
+
+                if ($request->hasFile('image.' . $key)) {
+                    $colorImage = $request->file('image.' . $key);
+                    $randomName = mt_rand(10000000, 99999999) . '.' . $colorImage->getClientOriginalExtension();
+                    $colorImage->move(public_path('images/products'), $randomName);
+                    $productColor->image = '/images/products/' . $randomName;
+                }
+
+                $productColor->created_by = auth()->user()->id;
+                $productColor->save();
+            }
+        }
+
+        return response()->json(['message' => 'Product created successfully!', 'product' => $product], 201);
     }
 
 }

@@ -187,7 +187,7 @@
             }
 
             $.ajax({
-                url: '{{ route('product-model.store') }}', // Your route for storing product model
+                url: '{{ route('product-model.store') }}',
                 type: 'POST',
                 data: {
                     "_token": "{{ csrf_token() }}",
@@ -237,7 +237,7 @@
             }
 
             $.ajax({
-                url: '{{ route('unit.store') }}', // Update with your route for storing unit
+                url: '{{ route('unit.store') }}',
                 type: 'POST',
                 data: {
                     "_token": "{{ csrf_token() }}",
@@ -287,7 +287,7 @@
             }
 
             $.ajax({
-                url: '{{ route('group.store') }}', // Update with your route for storing group
+                url: '{{ route('group.store') }}',
                 type: 'POST',
                 data: {
                     "_token": "{{ csrf_token() }}",

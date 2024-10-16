@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('product_code')->nullable();
             $table->longText('short_description')->nullable();
             $table->longText('long_description')->nullable();
-            $table->decimal('price', 8, 2)->nullable();
+            $table->decimal('price', 8, 2)->default(0);
             $table->unsignedBigInteger('category_id')->nullable();
             $table->unsignedBigInteger('sub_category_id')->nullable();
             $table->unsignedBigInteger('brand_id')->nullable();

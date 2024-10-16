@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('whole_sale_product_prices', function (Blueprint $table) {
+        Schema::create('product_prices', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('whole_sale_product_id')->nullable();
-            $table->foreign('whole_sale_product_id')->references('id')->on('whole_sale_products')->onDelete('cascade');
+            $table->unsignedBigInteger('product_id')->nullable();
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
             $table->integer('min_quantity')->nullable();
             $table->integer('max_quantity')->nullable();
             $table->double('price', 8, 2)->nullable();
