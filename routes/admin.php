@@ -72,6 +72,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/new-customer-update', [CustomerController::class, 'customerUpdate']);
     Route::get('/new-customer/{id}', [CustomerController::class, 'customerDelete']);
 
+    Route::post('/customer-store', [CustomerController::class, 'store'])->name('customer.store');
 
     //Contact Email crud
     Route::get('/contact-email', [ContactMailController::class, 'getContactEmail'])->name('allcontactemail');
@@ -316,6 +317,10 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/in-house-sell', [InHouseSellController::class, 'inHouseSellStore'])->name('inhousesell');
     Route::get('/in-house-order', [InHouseSellController::class, 'index'])->name('inhouseorders');
     Route::get('/in-house-sell/order/{encoded_order_id}', [InHouseSellController::class, 'generatePDF'])->name('in-house-sell.generate-pdf');
+
+    //Quotation
+    Route::post('/make-quotation', [InHouseSellController::class, 'makeQuotationStore'])->name('make.quotation.store');
+    Route::get('/quotations', [InHouseSellController::class, 'allquotations'])->name('allquotations');
 
     //Delivery Man crud
     Route::get('/deliveryman', [DeliveryManController::class, 'getDeliveryMan'])->name('alldeliverymen');

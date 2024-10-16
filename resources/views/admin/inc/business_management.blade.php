@@ -213,7 +213,7 @@
         <li class="nav-item">
             <a href="{{ route('allcustomer') }}" class="nav-link {{ (request()->is('admin/new-customer*')) ? 'active' : '' }}">
                 <i class="nav-icon fas fa-user"></i>
-                <p>Customer</p>
+                <p>Whole Saler</p>
             </a>
         </li>
 
@@ -315,6 +315,12 @@
                     <a href="{{ route('inhouseorders') }}" class="nav-link {{ (request()->is('admin/in-house-order*')) ? 'active' : '' }}">
                         <i class="fas fa-box nav-icon"></i>
                         <p>In House Orders</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('allquotations') }}" class="nav-link {{ (request()->is('admin/quotations*')) ? 'active' : '' }}">
+                        <i class="fas fa-box nav-icon"></i>
+                        <p>Quotations</p>
                     </a>
                 </li>
             </ul>

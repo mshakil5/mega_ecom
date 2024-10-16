@@ -139,6 +139,27 @@ class CustomerController extends Controller
             return response()->json(['success'=>false,'message'=>'Delete Failed']);
         }
     }
-    
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'surname' => 'nullable|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'phone' => 'nullable|string|max:15',
+            'password' => 'required|string|min:6',
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'surname' => $request->surname,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'password' => Hash::make($request->password),
+            'is_type' => 0,
+        ]);
+
+        return response()->json($user);
+    }
 
 }

@@ -35,7 +35,7 @@ return new class extends Migration
             $table->string('payment_method')->nullable();
             $table->string('ref')->nullable();
             $table->string('remarks')->nullable();
-            $table->boolean('order_type')->default(0);  //0==ecommerce, 1==in_house
+            $table->boolean('order_type')->default(0);  //0==ecommerce, 1==in_house, 2==quotation
             $table->boolean('status')->default(1);  //1== pending, 2==processing, 3==packed, 4==shipped, 5==delivered 6==return, 7==cancel
             $table->unsignedBigInteger('delivery_man_id')->nullable();
             $table->foreign('delivery_man_id')->references('id')->on('delivery_men');

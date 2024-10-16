@@ -17,13 +17,13 @@
                             <div class="row">
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="purchase_date">Selling Date</label>
-                                        <input type="date" class="form-control" id="purchase_date" name="purchase_date" placeholder="Enter date">
+                                        <label for="purchase_date">Selling Date*</label>
+                                        <input type="date" class="form-control" id="purchase_date" name="purchase_date" placeholder="Enter date" value="{{ now()->format('Y-m-d') }}">
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="supplier_id">Select Customer</label>
+                                        <label for="supplier_id">Select Wholesaler*</label>
                                         <select class="form-control" id="user_id" name="user_id">
                                             <option value="" >Select...</option>
                                             @foreach($customers as $customer)
@@ -32,9 +32,17 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-sm-1">
+                                    <div class="form-group">
+                                        <label>New</label>
+                                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#newWholeSalerModal">
+                                            <i class="fas fa-plus"></i> Add
+                                        </button>
+                                    </div>
+                                </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="purchase_type">Transaction Type</label>
+                                        <label for="purchase_type">Transaction Type*</label>
                                         <select class="form-control" id="payment_method" name="payment_method">
                                             <option value="">Select...</option>
                                             <option value="cash">Cash</option>
@@ -81,26 +89,24 @@
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="size">Size</label>
+                                        <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addSizeModal">Add New</span>
                                         <select class="form-control" id="size" name="size">
                                             <option value="">Select...</option>
-                                            <option value="XS">XS</option>
-                                            <option value="S">S</option>
-                                            <option value="M">M</option>
-                                            <option value="L">L</option>
-                                            <option value="XL">XL</option>
+                                            @foreach ($sizes as $size)
+                                                <option value="{{ $size->size }}">{{ $size->size }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
                                  <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="color">Color</label>
+                                        <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
                                         <select class="form-control" id="color" name="color">
                                             <option value="">Select...</option>
-                                            <option value="Black">Black</option>
-                                            <option value="White">White</option>
-                                            <option value="Red">Red</option>
-                                            <option value="Blue">Blue</option>
-                                            <option value="Green">Green</option>                                     
+                                            @foreach ($colors as $color)
+                                                <option value="{{ $color->color }}">{{ $color->color }}</option>
+                                            @endforeach                                     
                                         </select>
                                     </div>
                                 </div>
@@ -155,7 +161,7 @@
                                                     <input type="text" class="form-control" id="item_total_amount" readonly>
                                                 </div>
                                             </div>
-                                            <div class="row mb-3">
+                                            <div class="row mb-3 d-none">
                                                 <div class="col-sm-6 d-flex align-items-center justify-content-end">
                                                     <span>Vat Amount:</span>
                                                 </div>
@@ -185,7 +191,8 @@
 
                             </div>
                             <div class="card-footer">
-                                <button type="submit" id="addBtn" class="btn btn-secondary" value="Create"><i class="fas fa-plus"></i> Create</button>  
+                                <button id="addBtn" class="btn btn-success" value="Create"><i class="fas fa-cart-plus"></i> Make Sales</button>  
+                                <button id="quotationBtn" class="btn btn-secondary" value="Create"><i class="fas fa-file-invoice"></i> Make Quotation</button>  
                                 <div id="loader" style="display: none;">
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                     Loading...
@@ -198,6 +205,133 @@
         </div>
     </div>
 </section>
+
+<!-- New Whole Saler Modal -->
+<div class="modal fade" id="newWholeSalerModal" tabindex="-1" aria-labelledby="newWholeSalerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newWholeSalerModalLabel">Add New WholeSaler</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- New Supplier Form -->
+                <form id="newWholeSalerForm">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Name*</label>
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Enter name" required>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Surname</label>
+                                <input type="text" class="form-control" id="surname" name="surname" placeholder="Enter surname">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Email*</label>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <input type="number" class="form-control" id="phone" name="phone" placeholder="Enter phone">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 d-none">
+                            <div class="form-group">
+                                <label>Password</label>
+                                <input type="password" class="form-control" id="password" name="password" value="123456" placeholder="Enter password">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 d-none">
+                            <div class="form-group">
+                                <label>Confirm Password</label>
+                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" value="123456" placeholder="Enter password">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Submit Button -->
+                    <button type="button" class="btn btn-success" id="saveWholeSalerBtn">Save Supplier</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Color Modal -->
+<div class="modal fade" id="addColorModal" tabindex="-1" role="dialog" aria-labelledby="addColorModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addColorModalLabel">Add New Color</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="newColorForm">
+                    <div class="form-group">
+                        <label for="color_name">Color</label>
+                        <input type="text" class="form-control" id="color_name" name="color_name" placeholder="Enter color">
+                    </div>
+                    <div class="form-group">
+                        <label for="color_code">Color Code</label>
+                        <input type="color" class="form-control" id="color_code" name="color_code" placeholder="Enter color code">
+                    </div>
+                    <div class="form-group">
+                        <label for="color_price">Price</label>
+                        <input type="number" class="form-control" id="color_price" name="color_price" placeholder="Enter price">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveColorBtn">Save Color</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Size Modal -->
+<div class="modal fade" id="addSizeModal" tabindex="-1" role="dialog" aria-labelledby="addSizeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addSizeModalLabel">Add New Size</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="newSizeForm">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="size_name">Size</label>
+                            <input type="text" class="form-control" id="size_name" name="size_name" placeholder="Enter size">
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="size_price">Price</label>
+                            <input type="number" class="form-control" id="size_price" name="size_price" placeholder="Enter price">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveSizeBtn">Save Size</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @endsection
 
@@ -307,7 +441,7 @@
             });
         });
 
-        $('#createThisForm').submit(function(e) {
+        $('#addBtn').on('click', function(e) {
             e.preventDefault();
 
             $(this).attr('disabled', true);
@@ -315,6 +449,16 @@
 
             var formData = $(this).serializeArray();
             var products = [];
+            
+            formData.push({ name: 'purchase_date', value: $('#purchase_date').val() });
+            formData.push({ name: 'user_id', value: $('#user_id').val() });
+            formData.push({ name: 'payment_method', value: $('#payment_method').val() });
+            formData.push({ name: 'ref', value: $('#ref').val() });
+            formData.push({ name: 'remarks', value: $('#remarks').val() });
+            formData.push({ name: 'item_total_amount', value: $('#item_total_amount').val() });
+            formData.push({ name: 'vat', value: $('#vat').val() });
+            formData.push({ name: 'discount', value: $('#discount').val() });
+            formData.push({ name: 'net_amount', value: $('#net_amount').val() });
 
             $('#productTable tbody tr').each(function() {
                 var productId = $(this).find('input[name="product_id[]"]').val();
@@ -349,6 +493,9 @@
                 method: 'POST',
                 data: formData,
                 dataType: 'json',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
                 success: function(response) {
                     swal({
                         text: "Created Successfully",
@@ -382,23 +529,98 @@
                 }
             });
         });
-    });
-</script>
 
-<script>
-    $(document).ready(function() {
+        $('#quotationBtn').on('click', function(e) {
+            e.preventDefault();
+
+            $(this).attr('disabled', true);
+            $('#loader').show();
+
+            var formData = $(this).serializeArray();
+            var products = [];
+
+            formData.push({ name: 'purchase_date', value: $('#purchase_date').val() });
+            formData.push({ name: 'user_id', value: $('#user_id').val() });
+            formData.push({ name: 'payment_method', value: $('#payment_method').val() });
+            formData.push({ name: 'ref', value: $('#ref').val() });
+            formData.push({ name: 'remarks', value: $('#remarks').val() });
+            formData.push({ name: 'item_total_amount', value: $('#item_total_amount').val() });
+            formData.push({ name: 'vat', value: $('#vat').val() });
+            formData.push({ name: 'discount', value: $('#discount').val() });
+            formData.push({ name: 'net_amount', value: $('#net_amount').val() });
+
+            $('#productTable tbody tr').each(function() {
+                var productId = $(this).find('input[name="product_id[]"]').val();
+                var quantity = $(this).find('input.quantity').val();
+                var unitPrice = parseFloat($(this).find('input.price_per_unit').val());
+                var productSize = $(this).find('td:eq(2)').text();
+                var productColor = $(this).find('td:eq(3)').text();
+                var totalPrice = $(this).find('td:eq(5)').text();
+
+                products.push({
+                    product_id: productId,
+                    quantity: quantity,
+                    unit_price: unitPrice,
+                    product_size: productSize,
+                    product_color: productColor,
+                    total_price: totalPrice
+                });
+            });
+
+            formData.push({ name: 'vat', value: $('#vat').val() });
+
+            formData = formData.filter(function(item) {
+                return item.name !== 'product_id' && item.name !== 'quantity' && item.name !== 'price_per_unit' && item.name !== 'size' && item.name !== 'color';
+            });
+
+            formData.push({ name: 'products', value: JSON.stringify(products) });
+
+            console.log(formData);
+
+            $.ajax({
+                url: '/admin/make-quotation',
+                method: 'POST',
+                data: formData,
+                dataType: 'json',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    swal({
+                        text: "Quotation created successfully",
+                        icon: "success",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    }).then(() => {
+                        location.reload();
+                    });
+                },
+                error: function(xhr) {
+                    swal({
+                        text: xhr.responseJSON.message,
+                        icon: "error",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--error"
+                        }
+                    })
+                    console.log(xhr.responseText);
+                },
+                complete: function() {
+                    $('#loader').hide();
+                    $('#quotationBtn').attr('disabled', false);
+                }
+            });
+        });
+
         $('#product_id').select2({
             placeholder: "Select product...",
             allowClear: true,
             width: '100%'
         });
     });
-</script>
-
-<script>
-    window.onload = function() {
-        document.getElementById("purchase_date").value = new Date().toISOString().split('T')[0];
-    };
 </script>
 
 <script>
@@ -420,6 +642,164 @@
             } else {
                 $('#price_per_unit').val('');
             }
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('#saveWholeSalerBtn').on('click', function() {
+            var formData = new FormData($('#newWholeSalerForm')[0]);
+            formData.append('_token', '{{ csrf_token() }}');
+
+            $.ajax({
+                type: 'POST',
+                url: "{{ route('customer.store') }}",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function() {
+                    $('#user_id').append(`<option value="">${$('#name').val()} ${$('#surname').val() || ''}</option>`);
+                    $('#newWholeSalerForm')[0].reset();
+                    $('#newWholeSalerModal').modal('hide');
+
+                    swal({
+                        text: "Created successfully",
+                        icon: "success",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    });
+                },
+                error: function(xhr) {
+                    swal({
+                        text: xhr.responseJSON.message,
+                        icon: "error",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--error"
+                        }
+                    })
+                    // console.error(xhr.responseText);
+                }
+            });
+        });
+
+        $('#saveColorBtn').click(function() {
+            let colorName = $('#color_name').val();
+            let color_code = $('#color_code').val();
+            let price = $('#color_price').val();
+
+            $.ajax({
+                url: '{{ route('color.store') }}',
+                type: 'POST',
+                data: {
+                    color_name: colorName,
+                    color_code: color_code,
+                    price: price,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        swal({
+                            text: "Color added successfully",
+                            icon: "success",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--confirm"
+                            }
+                        }).then(() => {
+                            $('#color').append(`<option value="${response.data.color}">${response.data.color}</option>`);
+                            $('#addColorModal').modal('hide');
+                            $('#newColorForm')[0].reset();
+                        });
+                    } else {
+                        swal({
+                            text: "Failed to add color",
+                            icon: "error",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--error"
+                            }
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    let errorMessage = "Error adding color. Please try again.";
+                    
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        errorMessage = Object.values(xhr.responseJSON.errors).join("\n");
+                    }
+                    
+                    swal({
+                        text: errorMessage,
+                        icon: "error",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--error"
+                        }
+                    });
+                }
+            });
+        });
+
+        $('#saveSizeBtn').click(function() {
+
+            let size = $('#size_name').val();
+            let price = $('#size_price').val();
+
+            $.ajax({
+                url: '{{ route('size.store') }}',
+                type: 'POST',
+                data: {
+                    size: size,
+                    price: price,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        swal({
+                            text: "Size added successfully",
+                            icon: "success",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--confirm"
+                            }
+                        }).then(() => {
+                            $('#size').append(`<option value="${response.data.size}">${response.data.size}</option>`);
+                            
+                            $('#addSizeModal').modal('hide');
+                            $('#newSizeForm')[0].reset();
+                        });
+                    } else {
+                        swal({
+                            text: "Failed to add size",
+                            icon: "error",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--error"
+                            }
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    let errorMessage = "Error adding size. Please try again.";
+                    
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        errorMessage = Object.values(xhr.responseJSON.errors).join("\n");
+                    }
+                    
+                    swal({
+                        text: errorMessage,
+                        icon: "error",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--error"
+                        }
+                    });
+                }
+            });
         });
     });
 </script>

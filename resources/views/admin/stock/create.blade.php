@@ -17,13 +17,13 @@
                             <div class="row">
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="purchase_date">Purchase Date</label>
+                                        <label for="purchase_date">Purchase Date*</label>
                                         <input type="date" class="form-control" id="purchase_date" name="purchase_date" placeholder="Enter purchase date">
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="supplier_id">Select Supplier</label>
+                                        <label for="supplier_id">Select Supplier*</label>
                                         <select class="form-control" id="supplier_id" name="supplier_id">
                                             <option value="" >Select...</option>
                                             @foreach($suppliers as $supplier)
@@ -48,7 +48,7 @@
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="invoice">Invoice</label>
+                                        <label for="invoice">Invoice*</label>
                                         <input type="text" class="form-control" id="invoice" name="invoice" placeholder="Enter invoice">
                                     </div>
                                 </div>
@@ -60,7 +60,7 @@
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="purchase_type">Payment Type</label>
+                                        <label for="purchase_type">Payment Type*</label>
                                         <select class="form-control" id="purchase_type" name="purchase_type">
                                             <option value="">Select...</option>
                                             <option value="cash">Cash</option>
