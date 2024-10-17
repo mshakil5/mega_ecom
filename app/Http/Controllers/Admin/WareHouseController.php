@@ -21,6 +21,21 @@ class WareHouseController extends Controller
             return response()->json(['status'=> 303,'message'=>$message]);
             exit();
         }
+        if(empty($request->location)){
+            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \" location \" field..!</b></div>";
+            return response()->json(['status'=> 303,'message'=>$message]);
+            exit();
+        }
+        if(empty($request->operator_name)){
+            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \" operator name \" field..!</b></div>";
+            return response()->json(['status'=> 303,'message'=>$message]);
+            exit();
+        }
+        if(empty($request->operator_phone)){
+            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \" operator phone \" field..!</b></div>";
+            return response()->json(['status'=> 303,'message'=>$message]);
+            exit();
+        }
         $chkname = Warehouse::where('name',$request->name)->first();
         if($chkname){
             $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>This warehouse already added.</b></div>";
@@ -30,7 +45,9 @@ class WareHouseController extends Controller
         
         $data = new Warehouse;
         $data->name = $request->name;
-        $data->warehouse_id = $request->warehouse_id;
+        $data->location = $request->location;
+        $data->operator_name = $request->operator_name;
+        $data->operator_phone = $request->operator_phone;
         $data->description = $request->description;
         $data->created_by = auth()->id(); 
         
@@ -54,7 +71,22 @@ class WareHouseController extends Controller
     public function update(Request $request)
     {
         if(empty($request->name)){
-            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Warehouse name \" field..!</b></div>";
+            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \" name \" field..!</b></div>";
+            return response()->json(['status'=> 303,'message'=>$message]);
+            exit();
+        }
+        if(empty($request->location)){
+            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \" location \" field..!</b></div>";
+            return response()->json(['status'=> 303,'message'=>$message]);
+            exit();
+        }
+        if(empty($request->operator_name)){
+            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \" operator name \" field..!</b></div>";
+            return response()->json(['status'=> 303,'message'=>$message]);
+            exit();
+        }
+        if(empty($request->operator_phone)){
+            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \" operator phone \" field..!</b></div>";
             return response()->json(['status'=> 303,'message'=>$message]);
             exit();
         }
@@ -66,13 +98,15 @@ class WareHouseController extends Controller
             exit();
         }
 
-         $brand = Warehouse::find($request->codeid);
-         $brand->name = $request->name;     
-         $brand->warehouse_id = $request->warehouse_id;
-         $brand->description = $request->description;        
-         $brand->updated_by = auth()->id();
+         $data = Warehouse::find($request->codeid);
+         $data->name = $request->name;
+         $data->location = $request->location;
+         $data->operator_name = $request->operator_name;
+         $data->operator_phone = $request->operator_phone;
+         $data->description = $request->description;    
+         $data->updated_by = auth()->id();
 
-          if ($brand->save()) {
+          if ($data->save()) {
             $message = "<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Data Updated Successfully.</b></div>";
             return response()->json(['status' => 300, 'message' => $message]);
         } else {
@@ -84,13 +118,13 @@ class WareHouseController extends Controller
 
     public function delete($id)
     {
-        $brand = Warehouse::find($id);
+        $data = Warehouse::find($id);
         
-        if (!$brand) {
+        if (!$data) {
             return response()->json(['success' => false, 'message' => 'Not found.'], 404);
         }
 
-        if ($brand->delete()) {
+        if ($data->delete()) {
             return response()->json(['success' => true, 'message' => 'Deleted successfully.']);
         } else {
             return response()->json(['success' => false, 'message' => 'Failed to delete.'], 500);

@@ -27,16 +27,28 @@
                                 @csrf
                                 <input type="hidden" class="form-control" id="codeid" name="codeid">
                                 <div class="row">
-                                    <div class="col-sm-12">
+                                    <div class="col-sm-6">
                                         <div class="form-group">
-                                            <label>Name</label>
+                                            <label> Warehouse Name</label>
                                             <input type="text" class="form-control" id="name" name="name" placeholder="Enter warehouse name">
                                         </div>
                                     </div>
-                                    <div class="col-sm-12">
+                                    <div class="col-sm-6">
                                         <div class="form-group">
-                                            <label>Warehouse ID</label>
-                                            <input type="text" class="form-control" id="warehouse_id" name="warehouse_id" placeholder="Enter warehouse ID">
+                                            <label>Warehouse Location</label>
+                                            <input type="text" class="form-control" id="location" name="location" placeholder="Enter warehouse location">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label>Operator Name</label>
+                                            <input type="text" class="form-control" id="operator_name" name="operator_name" placeholder="Enter operator name">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label>Operator Phone</label>
+                                            <input type="number" class="form-control" id="operator_phone" name="operator_phone" placeholder="Enter operator phone">
                                         </div>
                                     </div>
                                     <div class="col-sm-12">
@@ -71,8 +83,9 @@
                                 <thead>
                                     <tr>
                                         <th>Sl</th>
-                                        <th>Warehouse ID</th>
                                         <th>Warehouse Name</th>                          
+                                        <th>Location</th>                          
+                                        <th>Operator</th>                          
                                         <th>Description</th>
                                         <th>Status</th>
                                         <th>Action</th>
@@ -83,7 +96,9 @@
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $item->name }}</td>
-                                            <td>{{ $item->warehouse_id }}</td>                                            
+                                            <td>{{ $item->location }}</td>           
+                                            <td>{{$item->operator_name}}<br>
+                                            {{$item->operator_phone}}</td>                                            
                                             <td>{!! $item->description !!}</td>
                                             <td>
                                                 <div class="custom-control custom-switch">
@@ -181,7 +196,9 @@
           if($(this).val() == 'Create') {
               var form_data = new FormData();
               form_data.append("name", $("#name").val());
-              form_data.append("warehouse_id", $("#warehouse_id").val());
+              form_data.append("location", $("#location").val());
+              form_data.append("operator_name", $("#operator_name").val());
+              form_data.append("operator_phone", $("#operator_phone").val());
               form_data.append("description", $("#description").val());
 
               $.ajax({
@@ -217,7 +234,9 @@
           if($(this).val() == 'Update'){
               var form_data = new FormData();
               form_data.append("name", $("#name").val());
-              form_data.append("warehouse_id", $("#warehouse_id").val());
+              form_data.append("location", $("#location").val());
+              form_data.append("operator_name", $("#operator_name").val());
+              form_data.append("operator_phone", $("#operator_phone").val());
               form_data.append("description", $("#description").val());
 
               form_data.append("codeid", $("#codeid").val());
@@ -299,8 +318,10 @@
       //Delete  
       function populateForm(data){
           $("#name").val(data.name);
+          $("#operator_name").val(data.operator_name);
+          $("#operator_phone").val(data.operator_phone);
+          $("#location").val(data.location);
           $("#description").val(data.description);
-          $("#warehouse_id").val(data.warehouse_id);
           $("#codeid").val(data.id);
           $("#addBtn").val('Update');
           $("#addBtn").html('Update');

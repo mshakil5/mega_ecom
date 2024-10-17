@@ -15,6 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('warehouse_id')->nullable();
             $table->string('name')->nullable();
+            $table->string('location')->nullable();
+            $table->string('operator_name')->nullable();
+            $table->string('operator_phone')->nullable();
             $table->longText('description')->nullable();
             $table->boolean('status')->default(1);
             $table->string('created_by')->nullable();
