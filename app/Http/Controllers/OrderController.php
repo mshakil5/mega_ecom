@@ -912,7 +912,7 @@ class OrderController extends Controller
     public function allOrder()
     {
         return DataTables::of(Order::with('user')
-                        ->where('order_type',0)
+                        ->whereIn('order_type', [0, 1])
                         ->orderBy('id', 'desc'))
                         ->addColumn('action', function($order){
                             return '<a href="'.route('admin.orders.details', ['orderId' => $order->id]).'" class="btn btn-primary">Details</a>';
@@ -950,6 +950,9 @@ class OrderController extends Controller
                         ->addColumn('phone', function ($order) {
                             return $order->phone;
                         })
+                        ->addColumn('type', function ($order) {
+                            return $order->order_type == 0 ? 'Frontend' : 'In-house Sale';
+                        })
                         ->rawColumns(['action'])
                         ->make(true);
     }
@@ -957,6 +960,7 @@ class OrderController extends Controller
     public function pendingOrders()
     {
         $orders = Order::with('user')
+                ->whereIn('order_type', [0, 1])
                 ->where('status', 1)
                 ->orderBy('id', 'desc')
                 ->get();
@@ -966,6 +970,7 @@ class OrderController extends Controller
     public function processingOrders()
     {
         $orders = Order::with('user')
+                ->whereIn('order_type', [0, 1])
                 ->where('status', 2)
                 ->orderBy('id', 'desc')
                 ->get();
@@ -974,6 +979,7 @@ class OrderController extends Controller
     public function packedOrders()
     {
         $orders = Order::with('user')
+                ->whereIn('order_type', [0, 1])
                 ->where('status', 3)
                 ->orderBy('id', 'desc')
                 ->get();
@@ -982,6 +988,7 @@ class OrderController extends Controller
     public function shippedOrders()
     {
         $orders = Order::with('user')
+                ->whereIn('order_type', [0, 1])
                 ->where('status', 4)
                 ->orderBy('id', 'desc')
                 ->get();
@@ -993,6 +1000,7 @@ class OrderController extends Controller
     {
         $orders = Order::with('user')
                 ->where('status', 5)
+                ->whereIn('order_type', [0, 1])
                 ->orderBy('id', 'desc')
                 ->get();
         return view('admin.orders.index', compact('orders'));
@@ -1001,6 +1009,7 @@ class OrderController extends Controller
     {
         $orders = Order::with(['user', 'orderReturns.product'])
                     ->where('status', 6)
+                    ->whereIn('order_type', [0, 1])
                     ->orderBy('id', 'desc')
                     ->get();
 
@@ -1009,6 +1018,7 @@ class OrderController extends Controller
     public function cancelledOrders()
     {
         $orders = Order::with('user', 'cancelledOrder')
+                ->whereIn('order_type', [0, 1])
                 ->where('status', 7)
                 ->orderBy('id', 'desc')
                 ->get();

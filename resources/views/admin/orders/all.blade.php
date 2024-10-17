@@ -20,7 +20,8 @@
                                     <th>Shipping</th>
                                     <th>Discount</th>
                                     <th>Total</th>
-                                    <th>Payment Method</th>
+                                    <th>Payment</th>
+                                    <th>Type</th>
                                     <th>Status</th>
                                     <th>Details</th>
                                 </tr>
@@ -50,6 +51,7 @@
                 { data: 'discount_amount', name: 'discount_amount' },
                 { data: 'net_amount', name: 'net_amount' },
                 { data: 'payment_method', name: 'payment_method' },
+                { data: 'type', name: 'type' },
                 { data: 'status', name: 'status' },
                 { data: 'action', name: 'action', orderable: false, searchable: false }
             ]

@@ -305,8 +305,8 @@
             </ul>
         </li>
 
-        <li class="nav-item {{ (request()->is('admin/in-house-sell*') || request()->is('admin/in-house-order*')) ? 'menu-open' : '' }}">
-            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/in-house-sell*') || request()->is('admin/in-house-order*')) ? 'active' : '' }}">
+        <li class="nav-item {{ (request()->is('admin/in-house-sell*') || request()->is('admin/quotations*')) ? 'menu-open' : '' }}">
+            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/in-house-sell*') || request()->is('admin/quotations*')) ? 'active' : '' }}">
                 <i class="nav-icon fas fa-industry"></i>
                 <p>
                     In House<i class="fas fa-angle-left right"></i>
@@ -317,12 +317,6 @@
                     <a href="{{ route('inhousesell') }}" class="nav-link {{ (request()->is('admin/in-house-sell*')) ? 'active' : '' }}">
                         <i class="fas fa-industry nav-icon"></i>
                         <p>In House Sale</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('inhouseorders') }}" class="nav-link {{ (request()->is('admin/in-house-order*')) ? 'active' : '' }}">
-                        <i class="fas fa-box nav-icon"></i>
-                        <p>In House Orders</p>
                     </a>
                 </li>
                 <li class="nav-item">

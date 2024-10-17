@@ -160,16 +160,6 @@ class InHouseSellController extends Controller
         return response()->json(['message' => 'Quotation created successfully', 'order_id' => $order->id], 201);
     }
 
-    public function index()
-    {
-        $inHouseOrders = Order::with('user')
-        ->where('order_type', 1) 
-        ->orderBy('id', 'desc') 
-        ->get();
-
-        return view('admin.in_house_sell.index', compact('inHouseOrders'));
-    }
-
     public function allquotations()
     {
         $inHouseOrders = Order::with('user')

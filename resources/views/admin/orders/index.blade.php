@@ -18,6 +18,7 @@
                                     <th>Phone</th>
                                     <th>Address</th>
                                     <th>Status</th>                                    
+                                    <th>Type</th>                                    
                                      @if (!empty($orders) && $orders->contains(function ($order) {
                                             return $order->status == 4;
                                         }))
@@ -59,6 +60,7 @@
                                             <option value="7" {{ $order->status == 7 ? 'selected' : '' }}>Cancelled</option>
                                         </select>
                                     </td>
+                                    <td>{{ $order->order_type == 0 ? 'Frontend' : 'In-house Sale' }}</td>
                                     @if ($order->status == 4)
                                         <td>
                                             <select class="form-control select-delivery-man" data-order-id="{{ $order->id }}">

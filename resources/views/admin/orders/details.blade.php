@@ -17,12 +17,17 @@
                                 <p><strong>Name:</strong> {{ $order->user->name ?? $order->name }} {{ $order->user->surname ?? '' }}</p>
                                 <p><strong>Email:</strong> {{ $order->user->email ?? $order->email }}</p>
                                 <p><strong>Phone:</strong> {{ $order->user->phone ?? $order->phone }}</p>
-                                <p><strong>Address:</strong> 
-                                    {{ $order->user->house_number ?? $order->house_number }},
-                                    {{ $order->user->street_name ?? $order->street_name }},
-                                    <br>
-                                    {{ $order->user->town ?? $order->town }},
-                                    {{ $order->user->postcode ?? $order->postcode }}
+                                <p><strong>Address:</strong>
+                                    @php
+                                        $addressParts = [
+                                            ($order->user->house_number ?? $order->house_number),
+                                            ($order->user->street_name ?? $order->street_name),
+                                            ($order->user->town ?? $order->town),
+                                            ($order->user->postcode ?? $order->postcode)
+                                        ];
+                                    @endphp
+
+                                    {{ implode(', ', array_filter($addressParts)) }}
                                 </p>
                             </div>
                             <!-- Order Information -->
@@ -66,6 +71,7 @@
                                         Unknown
                                     @endif
                                 </p>
+                                <p><strong>Order Type:</strong> {{ $order->order_type === 1 ? 'In House' : 'Frontend' }}</p>
                                 @if ($order->order_type === 0)
                                 <a href="{{ route('generate-pdf', ['encoded_order_id' => base64_encode($order->id)]) }}" class="btn btn-success" target="_blank">
                                     <i class="fas fa-receipt"></i> Invoice

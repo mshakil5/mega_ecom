@@ -316,7 +316,6 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     //In House sell
     Route::get('/in-house-sell', [InHouseSellController::class, 'inHouseSell'])->name('inhousesell');
     Route::post('/in-house-sell', [InHouseSellController::class, 'inHouseSellStore'])->name('inhousesell');
-    Route::get('/in-house-order', [InHouseSellController::class, 'index'])->name('inhouseorders');
     Route::get('/in-house-sell/order/{encoded_order_id}', [InHouseSellController::class, 'generatePDF'])->name('in-house-sell.generate-pdf');
 
     //Quotation
