@@ -77,7 +77,7 @@
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="quantity">Quantity</label>
-                                        <input type="number" class="form-control" id="quantity" name="quantity" placeholder="Enter quantity">
+                                        <input type="number" class="form-control quantity" id="quantity" name="quantity" placeholder="Enter quantity" min="1">
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
@@ -126,7 +126,10 @@
                                                 <th>Size</th>
                                                 <th>Color</th>
                                                 <th>Unit Price</th>
+                                                <th>VAT %</th>
+                                                <th>VAT Amount</th>
                                                 <th>Total Price</th>
+                                                <th>Total Price with VAT</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -139,7 +142,7 @@
                                 <div class="container mt-4 mb-5">
                                     <div class="row">
                                         <!-- Left side -->
-                                        <div class="col-md-6">
+                                        <div class="col-md-6 d-none">
                                             <div class="mb-2">
                                                 <div class="d-flex align-items-center">
                                                     <span>Coupon:</span>
@@ -152,7 +155,7 @@
                                         </div>
 
                                         <!-- Right side -->
-                                        <div class="col-sm-6">
+                                        <div class="col-md-6 offset-md-6">
                                             <div class="row mb-3">
                                                 <div class="col-sm-6 d-flex align-items-center justify-content-end">
                                                     <span>Item Total Amount:</span>
@@ -161,7 +164,7 @@
                                                     <input type="text" class="form-control" id="item_total_amount" readonly>
                                                 </div>
                                             </div>
-                                            <div class="row mb-3 d-none">
+                                            <div class="row mb-3">
                                                 <div class="col-sm-6 d-flex align-items-center justify-content-end">
                                                     <span>Vat Amount:</span>
                                                 </div>
@@ -341,27 +344,32 @@
     $(document).ready(function() {
         function updateSummary() {
             var itemTotalAmount = 0;
+            var totalVatAmount = 0;
 
             $('#productTable tbody tr').each(function() {
                 var quantity = parseFloat($(this).find('input.quantity').val()) || 0;
                 var unitPrice = parseFloat($(this).find('input.price_per_unit').val()) || 0;
+                var vatPercent = parseFloat($(this).find('input.vat_percent').val()) || 0;
+
                 var totalPrice = (quantity * unitPrice).toFixed(2);
+                var vatAmount = (totalPrice * vatPercent / 100).toFixed(2);
+                var totalPriceWithVat = (parseFloat(totalPrice) + parseFloat(vatAmount)).toFixed(2);
 
-                // console.log(`Quantity: ${quantity}, Unit Price: ${unitPrice}, Total Price: ${totalPrice}`);
+                $(this).find('td:eq(6)').text(vatAmount);
+                $(this).find('td:eq(7)').text(totalPrice);
+                $(this).find('td:eq(8)').text(totalPriceWithVat);
 
-                $(this).find('td:eq(4)').find('input.price_per_unit').val(unitPrice.toFixed(2));
-                $(this).find('td:eq(5)').text(totalPrice); 
                 itemTotalAmount += parseFloat(totalPrice) || 0;
+                totalVatAmount += parseFloat(vatAmount) || 0;
             });
 
             $('#item_total_amount').val(itemTotalAmount.toFixed(2) || '0.00');
-            // console.log(`Item Total Amount: ${itemTotalAmount}`);
+            $('#vat').val(totalVatAmount.toFixed(2) || '0.00');
 
             var discount = parseFloat($('#discount').val()) || 0; 
-            var vat = parseFloat($('#vat').val()) || 0; 
+            var vat = parseFloat($('#vat').val()) || 0;
             var netAmount = itemTotalAmount - discount + vat;
             $('#net_amount').val(netAmount.toFixed(2) || '0.00');
-            // console.log(`Discount: ${discount}, Net Amount: ${netAmount}`);
         }
 
         $('#addProductBtn').click(function() {
@@ -372,6 +380,7 @@
             var quantity = parseFloat($('#quantity').val()) || 1;
             var selectedSize = $('#size').val() || '';
             var selectedColor = $('#color').val() || '';
+            var vatPercent = 5;
 
             if (isNaN(quantity) || quantity <= 0) {
                 alert('Quantity must be a positive number.');
@@ -379,31 +388,59 @@
             }
 
             var totalPrice = (quantity * unitPrice).toFixed(2);
+            var vatAmount = (totalPrice * vatPercent / 100).toFixed(2);
+            var totalPriceWithVat = (parseFloat(totalPrice) + parseFloat(vatAmount)).toFixed(2);
 
-            var productRow = `<tr>
-                                <td>${productName}
-                                <input type="hidden" name="product_id[]" value="${productId}"></td> 
-                                <td><input type="number" class="form-control quantity" value="${quantity}" /></td>
-                                <td>${selectedSize || 'M'}</td>
-                                <td>${selectedColor || 'Black'}</td>
-                                <td><input type="number" step="0.01" class="form-control price_per_unit" value="${unitPrice.toFixed(2)}" /></td>
-                                <td>${totalPrice}</td>
-                                <td><button type="button" class="btn btn-sm btn-danger remove-product">Remove</button></td>
-                            </tr>`;
+            var productExists = false;
+            $('#productTable tbody tr').each(function() {
+                var existingProductId = $(this).data('product-id');
+                var existingSize = $(this).find('td:eq(2)').text();
+                var existingColor = $(this).find('td:eq(3)').text();
 
-            $('#productTable tbody').append(productRow);
-            $('#quantity').val('');
-            $('#price_per_unit').val('');
+                if (productId == existingProductId && selectedSize == existingSize && selectedColor == existingColor) {
+                    productExists = true;
+                    return false;
+                }
+            });
 
-            updateSummary();
+            if (productId && quantity && unitPrice) {
+
+                var productRow = `<tr data-product-id="${productId}">
+                                    <td>${productName}
+                                        <input type="hidden" name="product_id[]" value="${productId}">
+                                    </td> 
+                                    <td><input type="number" class="form-control quantity" value="${quantity}" min="1" /></td>
+                                    <td>${selectedSize}</td>
+                                    <td>${selectedColor}</td>
+                                    <td><input type="number" step="0.01" class="form-control price_per_unit" value="${unitPrice.toFixed(2)}" /></td>
+                                    <td><input type="number" step="0.01" class="form-control vat_percent" value="${vatPercent}" /></td>
+                                    <td>${vatAmount}</td>
+                                    <td>${totalPrice}</td>
+                                    <td>${totalPriceWithVat}</td>
+                                    <td><button type="button" class="btn btn-sm btn-danger remove-product">Remove</button></td>
+                                </tr>`;
+
+                $('#productTable tbody').append(productRow);
+                $('#quantity').val('');
+                $('#price_per_unit').val('');
+
+                updateSummary();
+            }
         });
 
         $(document).on('click', '.remove-product', function() {
             $(this).closest('tr').remove();
             updateSummary();
+            $('#product_id').val(null).trigger('change');
         });
 
-        $(document).on('input', '#productTable input.quantity, #productTable input.price_per_unit, #vat', function() {
+        $(document).on('input', '.quantity', function() {
+            if ($(this).val() < 1) {
+                $(this).val(1);
+            }
+        });
+
+        $(document).on('input', '#productTable input.quantity, #productTable input.price_per_unit, #productTable input.vat_percent', function() {
             updateSummary();
         });
 
@@ -445,6 +482,7 @@
             e.preventDefault();
 
             $(this).attr('disabled', true);
+            $('#quotationBtn').attr('disabled', true);
             $('#loader').show();
 
             var formData = $(this).serializeArray();
@@ -462,11 +500,11 @@
 
             $('#productTable tbody tr').each(function() {
                 var productId = $(this).find('input[name="product_id[]"]').val();
-                var quantity = $(this).find('input.quantity').val();
-                var unitPrice = parseFloat($(this).find('input.price_per_unit').val());
+                var quantity = parseFloat($(this).find('input.quantity').val()) || 0;
+                var unitPrice = parseFloat($(this).find('input.price_per_unit').val()) || 0;
                 var productSize = $(this).find('td:eq(2)').text();
                 var productColor = $(this).find('td:eq(3)').text();
-                var totalPrice = $(this).find('td:eq(5)').text();
+                var totalPrice = (quantity * unitPrice).toFixed(2);
 
                 products.push({
                     product_id: productId,
@@ -478,15 +516,13 @@
                 });
             });
 
-            formData.push({ name: 'vat', value: $('#vat').val() });
-
             formData = formData.filter(function(item) {
                 return item.name !== 'product_id' && item.name !== 'quantity' && item.name !== 'price_per_unit' && item.name !== 'size' && item.name !== 'color';
             });
 
             formData.push({ name: 'products', value: JSON.stringify(products) });
 
-            // console.log(formData);
+            console.log(formData);
 
             $.ajax({
                 url: '/admin/in-house-sell',
@@ -506,7 +542,6 @@
                         }
                     }).then(() => {
                         window.location.href = response.pdf_url;
-
                         setTimeout(function() {
                             location.reload();
                         }, 1000);
@@ -520,12 +555,13 @@
                             text: "OK",
                             className: "swal-button--error"
                         }
-                    })
+                    });
                     console.log(xhr.responseText);
                 },
                 complete: function() {
                     $('#loader').hide();
                     $('#addBtn').attr('disabled', false);
+                    $('#quotationBtn').attr('disabled', false);
                 }
             });
         });
@@ -534,6 +570,7 @@
             e.preventDefault();
 
             $(this).attr('disabled', true);
+            $('#addBtn').attr('disabled', true);
             $('#loader').show();
 
             var formData = $(this).serializeArray();
@@ -551,11 +588,11 @@
 
             $('#productTable tbody tr').each(function() {
                 var productId = $(this).find('input[name="product_id[]"]').val();
-                var quantity = $(this).find('input.quantity').val();
-                var unitPrice = parseFloat($(this).find('input.price_per_unit').val());
+                var quantity = parseFloat($(this).find('input.quantity').val()) || 0;
+                var unitPrice = parseFloat($(this).find('input.price_per_unit').val()) || 0;
                 var productSize = $(this).find('td:eq(2)').text();
                 var productColor = $(this).find('td:eq(3)').text();
-                var totalPrice = $(this).find('td:eq(5)').text();
+                var totalPrice = (quantity * unitPrice).toFixed(2);
 
                 products.push({
                     product_id: productId,
@@ -611,6 +648,7 @@
                 complete: function() {
                     $('#loader').hide();
                     $('#quotationBtn').attr('disabled', false);
+                    $('#addBtn').attr('disabled', false);
                 }
             });
         });

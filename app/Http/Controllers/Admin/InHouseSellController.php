@@ -43,7 +43,7 @@ class InHouseSellController extends Controller
             return $carry + $product['total_price'];
         }, 0);
 
-        $netAmount = $itemTotalAmount - $validated['discount'];
+        $netAmount = $itemTotalAmount - $validated['discount'] + $request->vat;
 
         $order = new Order();
         $order->invoice = random_int(100000, 999999);
@@ -127,7 +127,7 @@ class InHouseSellController extends Controller
             return $carry + $product['total_price'];
         }, 0);
 
-        $netAmount = $itemTotalAmount - $validated['discount'];
+        $netAmount = $itemTotalAmount - $validated['discount'] + $request->vat;
 
         $order = new Order();
         $order->invoice = random_int(100000, 999999);
