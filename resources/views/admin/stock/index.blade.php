@@ -59,6 +59,7 @@
                                         <th>Quantity</th>
                                         <th>Size</th>
                                         <th>Color</th>
+                                        <th>Warehouse Name</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -165,28 +166,8 @@
                 { data: 'quantity_formatted', name: 'quantity' },
                 { data: 'size', name: 'size' },
                 { data: 'color', name: 'color' },
-                // { 
-                //     data: 'action', 
-                //     name: 'action', 
-                //     orderable: false, 
-                //     searchable: false,
-                //     render: function (data, type, full, meta) {
-                //         return '<button type="button" class="btn btn-primary btn-open-loss-modal" data-id="' + full.product_id + '" data-quantity="' + full.quantity + '">System Loss</button>';
-                //     }
-                // }
-                { 
-                    data: 'action', 
-                    name: 'action', 
-                    orderable: false, 
-                    searchable: false,
-                    render: function (data, type, full, meta) {
-                        return `
-                            <button type="button" class="btn btn-info btn-sm">Purchase History</button>
-                            <button type="button" class="btn btn-warning btn-sm">Supplier History</button>
-                            <button type="button" class="btn btn-success btn-sm">Sold History</button>
-                        `;
-                    }
-                }
+                { data: 'warehouse', name: 'warehouse' },
+                {data: 'action', name: 'action', orderable: false, searchable: false}
             ],
             // columnDefs: [
             //     {

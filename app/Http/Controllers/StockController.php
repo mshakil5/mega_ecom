@@ -44,12 +44,30 @@ class StockController extends Controller
             ->addColumn('quantity_formatted', function ($row) {
                 return number_format($row->quantity, 0);
             })
+            ->addColumn('warehouse', function ($row) {
+                return $row->warehouse ? $row->warehouse->name : 'N/A';
+            })
             // ->addColumn('action', function ($row) {
             // return '<button class="btn btn-sm btn-danger" onclick="openLossModal('.$row->id.')">System Loss</button>';
             // })
+            ->addColumn('action', function ($data) {
+                $btn = '<div class="table-actions">';
+                if (Auth::user()) {
+                    $url = route('admin.product.purchasehistory', ['id' => $data->product->id, 'size' => $data->size]);
+                    $btn .= '<a href="'.$url.'" class="btn btn-sm btn-primary">History</a>';
+                }
+                $btn .= '</div>';
+                return $btn;
+            })
             ->rawColumns(['action'])
-
             ->make(true);
+    }
+
+    
+    public function getsingleproductPurchaseHistory($id, $size)
+    {
+        $data = PurchaseHistory::where('product_id', $id)->where('product_size', $size)->orderby('id','DESC')->get();
+        return view('admin.stock.single_product_history', compact('data'));
     }
 
     public function addstock()

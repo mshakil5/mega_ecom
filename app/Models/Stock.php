@@ -14,4 +14,9 @@ class Stock extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class);
+    }
 }

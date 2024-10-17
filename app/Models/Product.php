@@ -85,4 +85,6 @@ class Product extends Model
     {
         return $this->hasMany(ProductPrice::class, 'product_id');
     }
+
+    
 }

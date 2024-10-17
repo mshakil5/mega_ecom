@@ -221,18 +221,13 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/stocks', [StockController::class, 'getStocks'])->name('allstocks');
     Route::get('/stock', [StockController::class, 'getStock'])->name('allstock');
     Route::get('/add-stock', [StockController::class, 'addstock'])->name('addStock');
-
+    Route::get('/product-purchase-history/{id}/{size}', [StockController::class, 'getsingleproductPurchaseHistory'])->name('admin.product.purchasehistory');
     Route::post('/process/system-loss', [StockController::class, 'processSystemLoss'])->name('process.system.loss');
-
     Route::get('/system-losses', [StockController::class, 'systemLosses'])->name('system-losses.index');
-
     Route::post('/add-stock', [StockController::class, 'stockStore']);
-
     Route::get('/transfer-to-warehouse/{id}', [WarehouseController::class, 'transfer'])->name('transferToWarehouse');
-
     Route::get('/product-purchase-history', [StockController::class, 'productPurchaseHistory'])->name('productPurchaseHistory');
     Route::get('/purchase/{purchase}/history', [StockController::class, 'getPurchaseHistory'])->name('purchase.history');
-    
     Route::get('/stock-return-history', [StockController::class, 'stockReturnHistory'])->name('stockReturnHistory');
 
     Route::get('/purchase/edit/{purchase}', [StockController::class, 'editPurchaseHistory'])->name('purchase.edit');
