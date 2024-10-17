@@ -27,6 +27,8 @@ return new class extends Migration
             $table->double('total_amount',10,2)->nullable();
             $table->double('total_amount_with_vat',10,2)->nullable();
             $table->string('exp_date')->nullable();
+            $table->string('transferred_product_quantity')->nullable();
+            $table->string('remaining_product_quantity')->nullable();
             $table->boolean('status')->default(1);
             $table->string('updated_by')->nullable();
             $table->string('created_by')->nullable();

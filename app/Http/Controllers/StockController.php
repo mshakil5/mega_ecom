@@ -16,12 +16,14 @@ use DataTables;
 use App\Models\SystemLose;
 use App\Models\OrderReturn;
 use App\Models\Size;
+use App\Models\Warehouse;
 
 class StockController extends Controller
 {
     public function getStock()
     {
-        return view('admin.stock.index');
+        $warehouses = Warehouse::orderby('id','DESC')->get();
+        return view('admin.stock.index', compact('warehouses'));
     }
 
     public function getStocks()
@@ -133,30 +135,30 @@ class StockController extends Controller
                 $existingProduct->save();
             }
 
-            $stock = Stock::where('product_id', $product['product_id'])
-                      ->where('size', $product['product_size'])
-                      ->where('color', $product['product_color'])
-                      ->first();
+            // $stock = Stock::where('product_id', $product['product_id'])
+            //           ->where('size', $product['product_size'])
+            //           ->where('color', $product['product_color'])
+            //           ->first();
 
-            if ($stock) {
-                $stock->quantity += $product['quantity'];
-                $stock->updated_by = Auth::user()->id;
-                $stock->save();
-            } else {
-                $newStock = new Stock();
-                $newStock->product_id = $product['product_id'];
-                $newStock->quantity = $product['quantity'];
-                $newStock->size = $product['product_size'];
-                $newStock->color = $product['product_color'];
-                $newStock->created_by = Auth::user()->id;
-                $newStock->save();
-            }
+            // if ($stock) {
+            //     $stock->quantity += $product['quantity'];
+            //     $stock->updated_by = Auth::user()->id;
+            //     $stock->save();
+            // } else {
+            //     $newStock = new Stock();
+            //     $newStock->product_id = $product['product_id'];
+            //     $newStock->quantity = $product['quantity'];
+            //     $newStock->size = $product['product_size'];
+            //     $newStock->color = $product['product_color'];
+            //     $newStock->created_by = Auth::user()->id;
+            //     $newStock->save();
+            // }
 
         }
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Stock Added Successfully',
+            'message' => 'Purchased Successfully',
         ]);
     }
 
@@ -213,16 +215,16 @@ class StockController extends Controller
             $purchaseHistory = PurchaseHistory::find($removedId);
             if ($purchaseHistory) {
 
-                $stock = Stock::where('product_id', $purchaseHistory->product_id)
-                            ->where('size', $purchaseHistory->product_size)
-                            ->where('color', $purchaseHistory->product_color)
-                            ->first();
+                // $stock = Stock::where('product_id', $purchaseHistory->product_id)
+                //             ->where('size', $purchaseHistory->product_size)
+                //             ->where('color', $purchaseHistory->product_color)
+                //             ->first();
 
-                if ($stock) {
-                    $stock->quantity -= $purchaseHistory->quantity;
-                    $stock->updated_by = Auth::user()->id;
-                    $stock->save();
-                }
+                // if ($stock) {
+                //     $stock->quantity -= $purchaseHistory->quantity;
+                //     $stock->updated_by = Auth::user()->id;
+                //     $stock->save();
+                // }
 
                 $purchaseHistory->delete();
             }
@@ -236,14 +238,14 @@ class StockController extends Controller
             if (isset($product['purchase_history_id'])) {
                 $purchaseHistory = PurchaseHistory::find($product['purchase_history_id']);
                 if ($purchaseHistory) {
-                    $stock = Stock::where('product_id', $purchaseHistory->product_id)
-                                ->where('size', $purchaseHistory->product_size)
-                                ->where('color', $purchaseHistory->product_color)
-                                ->first();
+                    // $stock = Stock::where('product_id', $purchaseHistory->product_id)
+                    //             ->where('size', $purchaseHistory->product_size)
+                    //             ->where('color', $purchaseHistory->product_color)
+                    //             ->first();
 
-                    if ($stock) {
-                        $stock->quantity -= $purchaseHistory->quantity;
-                    }
+                    // if ($stock) {
+                    //     $stock->quantity -= $purchaseHistory->quantity;
+                    // }
 
                     $purchaseHistory->product_id = $product['product_id'];
                     $purchaseHistory->quantity = $product['quantity'];
@@ -258,10 +260,10 @@ class StockController extends Controller
                     $purchaseHistory->updated_by = Auth::user()->id;
                     $purchaseHistory->save();
 
-                    if ($stock) {
-                        $stock->quantity += $product['quantity'];
-                        $stock->save();
-                    }
+                    // if ($stock) {
+                    //     $stock->quantity += $product['quantity'];
+                    //     $stock->save();
+                    // }
                 }
             } else {
                 $purchaseHistory = new PurchaseHistory();
@@ -279,24 +281,24 @@ class StockController extends Controller
                 $purchaseHistory->created_by = Auth::user()->id;
                 $purchaseHistory->save();
 
-                $stock = Stock::where('product_id', $product['product_id'])
-                            ->where('size', $product['product_size'])
-                            ->where('color', $product['product_color'])
-                            ->first();
+                // $stock = Stock::where('product_id', $product['product_id'])
+                //             ->where('size', $product['product_size'])
+                //             ->where('color', $product['product_color'])
+                //             ->first();
 
-                if ($stock) {
-                    $stock->quantity += $product['quantity'];
-                    $stock->updated_by = Auth::user()->id;
-                    $stock->save();
-                } else {
-                    $newStock = new Stock();
-                    $newStock->product_id = $product['product_id'];
-                    $newStock->quantity = $product['quantity'];
-                    $newStock->size = $product['product_size'];
-                    $newStock->color = $product['product_color'];
-                    $newStock->created_by = Auth::user()->id;
-                    $newStock->save();
-                }
+                // if ($stock) {
+                //     $stock->quantity += $product['quantity'];
+                //     $stock->updated_by = Auth::user()->id;
+                //     $stock->save();
+                // } else {
+                //     $newStock = new Stock();
+                //     $newStock->product_id = $product['product_id'];
+                //     $newStock->quantity = $product['quantity'];
+                //     $newStock->size = $product['product_size'];
+                //     $newStock->color = $product['product_color'];
+                //     $newStock->created_by = Auth::user()->id;
+                //     $newStock->save();
+                // }
             }
 
             $totalAmount += $purchaseHistory->total_amount;
@@ -368,14 +370,14 @@ class StockController extends Controller
                 $product_id = $product['product_id'];
                 $return_quantity = $product['return_quantity'];
 
-                $stock = Stock::where('product_id', $product_id);
+                // $stock = Stock::where('product_id', $product_id);
 
-                if (isset($product['size']) && isset($product['color'])) {
-                    $stock->where('size', $product['size'])
-                        ->where('color', $product['color']);
-                }
+                // if (isset($product['size']) && isset($product['color'])) {
+                //     $stock->where('size', $product['size'])
+                //         ->where('color', $product['color']);
+                // }
 
-                $stock->decrement('quantity', $return_quantity);
+                // $stock->decrement('quantity', $return_quantity);
 
             }
         });

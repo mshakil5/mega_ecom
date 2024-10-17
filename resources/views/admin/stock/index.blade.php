@@ -33,11 +33,12 @@
                                 <input type="date" class="form-control" id="toDate" name="toDate">
                             </div>
                             <div class="col-md-3">
-                                <label class="label label-primary">Supplier / Customer</label>
+                                <label class="label label-primary">Warehouses</label>
                                 <select class="form-control select2" id="supplierCustomer" name="supplierCustomer">
                                     <option value="">Select...</option>
-                                    <option value="supplier">Supplier</option>
-                                    <option value="customer">Customer</option>
+                                    @foreach($warehouses as $warehouse)
+                                        <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="col-md-2">
@@ -209,6 +210,12 @@
             $('#systemLossForm')[0].reset();
             $('#quantityError').text('');
         });
+
+        // $('.select2').select2({
+        //     placeholder: 'Select a warehouse',
+        //     allowClear: true
+        // });
+        // $('.select2').css('width', '100%');
     });
 </script>
 
