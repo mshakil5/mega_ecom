@@ -53,16 +53,16 @@
                                         <input type="number" class="form-control" id="phone" name="phone" placeholder="Enter phone">
                                     </div>
                                 </div>
-                                <div class="col-sm-6">
+                                <div class="col-sm-6 d-none">
                                     <div class="form-group">
                                         <label>Password</label>
-                                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
+                                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" value="123456">
                                     </div>
                                 </div>
-                                <div class="col-sm-6">
+                                <div class="col-sm-6 d-none">
                                     <div class="form-group">
                                         <label>Confirm Password</label>
-                                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Enter password">
+                                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Enter password" value="123456">
                                     </div>
                                 </div>
                                 <div class="col-sm-6">

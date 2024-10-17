@@ -63,17 +63,17 @@
                     </div>
                   </div>
 
-                  <div class="row">
+                  <div class="row d-none">
                     <div class="col-sm-6">
                       <div class="form-group">
                         <label>Password</label>
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" value="123456">
                       </div>
                     </div>
                     <div class="col-sm-6">
                       <div class="form-group">
                         <label>Confirm Password</label>
-                        <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Enter confirm password">
+                        <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Enter confirm password" value="123456">
                       </div>
                     </div>
                   </div>
