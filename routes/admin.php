@@ -407,6 +407,10 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/warehouse/{id}', [WareHouseController::class, 'delete']);
     Route::post('/warehouse-status', [WareHouseController::class, 'toggleStatus']);
 
+    Route::post('/warehouse-store', [WareHouseController::class, 'storeWarehouse'])->name('warehouse.store');
+
+    Route::post('/transfer-to-warehouse/{id}', [WarehouseController::class, 'transferToWarehouse'])->name('transferToWarehouse');
+
     // mail content
     Route::get('/mail-content', [MailContentController::class, 'index'])->name('admin.mail-content');
     Route::post('/mail-content', [MailContentController::class, 'store']);

@@ -117,6 +117,7 @@ class StockController extends Controller
             $purchaseHistory->purchase_id = $purchase->id;
             $purchaseHistory->product_id = $product['product_id'];
             $purchaseHistory->quantity = $product['quantity'];
+            $purchaseHistory->remaining_product_quantity = $product['quantity'];
             $purchaseHistory->product_size = $product['product_size'];
             $purchaseHistory->product_color = $product['product_color'];
             $purchaseHistory->purchase_price = $product['unit_price'];
@@ -249,6 +250,7 @@ class StockController extends Controller
 
                     $purchaseHistory->product_id = $product['product_id'];
                     $purchaseHistory->quantity = $product['quantity'];
+                    $purchaseHistory->remaining_product_quantity = $product['quantity'];
                     $purchaseHistory->product_size = $product['product_size'];
                     $purchaseHistory->product_color = $product['product_color'];
                     $purchaseHistory->purchase_price = $product['unit_price'];

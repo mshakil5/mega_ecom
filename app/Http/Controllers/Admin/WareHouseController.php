@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
+use App\Models\Purchase;
+use App\Models\PurchaseHistory;
+use App\Models\Stock;
 
 class WareHouseController extends Controller
 {
@@ -142,6 +145,81 @@ class WareHouseController extends Controller
         $category->save();
 
         return response()->json(['status' => 200, 'message' => 'Status updated successfully']);
+    }
+
+    public function transfer($id)
+    {
+        $purchase = Purchase::with('purchaseHistory.product')->findOrFail($id);
+        $warehouses = Warehouse::orderby('id','DESC')->get();
+        return view('admin.stock.purchase_transfer', compact('purchase', 'warehouses'));
+    }
+
+    public function storeWarehouse(Request $request)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'location' => 'required|string|max:255',
+            'operator_name' => 'required|string|max:255',
+            'operator_phone' => 'required|numeric',
+        ]);
+
+        $warehouse = Warehouse::create($validatedData);
+
+        return response()->json([
+            'success' => true,
+            'warehouse' => $warehouse
+        ]);
+    }
+
+    public function transferToWarehouse(Request $request, $purchaseId)
+    {
+        $request->validate([
+            'quantities.*' => 'required|array',
+            'warehouses.*' => 'required|array',
+        ]);
+    
+        foreach ($request->quantities as $historyId => $quantities) {
+            foreach ($quantities as $index => $quantity) {
+                $warehouseId = $request->warehouses[$historyId][$index];
+    
+                $purchaseHistory = PurchaseHistory::find($historyId);
+    
+                if (!$purchaseHistory) {
+                    continue;
+                }
+    
+                $purchaseHistory->remaining_product_quantity -= $quantity;
+                $purchaseHistory->transferred_product_quantity += $quantity;
+                $purchaseHistory->save();
+
+                $size = $request->sizes[$historyId][0];
+                $color = $request->colors[$historyId][0];
+                $warehouseId = $request->warehouses[$historyId][0];
+    
+                $stock = Stock::where('product_id', $purchaseHistory->product_id)
+                    ->where('size', $size)
+                    ->where('color', $color)
+                    ->where('warehouse_id', $warehouseId)
+                    ->first();
+    
+                if ($stock) {
+                    $stock->quantity += $quantity;
+                    $stock->updated_by = auth()->id();
+                    $stock->save();
+                } else {
+                    Stock::create([
+                        'product_id' => $purchaseHistory->product_id,
+                        'quantity' => $quantity,
+                        'size' => $size,
+                        'color' => $color,
+                        'created_by' => auth()->id(),
+                        'warehouse_id' => $warehouseId,
+                    ]);
+                }
+            }
+        }
+    
+        return redirect()->back()->with('success', 'Stock transferred successfully.');
     }
 
 }
