@@ -46,6 +46,9 @@
                                         <a href="{{ route('returnProduct', $purchase->id) }}" class="btn btn-sm btn-warning">
                                             <i class="fas fa-undo-alt"></i>
                                         </a>
+                                        <a href="{{ route('transferToWarehouse', $purchase->id) }}" class="btn btn-sm btn-success">
+                                            <i class="fas fa-arrow-right"></i> Transfer to Warehouse
+                                        </a>
                                     </td>
                                 </tr>
                                 @endforeach

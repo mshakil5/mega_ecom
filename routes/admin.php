@@ -228,6 +228,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::post('/add-stock', [StockController::class, 'stockStore']);
 
+    Route::get('/transfer-to-warehouse/{id}', [WarehouseController::class, 'transfer'])->name('transferToWarehouse');
+
     Route::get('/product-purchase-history', [StockController::class, 'productPurchaseHistory'])->name('productPurchaseHistory');
     Route::get('/purchase/{purchase}/history', [StockController::class, 'getPurchaseHistory'])->name('purchase.history');
     
