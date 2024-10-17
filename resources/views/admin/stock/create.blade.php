@@ -95,7 +95,7 @@
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="quantity">Quantity</label>
-                                        <input type="number" class="form-control" id="quantity" name="quantity" placeholder="Enter quantity">
+                                        <input type="number" class="form-control quantity" id="quantity" name="quantity" placeholder="Enter quantity" min="1">
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
@@ -404,13 +404,13 @@
         updateSummary();
 
         $('#addProductBtn').click(function() {
-            var selectedSize = $('#product_size').val() || 'M';
-            var selectedColor = $('#product_color').val() || 'Black';
+            var selectedSize = $('#product_size').val() || '';
+            var selectedColor = $('#product_color').val() || '';
             
             var selectedProduct = $('#product_id option:selected');
             var productId = selectedProduct.val();
             var productName = selectedProduct.data('name');
-            var quantity = $('#quantity').val();
+            var quantity = $('#quantity').val() || 1;
             var unitPrice = $('#unit_price').val();
             var vatPercent = 5;
 
@@ -438,7 +438,7 @@
             if (productId && quantity && unitPrice) {
                 var productRow = `<tr data-id="${productId}">
                                     <td>${productName}</td>
-                                    <td><input type="number" class="form-control quantity" value="${quantity}" /></td>
+                                    <td><input type="number" class="form-control quantity" value="${quantity}" min="1" /></td>
                                     <td>${selectedSize}</td>
                                     <td>${selectedColor}</td>
                                     <td><input type="number" step="0.01" class="form-control unit_price" value="${unitPrice}" /></td>
@@ -458,10 +458,16 @@
             }
         });
 
+        $(document).on('input', '.quantity', function() {
+            if ($(this).val() < 1) {
+                $(this).val(1);
+            }
+        });
+
         $(document).on('click', '.remove-product', function() {
             $(this).closest('tr').remove();
-
             updateSummary();
+            $('#product_id').val(null).trigger('change');
         });
 
         $(document).on('input', '#productTable input.quantity, #productTable input.unit_price, #productTable input.vat_percent', function() {
