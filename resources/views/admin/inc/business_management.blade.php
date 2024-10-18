@@ -209,19 +209,21 @@
             </ul>
         </li>
 
-        <!-- customer -->
-        <li class="nav-item">
-            <a href="{{ route('allcustomer') }}" class="nav-link {{ (request()->is('admin/new-customer*')) ? 'active' : '' }}">
-                <i class="nav-icon fas fa-user"></i>
-                <p>Whole Saler</p>
-            </a>
-        </li>
 
         <!-- customer -->
         <li class="nav-item">
             <a href="{{ route('allwarehouse') }}" class="nav-link {{ (request()->is('admin/warehouse*')) ? 'active' : '' }}">
                 <i class="nav-icon fas fa-truck"></i>
                 <p>Warehouse</p>
+            </a>
+        </li>
+
+        
+        <!-- customer -->
+        <li class="nav-item">
+            <a href="{{ route('allcustomer') }}" class="nav-link {{ (request()->is('admin/new-customer*')) ? 'active' : '' }}">
+                <i class="nav-icon fas fa-user"></i>
+                <p>Whole Saler</p>
             </a>
         </li>
 

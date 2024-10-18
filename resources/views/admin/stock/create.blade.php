@@ -46,10 +46,22 @@
                                         <input type="text" class="form-control" id="supplier_balance" name="supplier_balance" readonly placeholder="Enter supplier previous due">
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 d-none">
                                     <div class="form-group">
                                         <label for="vat_reg">VAT Reg#</label>
                                         <input type="text" class="form-control" id="vat_reg" name="vat_reg" placeholder="Enter VAT Reg#">
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label for="warehouse_id">Warehouse</label>
+                                        <select name="warehouse_id" id="warehouse_id" class="form-control">
+                                            <option value="">Select</option>
+                                            @foreach ($warehouses as $warehouse)
+                                            <option value="{{$warehouse->id}}">{{$warehouse->name}}-{{$warehouse->location}}</option>
+                                                
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
@@ -500,6 +512,7 @@
             formData.invoice = $('#invoice').val();
             formData.purchase_date = $('#purchase_date').val();
             formData.supplier_id = $('#supplier_id').val();
+            formData.warehouse_id = $('#warehouse_id').val();
             formData.vat_reg = $('#vat_reg').val();
             formData.purchase_type = $('#purchase_type').val();
             formData.ref = $('#ref').val();

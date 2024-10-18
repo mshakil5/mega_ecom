@@ -37,7 +37,7 @@
                                 <select class="form-control select2" id="supplierCustomer" name="supplierCustomer">
                                     <option value="">Select...</option>
                                     @foreach($warehouses as $warehouse)
-                                        <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
+                                        <option value="{{ $warehouse->id }}">{{ $warehouse->name }}-{{ $warehouse->location }}</option>
                                     @endforeach
                                 </select>
                             </div>

@@ -23,7 +23,7 @@ class StockController extends Controller
 {
     public function getStock()
     {
-        $warehouses = Warehouse::orderby('id','DESC')->get();
+        $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
         return view('admin.stock.index', compact('warehouses'));
     }
 
@@ -46,7 +46,8 @@ class StockController extends Controller
                 return number_format($row->quantity, 0);
             })
             ->addColumn('warehouse', function ($row) {
-                return $row->warehouse ? $row->warehouse->name : 'N/A';
+                $warehouseDtl = '<b>'.$row->warehouse ? $row->warehouse->name .'-'. $row->warehouse->location : 'N/A'.'</b>';
+                return $warehouseDtl;
             })
             // ->addColumn('action', function ($row) {
             // return '<button class="btn btn-sm btn-danger" onclick="openLossModal('.$row->id.')">System Loss</button>';
@@ -77,7 +78,8 @@ class StockController extends Controller
         $suppliers = Supplier::where('status', 1)->select('id', 'name')->orderby('id','DESC')->get();
         $colors = Color::orderby('id','DESC')->get();
         $sizes = Size::orderby('id','DESC')->get();
-        return view('admin.stock.create', compact('products', 'suppliers', 'colors', 'sizes'));
+        $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
+        return view('admin.stock.create', compact('products', 'suppliers', 'colors', 'sizes','warehouses'));
     }
 
     public function stockStore(Request $request)
@@ -160,24 +162,29 @@ class StockController extends Controller
                 $existingProduct->save();
             }
 
-            // $stock = Stock::where('product_id', $product['product_id'])
-            //           ->where('size', $product['product_size'])
-            //           ->where('color', $product['product_color'])
-            //           ->first();
+            if ($request->warehouse_id) {
+                $stock = Stock::where('product_id', $product['product_id'])
+                      ->where('size', $product['product_size'])
+                      ->where('color', $product['product_color'])
+                      ->where('warehouse_id', $request->warehouse_id)
+                      ->first();
+                if ($stock) {
+                    $stock->quantity += $product['quantity'];
+                    $stock->updated_by = Auth::user()->id;
+                    $stock->save();
+                } else {
+                    $newStock = new Stock();
+                    $newStock->warehouse_id = $request->warehouse_id;
+                    $newStock->product_id = $product['product_id'];
+                    $newStock->quantity = $product['quantity'];
+                    $newStock->size = $product['product_size'];
+                    $newStock->color = $product['product_color'];
+                    $newStock->created_by = Auth::user()->id;
+                    $newStock->save();
+                }
+            }
 
-            // if ($stock) {
-            //     $stock->quantity += $product['quantity'];
-            //     $stock->updated_by = Auth::user()->id;
-            //     $stock->save();
-            // } else {
-            //     $newStock = new Stock();
-            //     $newStock->product_id = $product['product_id'];
-            //     $newStock->quantity = $product['quantity'];
-            //     $newStock->size = $product['product_size'];
-            //     $newStock->color = $product['product_color'];
-            //     $newStock->created_by = Auth::user()->id;
-            //     $newStock->save();
-            // }
+            
 
         }
 
