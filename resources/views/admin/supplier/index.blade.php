@@ -31,14 +31,14 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="form-group">
-                                        <label>Code*</label>
-                                        <input type="number" class="form-control" id="id_number" name="id_number" placeholder="Enter code">
+                                        <label>Name*</label>
+                                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter name">
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-group">
-                                        <label>Name*</label>
-                                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter name">
+                                        <label>Supplier ID*</label>
+                                        <input type="number" class="form-control" id="id_number" name="id_number" placeholder="Enter code">
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
@@ -115,7 +115,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="payModalLabel">Pay Balance</h5>
+                <h5 class="modal-title" id="payModalLabel">Supplier Payment Form</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -126,6 +126,20 @@
                         <label for="paymentAmount">Payment Amount</label>
                         <input type="number" class="form-control" id="paymentAmount" name="paymentAmount" placeholder="Enter payment amount">
                     </div>
+                    
+                    <div class="form-group">
+                        <label for="document">Document</label>
+                        <input type="file" class="form-control-file" id="document" name="document">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="payment_type">Payment Type</label>
+                        <select name="payment_type" id="payment_type" class="form-control" >
+                            <option value="cash">Cash</option>
+                            <option value="bank">Bank</option>
+                        </select>
+                    </div>
+
                     <div class="form-group">
                         <label for="paymentNote">Payment Note</label>
                         <textarea class="form-control" id="paymentNote" name="paymentNote" rows="3" placeholder="Enter payment note"></textarea>
@@ -153,18 +167,13 @@
                             <thead>
                                 <tr>
                                     <th>Sl</th>
-                                    <th>Code</th>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Phone</th>
-                                    <th>Stock</th>
+                                    <th>Supplier ID</th>
+                                    <th>Name/Email/Number</th>
+                                    {{-- <th>Stock</th> --}}
                                     <th>Balance</th>
-                                    <th>Active</th>
-                                    <!-- <th>Vat Reg</th>
-                                    <th>Address</th>
-                                    <th>Company</th> -->
                                     <th>Transactions</th>
                                     <th>Orders</th>
+                                    <th>Active</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -173,41 +182,46 @@
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
                                     <td>{{ $data->id_number }}</td>
-                                    <td>{{ $data->name }}</td>
-                                    <td>{{ $data->email }}</td>
-                                    <td>{{ $data->phone }}</td>
-                                    <td>
+                                    <td>{{ $data->name }} <br> {{ $data->email }} <br>{{ $data->phone }}</td>
+                                    {{-- <td>
                                         <button class="btn btn-info" type="button" onclick="location.href='{{ route('supplier.stocks', ['id' => $data->id]) }}'">Stocks</button>
-                                    </td>
+                                    </td> --}}
                                     <td>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <span>{{ $data->balance }}</span>
-                                            <button class="btn btn-sm btn-warning pay-btn" data-id="{{ $data->id }}" data-supplier-id="{{ $data->id }}">Pay</button>
+                                        <div class="align-items-center">
+                                            @if ($data->supplier_transaction_sum_total_amount-$data->total_decreament > 0)
+                                                <span  class="btn btn-sm btn-danger">£ {{ number_format($data->supplier_transaction_sum_total_amount - $data->total_decreament, 2) }}</span>
+                                                <button class="btn btn-sm btn-warning pay-btn" data-id="{{ $data->id }}" data-supplier-id="{{ $data->id }}">Pay</button>
+                                            @endif
                                         </div>
                                       <input type="hidden" id="supplierId" name="supplierId">  
                                     </td>
-                                    <td>
-                                        <div class="custom-control custom-switch">
-                                            <input type="checkbox" class="custom-control-input toggle-status" id="customSwitchStatus{{ $data->id }}" data-id="{{ $data->id }}" {{ $data->status == 1 ? 'checked' : '' }}>
-                                            <label class="custom-control-label" for="customSwitchStatus{{ $data->id }}"></label>
-                                        </div>
-                                    </td>
-                                    <!-- <td>{{ $data->vat_reg }}</td>
-                                    <td>{{ $data->address }}</td>
-                                    <td>{{ $data->company }}</td> -->
                                     <td>
                                         <a href="{{ route('supplier.transactions', ['supplierId' => $data->id]) }}" class="btn btn-info">
                                             Transactions
                                         </a>
                                     </td>
                                     <td>
-                                        @if ($data->order_details_count > 0)
+                                        {{-- @if ($data->order_details_count > 0)
                                             <a href="{{ route('supplier.orders', ['supplierId' => $data->id]) }}" class="btn btn-info">
                                                 Orders ({{ $data->order_details_count }})
                                             </a>
                                         @else
                                             0
+                                        @endif --}}
+
+                                        @if ($data->purchase_count > 0)
+                                            <a href="{{ route('supplier.purchase', ['supplierId' => $data->id]) }}" class="btn btn-info">
+                                                Purchase ({{ $data->purchase_count }})
+                                            </a>
+                                        @else
+                                            0
                                         @endif
+                                    </td>
+                                    <td>
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input toggle-status" id="customSwitchStatus{{ $data->id }}" data-id="{{ $data->id }}" {{ $data->status == 1 ? 'checked' : '' }}>
+                                            <label class="custom-control-label" for="customSwitchStatus{{ $data->id }}"></label>
+                                        </div>
                                     </td>
                                     <td>
                                         <a id="EditBtn" rid="{{ $data->id }}">
@@ -478,30 +492,43 @@
         $("#contentContainer").on('click', '.pay-btn', function () {
             var id = $(this).data('id');
             var supplierId = $(this).data('supplier-id');
-
+            console.log(supplierId);
             $('#payModal').modal('show');
             $('#payForm').off('submit').on('submit', function (event) {
                 event.preventDefault();
 
-                var paymentAmount = $('#paymentAmount').val();
-                var paymentNote = $('#paymentNote').val();
-                // console.log('supplierId:', supplierId);
+                var form_data = new FormData();
+                form_data.append("id", id);
+                form_data.append("supplierId", supplierId);
+                form_data.append("paymentAmount", $("#paymentAmount").val());
+                form_data.append("payment_type", $("#payment_type").val());
+                form_data.append("paymentNote", $("#paymentNote").val());
+
+                var paydoc = document.getElementById('document');
+                    if(paydoc.files && paydoc.files[0]) {
+                        form_data.append("document", paydoc.files[0]);
+                    }
+
 
                 $.ajax({
-                    url: '{{ URL::to('/admin/pay') }}',
+                    url: '{{ URL::to('/admin/supplier-pay') }}',
                     method: 'POST',
-                    data: {
-                        id: id,
-                        supplier_id: supplierId,
-                        amount: paymentAmount,
-                        note: paymentNote,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    dataType: 'json',
+                    data:form_data,
+                    contentType: false,
+                    processData: false,
+                    // dataType: 'json',
                     success: function (response) {
-                        alert(response.message);
                         $('#payModal').modal('hide');
-                        location.reload();
+                        swal({
+                            text: "Payment store successfully",
+                            icon: "success",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--confirm"
+                            }
+                        }).then(() => {
+                            location.reload();
+                        });
                     },
                     error: function (xhr) {
                         console.log(xhr.responseText);

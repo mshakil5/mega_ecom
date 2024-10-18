@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Purchase;
 use Illuminate\Http\Request;
 use App\Models\Supplier;
 use Illuminate\Support\Str;
@@ -13,13 +14,12 @@ class SupplierController extends Controller
 {
     public function getSupplier()
     {
-        $data = Supplier::withCount('orderDetails')->orderby('id','DESC')->get();
+        $data = Supplier::getAllsuppliersWithBalance();
         return view('admin.supplier.index', compact('data'));
     }
 
     public function supplierStore(Request $request)
     {
-        // dd($request->all());
         if(empty($request->id_number)){
             $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Supplier code \" field..!</b></div>";
             return response()->json(['status'=> 303,'message'=>$message]);
@@ -177,11 +177,20 @@ class SupplierController extends Controller
 
     public function supplierTransactions($supplierId)
     {
+        $supplier = Supplier::whereId($supplierId)->select('id', 'name')->first();
         $transactions = SupplierTransaction::where('supplier_id', $supplierId)
                                 ->orderBy('id', 'desc')
-                                ->select('id', 'amount', 'date', 'note')
+                                ->select('id', 'amount', 'date', 'note','payment_type','table_type','vat', 'discount','total_amount')
                                 ->get();
-        return view('admin.supplier.transactions', compact('transactions'));
+
+    
+                                
+        $totalDrAmount = SupplierTransaction::where('supplier_id', $supplierId)->whereIn('table_type', ['Purchase'])->whereIn('payment_type', ['credit'])->sum('total_amount');
+
+        $totalCrAmount = SupplierTransaction::where('supplier_id', $supplierId)->whereIn('table_type', ['Payment', 'Purchase Return'])->whereIn('payment_type', ['cash','bank','return'])->sum('total_amount');
+
+        $totalBalance = $totalDrAmount - $totalCrAmount;
+        return view('admin.supplier.transactions', compact('transactions','supplier','totalBalance'));
     }
 
     public function showStocks($id)
@@ -213,6 +222,14 @@ class SupplierController extends Controller
             $query->orderBy('created_at', 'DESC');
         }])->findOrFail($supplierId);
         return view('admin.supplier.orders', compact('supplier'));
+    }
+
+    public function showPurchase($supplierId)
+    {
+       
+        $purchases = Purchase::with('purchaseHistory.product','supplier')->where('supplier_id', $supplierId)->orderby('id','DESC')->get();
+        return view('admin.stock.purchase_history', compact('purchases'));
+
     }
 
     public function toggleStatus(Request $request)

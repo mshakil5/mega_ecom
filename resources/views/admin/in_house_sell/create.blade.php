@@ -21,7 +21,7 @@
                                         <input type="date" class="form-control" id="purchase_date" name="purchase_date" placeholder="Enter date" value="{{ now()->format('Y-m-d') }}">
                                     </div>
                                 </div>
-                                <div class="col-sm-2">
+                                <div class="col-sm-4">
                                     <div class="form-group">
                                         <label for="supplier_id">Select Wholesaler*</label>
                                         <select class="form-control" id="user_id" name="user_id">
@@ -40,14 +40,13 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div class="col-sm-2">
+                                <div class="col-sm-2 d-none">
                                     <div class="form-group">
                                         <label for="purchase_type">Transaction Type*</label>
                                         <select class="form-control" id="payment_method" name="payment_method">
-                                            <option value="">Select...</option>
+                                            <option value="credit">Credit</option>
                                             <option value="cash">Cash</option>
                                             <option value="bank">Bank</option>
-                                            <option value="bank">Credit</option>
                                         </select>
                                     </div>
                                 </div>

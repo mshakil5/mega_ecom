@@ -210,6 +210,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/supplier/transactions/{supplierId}', [SupplierController::class, 'supplierTransactions'])->name('supplier.transactions');
 
     Route::get('/suppliers/{supplierId}/orders', [SupplierController::class, 'showOrders'])->name('supplier.orders');
+    Route::get('/suppliers/{supplierId}/purchase', [SupplierController::class, 'showPurchase'])->name('supplier.purchase');
 
     Route::get('/supplier/stocks/{id}', [SupplierController::class, 'showStocks'])->name('supplier.stocks');
     Route::post('/approve-supplier-products', [SupplierController::class, 'approveItem'])->name('approve-item');
@@ -238,7 +239,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::post('/submit-return', [StockController::class, 'returnStore']);
 
-    Route::post('/pay', [TransactionController::class,'pay'])->name('pay');
+    Route::post('/supplier-pay', [TransactionController::class,'pay'])->name('pay');
 
     Route::get('/ads', [AdController::class, 'getAds'])->name('alladds');
     Route::post('/ads', [AdController::class, 'adStore']);

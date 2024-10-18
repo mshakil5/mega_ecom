@@ -16,6 +16,7 @@ use DataTables;
 use App\Models\SystemLose;
 use App\Models\OrderReturn;
 use App\Models\Size;
+use App\Models\SupplierTransaction;
 use App\Models\Warehouse;
 
 class StockController extends Controller
@@ -72,8 +73,8 @@ class StockController extends Controller
 
     public function addstock()
     {
-        $products = Product::orderby('id','DESC')->get();
-        $suppliers = Supplier::orderby('id','DESC')->get();
+        $products = Product::orderby('id','DESC')->select('id', 'name','price', 'product_code')->get();
+        $suppliers = Supplier::where('status', 1)->select('id', 'name')->orderby('id','DESC')->get();
         $colors = Color::orderby('id','DESC')->get();
         $sizes = Size::orderby('id','DESC')->get();
         return view('admin.stock.create', compact('products', 'suppliers', 'colors', 'sizes'));
@@ -124,11 +125,17 @@ class StockController extends Controller
         $purchase->created_by = Auth::user()->id;
         $purchase->save();
 
-        $supplier = Supplier::find($request->supplier_id);
-        if ($supplier) {
-            $supplier->balance -= $request->due_amount;
-            $supplier->save();
-        }
+        $supplier = new SupplierTransaction();
+        $supplier->date = $request->purchase_date;
+        $supplier->supplier_id = $request->supplier_id;
+        $supplier->purchase_id = $purchase->id;
+        $supplier->table_type = "Purchase";
+        $supplier->payment_type = "Credit";
+        $supplier->amount = $request->total_amount;
+        $supplier->vat = $request->total_vat_amount;
+        $supplier->discount = $request->discount ?? 0.00;
+        $supplier->total_amount = $request->net_amount;
+        $supplier->save();
 
         foreach ($request->products as $product) {
             $purchaseHistory = new PurchaseHistory();
@@ -144,7 +151,6 @@ class StockController extends Controller
             $purchaseHistory->total_vat = $purchaseHistory->vat_amount_per_unit * $product['quantity'];
             $purchaseHistory->total_amount = $product['unit_price'] * $product['quantity'];
             $purchaseHistory->total_amount_with_vat = $product['total_price_with_vat'];
-
             $purchaseHistory->created_by = Auth::user()->id;
             $purchaseHistory->save();
 

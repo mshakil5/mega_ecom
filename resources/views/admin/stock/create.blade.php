@@ -48,24 +48,24 @@
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="invoice">Invoice*</label>
-                                        <input type="text" class="form-control" id="invoice" name="invoice" placeholder="Enter invoice">
-                                    </div>
-                                </div>
-                                <div class="col-sm-3">
-                                    <div class="form-group">
                                         <label for="vat_reg">VAT Reg#</label>
                                         <input type="text" class="form-control" id="vat_reg" name="vat_reg" placeholder="Enter VAT Reg#">
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
+                                        <label for="invoice">Invoice*</label>
+                                        <input type="text" class="form-control" id="invoice" name="invoice" placeholder="Enter invoice">
+                                    </div>
+                                </div>
+                                <div class="col-sm-3 d-none">
+                                    <div class="form-group">
                                         <label for="purchase_type">Payment Type*</label>
                                         <select class="form-control" id="purchase_type" name="purchase_type">
                                             <option value="">Select...</option>
                                             <option value="cash">Cash</option>
                                             <option value="bank">Bank</option>
-                                            <option value="bank">Credit</option>
+                                            <option value="credit" selected >Credit</option>
                                         </select>
                                     </div>
                                 </div>
@@ -75,7 +75,7 @@
                                         <input type="text" class="form-control" id="ref" name="ref" placeholder="Enter reference">
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-6">
                                     <div class="form-group">
                                         <label for="remarks">Remarks</label>
                                         <textarea class="form-control" id="remarks" name="remarks" rows="1" placeholder="Enter remarks"></textarea>
@@ -182,13 +182,13 @@
                                             <input type="text" class="form-control" id="net_amount" readonly style="width: 100px; margin-left: auto;">
                                         </div>
                                     </div>
-                                    <div class="row justify-content-end mt-3">
+                                    <div class="row justify-content-end mt-3 d-none ">
                                         <div class="col-sm-3 d-flex align-items-center">
                                             <span class="">Paid Amount:</span>
                                             <input type="number" step="0.01" class="form-control" id="paid_amount" name="paid_amount" style="width: 100px; margin-left: auto;">
                                         </div>
                                     </div>
-                                    <div class="row justify-content-end mt-3">
+                                    <div class="row justify-content-end mt-3 d-none">
                                         <div class="col-sm-3 d-flex align-items-center">
                                             <span class="">Due Amount:</span>
                                             <input type="text" class="form-control" id="due_amount" readonly style="width: 100px; margin-left: auto;">

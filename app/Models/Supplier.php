@@ -36,4 +36,32 @@ class Supplier extends Authenticatable
     {
         return $this->hasMany(OrderDetails::class);
     }
+
+    public function purchase()
+    {
+        return $this->hasMany(Purchase::class);
+    }
+
+    public function supplierTransaction()
+    {
+        return $this->hasMany(SupplierTransaction::class);
+    }
+
+    public static function getAllsuppliersWithBalance()
+    {
+        $suppliers = self::withCount('orderDetails','purchase')->withSum(['supplierTransaction' => function ($query){
+            $query->where('table_type', 'Purchase')->where('status', 0);
+        }], 'total_amount')
+        ->orderby('id','DESC')
+        ->get();
+
+        $suppliers->each(function ($data) {
+            $data->total_decreament = $data->supplierTransaction()
+                ->whereIn('table_type', ['Purchase Return', 'Payment'])
+                ->where('status', 0)
+                ->sum('total_amount');
+        });
+
+        return $suppliers;
+    }
 }

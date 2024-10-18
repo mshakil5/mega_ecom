@@ -16,25 +16,63 @@
 
           <div class="card card-secondary">
             <div class="card-header">
-              <h3 class="card-title">All Transactions</h3>
+              <h3 class="card-title">{{$supplier->name}} All Transactions</h3>
             </div>
             <!-- /.card-header -->
             <div class="card-body">
+
+              <div class="text-center mb-4 company-name-container">
+                  <h2>{{$supplier->name}}</h2>
+
+                      <h4>Supplier transaction history</h4>
+              </div>
+
+
+
               <table id="example1" class="table table-bordered table-striped">
                 <thead>
                 <tr>
                   <th>Sl</th>
                   <th>Date</th>
-                  <th>Amount</th>
+                  <th>Description</th>
+                  <th>Payment Type</th>
+                  <th>Document</th>
+                  <th>Dr Amount</th>
+                  <th>Cr Amount</th>
+                  <th>Balance</th>
                   <th>Note</th>
                 </tr>
                 </thead>
                 <tbody>
+
+                  @php
+                      $balance = $totalBalance;
+                  @endphp
+
+
                   @foreach ($transactions as $key => $data)
                   <tr>
                     <td>{{ $key + 1 }}</td>
                    <td>{{ \Carbon\Carbon::parse($data->date)->format('d-m-Y') }}</td>
-                    <td>{{ $data->amount }}</td>
+                    <td>{{ $data->table_type }}</td>
+                    <td>{{ $data->payment_type }}</td>
+                    <td>document here</td>
+
+                    @if(in_array($data->payment_type, ['Credit']))
+                      <td style="text-align: right">{{ number_format($data->total_amount, 2) }}</td>
+                      <td></td>
+                      <td style="text-align: right">{{ number_format($balance, 2) }}</td>
+                      @php
+                          $balance = $balance - $data->total_amount;
+                      @endphp
+                    @elseif(in_array($data->payment_type, ['cash', 'bank', 'return']))
+                      <td></td>
+                      <td style="text-align: right">{{ number_format($data->total_amount, 2) }}</td>
+                      <td style="text-align: right">{{ number_format($balance, 2) }}</td>
+                      @php
+                          $balance = $balance + $data->total_amount;
+                      @endphp
+                    @endif
                     <td>{!! $data->note !!}</td>
                   </tr>
                   @endforeach

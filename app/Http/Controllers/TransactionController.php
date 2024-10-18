@@ -11,22 +11,29 @@ class TransactionController extends Controller
     public function pay(Request $request)
     {
         $request->validate([
-            'supplier_id' => 'required',
-            'amount' => 'required',
-            'note' => 'nullable',
+            'supplierId' => 'required',
+            'paymentAmount' => 'required',
+            'paymentNote' => 'nullable',
         ]);
 
         $transaction = new SupplierTransaction();
-        $transaction->supplier_id = $request->supplier_id;
-        $transaction->amount = $request->amount;
-        $transaction->note = $request->note;
+        $transaction->supplier_id = $request->supplierId;
+
+        if ($request->hasFile('image')) {
+            $uploadedFile = $request->file('image');
+            $randomName = mt_rand(10000000, 99999999). '.'. $uploadedFile->getClientOriginalExtension();
+            $destinationPath = public_path('images/supplier/document/');
+            $path = $uploadedFile->move($destinationPath, $randomName); 
+            $transaction->image = $randomName;
+        }
+
+        $transaction->amount = $request->paymentAmount;
+        $transaction->total_amount = $request->paymentAmount;
+        $transaction->payment_type = $request->payment_type;
+        $transaction->note = $request->paymentNote;
+        $transaction->table_type = "Payment";
         $transaction->date = date('Y-m-d');
         $transaction->save();
-
-        $supplier = Supplier::findOrFail($request->supplier_id);
-        $supplier->balance += $request->amount; 
-        $supplier->save();
-
         return response()->json([
             'status' => 'success',
             'message' => 'Payment processed successfully!',
