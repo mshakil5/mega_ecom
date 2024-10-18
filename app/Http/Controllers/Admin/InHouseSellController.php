@@ -49,6 +49,7 @@ class InHouseSellController extends Controller
 
         $order = new Order();
         $order->invoice = random_int(100000, 999999);
+        $order->warehouse_id = $request->warehouse_id;
         $order->purchase_date = $validated['purchase_date'];
         $order->user_id = $validated['user_id'];
         $order->payment_method = $validated['payment_method'];
@@ -65,6 +66,7 @@ class InHouseSellController extends Controller
         foreach ($products as $product) {
             $orderDetail = new OrderDetails();
             $orderDetail->order_id = $order->id;
+            $orderDetail->warehouse_id = $request->warehouse_id;
             $orderDetail->product_id = $product['product_id'];
             $orderDetail->quantity = $product['quantity'];
             $orderDetail->size = $product['product_size'];
@@ -74,15 +76,20 @@ class InHouseSellController extends Controller
             $orderDetail->status = 1;
             $orderDetail->save();
 
-            $stock = Stock::where('product_id', $product['product_id'])
+            if ($request->warehouse_id) {
+                $stock = Stock::where('product_id', $product['product_id'])
                 ->where('size', $product['product_size'])
                 ->where('color', $product['product_color'])
+                ->where('warehouse_id', $request->warehouse_id)
                 ->first();
-
-            if ($stock) {
-                $stock->quantity -= $product['quantity'];
-                $stock->save();
+                if ($stock) {
+                    $stock->quantity -= $product['quantity'];
+                    $stock->save();
+                }else {
+                    # code...
+                }
             }
+            
         }
 
         $encoded_order_id = base64_encode($order->id);

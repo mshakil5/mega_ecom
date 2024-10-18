@@ -502,6 +502,7 @@
             
             formData.push({ name: 'purchase_date', value: $('#purchase_date').val() });
             formData.push({ name: 'user_id', value: $('#user_id').val() });
+            formData.push({ name: 'warehouse_id', value: $('#warehouse_id').val() });
             formData.push({ name: 'payment_method', value: $('#payment_method').val() });
             formData.push({ name: 'ref', value: $('#ref').val() });
             formData.push({ name: 'remarks', value: $('#remarks').val() });
