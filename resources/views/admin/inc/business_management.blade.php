@@ -106,6 +106,8 @@
             </ul>
         </li>
 
+
+
         
         <!-- orders -->
         <li class="nav-item dropdown {{ request()->is('admin/*-orders*') ? 'menu-open' : '' }}">
@@ -162,6 +164,31 @@
                     <a href="{{ route('cancelledorders') }}" class="nav-link {{ request()->is('admin/cancelled-orders*') ? 'active' : '' }}">
                         <i class="fas fa-ban nav-icon"></i>
                         <p>Cancelled Orders</p>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        
+        <!-- In house sales -->
+        <li class="nav-item {{ (request()->is('admin/in-house-sell*') || request()->is('admin/quotations*')) ? 'menu-open' : '' }}">
+            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/in-house-sell*') || request()->is('admin/quotations*')) ? 'active' : '' }}">
+                <i class="nav-icon fas fa-industry"></i>
+                <p>
+                    In House<i class="fas fa-angle-left right"></i>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="{{ route('inhousesell') }}" class="nav-link {{ (request()->is('admin/in-house-sell*')) ? 'active' : '' }}">
+                        <i class="fas fa-industry nav-icon"></i>
+                        <p>In House Sale</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('allquotations') }}" class="nav-link {{ (request()->is('admin/quotations*')) ? 'active' : '' }}">
+                        <i class="fas fa-box nav-icon"></i>
+                        <p>Quotation</p>
                     </a>
                 </li>
             </ul>
@@ -302,29 +329,6 @@
                     <a href="{{ route('flashsells') }}" class="nav-link {{ request()->routeIs('flashsells') ? 'active' : '' }}">
                         <i class="fas fa-list nav-icon"></i>
                         <p>Flash Sells</p>
-                    </a>
-                </li>
-            </ul>
-        </li>
-
-        <li class="nav-item {{ (request()->is('admin/in-house-sell*') || request()->is('admin/quotations*')) ? 'menu-open' : '' }}">
-            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/in-house-sell*') || request()->is('admin/quotations*')) ? 'active' : '' }}">
-                <i class="nav-icon fas fa-industry"></i>
-                <p>
-                    In House<i class="fas fa-angle-left right"></i>
-                </p>
-            </a>
-            <ul class="nav nav-treeview">
-                <li class="nav-item">
-                    <a href="{{ route('inhousesell') }}" class="nav-link {{ (request()->is('admin/in-house-sell*')) ? 'active' : '' }}">
-                        <i class="fas fa-industry nav-icon"></i>
-                        <p>In House Sale</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('allquotations') }}" class="nav-link {{ (request()->is('admin/quotations*')) ? 'active' : '' }}">
-                        <i class="fas fa-box nav-icon"></i>
-                        <p>Quotations</p>
                     </a>
                 </li>
             </ul>

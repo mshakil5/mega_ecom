@@ -162,4 +162,13 @@ class CustomerController extends Controller
         return response()->json($user);
     }
 
+    public function toggleStatus(Request $request)
+    {
+        $customer = User::findOrFail($request->id);
+        $customer->status = $request->status;
+        $customer->save();
+
+        return response()->json(['message' => 'Status updated successfully']);
+    }
+
 }

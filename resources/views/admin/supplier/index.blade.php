@@ -174,7 +174,7 @@
                                     <th>Transactions</th>
                                     <th>Orders</th>
                                     <th>Active</th>
-                                    <th>Action</th>
+                                    <th style="text-align: center">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -224,12 +224,25 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <a id="EditBtn" rid="{{ $data->id }}">
+
+                                        <a class="btn btn-app">
+                                            <i class="fas fa-envelope"></i> Email
+                                        </a>
+                                        <a class="btn btn-app" id="EditBtn" rid="{{ $data->id }}">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                        
+                                        <a class="btn btn-app" id="deleteBtn" rid="{{ $data->id }}">
+                                            <i class="fa fa-trash-o" style="color: red; font-size:16px;"></i>Delete
+                                        </a>
+                                        
+                                        {{-- <a href="#"><i class="fa fa-envelope-o" style="color: #747678;font-size:16px;"></i></a> --}}
+                                        {{-- <a id="EditBtn" rid="{{ $data->id }}">
                                             <i class="fa fa-edit" style="color: #2196f3; font-size:16px;"></i>
                                         </a>
                                         <a id="deleteBtn" rid="{{ $data->id }}">
                                             <i class="fa fa-trash-o" style="color: red; font-size:16px;"></i>
-                                        </a>
+                                        </a> --}}
                                     </td>
                                 </tr>
                                 @endforeach

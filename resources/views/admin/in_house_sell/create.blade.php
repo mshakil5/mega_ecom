@@ -21,7 +21,7 @@
                                         <input type="date" class="form-control" id="purchase_date" name="purchase_date" placeholder="Enter date" value="{{ now()->format('Y-m-d') }}">
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="supplier_id">Select Wholesaler*</label>
                                         <select class="form-control" id="user_id" name="user_id">
@@ -40,11 +40,24 @@
                                         </button>
                                     </div>
                                 </div>
+                                
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <label for="warehouse_id">Warehouse</label>
+                                        <select name="warehouse_id" id="warehouse_id" class="form-control">
+                                            <option value="">Select</option>
+                                            @foreach ($warehouses as $warehouse)
+                                            <option value="{{$warehouse->id}}">{{$warehouse->name}}-{{$warehouse->location}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
                                 <div class="col-sm-2 d-none">
                                     <div class="form-group">
                                         <label for="purchase_type">Transaction Type*</label>
                                         <select class="form-control" id="payment_method" name="payment_method">
-                                            <option value="credit">Credit</option>
+                                            <option value="credit" selected>Credit</option>
                                             <option value="cash">Cash</option>
                                             <option value="bank">Bank</option>
                                         </select>
@@ -695,8 +708,9 @@
                 data: formData,
                 processData: false,
                 contentType: false,
-                success: function() {
-                    $('#user_id').append(`<option value="">${$('#name').val()} ${$('#surname').val() || ''}</option>`);
+                success: function(response) {
+                    console.log(response);
+                    $('#user_id').append(`<option value="${response.id}" selected>${$('#name').val()} ${$('#surname').val() || ''}</option>`);
                     $('#newWholeSalerForm')[0].reset();
                     $('#newWholeSalerModal').modal('hide');
 

@@ -120,6 +120,7 @@
                   <th>Surname</th>
                   <th>Email</th>
                   <th>Phone</th>
+                  <th>Status</th>
                   <th>Action</th>
                 </tr>
                 </thead>
@@ -132,6 +133,15 @@
                     <td>{{$data->email}}</td>
                     <td>{{$data->phone}}</td>
                     <td>
+                      
+                      <div class="custom-control custom-switch">
+                          <input type="checkbox" class="custom-control-input toggle-status" id="customSwitchStatus{{ $data->id }}" data-id="{{ $data->id }}" {{ $data->status == 1 ? 'checked' : '' }}>
+                          <label class="custom-control-label" for="customSwitchStatus{{ $data->id }}"></label>
+                      </div>
+
+                    </td>
+                    <td>
+                      <a href="#"><i class="fa fa-envelope-o" style="color: #747678;font-size:16px;"></i></a>
                       <a id="EditBtn" rid="{{$data->id}}"><i class="fa fa-edit" style="color: #2196f3;font-size:16px;"></i></a>
                       <a id="deleteBtn" rid="{{$data->id}}"><i class="fa fa-trash-o" style="color: red;font-size:16px;"></i></a>
                     </td>
@@ -164,6 +174,40 @@
       }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     });
   </script>
+
+<script>
+  // customer status change 
+  $(document).ready(function() {
+  $('.toggle-status').change(function() {
+      var isChecked = $(this).is(':checked');
+      var customerId = $(this).data('id');
+
+      $.ajax({
+          url: '/admin/toggle-customer-status',
+          method: 'POST',
+          data: {
+              _token: '{{ csrf_token() }}',
+              id: customerId,
+              status: isChecked ? 1 : 0
+          },
+          success: function(response) {
+              swal({
+                  text: "Status updated successfully",
+                  icon: "success",
+              });
+          },
+          error: function(xhr) {
+              console.error(xhr.responseText);
+              swal({
+                  text: "There was an error updating the supplier status.",
+                  icon: "error",
+              });
+          }
+      });
+  });
+});
+
+</script>
 
 <script>
   $(document).ready(function () {

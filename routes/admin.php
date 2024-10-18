@@ -72,6 +72,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/new-customer/{id}/edit', [CustomerController::class, 'customerEdit']);
     Route::post('/new-customer-update', [CustomerController::class, 'customerUpdate']);
     Route::get('/new-customer/{id}', [CustomerController::class, 'customerDelete']);
+    Route::post('/toggle-customer-status', [CustomerController::class, 'toggleStatus']);
 
     Route::post('/customer-store', [CustomerController::class, 'store'])->name('customer.store');
 
@@ -250,7 +251,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/ads-status', [AdController::class, 'toggleStatus']);
 
     //Orders
-    Route::get('/all-order', [OrderController::class, 'allOrder'])->name('allorder');
+    Route::get('/all-order', [OrderController::class, 'getAllOrder'])->name('getallorder');
     Route::get('/all-orders', [OrderController::class, 'allOrders'])->name('allorders');
     Route::get('/pending-orders', [OrderController::class, 'pendingOrders'])->name('pendingorders');
     Route::get('/processing-orders', [OrderController::class, 'processingOrders'])->name('processingorders');

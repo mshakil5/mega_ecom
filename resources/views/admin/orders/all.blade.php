@@ -13,8 +13,8 @@
                         <table id="pending-orders-table" class="table table-bordered table-striped table-fluid">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Email</th>
+                                    <th>Name/Email</th>
+                                    {{-- <th>Email</th> --}}
                                     <th>Phone</th>
                                     <th>Subtotal</th>
                                     <th>Shipping</th>
@@ -41,10 +41,10 @@
         $('#pending-orders-table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('allorder') }}",
+            ajax: "{{ route('getallorder') }}",
             columns: [
                 { data: 'name', name: 'name' },
-                { data: 'email', name: 'email' },
+                // { data: 'email', name: 'email' },
                 { data: 'phone', name: 'phone' },
                 { data: 'subtotal_amount', name: 'subtotal_amount' },
                 { data: 'shipping_amount', name: 'shipping_amount' },

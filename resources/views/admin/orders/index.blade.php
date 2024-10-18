@@ -13,9 +13,7 @@
                         <table id="example1" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Phone</th>
+                                    <th>Name/Email/Phone</th>
                                     <th>Address</th>
                                     <th>Status</th>                                    
                                     <th>Type</th>                                    
@@ -34,13 +32,7 @@
                                 @foreach ($orders as $order)
                                 <tr>
                                     <td>
-                                        {{ optional($order->user)->name ?? $order->name }} {{ optional($order->user)->surname ?? '' }}
-                                    </td>
-                                    <td>
-                                        {{ optional($order->user)->email ?? $order->email }}
-                                    </td>
-                                    <td>
-                                        {{ optional($order->user)->phone ?? $order->phone }}
+                                        {{ optional($order->user)->name ?? $order->name }} {{ optional($order->user)->surname ?? '' }} <br> {{ optional($order->user)->email ?? $order->email }} <br> {{ optional($order->user)->phone ?? $order->phone }}
                                     </td>
                                     <td>
                                         {{ optional($order->user)->house_number ?? $order->house_number }},

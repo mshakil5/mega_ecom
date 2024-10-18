@@ -13,6 +13,7 @@ use App\Models\CompanyDetails;
 use PDF;
 use App\Models\Color;
 use App\Models\Size;
+use App\Models\Warehouse;
 
 class InHouseSellController extends Controller
 {
@@ -22,7 +23,8 @@ class InHouseSellController extends Controller
         $products = Product::orderby('id','DESC')->get();
         $colors = Color::orderby('id','DESC')->get();
         $sizes = Size::orderby('id','DESC')->get();
-        return view('admin.in_house_sell.create', compact('customers', 'products', 'colors', 'sizes'));
+        $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
+        return view('admin.in_house_sell.create', compact('customers', 'products', 'colors', 'sizes','warehouses'));
     }
 
     public function inHouseSellStore(Request $request)

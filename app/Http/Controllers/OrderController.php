@@ -909,7 +909,7 @@ class OrderController extends Controller
         return view('admin.orders.all');
     }
 
-    public function allOrder()
+    public function getAllOrder()
     {
         return DataTables::of(Order::with('user')
                         ->whereIn('order_type', [0, 1])
@@ -942,13 +942,13 @@ class OrderController extends Controller
                             return isset($statusLabels[$order->status]) ? $statusLabels[$order->status] : 'Unknown';
                         })
                         ->addColumn('name', function ($order) {
-                            return $order->name;
+                            return '' . $order->user->name . ', ' . $order->user->email;
                         })
                         ->addColumn('email', function ($order) {
-                            return $order->email;
+                            return $order->user->email;
                         })
                         ->addColumn('phone', function ($order) {
-                            return $order->phone;
+                            return $order->user->phone;
                         })
                         ->addColumn('type', function ($order) {
                             return $order->order_type == 0 ? 'Frontend' : 'In-house Sale';
