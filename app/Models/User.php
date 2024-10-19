@@ -80,4 +80,14 @@ class User extends Authenticatable
         );
     }
 
+    public function customerTransaction()
+    {
+        return $this->hasMany(Transaction::class, 'customer_id');
+    }
+
+    public function orderDetails()
+    {
+        return $this->hasMany(Order::class);
+    }
+
 }

@@ -46,6 +46,8 @@ return new class extends Migration
             $table->string('income_id')->nullable();
             $table->string('expense_id')->nullable();
             $table->string('equity_id')->nullable();
+            $table->string('document')->nullable();
+            $table->longtext('note')->nullable();
             $table->boolean('status')->default(0); // 0 = Approved, 1 = Declined, 2= Pending
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();

@@ -76,6 +76,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::post('/customer-store', [CustomerController::class, 'store'])->name('customer.store');
 
+    Route::post('/customer-pay', [CustomerController::class,'pay']);    
+
     //Contact Email crud
     Route::get('/contact-email', [ContactMailController::class, 'getContactEmail'])->name('allcontactemail');
     Route::post('/contact-email', [ContactMailController::class, 'contactEmailStore']);

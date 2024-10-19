@@ -6,12 +6,36 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Transaction;
 
 class CustomerController extends Controller
 {
     public function getCustomer()
     {
-        $data = User::where('is_type', '0')->orderby('id','DESC')->get();
+        $data = User::where('is_type', '0')
+            ->with(['customerTransaction' => function ($query) {
+                $query->where('table_type', 'Sales')
+                    ->whereNotNull('customer_id')
+                    ->whereNull('chart_of_account_id')
+                    ->where('status', 0);        
+            }])
+            ->withSum(['customerTransaction as total_increament' => function ($query) {
+                $query->where('table_type', 'Sales')
+                    ->where('status', 0)
+                    ->whereNotNull('customer_id')
+                    ->whereNull('chart_of_account_id')
+                    ->where('payment_type', 'Credit')
+                    ->where('transaction_type', 'Current');
+            }], 'at_amount')
+            ->withSum(['customerTransaction as total_decrement' => function ($query) {
+                $query->where('table_type', 'Sales')
+                    ->where('status', 0)
+                    ->whereNotNull('customer_id')
+                    ->whereNull('chart_of_account_id')
+                    ->whereIn('transaction_type', ['Return', 'Received']);
+            }], 'at_amount')
+            ->get();
+
         return view('admin.customer.index', compact('data'));
     }
 
@@ -169,6 +193,39 @@ class CustomerController extends Controller
         $customer->save();
 
         return response()->json(['message' => 'Status updated successfully']);
+    }
+
+    public function pay(Request $request)
+    {
+        $request->validate([
+            'customerId' => 'required',
+            'paymentAmount' => 'required',
+            'paymentNote' => 'nullable',
+        ]);
+
+        $transaction = new Transaction();
+        $transaction->customer_id = $request->customerId;
+
+        if ($request->hasFile('document')) {
+            $uploadedFile = $request->file('document');
+            $randomName = mt_rand(10000000, 99999999).'.'.$uploadedFile->getClientOriginalExtension();
+            $destinationPath = 'images/customer/document/';
+            $uploadedFile->move(public_path($destinationPath), $randomName);
+            $transaction->document = '/' . $destinationPath . $randomName;
+        }
+
+        $transaction->amount = $request->paymentAmount;
+        $transaction->at_amount = $request->paymentAmount;
+        $transaction->payment_type = $request->payment_type;
+        $transaction->transaction_type = "Received";
+        $transaction->note = $request->paymentNote;
+        $transaction->table_type = "Sales";
+        $transaction->date = date('Y-m-d');
+        $transaction->save();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Payment processed successfully!',
+        ]);
     }
 
 }

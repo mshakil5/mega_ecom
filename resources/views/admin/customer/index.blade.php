@@ -117,7 +117,10 @@
                 <tr>
                   <th>Sl</th>
                   <th>Name/Email/Number</th>
-                  <th>Status</th>
+                  <th>Balance</th>
+                  <th>Transactions</th>
+                  <th>Sales</th>
+                  <th>Active</th>
                   <th>Action</th>
                 </tr>
                 </thead>
@@ -127,6 +130,22 @@
                     <td>{{ $key + 1 }}</td>
                     <td>{{$data->name}} {{$data->surname}} <br> {{$data->email}} <br> {{$data->phone}}</td>
                     <td>
+                        <div class="align-items-center">
+
+                          @php
+                              $netAmount = $data->total_increament - $data->total_decrement;
+                          @endphp
+
+                          @if ($netAmount > 0)
+                              <span class="btn btn-sm btn-danger">£ {{ number_format($netAmount, 2) }}</span>
+                              <button class="btn btn-sm btn-warning pay-btn" data-id="{{ $data->id }}" data-customer-id="{{ $data->id }}">Receive</button>
+                          @endif
+                        </div>
+                      <input type="hidden" id="customerId" name="customerId">  
+                    </td>
+                    <td>Transactions</td>
+                    <td>Sales</td>
+                    <td>
                       
                       <div class="custom-control custom-switch">
                           <input type="checkbox" class="custom-control-input toggle-status" id="customSwitchStatus{{ $data->id }}" data-id="{{ $data->id }}" {{ $data->status == 1 ? 'checked' : '' }}>
@@ -135,9 +154,16 @@
 
                     </td>
                     <td>
-                      <a href="#"><i class="fa fa-envelope-o" style="color: #747678;font-size:16px;"></i></a>
-                      <a id="EditBtn" rid="{{$data->id}}"><i class="fa fa-edit" style="color: #2196f3;font-size:16px;"></i></a>
-                      <a id="deleteBtn" rid="{{$data->id}}"><i class="fa fa-trash-o" style="color: red;font-size:16px;"></i></a>
+                      <a class="btn btn-app">
+                          <i class="fas fa-envelope"></i> Email
+                      </a>
+                      <a class="btn btn-app" id="EditBtn" rid="{{ $data->id }}">
+                          <i class="fas fa-edit"></i> Edit
+                      </a>
+                      
+                      <a class="btn btn-app" id="deleteBtn" rid="{{ $data->id }}">
+                          <i class="fa fa-trash-o" style="color: red; font-size:16px;"></i>Delete
+                      </a>
                     </td>
                   </tr>
                   @endforeach
@@ -157,9 +183,109 @@
 </section>
 <!-- /.content -->
 
+<div class="modal fade" id="payModal" tabindex="-1" role="dialog" aria-labelledby="payModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="payModalLabel">WholeSaler Payment Form</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="payForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="paymentAmount">Payment Amount</label>
+                        <input type="number" class="form-control" id="paymentAmount" name="paymentAmount" placeholder="Enter payment amount">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="document">Document</label>
+                        <input type="file" class="form-control-file" id="document" name="document">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="payment_type">Payment Type</label>
+                        <select name="payment_type" id="payment_type" class="form-control" >
+                            <option value="Cash">Cash</option>
+                            <option value="Bank">Bank</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="paymentNote">Payment Note</label>
+                        <textarea class="form-control" id="paymentNote" name="paymentNote" rows="3" placeholder="Enter payment note"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning">Pay</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 
 @endsection
 @section('script')
+
+<script>
+    $(document).ready(function () {
+        $("#contentContainer").on('click', '.pay-btn', function () {
+            var id = $(this).data('id');
+            var customerId = $(this).data('customer-id');
+            $('#payModal').modal('show');
+            $('#payForm').off('submit').on('submit', function (event) {
+                event.preventDefault();
+
+                var form_data = new FormData();
+                form_data.append("id", id);
+                form_data.append("customerId", customerId);
+                form_data.append("paymentAmount", $("#paymentAmount").val());
+                form_data.append("payment_type", $("#payment_type").val());
+                form_data.append("paymentNote", $("#paymentNote").val());
+
+                var paydoc = document.getElementById('document');
+                    if(paydoc.files && paydoc.files[0]) {
+                        form_data.append("document", paydoc.files[0]);
+                    }
+
+
+                $.ajax({
+                    url: '{{ URL::to('/admin/customer-pay') }}',
+                    method: 'POST',
+                    data:form_data,
+                    contentType: false,
+                    processData: false,
+                    // dataType: 'json',
+                    success: function (response) {
+                        $('#payModal').modal('hide');
+                        swal({
+                            text: "Payment store successfully",
+                            icon: "success",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--confirm"
+                            }
+                        }).then(() => {
+                            location.reload();
+                        });
+                    },
+                    error: function (xhr) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+        });
+
+        $('#payModal').on('hidden.bs.modal', function () {
+            $('#paymentAmount').val('');
+            $('#paymentNote').val('');
+        });
+    });
+</script>
+
 <script>
     $(function () {
       $("#example1").DataTable({
