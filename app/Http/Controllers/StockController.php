@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Color;
+use App\Models\OrderDetails;
 use Illuminate\Http\Request;
 use App\Models\Stock;
 use App\Models\Product;
@@ -55,7 +56,7 @@ class StockController extends Controller
             ->addColumn('action', function ($data) {
                 $btn = '<div class="table-actions">';
                 if (Auth::user()) {
-                    $url = route('admin.product.purchasehistory', ['id' => $data->product->id, 'size' => $data->size]);
+                    $url = route('admin.product.purchasehistory', ['id' => $data->product->id, 'size' => $data->size, 'color' => $data->color]);
                     $btn .= '<a href="'.$url.'" class="btn btn-sm btn-primary">History</a>';
                 }
                 $btn .= '</div>';
@@ -66,10 +67,13 @@ class StockController extends Controller
     }
 
     
-    public function getsingleproductPurchaseHistory($id, $size)
+    public function getsingleProductHistory($id, $size, $color)
     {
-        $data = PurchaseHistory::where('product_id', $id)->where('product_size', $size)->orderby('id','DESC')->get();
-        return view('admin.stock.single_product_history', compact('data'));
+        $product = Product::select('id', 'name','product_code')->where('id', $id)->first();
+        $warehouses = Warehouse::orderby('id','DESC')->where('status', 1)->get();
+        $purchaseHistories = PurchaseHistory::where('product_id', $id)->where('product_size', $size)->where('product_color', $color)->orderby('id','DESC')->get();
+        $saledHistories = OrderDetails::where('product_id', $id)->where('size', $size)->where('color', $color)->orderby('id','DESC')->get();
+        return view('admin.stock.single_product_history', compact('purchaseHistories','saledHistories','product','warehouses'));
     }
 
     public function addstock()
