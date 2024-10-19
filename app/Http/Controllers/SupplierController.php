@@ -180,7 +180,7 @@ class SupplierController extends Controller
         $supplier = Supplier::whereId($supplierId)->select('id', 'name')->first();
         $transactions = SupplierTransaction::where('supplier_id', $supplierId)
                                 ->orderBy('id', 'desc')
-                                ->select('id', 'amount', 'date', 'note','payment_type','table_type','vat', 'discount','total_amount')
+                                ->select('id', 'amount', 'date', 'note','payment_type','table_type','vat', 'discount','total_amount','document')
                                 ->get();
 
     

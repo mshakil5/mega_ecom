@@ -226,8 +226,8 @@
       //header for csrf-token is must in laravel
       $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
       //
-      var url = "{{URL::to('/admin/new-customer')}}";
-      var upurl = "{{URL::to('/admin/new-customer-update')}}";
+      var url = "{{URL::to('/admin/whole-saler')}}";
+      var upurl = "{{URL::to('/admin/whole-saler-update')}}";
       // console.log(url);
       $("#addBtn").click(function(){
       //   alert("#addBtn");

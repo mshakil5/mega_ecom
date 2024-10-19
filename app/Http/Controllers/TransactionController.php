@@ -19,12 +19,12 @@ class TransactionController extends Controller
         $transaction = new SupplierTransaction();
         $transaction->supplier_id = $request->supplierId;
 
-        if ($request->hasFile('image')) {
-            $uploadedFile = $request->file('image');
-            $randomName = mt_rand(10000000, 99999999). '.'. $uploadedFile->getClientOriginalExtension();
-            $destinationPath = public_path('images/supplier/document/');
-            $path = $uploadedFile->move($destinationPath, $randomName); 
-            $transaction->image = $randomName;
+        if ($request->hasFile('document')) {
+            $uploadedFile = $request->file('document');
+            $randomName = mt_rand(10000000, 99999999).'.'.$uploadedFile->getClientOriginalExtension();
+            $destinationPath = 'images/supplier/document/';
+            $uploadedFile->move(public_path($destinationPath), $randomName);
+            $transaction->document = '/' . $destinationPath . $randomName;
         }
 
         $transaction->amount = $request->paymentAmount;

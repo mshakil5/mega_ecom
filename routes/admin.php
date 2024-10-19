@@ -66,12 +66,12 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/new-admin-update', [AdminController::class, 'adminUpdate']);
     Route::get('/new-admin/{id}', [AdminController::class, 'adminDelete']);
 
-    //Customer crud
-    Route::get('/new-customer', [CustomerController::class, 'getCustomer'])->name('allcustomer');
-    Route::post('/new-customer', [CustomerController::class, 'customerStore']);
-    Route::get('/new-customer/{id}/edit', [CustomerController::class, 'customerEdit']);
-    Route::post('/new-customer-update', [CustomerController::class, 'customerUpdate']);
-    Route::get('/new-customer/{id}', [CustomerController::class, 'customerDelete']);
+    //WholeSaler crud
+    Route::get('/whole-saler', [CustomerController::class, 'getCustomer'])->name('allcustomer');
+    Route::post('/whole-saler', [CustomerController::class, 'customerStore']);
+    Route::get('/whole-saler/{id}/edit', [CustomerController::class, 'customerEdit']);
+    Route::post('/whole-saler-update', [CustomerController::class, 'customerUpdate']);
+    Route::get('/whole-saler/{id}', [CustomerController::class, 'customerDelete']);
     Route::post('/toggle-customer-status', [CustomerController::class, 'toggleStatus']);
 
     Route::post('/customer-store', [CustomerController::class, 'store'])->name('customer.store');

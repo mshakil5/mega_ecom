@@ -248,7 +248,7 @@
         
         <!-- customer -->
         <li class="nav-item">
-            <a href="{{ route('allcustomer') }}" class="nav-link {{ (request()->is('admin/new-customer*')) ? 'active' : '' }}">
+            <a href="{{ route('allcustomer') }}" class="nav-link {{ (request()->is('admin/whole-saler*')) ? 'active' : '' }}">
                 <i class="nav-icon fas fa-user"></i>
                 <p>Whole Saler</p>
             </a>

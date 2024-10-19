@@ -56,7 +56,15 @@
                    <td>{{ \Carbon\Carbon::parse($data->date)->format('d-m-Y') }}</td>
                     <td>{{ $data->table_type }}</td>
                     <td>{{ $data->payment_type }}</td>
-                    <td>document here</td>
+                    <td>
+                        @if($data->document)
+                            <a href="{{ asset($data->document) }}" target="_blank" class="btn btn-secondary">
+                                View
+                            </a>
+                        @else
+                            Not available
+                        @endif
+                    </td>
 
                     @if(in_array($data->payment_type, ['Credit']))
                       <td style="text-align: right">{{ number_format($data->total_amount, 2) }}</td>
