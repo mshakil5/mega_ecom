@@ -28,6 +28,7 @@ return new class extends Migration
             $table->decimal('paid_amount',10,2)->nullable();
             $table->decimal('due_amount',10,2)->nullable();
             $table->boolean('status')->default(1);
+            // 1==Processing, 2==On The Way, 3==Customs, 4==Received
             $table->string('payment_status')->nullable();
             $table->string('updated_by')->nullable();
             $table->string('created_by')->nullable();

@@ -240,6 +240,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::get('/admin/purchase-return/{purchase}', [StockController::class, 'returnProduct'])->name('returnProduct');
 
+    Route::post('/purchases/update-status', [StockController::class, 'updateStatus'])->name('purchases.updateStatus');
+
     Route::post('/update-stock', [StockController::class, 'stockUpdate']);
 
     Route::post('/submit-return', [StockController::class, 'returnStore']);

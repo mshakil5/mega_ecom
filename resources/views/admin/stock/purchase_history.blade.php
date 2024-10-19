@@ -22,6 +22,7 @@
                                     <th>Ref</th>
                                     <th>Total Amount</th>
                                     <th>Not Transferred Quantity</th>
+                                    <th>Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -39,6 +40,14 @@
                                     $totalRemainingQuantity = $purchase->purchaseHistory->sum('remaining_product_quantity');
                                     @endphp
                                     <td>{{ $totalRemainingQuantity }}</td>
+                                    <td>
+                                        <select class="form-control purchase-status" data-purchase-id="{{ $purchase->id }}">
+                                            <option value="1" {{ $purchase->status == 1 ? 'selected' : '' }}>Processing</option>
+                                            <option value="2" {{ $purchase->status == 2 ? 'selected' : '' }}>On The Way</option>
+                                            <option value="3" {{ $purchase->status == 3 ? 'selected' : '' }}>Customs</option>
+                                            <option value="4" {{ $purchase->status == 4 ? 'selected' : '' }}>Received</option>
+                                        </select>
+                                    </td>
                                     <td>
                                         <a class="btn btn-sm btn-info" onclick="showViewPurchaseModal({{ $purchase->id }})">
                                             <i class="fas fa-eye"></i>
@@ -177,6 +186,46 @@
             $('#viewPurchaseModal').modal('hide');
         });
     }
+</script>
+
+<script>
+    $(document).on('change', '.purchase-status', function() {
+        const purchaseId = $(this).data('purchase-id');
+        const status = $(this).val();
+
+        $.ajax({
+            url: '/admin/purchases/update-status',
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                purchase_id: purchaseId,
+                status: status
+            },
+            success: function(response) {
+                swal({
+                    text: "Status Changed",
+                    icon: "success",
+                    button: {
+                        text: "OK",
+                        className: "swal-button--confirm"
+                    }
+                }).then(() => {
+                    location.reload();
+                });
+            },
+            error: function(xhr, status, error) {
+                console.log(xhr.responseText);
+                swal({
+                    text: "An error occurred while changing the status.",
+                    icon: "error",
+                    button: {
+                        text: "OK",
+                        className: "swal-button--confirm"
+                    }
+                });
+            }
+        });
+    });
 </script>
 
 @endsection

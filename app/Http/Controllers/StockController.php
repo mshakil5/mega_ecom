@@ -545,4 +545,18 @@ class StockController extends Controller
         return redirect()->back()->with('success', 'Sent to system lose successfully.');
     }
 
+    public function updateStatus(Request $request)
+    {
+        $request->validate([
+            'purchase_id' => 'required|integer|exists:purchases,id',
+            'status' => 'required|integer|in:1,2,3,4'
+        ]);
+
+        $purchase = Purchase::find($request->purchase_id);
+        $purchase->status = $request->status;
+        $purchase->save();
+
+        return response()->json(['success' => true]);
+    }
+
 }
