@@ -195,8 +195,8 @@
         </li>
 
         <!-- stock -->
-        <li class="nav-item dropdown {{ (request()->is('admin/stock*') || request()->is('admin/product-purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/stock-return-history*') || request()->is('admin/system-losses*') || request()->routeIs('purchase.edit') || request()->routeIs('returnProduct') || request()->routeIs('system-losses.index')) ? 'menu-open' : '' }}">
-            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/stock*') || request()->is('admin/product-purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/stock-return-history*') || request()->is('admin/system-losses*') || request()->routeIs('purchase.edit') || request()->routeIs('returnProduct') || request()->routeIs('system-losses.index')) ? 'active' : '' }}">
+        <li class="nav-item dropdown {{ (request()->is('admin/stock*') || request()->is('admin/product-purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/stock-return-history*') || request()->routeIs('purchase.edit') || request()->routeIs('returnProduct')) ? 'menu-open' : '' }}">
+            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/stock*') || request()->is('admin/product-purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/stock-return-history*') || request()->routeIs('purchase.edit') || request()->routeIs('returnProduct')) ? 'active' : '' }}">
                 <i class="nav-icon fas fa-warehouse"></i>
                 <p>
                     Stocks <i class="fas fa-angle-left right"></i>
@@ -225,12 +225,6 @@
                     <a href="{{ route('stockReturnHistory') }}" class="nav-link {{ (request()->is('admin/stock-return-history') || request()->routeIs('returnProduct')) ? 'active' : '' }}">
                         <i class="fas fa-undo nav-icon"></i>
                         <p>Return History</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('system-losses.index') }}" class="nav-link {{ (request()->is('admin/system-losses*')) ? 'active' : '' }}">
-                        <i class="fas fa-exclamation-triangle nav-icon"></i>
-                        <p>System Losses</p>
                     </a>
                 </li>
             </ul>
