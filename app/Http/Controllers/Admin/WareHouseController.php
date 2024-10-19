@@ -150,7 +150,7 @@ class WareHouseController extends Controller
     public function transfer($id)
     {
         $purchase = Purchase::with('purchaseHistory.product')->findOrFail($id);
-        $warehouses = Warehouse::orderby('id','DESC')->get();
+        $warehouses = Warehouse::orderby('id','DESC')->where('status', 1)->get();
         return view('admin.stock.purchase_transfer', compact('purchase', 'warehouses'));
     }
 

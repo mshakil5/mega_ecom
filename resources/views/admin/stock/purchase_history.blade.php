@@ -21,7 +21,7 @@
                                     <th>Transaction Type</th>
                                     <th>Ref</th>
                                     <th>Total Amount</th>
-                                    <th>Due Amount</th>
+                                    <th>Not Transferred Quantity</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -35,7 +35,10 @@
                                     <td>{{ $purchase->purchase_type }}</td>
                                     <td>{{ $purchase->ref }}</td>
                                     <td>{{ $purchase->net_amount }}</td>
-                                    <td>{{ $purchase->due_amount }}</td>
+                                    @php
+                                    $totalRemainingQuantity = $purchase->purchaseHistory->sum('remaining_product_quantity');
+                                    @endphp
+                                    <td>{{ $totalRemainingQuantity }}</td>
                                     <td>
                                         <a class="btn btn-sm btn-info" onclick="showViewPurchaseModal({{ $purchase->id }})">
                                             <i class="fas fa-eye"></i>
@@ -46,9 +49,15 @@
                                         <a href="{{ route('returnProduct', $purchase->id) }}" class="btn btn-sm btn-warning">
                                             <i class="fas fa-undo-alt"></i>
                                         </a>
-                                        <a href="{{ route('transferToWarehouse', $purchase->id) }}" class="btn btn-sm btn-success">
-                                            <i class="fas fa-arrow-right"></i> Transfer to Warehouse
-                                        </a>
+                                        @if ($totalRemainingQuantity < 1)
+                                            <a class="btn btn-sm btn-info" disabled>
+                                            Already Transferred
+                                            </a>
+                                        @else
+                                            <a href="{{ route('transferToWarehouse', $purchase->id) }}" class="btn btn-sm btn-success">
+                                                <i class="fas fa-arrow-right"></i> Transfer to Warehouse
+                                            </a>
+                                         @endif   
                                     </td>
                                 </tr>
                                 @endforeach

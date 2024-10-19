@@ -116,10 +116,7 @@
                 <thead>
                 <tr>
                   <th>Sl</th>
-                  <th>Name</th>
-                  <th>Surname</th>
-                  <th>Email</th>
-                  <th>Phone</th>
+                  <th>Name/Email/Number</th>
                   <th>Status</th>
                   <th>Action</th>
                 </tr>
@@ -128,10 +125,7 @@
                   @foreach ($data as $key => $data)
                   <tr>
                     <td>{{ $key + 1 }}</td>
-                    <td>{{$data->name}}</td>
-                    <td>{{$data->surname}}</td>
-                    <td>{{$data->email}}</td>
-                    <td>{{$data->phone}}</td>
+                    <td>{{$data->name}} {{$data->surname}} <br> {{$data->email}} <br> {{$data->phone}}</td>
                     <td>
                       
                       <div class="custom-control custom-switch">
