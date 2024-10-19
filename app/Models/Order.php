@@ -44,4 +44,9 @@ class Order extends Model
         return $this->belongsTo(BundleProduct::class);
     }
 
+    public function warehouse()
+    {
+        return $this->hasMany(Warehouse::class);
+    }
+
 }

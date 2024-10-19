@@ -19,6 +19,7 @@ use App\Models\OrderReturn;
 use App\Models\Size;
 use App\Models\SupplierTransaction;
 use App\Models\Warehouse;
+use Carbon\Carbon;
 
 class StockController extends Controller
 {
@@ -67,13 +68,46 @@ class StockController extends Controller
     }
 
     
-    public function getsingleProductHistory($id, $size, $color)
+    public function getsingleProductHistory(Request $request, $id, $size, $color)
     {
+        if ($request->fromDate || $request->toDate) {
+            $request->validate([
+                'fromDate' => 'nullable|date', 
+                'toDate' => 'required_with:fromDate|date|after_or_equal:fromDate', 
+            ]);
+
+            $fromDate = Carbon::parse($request->input('fromDate'))->startOfDay();
+            $toDate = Carbon::parse($request->input('toDate'))->endOfDay();   
+        }else{
+            $fromDate = '';
+            $toDate = '';
+        }
+        
         $product = Product::select('id', 'name','product_code')->where('id', $id)->first();
         $warehouses = Warehouse::orderby('id','DESC')->where('status', 1)->get();
-        $purchaseHistories = PurchaseHistory::where('product_id', $id)->where('product_size', $size)->where('product_color', $color)->orderby('id','DESC')->get();
-        $saledHistories = OrderDetails::where('product_id', $id)->where('size', $size)->where('color', $color)->orderby('id','DESC')->get();
-        return view('admin.stock.single_product_history', compact('purchaseHistories','saledHistories','product','warehouses'));
+
+        $purchaseHistories = PurchaseHistory::where('product_id', $id)
+                            ->when($fromDate, function ($query) use ($fromDate, $toDate) {
+                                $query->whereBetween('created_at', [$fromDate, $toDate]);
+                            })
+                            ->where('product_size', $size)
+                            ->where('product_color', $color)
+                            ->orderby('id','DESC')
+                            ->get();
+
+        $saledHistories = OrderDetails::where('product_id', $id)
+                            ->when($fromDate, function ($query) use ($fromDate, $toDate) {
+                                $query->whereBetween('created_at', [$fromDate, $toDate]);
+                            })
+                            ->when($request->input('warehouse_id'), function ($query) use ($request) {
+                                $query->where("warehouse_id",$request->input('warehouse_id'));
+                            })
+                            ->where('size', $size)
+                            ->where('color', $color)
+                            ->orderby('id','DESC')
+                            ->get();
+
+        return view('admin.stock.single_product_history', compact('purchaseHistories','saledHistories','product','warehouses', 'id', 'size', 'color'));
     }
 
     public function addstock()

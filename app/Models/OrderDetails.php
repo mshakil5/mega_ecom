@@ -28,4 +28,9 @@ class OrderDetails extends Model
     {
         return $this->belongsTo(BuyOneGetOne::class, 'buy_one_get_ones_id');
     }
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class);
+    }
+
 }

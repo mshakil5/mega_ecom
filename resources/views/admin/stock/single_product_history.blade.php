@@ -22,9 +22,13 @@
                     </div>
                     <div class="card-body">
                         <!-- Filter Form Section -->
-                        <form action="#" method="GET">
-                            <div class="row mb-3">
-                                <div class="col-md-3">
+                        <form action="{{route('admin.product.purchasehistorysearch',['id' => $id, 'size' => $size, 'color' => $color])}}" method="POST">
+                            @csrf
+                            <div class="row mb-3 ">
+                                <input type="hidden" id="product_id" name="product_id" value="{{$id}}">
+                                <input type="hidden" id="size" name="size" value="{{$size}}">
+                                <input type="hidden" id="color" name="color" value="{{$color}}">
+                                <div class="col-md-3 d-none">
                                     <label class="label label-primary">Filter By</label>
                                     <select class="form-control" id="filterBy" name="filterBy">
                                         <option value="today">Today</option>
@@ -39,11 +43,11 @@
                                 </div>
                                 <div class="col-md-2">
                                     <label class="label label-primary">To Date</label>
-                                    <input type="date" class="form-control" id="toDate" name="toDate">
+                                    <input type="date" class="form-control" id="toDate" name="toDate" value="{{old('toDate')}}">
                                 </div>
                                 <div class="col-md-3">
                                     <label class="label label-primary">Warehouses</label>
-                                    <select class="form-control select2" id="supplierCustomer" name="supplierCustomer">
+                                    <select class="form-control select2" id="warehouse_id" name="warehouse_id">
                                         <option value="">Select...</option>
                                         @foreach($warehouses as $warehouse)
                                             <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
@@ -53,6 +57,15 @@
                                 <div class="col-md-2">
                                     <label class="label label-primary" style="visibility:hidden;">Action</label>
                                     <button type="submit" class="btn btn-secondary btn-block">Search</button>
+                                </div>
+                                <div class="col-md-12">
+                                    @if ($errors->any())
+                                            <ul>
+                                                @foreach ($errors->all() as $error)
+                                                    <li class="text-danger">{{ $error }}</li>
+                                                @endforeach
+                                            </ul>
+                                    @endif
                                 </div>
                             </div>
                         </form>
@@ -139,6 +152,7 @@
                                         <th>Sl</th>
                                         <th>Date</th>
                                         <th>Whole Saler</th>
+                                        <th>Warehouse</th>
                                         <th>Size</th>
                                         <th>Colour</th>
                                         <th>Quantity</th>
@@ -158,6 +172,7 @@
                                                     <i class="fas fa-arrow-right"></i>
                                                 </a>
                                             </td>
+                                            <td>{{ $data->warehouse->name}}</td>
                                             <td>{{ $data->size}}</td>
                                             <td>{{ $data->color}}</td>
                                             <td>{{ $data->quantity}}</td>
