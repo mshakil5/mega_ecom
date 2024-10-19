@@ -144,7 +144,7 @@ class StockController extends Controller
             $purchaseHistory->purchase_id = $purchase->id;
             $purchaseHistory->product_id = $product['product_id'];
             $purchaseHistory->quantity = $product['quantity'];
-            $purchaseHistory->remaining_product_quantity = $product['quantity'];
+            
             $purchaseHistory->product_size = $product['product_size'];
             $purchaseHistory->product_color = $product['product_color'];
             $purchaseHistory->purchase_price = $product['unit_price'];
@@ -153,6 +153,14 @@ class StockController extends Controller
             $purchaseHistory->total_vat = $purchaseHistory->vat_amount_per_unit * $product['quantity'];
             $purchaseHistory->total_amount = $product['unit_price'] * $product['quantity'];
             $purchaseHistory->total_amount_with_vat = $product['total_price_with_vat'];
+            if ($request->warehouse_id) {
+                $purchaseHistory->remaining_product_quantity = 0;
+                $purchaseHistory->transferred_product_quantity = $product['quantity'];
+            }else{
+                $purchaseHistory->remaining_product_quantity = $product['quantity'];
+                $purchaseHistory->transferred_product_quantity = 0;
+            }
+
             $purchaseHistory->created_by = Auth::user()->id;
             $purchaseHistory->save();
 

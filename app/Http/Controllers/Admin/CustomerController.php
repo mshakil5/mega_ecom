@@ -232,4 +232,25 @@ class CustomerController extends Controller
         ]);
     }
 
+    public function customerTransactions($wholeSalerId)
+    {
+        $customer = User::whereId($wholeSalerId)->select('id', 'name')->first();
+        $transactions = Transaction::where('customer_id', $wholeSalerId)
+                                ->orderBy('id', 'desc')
+                                ->select('id', 'date', 'note','payment_type','table_type', 'discount','at_amount','document','transaction_type')
+                                ->get();
+
+        $totalDrAmount = Transaction::where('customer_id', $wholeSalerId)->whereIn('table_type', ['Sales'])
+                                        ->whereIn('payment_type', ['Credit'])
+                                        ->where('transaction_type', 'Current')
+                                        ->sum('at_amount');
+
+        $totalCrAmount = Transaction::where('customer_id', $wholeSalerId)->whereIn('table_type', ['Sales'])
+                                        ->whereIn('payment_type', ['Cash','Bank','Return'])
+                                        ->whereIn('transaction_type', ['Return', 'Received'])
+                                        ->sum('at_amount');
+        $totalBalance = $totalDrAmount - $totalCrAmount;
+        return view('admin.customer.transactions', compact('transactions','customer','totalBalance'));
+    }
+
 }

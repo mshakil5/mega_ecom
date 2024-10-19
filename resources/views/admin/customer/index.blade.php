@@ -143,7 +143,11 @@
                         </div>
                       <input type="hidden" id="customerId" name="customerId">  
                     </td>
-                    <td>Transactions</td>
+                    <td>
+                      <a href="{{ route('customer.transactions', ['wholeSalerId' => $data->id]) }}" class="btn btn-info">
+                          Transactions
+                      </a>
+                    </td>
                     <td>
 
                         @if ($data->sales_count > 0)
