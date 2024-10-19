@@ -19,6 +19,7 @@
                 <div class="card card-secondary">
                     <div class="card-header">
                         <h3 class="card-title" id="cardTitle">Transfer To Warehouse</h3>
+                        <input type="hidden" value="{{ $warehouseCount }}" id="warehouseCount">
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -151,9 +152,8 @@
 <script>
     window.transferredQuantities = {};
 
-    const warehouseLimit = {{ count($warehouses) }};
-
     window.transferToRight = function(historyId, productName, availableQuantity, productSize, productColor) {
+        const warehouseLimit = parseInt($('#warehouseCount').val()); 
         if (transferredQuantities[historyId] >= warehouseLimit) {
             swal({
                 title: "Error",
@@ -276,6 +276,11 @@
 
                     $('#addWarehouseModal').modal('hide');
                     $('#newWarehouseForm')[0].reset();
+
+                    let warehouseCountInput = $('#warehouseCount');
+                    let currentWarehouseCount = parseInt(warehouseCountInput.val());
+                    currentWarehouseCount++;
+                    warehouseCountInput.val(currentWarehouseCount);
 
                     swal({
                         text: "Warehouse created successfully",
