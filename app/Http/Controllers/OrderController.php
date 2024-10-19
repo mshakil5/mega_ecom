@@ -904,57 +904,64 @@ class OrderController extends Controller
         return view('user.orders', compact('orders'));
     }
 
-    public function allOrders()
+    public function getAllOrder(Request $request, $userId = null)
     {
-        return view('admin.orders.all');
-    }
+        if ($request->ajax()) {
+            $userId = $request->get('userId') ?? $userId;
 
-    public function getAllOrder()
-    {
-        return DataTables::of(Order::with('user')
-                        ->whereIn('order_type', [0, 1])
-                        ->orderBy('id', 'desc'))
-                        ->addColumn('action', function($order){
-                            return '<a href="'.route('admin.orders.details', ['orderId' => $order->id]).'" class="btn btn-primary">Details</a>';
-                        })
-                        ->editColumn('subtotal_amount', function ($order) {
-                            return number_format($order->subtotal_amount, 2);
-                        })
-                        ->editColumn('shipping_amount', function ($order) {
-                            return number_format($order->shipping_amount, 2);
-                        })
-                        ->editColumn('discount_amount', function ($order) {
-                            return number_format($order->discount_amount, 2);
-                        })
-                        ->editColumn('net_amount', function ($order) {
-                            return number_format($order->net_amount, 2);
-                        })
-                        ->editColumn('status', function ($order) {
-                            $statusLabels = [
-                                1 => 'Pending',
-                                2 => 'Processing',
-                                3 => 'Packed',
-                                4 => 'Shipped',
-                                5 => 'Delivered',
-                                6 => 'Returned',
-                                7 => 'Cancelled'
-                            ];
-                            return isset($statusLabels[$order->status]) ? $statusLabels[$order->status] : 'Unknown';
-                        })
-                        ->addColumn('name', function ($order) {
-                            return '' . $order->user->name . ', ' . $order->user->email;
-                        })
-                        ->addColumn('email', function ($order) {
-                            return $order->user->email;
-                        })
-                        ->addColumn('phone', function ($order) {
-                            return $order->user->phone;
-                        })
-                        ->addColumn('type', function ($order) {
-                            return $order->order_type == 0 ? 'Frontend' : 'In-house Sale';
-                        })
-                        ->rawColumns(['action'])
-                        ->make(true);
+            if ($userId) {
+                $ordersQuery = Order::with('user')->where('user_id', $userId)
+                    ->whereIn('order_type', [0, 1]);
+            } else {
+                $ordersQuery = Order::with('user')->whereIn('order_type', [0, 1]);
+            }
+            
+            $ordersQuery->where('status', '!=', 7);
+
+            return DataTables::of($ordersQuery->orderBy('id', 'desc'))
+                ->addColumn('action', function($order) {
+                    return '<a href="'.route('admin.orders.details', ['orderId' => $order->id]).'" class="btn btn-primary">Details</a>';
+                })
+                ->editColumn('subtotal_amount', function ($order) {
+                    return number_format($order->subtotal_amount, 2);
+                })
+                ->editColumn('shipping_amount', function ($order) {
+                    return number_format($order->shipping_amount, 2);
+                })
+                ->editColumn('discount_amount', function ($order) {
+                    return number_format($order->discount_amount, 2);
+                })
+                ->editColumn('net_amount', function ($order) {
+                    return number_format($order->net_amount, 2);
+                })
+                ->editColumn('status', function ($order) {
+                    $statusLabels = [
+                        1 => 'Pending',
+                        2 => 'Processing',
+                        3 => 'Packed',
+                        4 => 'Shipped',
+                        5 => 'Delivered',
+                        6 => 'Returned',
+                        7 => 'Cancelled'
+                    ];
+                    return isset($statusLabels[$order->status]) ? $statusLabels[$order->status] : 'Unknown';
+                })
+                ->addColumn('name', function ($order) {
+                    return $order->user->name . ', ' . $order->user->email;
+                })
+                ->addColumn('email', function ($order) {
+                    return $order->user->email;
+                })
+                ->addColumn('phone', function ($order) {
+                    return $order->user->phone;
+                })
+                ->addColumn('type', function ($order) {
+                    return $order->order_type == 0 ? 'Frontend' : 'In-house Sale';
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+        return view('admin.orders.all', compact('userId'));
     }
 
     public function pendingOrders()

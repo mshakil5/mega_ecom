@@ -144,7 +144,16 @@
                       <input type="hidden" id="customerId" name="customerId">  
                     </td>
                     <td>Transactions</td>
-                    <td>Sales</td>
+                    <td>
+
+                        @if ($data->sales_count > 0)
+                            <a href="{{ route('getallorder', $data->id) }}" class="btn btn-info">
+                                Sales ({{ $data->sales_count }})
+                            </a>
+                        @else
+                            0
+                        @endif
+                    </td>
                     <td>
                       
                       <div class="custom-control custom-switch">

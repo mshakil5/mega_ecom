@@ -14,7 +14,6 @@
                             <thead>
                                 <tr>
                                     <th>Name/Email</th>
-                                    {{-- <th>Email</th> --}}
                                     <th>Phone</th>
                                     <th>Subtotal</th>
                                     <th>Shipping</th>
@@ -38,13 +37,25 @@
 @section('script')
 <script>
     $(function () {
+        var userId = '{{ $userId }}';
+
         $('#pending-orders-table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('getallorder') }}",
+            ajax: {
+                url: "{{ route('getallorder') }}",
+                type: 'GET',
+                data: function (d) {
+                    if (userId) {
+                        d.userId = userId;
+                    }
+                },
+                error: function (xhr, error, thrown) {
+                    console.error(xhr.responseText);
+                }
+            },
             columns: [
                 { data: 'name', name: 'name' },
-                // { data: 'email', name: 'email' },
                 { data: 'phone', name: 'phone' },
                 { data: 'subtotal_amount', name: 'subtotal_amount' },
                 { data: 'shipping_amount', name: 'shipping_amount' },

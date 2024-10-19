@@ -34,6 +34,10 @@ class CustomerController extends Controller
                     ->whereNull('chart_of_account_id')
                     ->whereIn('transaction_type', ['Return', 'Received']);
             }], 'at_amount')
+            ->withCount(['orders as sales_count' => function ($query) {
+                $query->where('status', '!=', 7) // exclude cancelled orders
+                      ->whereIn('order_type', [0, 1]); 
+            }])
             ->get();
 
         return view('admin.customer.index', compact('data'));

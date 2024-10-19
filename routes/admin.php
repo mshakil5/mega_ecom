@@ -253,8 +253,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/ads-status', [AdController::class, 'toggleStatus']);
 
     //Orders
-    Route::get('/all-order', [OrderController::class, 'getAllOrder'])->name('getallorder');
-    Route::get('/all-orders', [OrderController::class, 'allOrders'])->name('allorders');
+    Route::get('/all-orders/{userId?}', [OrderController::class, 'getAllOrder'])->name('getallorder');
     Route::get('/pending-orders', [OrderController::class, 'pendingOrders'])->name('pendingorders');
     Route::get('/processing-orders', [OrderController::class, 'processingOrders'])->name('processingorders');
     Route::get('/packed-orders', [OrderController::class, 'packedOrders'])->name('packedorders');

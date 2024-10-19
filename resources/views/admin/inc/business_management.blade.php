@@ -111,7 +111,7 @@
         
         <!-- orders -->
         <li class="nav-item dropdown {{ request()->is('admin/*-orders*') ? 'menu-open' : '' }}">
-            <a href="#" class="nav-link dropdown-toggle {{ request()->is('admin/*-orders*') ? 'active' : '' }}">
+            <a href="#" class="nav-link dropdown-toggle {{ request()->is('admin/*-order*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-truck"></i>
                 <p>
                     Orders <i class="fas fa-angle-left right"></i>
@@ -119,7 +119,7 @@
             </a>
             <ul class="nav nav-treeview">
                 <li class="nav-item">
-                    <a href="{{ route('allorders') }}" class="nav-link {{ request()->is('admin/all-orders*') ? 'active' : '' }}">
+                    <a href="{{ route('getallorder') }}" class="nav-link {{ request()->is('admin/all-order*') ? 'active' : '' }}">
                         <i class="fas fa-list nav-icon"></i>
                         <p>All Orders</p>
                     </a>
