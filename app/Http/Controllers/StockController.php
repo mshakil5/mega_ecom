@@ -232,7 +232,8 @@ class StockController extends Controller
         $purchase = Purchase::with('supplier', 'purchaseHistory.product')->findOrFail($purchase->id);
         $products = Product::orderby('id','DESC')->get();
         $suppliers = Supplier::orderby('id','DESC')->get();
-        return view('admin.stock.edit_purchase_history', compact('purchase', 'products', 'suppliers'));
+        $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
+        return view('admin.stock.edit_purchase_history', compact('purchase', 'products', 'suppliers', 'warehouses'));
     }
 
     public function stockUpdate(Request $request)

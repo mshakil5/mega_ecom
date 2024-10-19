@@ -21,7 +21,7 @@
                                         <input type="date" class="form-control" id="purchase_date" name="purchase_date" placeholder="Enter purchase date">
                                     </div>
                                 </div>
-                                <div class="col-sm-2">
+                                <div class="col-sm-4">
                                     <div class="form-group">
                                         <label for="supplier_id">Select Supplier*</label>
                                         <select class="form-control" id="supplier_id" name="supplier_id">
@@ -40,7 +40,7 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 d-none">
                                     <div class="form-group">
                                         <label for="supplier_balance">Supplier Balance</label>
                                         <input type="text" class="form-control" id="supplier_balance" name="supplier_balance" readonly placeholder="Enter supplier previous due">
@@ -52,7 +52,7 @@
                                         <input type="text" class="form-control" id="vat_reg" name="vat_reg" placeholder="Enter VAT Reg#">
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-4">
                                     <div class="form-group">
                                         <label for="warehouse_id">Warehouse</label>
                                         <select name="warehouse_id" id="warehouse_id" class="form-control">
@@ -224,156 +224,9 @@
     </div>
 </section>
 
-<!-- New Supplier Modal -->
-<div class="modal fade" id="newSupplierModal" tabindex="-1" aria-labelledby="newSupplierModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="newSupplierModalLabel">Add New Supplier</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <!-- New Supplier Form -->
-                <form id="newSupplierForm">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <label>Code*</label>
-                                <input type="number" class="form-control" id="supplier_id_number" name="id_number" placeholder="Enter code" required>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <label>Name*</label>
-                                <input type="text" class="form-control" id="supplier_name" name="name" placeholder="Enter name" required>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <label>Email</label>
-                                <input type="email" class="form-control" id="supplier_email" name="email" placeholder="Enter email">
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <label>Phone</label>
-                                <input type="number" class="form-control" id="supplier_phone" name="phone" placeholder="Enter phone">
-                            </div>
-                        </div>
-                        <div class="col-sm-6 d-none">
-                            <div class="form-group">
-                                <label>Password</label>
-                                <input type="password" class="form-control" id="password" name="password" value="123456" placeholder="Enter password">
-                            </div>
-                        </div>
-                        <div class="col-sm-6 d-none">
-                            <div class="form-group">
-                                <label>Confirm Password</label>
-                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" value="123456" placeholder="Enter password">
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <label>Vat Reg</label>
-                                <input type="number" class="form-control" id="vat_reg1" name="vat_reg" placeholder="Enter vat reg">
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <label>Contract Date</label>
-                                <input type="date" class="form-control" id="contract_date" name="contract_date" placeholder="Enter contract date">
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <label>Address</label>
-                                <textarea class="form-control" id="address" name="address" rows="3" placeholder="Enter address"></textarea>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <label>Company</label>
-                                <textarea class="form-control" id="company" name="company" rows="3" placeholder="Enter company"></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Submit Button -->
-                    <button type="button" class="btn btn-success" id="saveSupplierBtn">Save Supplier</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Add Color Modal -->
-<div class="modal fade" id="addColorModal" tabindex="-1" role="dialog" aria-labelledby="addColorModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content modal-lg">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addColorModalLabel">Add New Color</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="newColorForm">
-                    <div class="form-group">
-                        <label for="color_name">Color</label>
-                        <input type="text" class="form-control" id="color_name" name="color_name" placeholder="Enter color">
-                    </div>
-                    <div class="form-group">
-                        <label for="color_code">Color Code</label>
-                        <input type="color" class="form-control" id="color_code" name="color_code" placeholder="Enter color code">
-                    </div>
-                    <div class="form-group">
-                        <label for="color_price">Price</label>
-                        <input type="number" class="form-control" id="color_price" name="color_price" placeholder="Enter price">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="saveColorBtn">Save Color</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Add Size Modal -->
-<div class="modal fade" id="addSizeModal" tabindex="-1" role="dialog" aria-labelledby="addSizeModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addSizeModalLabel">Add New Size</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="newSizeForm">
-                    <div class="col-sm-12">
-                        <div class="form-group">
-                            <label for="size_name">Size</label>
-                            <input type="text" class="form-control" id="size_name" name="size_name" placeholder="Enter size">
-                        </div>
-                    </div>
-                    <div class="col-sm-12">
-                        <div class="form-group">
-                            <label for="size_price">Price</label>
-                            <input type="number" class="form-control" id="size_price" name="size_price" placeholder="Enter price">
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="saveSizeBtn">Save Size</button>
-            </div>
-        </div>
-    </div>
-</div>
+@include('admin.inc.modal.supplier_modal')
+@include('admin.inc.modal.size_modal')
+@include('admin.inc.modal.color_modal')
 
 @endsection
 

@@ -22,36 +22,44 @@
                                         <input type="date" class="form-control" id="purchase_date" name="purchase_date" placeholder="Enter purchase date" value="{{ $purchase->purchase_date }}">
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-4">
                                     <div class="form-group">
                                         <label for="supplier_id">Select Supplier</label>
-                                        <select class="form-control" id="supplier_id" name="supplier_id" disabled>
+                                        <select class="form-control" id="supplier_id" name="supplier_id">
                                             @foreach($suppliers as $supplier)
                                                 <option value="{{ $supplier->id }}" data-balance="{{ $supplier->balance }}" {{ $purchase->supplier_id == $supplier->id ? 'selected' : '' }}>{{ $supplier->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-1">
+                                    <div class="form-group">
+                                        <label>New</label>
+                                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#newSupplierModal">
+                                            <i class="fas fa-plus"></i> Add
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3 d-none">
                                     <div class="form-group">
                                         <label for="supplier_balance">Supplier Balance</label>
                                         <input type="text" class="form-control" id="supplier_balance" name="supplier_balance" placeholder="Enter supplier previous due" readonly>
                                         <input type="hidden" id="previous_purchase_due" value="{{ $purchase->due_amount }}">
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-4">
                                     <div class="form-group">
                                         <label for="invoice">Invoice</label>
                                         <input type="text" class="form-control" id="invoice" name="invoice" placeholder="Enter invoice" value="{{ $purchase->invoice }}">
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 d-none">
                                     <div class="form-group">
                                         <label for="vat_reg">VAT Reg#</label>
                                         <input type="text" class="form-control" id="vat_reg" name="vat_reg" placeholder="Enter VAT Reg#" value="{{ $purchase->vat_reg }}">
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-4">
                                     <div class="form-group">
                                         <label for="purchase_type">Payment Type</label>
                                         <select class="form-control" id="purchase_type" name="purchase_type">
@@ -61,13 +69,13 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-4">
                                     <div class="form-group">
                                         <label for="ref">Ref</label>
                                         <input type="text" class="form-control" id="ref" name="ref" placeholder="Enter reference" value="{{ $purchase->ref }}">
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-4">
                                     <div class="form-group">
                                         <label for="remarks">Remarks</label>
                                         <textarea class="form-control" id="remarks" name="remarks" rows="1" placeholder="Enter remarks">{{ $purchase->remarks }}</textarea>
@@ -99,6 +107,7 @@
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="product_size">Size</label>
+                                        <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addSizeModal">Add New</span>
                                         <select class="form-control" id="product_size" name="product_size">
                                             <option value="">Select...</option>
                                             <option value="XS">XS</option>
@@ -112,6 +121,7 @@
                                  <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="product_color">Color</label>
+                                        <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
                                         <select class="form-control" id="product_color" name="product_color">
                                             <option value="">Select...</option>
                                             <option value="Black">Black</option>
@@ -191,14 +201,14 @@
                                             <input type="text" class="form-control" id="net_amount" readonly style="width: 100px; margin-left: auto;">
                                         </div>
                                     </div>
-                                    <div class="row justify-content-end mt-3">
+                                    <div class="row justify-content-end mt-3 d-none">
                                         <div class="col-sm-3 d-flex align-items-center">
                                             <span class="">Paid Amount:</span>
                                             <input type="number" step="0.01" class="form-control" id="paid_amount" name="paid_amount" style="width: 100px; margin-left: auto;" value="{{ $purchase->paid_amount }}">
                                             <input type="hidden" id="hidden_paid_amount" value="{{ $purchase->paid_amount }}">
                                         </div>
                                     </div>
-                                    <div class="row justify-content-end mt-3">
+                                    <div class="row justify-content-end mt-3 d-none">
                                         <div class="col-sm-3 d-flex align-items-center">
                                             <span class="">Due Amount:</span>
                                             <input type="text" class="form-control" id="due_amount" readonly style="width: 100px; margin-left: auto;">
@@ -218,9 +228,194 @@
     </div>
 </section>
 
+@include('admin.inc.modal.supplier_modal')
+@include('admin.inc.modal.size_modal')
+@include('admin.inc.modal.color_modal')
+
 @endsection
 
 @section('script')
+<script>
+
+    $(document).ready(function() {
+        $('#saveSupplierBtn').on('click', function() {
+
+            let password = $('#password').val();
+            let confirmPassword = $('#confirm_password').val();
+
+            if (password !== confirmPassword) {
+                
+                swal({
+                    text: "Passwords do not match !",
+                    icon: "error",
+                    button: {
+                        text: "OK",
+                        className: "swal-button--confirm"
+                    }
+                });
+
+                return false;
+            }
+
+            let formData = {
+                id_number: $('#supplier_id_number').val(),
+                name: $('#supplier_name').val(),
+                email: $('#supplier_email').val(),
+                phone: $('#supplier_phone').val(),
+                password: $('#password').val(),
+                vat_reg: $('#vat_reg1').val(),
+                contract_date: $('#contract_date').val(),
+                address: $('#address').val(),
+                company: $('#company').val(),
+                _token: '{{ csrf_token() }}'
+            };
+
+            $.ajax({
+                url: '{{ route('supplier.store') }}',
+                type: 'POST',
+                data: formData,
+                success: function(response) {
+                    if (response.success) {
+                        $('#supplier_id').append(`<option value="${response.data.id}">${response.data.name}</option>`);
+                        $('#newSupplierModal').modal('hide');
+                        $('#newSupplierForm')[0].reset();
+                        swal({
+                            text: "Created successfully",
+                            icon: "success",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--confirm"
+                            }
+                        });
+                    } else {
+                        alert('Failed to add supplier.');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // console.log(xhr.responseText);
+                    alert('Error adding supplier. Please try again.');
+                }
+            });
+        });
+
+        $('#saveColorBtn').click(function() {
+            let colorName = $('#color_name').val();
+            let color_code = $('#color_code').val();
+            let price = $('#color_price').val();
+
+            $.ajax({
+                url: '{{ route('color.store') }}',
+                type: 'POST',
+                data: {
+                    color_name: colorName,
+                    color_code: color_code,
+                    price: price,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        swal({
+                            text: "Color added successfully",
+                            icon: "success",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--confirm"
+                            }
+                        }).then(() => {
+                            $('#product_color').append(`<option value="${response.data.color}">${response.data.color}</option>`);
+                            $('#addColorModal').modal('hide');
+                            $('#newColorForm')[0].reset();
+                        });
+                    } else {
+                        swal({
+                            text: "Failed to add color",
+                            icon: "error",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--error"
+                            }
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    let errorMessage = "Error adding color. Please try again.";
+                    
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        errorMessage = Object.values(xhr.responseJSON.errors).join("\n");
+                    }
+                    
+                    swal({
+                        text: errorMessage,
+                        icon: "error",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--error"
+                        }
+                    });
+                }
+            });
+        });
+
+        $('#saveSizeBtn').click(function() {
+
+            let size = $('#size_name').val();
+            let price = $('#size_price').val();
+
+            $.ajax({
+                url: '{{ route('size.store') }}',
+                type: 'POST',
+                data: {
+                    size: size,
+                    price: price,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        swal({
+                            text: "Size added successfully",
+                            icon: "success",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--confirm"
+                            }
+                        }).then(() => {
+                            $('#product_size').append(`<option value="${response.data.size}">${response.data.size}</option>`);
+                            
+                            $('#addSizeModal').modal('hide');
+                            $('#newSizeForm')[0].reset();
+                        });
+                    } else {
+                        swal({
+                            text: "Failed to add size",
+                            icon: "error",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--error"
+                            }
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    let errorMessage = "Error adding size. Please try again.";
+                    
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        errorMessage = Object.values(xhr.responseJSON.errors).join("\n");
+                    }
+                    
+                    swal({
+                        text: errorMessage,
+                        icon: "error",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--error"
+                        }
+                    });
+                }
+            });
+        });
+    });
+
+</script>
 
 <script>
     $(document).ready(function() {
