@@ -49,13 +49,9 @@
                                         <a href="{{ route('returnProduct', $purchase->id) }}" class="btn btn-sm btn-warning">
                                             <i class="fas fa-undo-alt"></i>
                                         </a>
-                                        @if ($totalRemainingQuantity < 1)
-                                            <a class="btn btn-sm btn-info" disabled>
-                                            Already Transferred
-                                            </a>
-                                        @else
+                                        @if ($totalRemainingQuantity > 1)
                                             <a href="{{ route('transferToWarehouse', $purchase->id) }}" class="btn btn-sm btn-success">
-                                                <i class="fas fa-arrow-right"></i> Transfer to Warehouse
+                                                <i class="fas fa-arrow-right"></i>
                                             </a>
                                          @endif   
                                     </td>
