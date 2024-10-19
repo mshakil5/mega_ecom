@@ -135,8 +135,8 @@
                     <div class="form-group">
                         <label for="payment_type">Payment Type</label>
                         <select name="payment_type" id="payment_type" class="form-control" >
-                            <option value="cash">Cash</option>
-                            <option value="bank">Bank</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Bank">Bank</option>
                         </select>
                     </div>
 

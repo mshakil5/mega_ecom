@@ -14,6 +14,7 @@ use PDF;
 use App\Models\Color;
 use App\Models\Size;
 use App\Models\Warehouse;
+use App\Models\Transaction;
 
 class InHouseSellController extends Controller
 {
@@ -63,6 +64,22 @@ class InHouseSellController extends Controller
         $order->status = 1;
         $order->save();
 
+        $transaction = new Transaction();
+        $transaction->date = $validated['purchase_date'];
+        $transaction->customer_id = $validated['user_id'];
+        $transaction->order_id = $order->id;
+        $transaction->table_type = "Sales";
+        $transaction->ref = $validated['ref'];
+        $transaction->payment_type = "Credit";
+        $transaction->transaction_type = "Current";
+        $transaction->amount = $netAmount;
+        $transaction->vat_amount = $request->vat;
+        $transaction->discount = $validated['discount'] ?? 0.00;
+        $transaction->at_amount = $itemTotalAmount;
+        $transaction->save();
+        $transaction->tran_id = 'SL' . date('Ymd') . str_pad($transaction->id, 4, '0', STR_PAD_LEFT);
+        $transaction->save();
+
         foreach ($products as $product) {
             $orderDetail = new OrderDetails();
             $orderDetail->order_id = $order->id;
@@ -86,7 +103,14 @@ class InHouseSellController extends Controller
                     $stock->quantity -= $product['quantity'];
                     $stock->save();
                 }else {
-                    # code...
+                    $stock = new Stock();
+                    $stock->warehouse_id = $request->warehouse_id;
+                    $stock->product_id = $product['product_id'];
+                    $stock->size = $product['product_size'];
+                    $stock->color = $product['product_color'];
+                    $stock->quantity = - $product['quantity'];
+                    $stock->created_by = auth()->user()->id;
+                    $stock->save();
                 }
             }
             
@@ -177,6 +201,36 @@ class InHouseSellController extends Controller
         ->get();
 
         return view('admin.in_house_sell.quotations', compact('inHouseOrders'));
+    }
+
+    public function checkStock(Request $request)
+    {
+        $warehouseId = $request->input('warehouse_id');
+        $productId = $request->input('product_id');
+        $size = $request->input('size');
+        $color = $request->input('color');
+
+        if (empty($warehouseId) || empty($productId)) {
+            return response()->json(['error' => 'Warehouse ID and Product ID are required'], 400);
+        }
+
+        $stock = Stock::where('warehouse_id', $warehouseId)
+            ->where('product_id', $productId)
+            ->where(function($query) use ($size, $color) {
+                if ($size) {
+                    $query->where('size', $size);
+                }
+                if ($color) {
+                    $query->where('color', $color);
+                }
+            })
+            ->first();
+
+        if (!$stock) {
+            return response()->json(['in_stock' => false]);
+        }
+
+        return response()->json(['in_stock' => $stock->quantity > 0]);
     }
 
 }

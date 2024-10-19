@@ -75,9 +75,9 @@
                                         <label for="purchase_type">Payment Type*</label>
                                         <select class="form-control" id="purchase_type" name="purchase_type">
                                             <option value="">Select...</option>
-                                            <option value="cash">Cash</option>
-                                            <option value="bank">Bank</option>
-                                            <option value="credit" selected >Credit</option>
+                                            <option value="Cash">Cash</option>
+                                            <option value="Bank">Bank</option>
+                                            <option value="Credit" selected >Credit</option>
                                         </select>
                                     </div>
                                 </div>

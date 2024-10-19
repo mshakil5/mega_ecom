@@ -43,7 +43,7 @@
                                 
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="warehouse_id">Warehouse</label>
+                                        <label for="warehouse_id">Warehouse*</label>
                                         <select name="warehouse_id" id="warehouse_id" class="form-control">
                                             <option value="">Select</option>
                                             @foreach ($warehouses as $warehouse)
@@ -57,9 +57,9 @@
                                     <div class="form-group">
                                         <label for="purchase_type">Transaction Type*</label>
                                         <select class="form-control" id="payment_method" name="payment_method">
-                                            <option value="credit" selected>Credit</option>
-                                            <option value="cash">Cash</option>
-                                            <option value="bank">Bank</option>
+                                            <option value="Credit" selected>Credit</option>
+                                            <option value="Cash">Cash</option>
+                                            <option value="Bank">Bank</option>
                                         </select>
                                     </div>
                                 </div>
@@ -385,6 +385,20 @@
         }
 
         $('#addProductBtn').click(function() {
+
+            var warehouseId = $('#warehouse_id').val();
+            if (!warehouseId) {
+                swal({
+                    text: 'Please select warehouse',
+                    icon: "error",
+                    button: {
+                        text: "OK",
+                        className: "swal-button--error"
+                    }
+                });
+                return;
+            }
+
             var selectedProduct = $('#product_id option:selected');
             var productId = selectedProduct.val();
             var productName = selectedProduct.data('name');
@@ -416,27 +430,56 @@
             });
 
             if (productId && quantity && unitPrice) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/admin/check-product-stock',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    data: {
+                        warehouse_id: warehouseId,
+                        product_id: productId,
+                        size: selectedSize,
+                        color: selectedColor,
+                    },
+                    success: function(response) {
+                        var stockStatus = '';
+                        if (!response.in_stock) {
+                            stockStatus = '<span class="badge badge-danger">Stock out</span>';
+                        }
 
-                var productRow = `<tr data-product-id="${productId}">
-                                    <td>${productName}
-                                        <input type="hidden" name="product_id[]" value="${productId}">
-                                    </td> 
-                                    <td><input type="number" class="form-control quantity" value="${quantity}" min="1" /></td>
-                                    <td>${selectedSize}</td>
-                                    <td>${selectedColor}</td>
-                                    <td><input type="number" step="0.01" class="form-control price_per_unit" value="${unitPrice.toFixed(2)}" /></td>
-                                    <td><input type="number" step="0.01" class="form-control vat_percent" value="${vatPercent}" /></td>
-                                    <td>${vatAmount}</td>
-                                    <td>${totalPrice}</td>
-                                    <td>${totalPriceWithVat}</td>
-                                    <td><button type="button" class="btn btn-sm btn-danger remove-product">Remove</button></td>
-                                </tr>`;
+                        var productRow = `<tr data-product-id="${productId}">
+                                            <td>${productName} ${stockStatus}
+                                                <input type="hidden" name="product_id[]" value="${productId}">
+                                            </td> 
+                                            <td><input type="number" class="form-control quantity" value="${quantity}" min="1" /></td>
+                                            <td>${selectedSize}</td>
+                                            <td>${selectedColor}</td>
+                                            <td><input type="number" step="0.01" class="form-control price_per_unit" value="${unitPrice.toFixed(2)}" /></td>
+                                            <td><input type="number" step="0.01" class="form-control vat_percent" value="${vatPercent}" /></td>
+                                            <td>${vatAmount}</td>
+                                            <td>${totalPrice}</td>
+                                            <td>${totalPriceWithVat}</td>
+                                            <td><button type="button" class="btn btn-sm btn-danger remove-product">Remove</button></td>
+                                        </tr>`;
 
-                $('#productTable tbody').append(productRow);
-                $('#quantity').val('');
-                $('#price_per_unit').val('');
-
-                updateSummary();
+                        $('#productTable tbody').append(productRow);
+                        $('#quantity').val('');
+                        $('#price_per_unit').val('');
+                        updateSummary();
+                    },
+                    error: function(xhr) {
+                        swal({
+                            text: xhr.responseJSON.message,
+                            icon: "error",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--error"
+                            }
+                        })
+                        // console.error(xhr.responseText);
+                    },
+                });
             }
         });
 

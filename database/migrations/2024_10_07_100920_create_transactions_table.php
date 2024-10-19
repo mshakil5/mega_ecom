@@ -33,6 +33,7 @@ return new class extends Migration
             $table->decimal('tax_amount', 10, 2)->default(0)->nullable();
             $table->decimal('vat_rate', 10, 2)->default(0)->nullable();
             $table->decimal('vat_amount', 10, 2)->default(0)->nullable();
+            $table->double('discount', 10, 2)->default(0);
             $table->decimal('at_amount', 10, 2)->default(0)->nullable();
             $table->string('transaction_type')->nullable();
             $table->string('liability_id')->nullable();

@@ -73,7 +73,7 @@
                       @php
                           $balance = $balance - $data->total_amount;
                       @endphp
-                    @elseif(in_array($data->payment_type, ['cash', 'bank', 'return']))
+                    @elseif(in_array($data->payment_type, ['Cash', 'Bank', 'Return']))
                       <td></td>
                       <td style="text-align: right">{{ number_format($data->total_amount, 2) }}</td>
                       <td style="text-align: right">{{ number_format($balance, 2) }}</td>

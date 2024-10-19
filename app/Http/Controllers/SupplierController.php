@@ -185,9 +185,9 @@ class SupplierController extends Controller
 
     
                                 
-        $totalDrAmount = SupplierTransaction::where('supplier_id', $supplierId)->whereIn('table_type', ['Purchase'])->whereIn('payment_type', ['credit'])->sum('total_amount');
+        $totalDrAmount = SupplierTransaction::where('supplier_id', $supplierId)->whereIn('table_type', ['Purchase'])->whereIn('payment_type', ['Credit'])->sum('total_amount');
 
-        $totalCrAmount = SupplierTransaction::where('supplier_id', $supplierId)->whereIn('table_type', ['Payment', 'Purchase Return'])->whereIn('payment_type', ['cash','bank','return'])->sum('total_amount');
+        $totalCrAmount = SupplierTransaction::where('supplier_id', $supplierId)->whereIn('table_type', ['Payment', 'Purchase Return'])->whereIn('payment_type', ['Cash','Bank','Return'])->sum('total_amount');
 
         $totalBalance = $totalDrAmount - $totalCrAmount;
         return view('admin.supplier.transactions', compact('transactions','supplier','totalBalance'));

@@ -56,8 +56,8 @@
                                         <label for="purchase_type">Payment Type</label>
                                         <select class="form-control" id="purchase_type" name="purchase_type">
                                             <option value="">Select...</option>
-                                            <option value="cash" {{ $purchase->purchase_type == 'cash' ? 'selected' : '' }}>Cash</option>
-                                            <option value="bank" {{ $purchase->purchase_type == 'bank' ? 'selected' : '' }}>Bank</option>
+                                            <option value="Cash" {{ $purchase->purchase_type == 'Cash' ? 'selected' : '' }}>Cash</option>
+                                            <option value="Bank" {{ $purchase->purchase_type == 'Bank' ? 'selected' : '' }}>Bank</option>
                                         </select>
                                     </div>
                                 </div>

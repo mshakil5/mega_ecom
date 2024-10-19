@@ -317,6 +317,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/in-house-sell', [InHouseSellController::class, 'inHouseSellStore'])->name('inhousesell');
     Route::get('/in-house-sell/order/{encoded_order_id}', [InHouseSellController::class, 'generatePDF'])->name('in-house-sell.generate-pdf');
 
+    Route::post('/check-product-stock', [InHouseSellController::class, 'checkStock']);
+
     //Quotation
     Route::post('/make-quotation', [InHouseSellController::class, 'makeQuotationStore'])->name('make.quotation.store');
     Route::get('/quotations', [InHouseSellController::class, 'allquotations'])->name('allquotations');
