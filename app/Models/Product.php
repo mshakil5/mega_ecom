@@ -86,5 +86,14 @@ class Product extends Model
         return $this->hasMany(ProductPrice::class, 'product_id');
     }
 
+    public function colors()
+    {
+        return $this->hasMany(ProductColor::class);
+    }
+
+    public function sizes()
+    {
+        return $this->hasMany(ProductSize::class);
+    }
     
 }

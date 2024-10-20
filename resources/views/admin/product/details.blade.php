@@ -14,84 +14,48 @@
                 <img src="{{ asset('/images/products/' . $product->feature_image) }}" class="product-image" alt="Product Image">
                 </div>
                 <div class="col-12 product-image-thumbs">
-                    @foreach ($product->images as $image)
-                        <div class="product-image-thumb {{ $loop->first ? 'active' : '' }}">
-                            <img src="{{ asset('/images/products/' . $image->image) }}" alt="Product Image">
+                    @foreach($product->colors as $productColor)
+                        @php
+                            $color = $productColor->color;
+                        @endphp
+                        <div class="product-image-thumb">
+                            <img src="{{ asset($productColor->image) }}" data-color-image="{{ asset($productColor->image) }}" class="img-thumbnail" alt="{{ $color->color }}">
                         </div>
                     @endforeach
                 </div>
             </div>
             <div class="col-12 col-sm-6">
                 <h3 class="my-3">{{ $product->name }}</h3>
-                <p>{{ $product->short_description }}</p>
+                <p>{!! $product->short_description !!}</p>
 
                 <hr>
                 <h4>Available Colors</h4>
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                <label class="btn btn-default text-center active">
-                    <input type="radio" name="color_option" id="color_option_a1" autocomplete="off" checked>
-                    Black
-                    <br>
-                    <i class="fas fa-circle fa-2x text-black"></i>
-                </label>
-                <label class="btn btn-default text-center active">
-                    <input type="radio" name="color_option" id="color_option_a1" autocomplete="off" checked>
-                    White
-                    <br>
-                    <i class="fas fa-circle fa-2x text-white"></i>
-                </label>
-                <label class="btn btn-default text-center">
-                    <input type="radio" name="color_option" id="color_option_a4" autocomplete="off">
-                    Red
-                    <br>
-                    <i class="fas fa-circle fa-2x text-red"></i>
-                </label>
-                <label class="btn btn-default text-center">
-                    <input type="radio" name="color_option" id="color_option_a2" autocomplete="off">
-                    Blue
-                    <br>
-                    <i class="fas fa-circle fa-2x text-blue"></i>
-                </label>
-                <label class="btn btn-default text-center active">
-                    <input type="radio" name="color_option" id="color_option_a1" autocomplete="off" checked>
-                    Green
-                    <br>
-                    <i class="fas fa-circle fa-2x text-green"></i>
-                </label>
+                    @foreach($product->colors as $productColor)
+                        @php
+                            $color = $productColor->color;
+                        @endphp
+                        <label class="btn btn-default text-center {{ $loop->first ? 'active' : '' }}">
+                            <input type="radio" name="color_option" id="color_option_{{ $color->id }}" autocomplete="off" {{ $loop->first ? 'checked' : '' }}>
+                            {{ $color->color ?? 'N/A' }} 
+                            <br>
+                            <i class="fas fa-circle fa-2x" style="color: {{ $color->color_code ?? '#000' }}"></i>
+                        </label>
+                    @endforeach
                 </div>
 
                 <h4 class="mt-3">Available Sizes</h4>
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                <label class="btn btn-default text-center">
-                    <input type="radio" name="color_option" id="color_option_b1" autocomplete="off">
-                    <span class="text-xl">XS</span>
-                    <br>
-                    Small
-                </label>
-                <label class="btn btn-default text-center">
-                    <input type="radio" name="color_option" id="color_option_b1" autocomplete="off">
-                    <span class="text-xl">S</span>
-                    <br>
-                    Small
-                </label>
-                <label class="btn btn-default text-center">
-                    <input type="radio" name="color_option" id="color_option_b2" autocomplete="off">
-                    <span class="text-xl">M</span>
-                    <br>
-                    Medium
-                </label>
-                <label class="btn btn-default text-center">
-                    <input type="radio" name="color_option" id="color_option_b3" autocomplete="off">
-                    <span class="text-xl">L</span>
-                    <br>
-                    Large
-                </label>
-                <label class="btn btn-default text-center">
-                    <input type="radio" name="color_option" id="color_option_b4" autocomplete="off">
-                    <span class="text-xl">XL</span>
-                    <br>
-                    Xtra-Large
-                </label>
+                    @foreach($product->sizes as $productSize)
+                        @php
+                            $size = $productSize->size;
+                        @endphp
+                        <label class="btn btn-default text-center {{ $loop->first ? 'active' : '' }}">
+                            <input type="radio" name="size_option" id="size_option_{{ $size->id }}" autocomplete="off" {{ $loop->first ? 'checked' : '' }}>
+                            <span class="text-xl">{{ $size->size ?? 'N/A' }}</span>
+                            <br>
+                        </label>
+                    @endforeach
                 </div>
 
                 <div class="bg-gray py-2 px-3 mt-4">
@@ -102,31 +66,22 @@
                 </h4>
                 </div>
 
-                <div class="mt-4">
-               {{-- <div class="btn btn-primary btn-lg btn-flat">
-                    <i class="fas fa-cart-plus fa-lg mr-2"></i>
-                    Add to Cart
-                </div>
-
-                <div class="btn btn-default btn-lg btn-flat">
-                    <i class="fas fa-heart fa-lg mr-2"></i>
-                    Add to Wishlist
-                </div> --}}
-                </div>
-
                 <div class="mt-4 product-share">
-                <a href="#" class="text-gray">
-                    <i class="fab fa-facebook-square fa-2x"></i>
-                </a>
-                <a href="#" class="text-gray">
-                    <i class="fab fa-twitter-square fa-2x"></i>
-                </a>
-                <a href="#" class="text-gray">
-                    <i class="fas fa-envelope-square fa-2x"></i>
-                </a>
-                <a href="#" class="text-gray">
-                    <i class="fas fa-rss-square fa-2x"></i>
-                </a>
+                    <!-- Facebook Share -->
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(Request::fullUrl()) }}" class="text-gray" target="_blank">
+                        <i class="fab fa-facebook-square fa-2x"></i>
+                    </a>
+                    
+                    <!-- Twitter Share -->
+                    <a href="https://twitter.com/intent/tweet?text=Check%20out%20this%20product!&url={{ urlencode(Request::fullUrl()) }}" class="text-gray" target="_blank">
+                        <i class="fab fa-twitter-square fa-2x"></i>
+                    </a>
+                    
+                    <!-- Email Share -->
+                    <a href="mailto:?subject=Check%20out%20this%20product&body={{ urlencode(Request::fullUrl()) }}" class="text-gray">
+                        <i class="fas fa-envelope-square fa-2x"></i>
+                    </a>
+                    
                 </div>
 
             </div>
@@ -140,7 +95,7 @@
                 </div>
             </nav>
             <div class="tab-content p-3" id="nav-tabContent">
-                <div class="tab-pane fade show active" id="product-desc" role="tabpanel" aria-labelledby="product-desc-tab"> {{ $product->description }} </div>
+                <div class="tab-pane fade show active" id="product-desc" role="tabpanel" aria-labelledby="product-desc-tab"> {!! $product->long_description !!} </div>
                 <div class="tab-pane fade" id="product-comments" role="tabpanel" aria-labelledby="product-comments-tab"></div>
                 <div class="tab-pane fade" id="product-rating" role="tabpanel" aria-labelledby="product-rating-tab"></div>
             </div>
