@@ -29,6 +29,20 @@
                 <p>{!! $product->short_description !!}</p>
 
                 <hr>
+
+                @if($product->category)
+                    <h4>Category: <span>{{ $product->category->name }}</span></h4>
+                @endif
+                @if($product->subCategory)
+                    <h4>Sub-Category: <span>{{ $product->subCategory->name }}</span></h4>
+                @endif
+                @if($product->brand)
+                    <h4>Brand: <span>{{ $product->brand->name }}</span></h4>
+                @endif
+                @if($product->productModel)
+                    <h4>Model: <span>{{ $product->productModel->name }}</span></h4>
+                @endif
+                <hr>
                 <h4>Available Colors</h4>
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
                     @foreach($product->colors as $productColor)

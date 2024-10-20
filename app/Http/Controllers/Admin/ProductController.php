@@ -308,7 +308,7 @@ class ProductController extends Controller
     public function showProductDetails($id)
     {
         $currency = CompanyDetails::value('currency');
-        $product = Product::with(['colors.color', 'sizes.size'])->findOrFail($id);
+        $product = Product::with(['colors.color', 'sizes.size', 'category', 'subCategory', 'brand', 'productModel', 'group', 'unit'])->findOrFail($id);
         return view('admin.product.details', compact('product', 'currency'));
     }
 
