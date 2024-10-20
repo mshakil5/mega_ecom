@@ -174,11 +174,23 @@
                             <td></td>
                             <td id="shipping-charge">{{ $currency }} $00.00</td>
                         </tr>
+                        <tr>
+                            <td>Vat(5%):</td>
+                            <td></td>
+                            <td></td>
+                            <td id="vat-charge">{{ $currency }} $00.00</td>
+                        </tr>
+                        <tr class="d-none" id="discount-row">
+                            <td>Discount:</td>
+                            <td></td>
+                            <td></td>
+                            <td id="discount">{{ $currency }} $00.00</td>
+                        </tr>
                     </tbody>
                 </table>
 
-                <div class="form-group mt-5">
-                    <h6 for="delivery-location">Delivery Location:</h6><br>
+                <div class="form-group mt-3">
+                    <h6 for="delivery-location">Delivery Location:</h6>
                     <div class="custom-control custom-radio custom-control-inline">
                         <input type="radio" class="custom-control-input" name="delivery_location" id="insideDhaka" value="insideDhaka" checked>
                         <label class="custom-control-label" for="insideDhaka">Inside Dhaka</label>
@@ -284,14 +296,29 @@
             }
 
             $('#discount').text(`{{ $currency }} ${discount.toFixed(2)}`);
+            if (discount > 0) {
+                $('#discount-row').removeClass('d-none');
+            } else {
+                $('#discount-row').addClass('d-none');
+            }
             return discount;
+        }
+
+        function updateVat() {
+            var subtotal = parseFloat('{{ $total }}');
+            var vatPercentage = 5;
+            var vatAmount = (vatPercentage / 100) * subtotal;
+
+            $('#vat-charge').text(`{{ $currency }} ${vatAmount.toFixed(2)}`);
+            return vatAmount;
         }
 
         function updateTotal() {
             var subtotal = parseFloat('{{ $total }}');
             var shippingCharge = $('#outsideDhaka').is(':checked') ? 60.00 : 0.00;
             var discount = updateDiscount();
-            var totalAmount = subtotal + shippingCharge - discount;
+            var vatAmount = updateVat();
+            var totalAmount = subtotal + shippingCharge - discount + vatAmount;
 
             $('#total-amount').text(`{{ $currency }} ${totalAmount.toFixed(2)}`);
         }
@@ -329,174 +356,174 @@
         });
 
 
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
 
-            const stripe = Stripe('pk_test_51N5D0QHyRsekXzKiScNvPKU4rCAVKTJOQm8VoSLk7Mm4AqPPsXwd6NDhbdZGyY4tkqWYBoDJyD0eHLFBqQBfLUBA00tj1hNg3q');
-            const elements = stripe.elements();
-            const cardElement = elements.create('card');
-            cardElement.mount('#card-element');
+        const stripe = Stripe('pk_test_51N5D0QHyRsekXzKiScNvPKU4rCAVKTJOQm8VoSLk7Mm4AqPPsXwd6NDhbdZGyY4tkqWYBoDJyD0eHLFBqQBfLUBA00tj1hNg3q');
+        const elements = stripe.elements();
+        const cardElement = elements.create('card');
+        cardElement.mount('#card-element');
 
-            $('input[name="payment_method"]').change(function() {
-                if ($('#stripe').is(':checked')) {
-                    $('#card-element-container').show();
-                } else {
-                    $('#card-element-container').hide();
-                }
-            });
+        $('input[name="payment_method"]').change(function() {
+            if ($('#stripe').is(':checked')) {
+                $('#card-element-container').show();
+            } else {
+                $('#card-element-container').hide();
+            }
+        });
 
-            $('#placeOrderBtn').click(async function() {
-                $('#loader').show();
-                $('#placeOrderBtn').prop('disabled', true);
+        $('#placeOrderBtn').click(async function() {
+            $('#loader').show();
+            $('#placeOrderBtn').prop('disabled', true);
 
-                var formData = {
-                    'name': $('#shipto').is(':checked') ? $('#ship_first_name').val() : $('#first_name').val(),
-                    'surname': $('#shipto').is(':checked') ? $('#ship_last_name').val() : $('#last_name').val(),
-                    'email': $('#shipto').is(':checked') ? $('#ship_email').val() : $('#email').val(),
-                    'phone': $('#shipto').is(':checked') ? $('#ship_phone').val() : $('#phone').val(),
-                    'house_number': $('#shipto').is(':checked') ? $('#ship_house_number').val() : $('#house_number').val(),
-                    'street_name': $('#shipto').is(':checked') ? $('#ship_street_name').val() : $('#street_name').val(),
-                    'town': $('#shipto').is(':checked') ? $('#ship_town').val() : $('#town').val(),
-                    'postcode': $('#shipto').is(':checked') ? $('#ship_postcode').val() : $('#postcode').val(),
-                    'address': $('#shipto').is(':checked') ? $('#ship_address').val() : $('#address').val(),
-                    'delivery_location': $('input[name="delivery_location"]:checked').val(),
-                    'payment_method': $('input[name="payment_method"]:checked').val(),
-                    'discount_percentage': $('#couponType').text().includes('Percentage') ? $('#couponValue').text() : null,
-                    'discount_amount': $('#couponType').text().includes('Fixed Amount') ? $('#couponValue').text() : null,
-                    'order_summary': {!! json_encode($cart) !!},
-                    '_token': '{{ csrf_token() }}'
-                };
+            var formData = {
+                'name': $('#shipto').is(':checked') ? $('#ship_first_name').val() : $('#first_name').val(),
+                'surname': $('#shipto').is(':checked') ? $('#ship_last_name').val() : $('#last_name').val(),
+                'email': $('#shipto').is(':checked') ? $('#ship_email').val() : $('#email').val(),
+                'phone': $('#shipto').is(':checked') ? $('#ship_phone').val() : $('#phone').val(),
+                'house_number': $('#shipto').is(':checked') ? $('#ship_house_number').val() : $('#house_number').val(),
+                'street_name': $('#shipto').is(':checked') ? $('#ship_street_name').val() : $('#street_name').val(),
+                'town': $('#shipto').is(':checked') ? $('#ship_town').val() : $('#town').val(),
+                'postcode': $('#shipto').is(':checked') ? $('#ship_postcode').val() : $('#postcode').val(),
+                'address': $('#shipto').is(':checked') ? $('#ship_address').val() : $('#address').val(),
+                'delivery_location': $('input[name="delivery_location"]:checked').val(),
+                'payment_method': $('input[name="payment_method"]:checked').val(),
+                'discount_percentage': $('#couponType').text().includes('Percentage') ? $('#couponValue').text() : null,
+                'discount_amount': $('#couponType').text().includes('Fixed Amount') ? $('#couponValue').text() : null,
+                'order_summary': {!! json_encode($cart) !!},
+                '_token': '{{ csrf_token() }}'
+            };
 
-                if (formData.payment_method === 'stripe') {
-                    try {
-                        const { paymentMethod, error } = await stripe.createPaymentMethod({
-                            type: 'card',
-                            card: cardElement,
-                            billing_details: {
-                                name: formData.name,
-                                email: formData.email
-                            }
-                        });
-
-                        if (error) {
-                            $('#loader').hide();
-
-                            var errorHtml = '<div class="alert alert-warning"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
-                            errorHtml += '<b>' + error.message + '</b><br>';
-                            errorHtml += '</div>';
-                            $('#alertContainer').html(errorHtml);
-                            $('html, body').animate({ scrollTop: 100 }, 'smooth');
-                            return;
+            if (formData.payment_method === 'stripe') {
+                try {
+                    const { paymentMethod, error } = await stripe.createPaymentMethod({
+                        type: 'card',
+                        card: cardElement,
+                        billing_details: {
+                            name: formData.name,
+                            email: formData.email
                         }
+                    });
 
-                        formData.payment_method_id = paymentMethod.id;
-                    } catch (error) {
-                        console.error(error);
+                    if (error) {
                         $('#loader').hide();
+
+                        var errorHtml = '<div class="alert alert-warning"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
+                        errorHtml += '<b>' + error.message + '</b><br>';
+                        errorHtml += '</div>';
+                        $('#alertContainer').html(errorHtml);
+                        $('html, body').animate({ scrollTop: 100 }, 'smooth');
                         return;
                     }
+
+                    formData.payment_method_id = paymentMethod.id;
+                } catch (error) {
+                    console.error(error);
+                    $('#loader').hide();
+                    return;
                 }
+            }
 
-                $.ajax({
-                    url: '{{ route('place.order') }}',
-                    type: 'POST',
-                    data: formData,
-                    success: function(response) {
+            $.ajax({
+                url: '{{ route('place.order') }}',
+                type: 'POST',
+                data: formData,
+                success: function(response) {
 
-                        swal({
-                            text: "Order Placed Successfully. Thank you for shopping with us.",
-                            icon: "success",
-                            button: {
-                                text: "OK",
-                                className: "swal-button--confirm"
-                            }
-                        }).then(() => {
-                            window.open(response.pdf_url, '_blank');
-                            window.location.href = '{{ route('frontend.homepage') }}';
-                        });
+                    swal({
+                        text: "Order Placed Successfully. Thank you for shopping with us.",
+                        icon: "success",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    }).then(() => {
+                        window.open(response.pdf_url, '_blank');
+                        window.location.href = '{{ route('frontend.homepage') }}';
+                    });
 
-                        if (formData.payment_method === 'stripe') {
-                            stripe.confirmCardPayment(response.client_secret, {
-                                payment_method: formData.payment_method_id
-                            }).then(function(result) {
-                                if (result.error) {
-                                    var errorHtml = '<div class="alert alert-warning"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
-                                    errorHtml += '<b>' + result.error.message + '</b><br>';
-                                    errorHtml += '</div>';
-                                    $('#alertContainer').html(errorHtml);
-                                    $('html, body').animate({ scrollTop: 100 }, 'smooth');
-                                } else {
-                                    if (result.paymentIntent.status === 'succeeded') {
-                                        localStorage.removeItem('cart');
-                                        localStorage.removeItem('wishlist');
-                                        updateCartCount();
-                                        window.open(response.redirectUrl, '_blank');
-                                        window.location.href = '{{ route("frontend.homepage") }}';
-                                    }
+                    if (formData.payment_method === 'stripe') {
+                        stripe.confirmCardPayment(response.client_secret, {
+                            payment_method: formData.payment_method_id
+                        }).then(function(result) {
+                            if (result.error) {
+                                var errorHtml = '<div class="alert alert-warning"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
+                                errorHtml += '<b>' + result.error.message + '</b><br>';
+                                errorHtml += '</div>';
+                                $('#alertContainer').html(errorHtml);
+                                $('html, body').animate({ scrollTop: 100 }, 'smooth');
+                            } else {
+                                if (result.paymentIntent.status === 'succeeded') {
+                                    localStorage.removeItem('cart');
+                                    localStorage.removeItem('wishlist');
+                                    updateCartCount();
+                                    window.open(response.redirectUrl, '_blank');
+                                    window.location.href = '{{ route("frontend.homepage") }}';
                                 }
-                            }).finally(function() {
-                                $('#loader').hide();
-                            });
-                        } else if (formData.payment_method === 'paypal') {
-                                swal({
-                                    text: "Please proceed to PayPal to complete your payment.",
-                                    icon: "info",
-                                    button: {
-                                        text: "OK",
-                                        className: "swal-button--confirm"
-                                    }
-                                }).then(() => {
-                                    localStorage.removeItem('cart');
-                                    localStorage.removeItem('wishlist');
-                                    window.open(response.redirectUrl, '_blank');
-                                    window.location.href = '{{ route("frontend.homepage") }}';
-                                });
-                            } 
-
-                          else if(formData.payment_method === 'cashOnDelivery') {
+                            }
+                        }).finally(function() {
+                            $('#loader').hide();
+                        });
+                    } else if (formData.payment_method === 'paypal') {
                             swal({
-                                    text: "Order Placed Successfully. Thank you for shopping with us.",
-                                    icon: "success",
-                                    button: {
-                                        text: "OK",
-                                        className: "swal-button--confirm"
-                                    }
-                                }).then(() => {
-                                    localStorage.removeItem('cart');
-                                    localStorage.removeItem('wishlist');
-                                    window.open(response.redirectUrl, '_blank');
-                                    window.location.href = '{{ route("frontend.homepage") }}';
-                                });
-                          }  
-                        else {
-                            localStorage.removeItem('cart');
-                            localStorage.removeItem('wishlist');
-                            updateCartCount();
-                            window.location.href = response.redirectUrl;
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        if (xhr.status === 422) {
-                            var errors = xhr.responseJSON.errors;
-                            var firstError = Object.values(errors)[0][0];
-                            var errorHtml = '<div class="alert alert-warning"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
-                            errorHtml += '<b>' + firstError + '</b><br>';
-                            errorHtml += '</div>';
-                            $('#alertContainer').html(errorHtml);
-                            $('html, body').animate({ scrollTop: 100 }, 'smooth');
-                        } else {
-                            console.error(xhr.responseText);
-                        }
-                    },
-                    complete: function() {
-                        $('#loader').hide();
-                        $('#placeOrderBtn').prop('disabled', false);
+                                text: "Please proceed to PayPal to complete your payment.",
+                                icon: "info",
+                                button: {
+                                    text: "OK",
+                                    className: "swal-button--confirm"
+                                }
+                            }).then(() => {
+                                localStorage.removeItem('cart');
+                                localStorage.removeItem('wishlist');
+                                window.open(response.redirectUrl, '_blank');
+                                window.location.href = '{{ route("frontend.homepage") }}';
+                            });
+                        } 
+
+                        else if(formData.payment_method === 'cashOnDelivery') {
+                        swal({
+                                text: "Order Placed Successfully. Thank you for shopping with us.",
+                                icon: "success",
+                                button: {
+                                    text: "OK",
+                                    className: "swal-button--confirm"
+                                }
+                            }).then(() => {
+                                localStorage.removeItem('cart');
+                                localStorage.removeItem('wishlist');
+                                window.open(response.redirectUrl, '_blank');
+                                window.location.href = '{{ route("frontend.homepage") }}';
+                            });
+                        }  
+                    else {
+                        localStorage.removeItem('cart');
+                        localStorage.removeItem('wishlist');
+                        updateCartCount();
+                        window.location.href = response.redirectUrl;
                     }
-                });
+                },
+                error: function(xhr, status, error) {
+                    if (xhr.status === 422) {
+                        var errors = xhr.responseJSON.errors;
+                        var firstError = Object.values(errors)[0][0];
+                        var errorHtml = '<div class="alert alert-warning"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
+                        errorHtml += '<b>' + firstError + '</b><br>';
+                        errorHtml += '</div>';
+                        $('#alertContainer').html(errorHtml);
+                        $('html, body').animate({ scrollTop: 100 }, 'smooth');
+                    } else {
+                        console.error(xhr.responseText);
+                    }
+                },
+                complete: function() {
+                    $('#loader').hide();
+                    $('#placeOrderBtn').prop('disabled', false);
+                }
             });
+        });
 
         $('#applyCoupon').click(function(e) {
             e.preventDefault();

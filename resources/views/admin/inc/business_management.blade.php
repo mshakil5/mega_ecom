@@ -206,7 +206,7 @@
                 <li class="nav-item">
                     <a href="{{ route('addStock') }}" class="nav-link {{ (request()->is('admin/add-stock*')) ? 'active' : '' }}">
                         <i class="fas fa-shopping-cart nav-icon"></i>
-                        <p>Purchase</p>
+                        <p>Purchase-order</p>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -218,7 +218,7 @@
                 <li class="nav-item">
                     <a href="{{ route('productPurchaseHistory') }}" class="nav-link {{ (request()->is('admin/product-purchase-history*') || request()->routeIs('purchase.edit')) ? 'active' : '' }}">
                         <i class="fas fa-file-invoice-dollar nav-icon"></i>
-                        <p>Purchase History</p>
+                        <p>Purchase-order History</p>
                     </a>
                 </li>
                 <li class="nav-item">
