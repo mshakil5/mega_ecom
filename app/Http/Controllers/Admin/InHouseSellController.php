@@ -59,6 +59,8 @@ class InHouseSellController extends Controller
         $order->discount_amount = $validated['discount'];
         $order->net_amount = $netAmount;
         $order->vat_amount = $request->vat;
+        $order->paid_amount = $request->cash_payment + $request->bank_payment;
+        $order->due_amount = $netAmount - $request->cash_payment - $request->bank_payment;
         $order->subtotal_amount = $itemTotalAmount;
         $order->order_type = 1;
         $order->status = 1;
@@ -72,13 +74,45 @@ class InHouseSellController extends Controller
         $transaction->ref = $validated['ref'];
         $transaction->payment_type = "Credit";
         $transaction->transaction_type = "Current";
-        $transaction->amount = $netAmount;
+        $transaction->amount = $itemTotalAmount;
         $transaction->vat_amount = $request->vat;
         $transaction->discount = $validated['discount'] ?? 0.00;
-        $transaction->at_amount = $itemTotalAmount;
+        $transaction->at_amount = $netAmount;
         $transaction->save();
         $transaction->tran_id = 'SL' . date('Ymd') . str_pad($transaction->id, 4, '0', STR_PAD_LEFT);
         $transaction->save();
+
+        if ($request->cash_payment) {
+            $cashtransaction = new Transaction();
+            $cashtransaction->date = $validated['purchase_date'];
+            $cashtransaction->customer_id = $validated['user_id'];
+            $cashtransaction->order_id = $order->id;
+            $cashtransaction->table_type = "Sales";
+            $cashtransaction->ref = $validated['ref'];
+            $cashtransaction->payment_type = "Cash";
+            $cashtransaction->transaction_type = "Received";
+            $cashtransaction->amount = $request->cash_payment;
+            $cashtransaction->at_amount = $request->cash_payment;
+            $cashtransaction->save();
+            $cashtransaction->tran_id = 'SL' . date('Ymd') . str_pad($cashtransaction->id, 4, '0', STR_PAD_LEFT);
+            $cashtransaction->save();
+        }
+
+        if ($request->bank_payment) {
+            $banktransaction = new Transaction();
+            $banktransaction->date = $validated['purchase_date'];
+            $banktransaction->customer_id = $validated['user_id'];
+            $banktransaction->order_id = $order->id;
+            $banktransaction->table_type = "Sales";
+            $banktransaction->ref = $validated['ref'];
+            $banktransaction->payment_type = "Bank";
+            $banktransaction->transaction_type = "Received";
+            $banktransaction->amount = $request->bank_payment;
+            $banktransaction->at_amount = $request->bank_payment;
+            $banktransaction->save();
+            $banktransaction->tran_id = 'SL' . date('Ymd') . str_pad($banktransaction->id, 4, '0', STR_PAD_LEFT);
+            $banktransaction->save();
+        }
 
         foreach ($products as $product) {
             $orderDetail = new OrderDetails();
@@ -125,6 +159,15 @@ class InHouseSellController extends Controller
         ], 200);
 
         return response()->json(['message' => 'Order created successfully', 'order_id' => $order->id], 201);
+    }
+
+    public function inHouseQuotationSellStore(Request $request)
+    {
+        $data = Order::find($request->order_id);
+        $data->order_type = 1;
+        $data->save();
+        
+        return back()->with('success', 'Order create successfully!');
     }
 
     public function generatePDF($encoded_order_id)

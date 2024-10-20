@@ -945,6 +945,89 @@ class OrderController extends Controller
                 ->editColumn('paid_amount', function ($order) {
                     return number_format($order->paid_amount, 2);
                 })
+                ->editColumn('due_amount', function ($order) {
+                    return number_format($order->due_amount, 2);
+                })
+                ->editColumn('discount_amount', function ($order) {
+                    return number_format($order->discount_amount, 2);
+                })
+                ->editColumn('net_amount', function ($order) {
+                    return number_format($order->net_amount, 2);
+                })
+                ->editColumn('status', function ($order) {
+                    $statusLabels = [
+                        1 => 'Pending',
+                        2 => 'Processing',
+                        3 => 'Packed',
+                        4 => 'Shipped',
+                        5 => 'Delivered',
+                        6 => 'Returned',
+                        7 => 'Cancelled'
+                    ];
+                    return isset($statusLabels[$order->status]) ? $statusLabels[$order->status] : 'Unknown';
+                })
+                ->addColumn('purchase_date', function ($order) {
+                    return Carbon::parse($order->purchase_date)->format('d-m-Y');
+                })
+                ->addColumn('name', function ($order) {
+                    return $order->user->name . '<br>' . 
+                           $order->user->email . '<br>' . 
+                           $order->user->phone;
+                })
+                ->addColumn('phone', function ($order) {
+                    return $order->user->phone;
+                })
+                ->addColumn('type', function ($order) {
+                    return $order->order_type == 0 ? 'Frontend' : 'In-house Sale';
+                })
+                ->rawColumns(['action','name'])
+                ->make(true);
+        }
+        return view('admin.orders.all', compact('userId'));
+    }
+
+    public function getInHouseOrder(Request $request, $userId = null)
+    {
+        if ($request->ajax()) {
+            $userId = $request->get('userId') ?? $userId;
+
+            if ($userId) {
+                $ordersQuery = Order::with('user')->where('user_id', $userId)
+                    ->whereIn('order_type', [1]);
+            } else {
+                $ordersQuery = Order::with('user')->whereIn('order_type', [1]);
+            }
+            
+            $ordersQuery->where('status', '!=', 7);
+
+            return DataTables::of($ordersQuery->orderBy('id', 'desc'))
+                ->addColumn('action', function($order) {
+                    $invoiceButton = '';
+                    if ($order->order_type === 0) {
+                        $invoiceButton = '<a href="' . route('generate-pdf', ['encoded_order_id' => base64_encode($order->id)]) . '" class="btn btn-success btn-round btn-shadow" target="_blank">
+                                            <i class="fas fa-receipt"></i> Invoice
+                                        </a>';
+                    } elseif ($order->order_type === 1) {
+                        $invoiceButton = '<a href="' . route('in-house-sell.generate-pdf', ['encoded_order_id' => base64_encode($order->id)]) . '" class="btn btn-success btn-round btn-shadow" target="_blank">
+                                            <i class="fas fa-receipt"></i> Invoice
+                                        </a>';
+                    }
+                
+                    $detailsButton = '<a href="' . route('admin.orders.details', ['orderId' => $order->id]) . '" class="btn btn-info btn-round btn-shadow">
+                                        <i class="fas fa-info-circle"></i> Details
+                                    </a>';
+                
+                    return $invoiceButton . ' ' . $detailsButton;
+                })            
+                ->editColumn('subtotal_amount', function ($order) {
+                    return number_format($order->subtotal_amount, 2);
+                })
+                ->editColumn('paid_amount', function ($order) {
+                    return number_format($order->paid_amount, 2);
+                })
+                ->editColumn('due_amount', function ($order) {
+                    return number_format($order->due_amount, 2);
+                })
                 ->editColumn('discount_amount', function ($order) {
                     return number_format($order->discount_amount, 2);
                 })

@@ -18,10 +18,12 @@
                                     <th>Date</th>
                                     <th>Invoice</th>
                                     <th>Supplier</th>
-                                    <th>Transaction Type</th>
                                     <th>Ref</th>
-                                    <th>Total Amount</th>
+                                    <th>Net Amount</th>
+                                    <th>Paid Amount</th>
+                                    <th>Due Amount</th>
                                     <th>Not Transferred Quantity</th>
+                                    <th>Missing Quantity</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -32,14 +34,19 @@
                                     <td>{{ $key + 1 }}</td>
                                     <td>{{ \Carbon\Carbon::parse($purchase->purchase_date)->format('d-m-Y') }}</td>
                                     <td>{{ $purchase->invoice }}</td>
-                                    <td>{{ $purchase->supplier->name }}</td>
-                                    <td>{{ $purchase->purchase_type }}</td>
+                                    <td>{{ $purchase->supplier->name }}
+                                        <br> {{ $purchase->supplier->email }}
+                                        <br> {{ $purchase->supplier->phone }}
+                                    </td>
                                     <td>{{ $purchase->ref }}</td>
                                     <td>{{ $purchase->net_amount }}</td>
+                                    <td>{{ $purchase->paid_amount }}</td>
+                                    <td>{{ $purchase->due_amount }}</td>
                                     @php
                                     $totalRemainingQuantity = $purchase->purchaseHistory->sum('remaining_product_quantity');
                                     @endphp
                                     <td>{{ $totalRemainingQuantity }}</td>
+                                    <td>{{$purchase->purchaseHistory->sum('missing_product_quantity')}}</td>
                                     <td>
                                         <select class="form-control purchase-status" data-purchase-id="{{ $purchase->id }}">
                                             <option value="1" {{ $purchase->status == 1 ? 'selected' : '' }}>Processing</option>
@@ -58,8 +65,12 @@
                                         <a href="{{ route('returnProduct', $purchase->id) }}" class="btn btn-sm btn-warning">
                                             <i class="fas fa-undo-alt"></i>
                                         </a>
-                                        @if ($totalRemainingQuantity > 1)
+                                        @if ($totalRemainingQuantity > 1 && $purchase->status == 4)
                                             <a href="{{ route('transferToWarehouse', $purchase->id) }}" class="btn btn-sm btn-success">
+                                                <i class="fas fa-arrow-right"></i>
+                                            </a>
+                                            
+                                            <a href="{{ route('missingProduct', $purchase->id) }}" class="btn btn-sm btn-danger">
                                                 <i class="fas fa-arrow-right"></i>
                                             </a>
                                          @endif   

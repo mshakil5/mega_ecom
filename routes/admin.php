@@ -232,6 +232,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/process/system-loss', [StockController::class, 'processSystemLoss'])->name('process.system.loss');
     Route::get('/system-losses', [StockController::class, 'systemLosses'])->name('system-losses.index');
     Route::post('/add-stock', [StockController::class, 'stockStore']);
+    Route::get('/missing-purchase-product/{id}', [StockController::class, 'missingProduct'])->name('missingProduct');
     Route::get('/transfer-to-warehouse/{id}', [WarehouseController::class, 'transfer'])->name('transferToWarehouse');
     Route::get('/purchase-history', [StockController::class, 'productPurchaseHistory'])->name('productPurchaseHistory');
     Route::get('/purchase/{purchase}/history', [StockController::class, 'getPurchaseHistory'])->name('purchase.history');
@@ -259,6 +260,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     //Orders
     Route::get('/all-orders/{userId?}', [OrderController::class, 'getAllOrder'])->name('getallorder');
+    Route::get('/all-inhouse-orders/{userId?}', [OrderController::class, 'getInHouseOrder'])->name('getinhouseorder');
     Route::get('/pending-orders', [OrderController::class, 'pendingOrders'])->name('pendingorders');
     Route::get('/processing-orders', [OrderController::class, 'processingOrders'])->name('processingorders');
     Route::get('/packed-orders', [OrderController::class, 'packedOrders'])->name('packedorders');
@@ -321,6 +323,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     //In House sell
     Route::get('/in-house-sell', [InHouseSellController::class, 'inHouseSell'])->name('inhousesell');
     Route::post('/in-house-sell', [InHouseSellController::class, 'inHouseSellStore'])->name('inhousesell');
+    Route::post('/in-house-quotation-order', [InHouseSellController::class, 'inHouseQuotationSellStore'])->name('quotationToOrder');
     Route::get('/in-house-sell/order/{encoded_order_id}', [InHouseSellController::class, 'generatePDF'])->name('in-house-sell.generate-pdf');
 
     Route::post('/check-product-stock', [InHouseSellController::class, 'checkStock']);
@@ -415,6 +418,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/warehouse-store', [WareHouseController::class, 'storeWarehouse'])->name('warehouse.store');
 
     Route::post('/transfer-to-warehouse/{id}', [WarehouseController::class, 'transferToWarehouse'])->name('transferToWarehouse');
+    Route::post('/missing-purchase-product/{id}', [StockController::class, 'missingPurchaseProduct'])->name('missingPurchaseProduct');
 
     // mail content
     Route::get('/mail-content', [MailContentController::class, 'index'])->name('admin.mail-content');

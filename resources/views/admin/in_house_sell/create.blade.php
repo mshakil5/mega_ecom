@@ -192,7 +192,7 @@
                                                     <input type="number" step="0.01" class="form-control" id="discount" name="discount">
                                                 </div>
                                             </div>
-                                            <div class="row">
+                                            <div class="row mb-3">
                                                 <div class="col-sm-6 d-flex align-items-center justify-content-end">
                                                     <span>Net Amount:</span>
                                                 </div>
@@ -200,6 +200,28 @@
                                                     <input type="text" class="form-control" id="net_amount" readonly>
                                                 </div>
                                             </div>
+                                            
+                                            <div class="row mb-3">
+                                                <div class="col-sm-6 d-flex align-items-center justify-content-end">
+                                                    <span>Cash Payment:</span>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <input type="number" class="form-control" id="cash_payment" name="cash_payment">
+                                                    <span class="errmsg text-danger"></span>
+                                                </div>
+                                            </div>
+
+                                            
+                                            <div class="row">
+                                                <div class="col-sm-6 d-flex align-items-center justify-content-end">
+                                                    <span>Bank Payment:</span>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <input type="text" class="form-control" id="bank_payment" name="bank_payment">
+                                                    <span class="errmsg text-danger"></span>
+                                                </div>
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -553,6 +575,8 @@
             formData.push({ name: 'vat', value: $('#vat').val() });
             formData.push({ name: 'discount', value: $('#discount').val() });
             formData.push({ name: 'net_amount', value: $('#net_amount').val() });
+            formData.push({ name: 'cash_payment', value: $('#cash_payment').val() });
+            formData.push({ name: 'bank_payment', value: $('#bank_payment').val() });
 
             $('#productTable tbody tr').each(function() {
                 var productId = $(this).find('input[name="product_id[]"]').val();
@@ -708,6 +732,31 @@
                 }
             });
         });
+
+
+        $('#cash_payment').on('keyup', function() {
+            paymentCheck($(this).val(), 'Cash Payment');
+        });
+
+        $('#bank_payment').on('keyup', function() {
+            paymentCheck($(this).val(), 'Bank Payment');
+        });
+
+        function paymentCheck(payment, paymentType) {
+            var netAmount = parseFloat($('#net_amount').val());
+            var paymentValue = parseFloat(payment);
+
+            if (!isNaN(netAmount) && !isNaN(paymentValue)) {
+                if (paymentValue > netAmount) {
+                    $('.errmsg').text(paymentType + ' is greater than Net Amount');
+                    $('#cash_payment').val('0.00');
+                    $('#bank_payment').val('0.00');
+                }
+            } else {
+                $('.errmsg').text('Please enter valid numbers.');
+            }
+        }
+
 
         $('#product_id').select2({
             placeholder: "Select product...",

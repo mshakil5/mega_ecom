@@ -146,7 +146,7 @@
                                         <button type="button" id="addProductBtn" class="btn btn-secondary">Add</button>
                                      </div>
                                 </div>
-                                <div class="col-sm-12 mt-3">
+                                <div class="col-sm-12 mt-1">
                                     <h2>Product List:</h2>
                                     <table class="table table-bordered" id="productTable">
                                         <thead>
@@ -176,34 +176,49 @@
                                             <input type="text" class="form-control" id="item_total_amount" readonly style="width: 100px; margin-left: auto;">
                                         </div>
                                     </div>
-                                    <div class="row justify-content-end mt-3">
+                                    <div class="row justify-content-end mt-1">
                                         <div class="col-sm-3 d-flex align-items-center">
                                             <span class="">Discount Amount:</span>
                                             <input type="number" step="0.01" class="form-control" id="discount" name="discount" style="width: 100px; margin-left: auto;">
                                         </div>
                                     </div>
-                                    <div class="row justify-content-end mt-3">
+                                    <div class="row justify-content-end mt-1">
                                         <div class="col-sm-3 d-flex align-items-center">
                                             <span class="">Total VAT Amount:</span>
                                             <input type="text" class="form-control" id="total_vat_amount" readonly style="width: 100px; margin-left: auto;">
                                         </div>
                                     </div>
-                                    <div class="row justify-content-end mt-3">
+                                    <div class="row justify-content-end mt-1">
                                         <div class="col-sm-3 d-flex align-items-center">
                                             <span class="">Net Amount:</span>
                                             <input type="text" class="form-control" id="net_amount" readonly style="width: 100px; margin-left: auto;">
                                         </div>
                                     </div>
-                                    <div class="row justify-content-end mt-3 d-none ">
+                                    <div class="row justify-content-end mt-1 d-none">
                                         <div class="col-sm-3 d-flex align-items-center">
                                             <span class="">Paid Amount:</span>
                                             <input type="number" step="0.01" class="form-control" id="paid_amount" name="paid_amount" style="width: 100px; margin-left: auto;">
                                         </div>
                                     </div>
-                                    <div class="row justify-content-end mt-3 d-none">
+                                    <div class="row justify-content-end mt-1">
+                                        <div class="col-sm-3 d-flex align-items-center">
+                                            <span class="">Cash Payment:</span>
+                                            <input type="number" step="0.01" class="form-control" id="cash_payment" name="cash_payment" style="width: 100px; margin-left: auto;">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row justify-content-end mt-1">
+                                        <div class="col-sm-3 d-flex align-items-center">
+                                            <span class="">Bank Payment:</span>
+                                            <input type="number" step="0.01" class="form-control" id="bank_payment" name="bank_payment" style="width: 100px; margin-left: auto;">
+                                        </div>
+                                    </div>
+                                    
+
+                                    <div class="row justify-content-end mt-1 d-none">
                                         <div class="col-sm-3 d-flex align-items-center">
                                             <span class="">Due Amount:</span>
-                                            <input type="text" class="form-control" id="due_amount" readonly style="width: 100px; margin-left: auto;">
+                                            <input type="text" class="form-control" id="due_amount" readonly style="width: 100px; margin-left: auto;" min="0">
                                         </div>
                                     </div>
                                 </div>
@@ -376,6 +391,8 @@
             formData.total_vat_amount = $('#total_vat_amount').val();
             formData.net_amount = $('#net_amount').val();
             formData.paid_amount = $('#paid_amount').val();
+            formData.bank_payment = $('#bank_payment').val();
+            formData.cash_payment = $('#cash_payment').val();
             formData.due_amount = $('#due_amount').val();
 
             $('#productTable tbody tr').each(function() {

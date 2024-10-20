@@ -20,6 +20,7 @@
                                     <th>Discount</th>
                                     <th>Total</th>
                                     <th>Paid</th>
+                                    <th>Due</th>
                                     <th>Type</th>
                                     <th>Status</th>
                                     <th>Details</th>
@@ -62,6 +63,7 @@
                 { data: 'discount_amount', name: 'discount_amount' },
                 { data: 'net_amount', name: 'net_amount' },
                 { data: 'paid_amount', name: 'paid_amount' },
+                { data: 'due_amount', name: 'due_amount' },
                 { data: 'type', name: 'type' },
                 { data: 'status', name: 'status' },
                 { data: 'action', name: 'action', orderable: false, searchable: false }

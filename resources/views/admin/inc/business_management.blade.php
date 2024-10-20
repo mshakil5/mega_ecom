@@ -185,6 +185,14 @@
                         <p>In House Sale</p>
                     </a>
                 </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('getinhouseorder') }}" class="nav-link {{ (request()->is('admin/all-inhouse-orders*')) ? 'active' : '' }}">
+                        <i class="fas fa-industry nav-icon"></i>
+                        <p>In House Sale List</p>
+                    </a>
+                </li>
+
                 <li class="nav-item">
                     <a href="{{ route('allquotations') }}" class="nav-link {{ (request()->is('admin/quotations*')) ? 'active' : '' }}">
                         <i class="fas fa-box nav-icon"></i>

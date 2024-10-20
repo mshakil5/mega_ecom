@@ -174,8 +174,8 @@ class StockController extends Controller
         $purchase->discount = $request->discount;
         $purchase->total_vat_amount = $request->total_vat_amount;
         $purchase->net_amount = $request->net_amount;
-        $purchase->paid_amount = $request->paid_amount;
-        $purchase->due_amount = $request->due_amount;
+        $purchase->paid_amount = $request->cash_payment + $request->bank_payment;
+        $purchase->due_amount = $request->net_amount - $request->cash_payment - $request->bank_payment;
         $purchase->created_by = Auth::user()->id;
         $purchase->save();
 
@@ -190,6 +190,30 @@ class StockController extends Controller
         $supplier->discount = $request->discount ?? 0.00;
         $supplier->total_amount = $request->net_amount;
         $supplier->save();
+
+        if ($request->cash_payment) {
+            $cashpayment = new SupplierTransaction();
+            $cashpayment->date = $request->purchase_date;
+            $cashpayment->supplier_id = $request->supplier_id;
+            $cashpayment->purchase_id = $purchase->id;
+            $cashpayment->table_type = "Purchase";
+            $cashpayment->payment_type = "Cash";
+            $cashpayment->amount = $request->cash_payment;
+            $cashpayment->total_amount = $request->cash_payment;
+            $cashpayment->save();
+        }
+
+        if ($request->bank_payment) {
+            $bankpayment = new SupplierTransaction();
+            $bankpayment->date = $request->purchase_date;
+            $bankpayment->supplier_id = $request->supplier_id;
+            $bankpayment->purchase_id = $purchase->id;
+            $bankpayment->table_type = "Purchase";
+            $bankpayment->payment_type = "Bank";
+            $bankpayment->amount = $request->bank_payment;
+            $bankpayment->total_amount = $request->bank_payment;
+            $bankpayment->save();
+        }
 
         foreach ($request->products as $product) {
             $purchaseHistory = new PurchaseHistory();
@@ -463,15 +487,15 @@ class StockController extends Controller
 
                 $product_id = $product['product_id'];
                 $return_quantity = $product['return_quantity'];
-
-                // $stock = Stock::where('product_id', $product_id);
-
-                // if (isset($product['size']) && isset($product['color'])) {
-                //     $stock->where('size', $product['size'])
-                //         ->where('color', $product['color']);
-                // }
-
-                // $stock->decrement('quantity', $return_quantity);
+                
+                $purchaseHistory = PurchaseHistory::find($product['purchase_history_id']);
+    
+                if (!$purchaseHistory) {
+                    continue;
+                }
+    
+                $purchaseHistory->remaining_product_quantity -= $product['return_quantity'];
+                $purchaseHistory->save();
 
             }
         });
@@ -609,6 +633,50 @@ class StockController extends Controller
         $purchase->save();
 
         return response()->json(['success' => true]);
+    }
+
+    public function missingProduct($id)
+    {
+        $purchase = Purchase::with('purchaseHistory.product')->findOrFail($id);
+        $warehouses = Warehouse::orderby('id','DESC')->where('status', 1)->get();
+        $purchaseCount = PurchaseHistory::where('purchase_id', $id)->count();
+        return view('admin.stock.missing_product', compact('purchase', 'warehouses', 'purchaseCount'));
+    }
+
+    public function missingPurchaseProduct(Request $request, $purchaseId)
+    {
+        $request->validate([
+            'quantities.*' => 'required|array',
+        ]);
+    
+        foreach ($request->quantities as $historyId => $quantities) {
+            foreach ($quantities as $index => $quantity) {
+    
+                $purchaseHistory = PurchaseHistory::find($historyId);
+    
+                if (!$purchaseHistory) {
+                    continue;
+                }
+    
+                $purchaseHistory->remaining_product_quantity -= $quantity;
+                $purchaseHistory->missing_product_quantity += $quantity;
+                $purchaseHistory->save();
+
+                $size = $request->sizes[$historyId][0];
+                $color = $request->colors[$historyId][0];
+
+                $missing = new SystemLose();
+                $missing->product_id = $purchaseHistory->product_id;
+                $missing->purchase_id = $purchaseHistory->purchase_id;
+                $missing->quantity = $quantity;
+                $missing->reason = "Product Missing";
+                $missing->save();
+    
+                
+            }
+        }
+    
+        return redirect()->back()->with('success', 'Missing product recorded successfully.');
     }
 
 }
