@@ -15,9 +15,20 @@
                     <!-- Filter Form Section -->
                     <form action="#" method="GET">
                         <div class="row mb-3">
+                            
+                            <div class="col-md-3">
+                                <label class="label label-primary">Product</label>
+                                <select class="form-control select2" id="product_id" name="product_id">
+                                    <option value="">Select...</option>
+                                    @foreach($products as $product)
+                                        <option value="{{ $product->id }}">{{ $product->name }}-{{ $product->product_code }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
                             <div class="col-md-3">
                                 <label class="label label-primary">Warehouses</label>
-                                <select class="form-control select2" id="supplierCustomer" name="supplierCustomer">
+                                <select class="form-control select2" id="warehouse_id" name="warehouse_id">
                                     <option value="">Select...</option>
                                     @foreach($warehouses as $warehouse)
                                         <option value="{{ $warehouse->id }}">{{ $warehouse->name }}-{{ $warehouse->location }}</option>
@@ -48,7 +59,6 @@
                                         <th>Quantity</th>
                                         <th>Size</th>
                                         <th>Color</th>
-                                        <th>Warehouse Name</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -74,6 +84,19 @@
             <form id="systemLossForm">
                 <div class="modal-body">
                     <input type="hidden" id="lossProductId" name="productId">
+                    
+                    <span id="allError" class="text-danger"></span>
+
+                    <div class="form-group">
+                        <label class="label label-primary">Warehouses</label>
+                        <select class="form-control" id="warehouse" name="warehouse">
+                            <option value="">Select...</option>
+                            @foreach($warehouses as $warehouse)
+                                <option value="{{ $warehouse->id }}">{{ $warehouse->name }}-{{ $warehouse->location }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     <div class="form-group">
                         <label for="lossQuantity">Loss Quantity:</label>
                         <input type="number" class="form-control" id="lossQuantity" name="lossQuantity" required>
@@ -98,8 +121,8 @@
 @section('script')
 <script>
     $(document).ready(function () {
-        function openLossModal(productId) {
-            console.log('btn work');
+        function openLossModal(productId, size, color) {
+            // console.log(productId, size, color);
 
             $('#systemLossForm')[0].reset();
             $('#lossProductId').val(productId);
@@ -109,20 +132,24 @@
                 e.preventDefault();
                 let lossQuantity = parseInt($('#lossQuantity').val());
 
-                if (lossQuantity > currentQuantity) {
-                    $('#quantityError').text('Quantity cannot be more than current stock quantity.');
-                    return;
-                } else {
-                    $('#quantityError').text('');
-                }
+                // if (lossQuantity > currentQuantity) {
+                //     $('#quantityError').text('Quantity cannot be more than current stock quantity.');
+                //     return;
+                // } else {
+                //     $('#quantityError').text('');
+                // }
 
                 let lossReason = $('#lossReason').val();
+                let warehouse = $('#warehouse').val();
 
                 $.ajax({
                     url: "{{ route('process.system.loss') }}", 
                     type: 'POST',
                     data: {
+                        color: color,
+                        size: size,
                         productId: productId,
+                        warehouse: warehouse,
                         lossQuantity: lossQuantity,
                         lossReason: lossReason,
                         _token: '{{ csrf_token() }}'
@@ -141,6 +168,13 @@
                     },
                     error: function (xhr, status, error) {
                         console.error(xhr.responseText);
+                        
+                        let response = JSON.parse(xhr.responseText);
+        
+                        // If there are validation errors, get the message
+                        let errorMessage = response.message;
+                        // Insert the error message into the modal
+                        $('#allError').html(errorMessage);
                     }
                 });
             });
@@ -152,7 +186,8 @@
             ajax: {
                 url: "{{ route('allstocks') }}",
                 data: function(d) {
-                    d.supplierCustomer = $('#supplierCustomer').val();
+                    d.warehouse_id = $('#warehouse_id').val();
+                    d.product_id = $('#product_id').val();
                 },
                 error: function(xhr, error, code) {
                     console.error(xhr.responseText);
@@ -165,7 +200,6 @@
                 { data: 'quantity_formatted', name: 'quantity' },
                 { data: 'size', name: 'size' },
                 { data: 'color', name: 'color' },
-                { data: 'warehouse', name: 'warehouse' },
                 {data: 'action', name: 'action', orderable: false, searchable: false}
             ],
             // columnDefs: [
@@ -186,13 +220,16 @@
         });
 
         $('#reset-button').on('click', function() {
-            $('#supplierCustomer').val('');
+            $('#warehouse_id').val('');
+            location.reload();
             table.draw();
         });
 
         $('#stock-table').on('click', '.btn-open-loss-modal', function () {
-            let productId = $(this).data('productId');
-            openLossModal(productId);
+            let productId = $(this).data('id');
+            let size = $(this).data('size');
+            let color = $(this).data('color');
+            openLossModal(productId, size, color);
         });
 
         $('#systemLossModal').on('hidden.bs.modal', function () {
@@ -200,11 +237,11 @@
             $('#quantityError').text('');
         });
 
-        // $('.select2').select2({
-        //     placeholder: 'Select a warehouse',
-        //     allowClear: true
-        // });
-        // $('.select2').css('width', '100%');
+        $('#product_id').select2({
+            placeholder: "Select product...",
+            allowClear: true,
+            width: '100%'
+        });
     });
 </script>
 

@@ -25,20 +25,25 @@ class StockController extends Controller
 {
     public function getStock()
     {
+        $products = Product::select('id','name','product_code')->orderBy('id', 'DESC')->get();
         $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
-        return view('admin.stock.index', compact('warehouses'));
+        return view('admin.stock.index', compact('warehouses','products'));
     }
 
     public function getStocks(Request $request)
     {
-        $query = Stock::query();
-
-        if ($request->has('supplierCustomer') && $request->supplierCustomer != '') {
-            $query->where('warehouse_id', $request->supplierCustomer);
+        // $query = Stock::query();
+        $query = Stock::select('product_id', 'size','color',  \DB::raw('SUM(quantity) as total_quantity'))
+            ->groupBy('product_id', 'size','color');
+        if ($request->has('warehouse_id') && $request->warehouse_id != '') {
+            $query->where('warehouse_id', $request->warehouse_id);
         }
 
+        if ($request->has('product_id') && $request->product_id != '') {
+            $query->where('product_id', $request->product_id);
+        }
        $data = $query->orderBy('id', 'DESC')->get();
-
+       
         return DataTables::of($data)
             ->addColumn('sl', function($row) {
                 static $i = 1;
@@ -51,17 +56,17 @@ class StockController extends Controller
                 return $row->product ? $row->product->product_code : 'N/A';
             })
             ->addColumn('quantity_formatted', function ($row) {
-                return number_format($row->quantity, 0);
+                return $row->total_quantity ? number_format($row->total_quantity, 0) : 'N/A';
             })
-            ->addColumn('warehouse', function ($row) {
-                $warehouseDtl = '<b>'.$row->warehouse ? $row->warehouse->name .'-'. $row->warehouse->location : 'N/A'.'</b>';
-                return $warehouseDtl;
-            })
+            // ->addColumn('warehouse', function ($row) {
+            //     $warehouseDtl = '<b>'.$row->warehouse ? $row->warehouse->name .'-'. $row->warehouse->location : 'N/A'.'</b>';
+            //     return $warehouseDtl;
+            // })
             // ->addColumn('action', function ($row) {
             // return '<button class="btn btn-sm btn-danger" onclick="openLossModal('.$row->id.')">System Loss</button>';
             // })
             ->addColumn('action', function ($data) {
-                $btn = '<div class="table-actions"> <button class="btn btn-sm btn-danger btn-open-loss-modal" data-id="'.$data->id.'" data-productId="'.$data->product->id.'" onclick="openLossModal()">System Loss</button> ';  
+                $btn = '<div class="table-actions"> <button class="btn btn-sm btn-danger btn-open-loss-modal" data-size="'.$data->size.'" data-color="'.$data->color.'" data-id="'.$data->product->id.'" >System Loss</button> ';  
                 if (Auth::user()) {
                     $url = route('admin.product.purchasehistory', ['id' => $data->product->id, 'size' => $data->size, 'color' => $data->color]);
                     $btn .= '<a href="'.$url.'" class="btn btn-sm btn-primary">History</a>';
@@ -101,7 +106,7 @@ class StockController extends Controller
                             ->orderby('id','DESC')
                             ->get();
 
-        $saledHistories = OrderDetails::where('product_id', $id)
+        $salesHistories = OrderDetails::where('product_id', $id)
                             ->when($fromDate, function ($query) use ($fromDate, $toDate) {
                                 $query->whereBetween('created_at', [$fromDate, $toDate]);
                             })
@@ -111,9 +116,12 @@ class StockController extends Controller
                             ->where('size', $size)
                             ->where('color', $color)
                             ->orderby('id','DESC')
-                            ->get();
+                            ->whereHas('order', function ($query) {
+                                $query->whereIn('order_type', ['0','1']);
+                            })->get();
 
-        return view('admin.stock.single_product_history', compact('purchaseHistories','saledHistories','product','warehouses', 'id', 'size', 'color'));
+
+        return view('admin.stock.single_product_history', compact('purchaseHistories','salesHistories','product','warehouses', 'id', 'size', 'color'));
     }
 
     public function addstock()
@@ -481,30 +489,30 @@ class StockController extends Controller
     {
         $validatedData = $request->validate([
             'productId' => 'required|exists:stocks,product_id', 
+            'warehouse' => 'required', 
             'lossQuantity' => 'required|numeric|min:1', 
             'lossReason' => 'nullable|string|max:255',
         ]);
 
-        $systemLoss = new SystemLose();
-        $systemLoss->product_id = $validatedData['productId'];
-        $systemLoss->quantity = $validatedData['lossQuantity'];
-        $systemLoss->reason = $validatedData['lossReason'];
-        $systemLoss->created_by = Auth::user()->id;
-        $systemLoss->save();
-
-
-        $stock = Stock::where('product_id', $validatedData['productId'])->first();
+        $stock = Stock::where('product_id', $validatedData['productId'])->where('size',$request->size)->where('color',$request->color)->where('warehouse_id', $request->warehouse)->first();
 
         if (!$stock) {
             return response()->json(['message' => 'Stock record not found.'], 404);
         }
-
         if ($validatedData['lossQuantity'] > $stock->quantity) {
             return response()->json(['message' => 'Loss quantity cannot be more than current stock quantity.'], 422);
         }
 
         $newQuantity = $stock->quantity - $validatedData['lossQuantity'];
         $stock->update(['quantity' => $newQuantity]);
+
+        $systemLoss = new SystemLose();
+        $systemLoss->warehouse_id = $validatedData['warehouse'];
+        $systemLoss->product_id = $validatedData['productId'];
+        $systemLoss->quantity = $validatedData['lossQuantity'];
+        $systemLoss->reason = $validatedData['lossReason'];
+        $systemLoss->created_by = Auth::user()->id;
+        $systemLoss->save();
 
         return response()->json(['message' => 'System loss processed successfully.']);
     }

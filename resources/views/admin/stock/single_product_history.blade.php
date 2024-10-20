@@ -163,7 +163,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($saledHistories as $key => $data)
+                                    @foreach ($salesHistories as $key => $data)
                                         <tr>
                                             <td>{{ $key + 1}}</td>
                                             <td>{{ date('d-m-Y', strtotime($data->created_at))}}</td>
@@ -172,14 +172,14 @@
                                                     <i class="fas fa-arrow-right"></i>
                                                 </a>
                                             </td>
-                                            <td>{{ $data->warehouse->name}}</td>
+                                            <td>{{ $data->warehouse_id ? $data->warehouse->name : " "}}</td>
                                             <td>{{ $data->size}}</td>
                                             <td>{{ $data->color}}</td>
                                             <td>{{ $data->quantity}}</td>
                                             <td>{{ $data->price_per_unit}}</td>
                                             <td></td>
                                             <td>{{ $data->total_price}}</td>
-                                            <td>{{ $saledHistories->sum('total_price')}}</td>
+                                            <td>{{ $salesHistories->sum('total_price')}}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
