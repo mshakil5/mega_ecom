@@ -13,76 +13,29 @@
                         <table id="example1" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Phone</th>
-                                    <th>Address</th>
+                                    <th>Date</th>
+                                    <th>Name/Email/Phone</th>
                                     <th>Subtotal</th>
-                                    <th>Shipping</th>
-                                    <th>Discount</th>
                                     <th>Total</th>
-                                    <th>Payment Method</th>
+                                    <th>Type</th>  
                                     <th>Cancel Reason</th>
-                                    <th>Status</th>
                                     <th>Details</th>
-                                     @if (!empty($orders) && $orders->contains(function ($order) {
-                                            return $order->status == 4;
-                                        }))
-                                        <th>Action</th>
-                                    @endif
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($orders as $order)
                                 <tr>
+                                    <td>{{ \Carbon\Carbon::parse($order->purchase_date)->format('d-m-Y') }}</td>
                                     <td>
-                                        {{ optional($order->user)->name ?? $order->name }} {{ optional($order->user)->surname ?? '' }}
-                                    </td>
-                                    <td>
-                                        {{ optional($order->user)->email ?? $order->email }}
-                                    </td>
-                                    <td>
-                                        {{ optional($order->user)->phone ?? $order->phone }}
-                                    </td>
-                                    <td>
-                                        {{ optional($order->user)->house_number ?? $order->house_number }},
-                                        {{ optional($order->user)->street_name ?? $order->street_name }},
-                                        <br>
-                                        {{ optional($order->user)->town ?? $order->town }},
-                                        {{ optional($order->user)->postcode ?? $order->postcode }}
+                                        {{ optional($order->user)->name ?? $order->name }} {{ optional($order->user)->surname ?? '' }} <br> {{ optional($order->user)->email ?? $order->email }} <br> {{ optional($order->user)->phone ?? $order->phone }}
                                     </td>
                                     <td>{{ number_format($order->subtotal_amount, 2) }}</td>
-                                    <td>{{ number_format($order->shipping_amount, 2) }}</td>
-                                    <td>{{ number_format($order->discount_amount, 2) }}</td>
                                     <td>{{ number_format($order->net_amount, 2) }}</td>
-                                    <td>{{ ucfirst($order->payment_method) }}</td>
+                                    <td>{{ $order->order_type == 0 ? 'Frontend' : 'In-house Sale' }}</td>
                                     <td>{!! ($order->cancelledOrder->reason) !!}</td>
-                                    <td>
-                                        <select class="form-control order-status" data-order-id="{{ $order->id }}">
-                                            <option value="1" {{ $order->status == 1 ? 'selected' : '' }}>Pending</option>
-                                            <option value="2" {{ $order->status == 2 ? 'selected' : '' }}>Processing</option>
-                                            <option value="3" {{ $order->status == 3 ? 'selected' : '' }}>Packed</option>
-                                            <option value="4" {{ $order->status == 4 ? 'selected' : '' }}>Shipped</option>
-                                            <option value="5" {{ $order->status == 5 ? 'selected' : '' }}>Delivered</option>
-                                            <option value="6" {{ $order->status == 6 ? 'selected' : '' }}>Returned</option>
-                                            <option value="7" {{ $order->status == 7 ? 'selected' : '' }}>Cancelled</option>
-                                        </select>
-                                    </td>
                                     <td>
                                         <a href="{{ route('admin.orders.details', ['orderId' => $order->id]) }}" class="btn btn-primary">Details</a>
                                     </td>
-                                    @if ($order->status == 4)
-                                        <td>
-                                            <select class="form-control select-delivery-man" data-order-id="{{ $order->id }}">
-                                                <option value="">Select Delivery Man</option>
-                                                @foreach ($deliveryMen as $deliveryMan)
-                                                    <option value="{{ $deliveryMan->id }}" {{ $order->delivery_man_id == $deliveryMan->id ? 'selected' : '' }}>
-                                                        {{ $deliveryMan->name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </td>
-                                    @endif
                                 </tr>
                                 @endforeach
                             </tbody>

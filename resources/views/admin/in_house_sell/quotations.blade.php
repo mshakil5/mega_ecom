@@ -13,45 +13,39 @@
                         <table id="example1" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Phone</th>
-                                    <th>Address</th>
+                                    <th>Date</th>
+                                    <th>Name/Email/Phone</th>
                                     <th>Subtotal</th>
-                                    <th>Shipping</th>
+                                    <th>Vat</th>
                                     <th>Discount</th>
                                     <th>Total</th>
-                                    <th>Transaction Method</th>
-                                    <th>Details</th>
+                                    <th>Action</th>                          
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($inHouseOrders as $order)
                                 <tr>
+                                    <td>{{ \Carbon\Carbon::parse($order->purchase_date)->format('d-m-Y') }}</td>
                                     <td>
-                                        {{ optional($order->user)->name ?? $order->name }} {{ optional($order->user)->surname ?? '' }}
-                                    </td>
-                                    <td>
-                                        {{ optional($order->user)->email ?? $order->email }}
-                                    </td>
-                                    <td>
+                                        {{ optional($order->user)->name ?? $order->name }} {{ optional($order->user)->surname ?? '' }} <br>
+                                        {{ optional($order->user)->email ?? $order->email }} <br>
                                         {{ optional($order->user)->phone ?? $order->phone }}
                                     </td>
-                                    <td>
-                                        {{ optional($order->user)->house_number ?? $order->house_number }},
-                                        {{ optional($order->user)->street_name ?? $order->street_name }},
-                                        <br>
-                                        {{ optional($order->user)->town ?? $order->town }},
-                                        {{ optional($order->user)->postcode ?? $order->postcode }}
-                                    </td>
                                     <td>{{ number_format($order->subtotal_amount, 2) }}</td>
-                                    <td>{{ number_format($order->shipping_amount, 2) }}</td>
+                                    <td>{{ number_format($order->vat_amount, 2) }}</td>
                                     <td>{{ number_format($order->discount_amount, 2) }}</td>
                                     <td>{{ number_format($order->net_amount, 2) }}</td>
-                                    <td>{{ ucfirst($order->payment_method) }}</td>
                                     </td>
                                     <td>
-                                        <a href="{{ route('admin.orders.details', ['orderId' => $order->id]) }}" class="btn btn-primary">Details</a>
+                                        <a href="#" class="btn btn-success btn-round btn-shadow">
+                                            <i class="fas fa-envelope"></i> Email
+                                        </a>
+                                        <a href="{{ route('in-house-sell.generate-pdf', ['encoded_order_id' => base64_encode($order->id)]) }}" class="btn btn-success btn-round btn-shadow" target="_blank">
+                                            <i class="fas fa-receipt"></i> Invoice
+                                        </a>
+                                        <a href="{{ route('admin.orders.details', ['orderId' => $order->id]) }}" class="btn btn-info btn-round btn-shadow">
+                                            <i class="fas fa-info-circle"></i> Details
+                                        </a>
                                     </td>
                                 </tr>
                                 @endforeach

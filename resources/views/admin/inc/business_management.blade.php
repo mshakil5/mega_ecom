@@ -195,8 +195,8 @@
         </li>
 
         <!-- stock -->
-        <li class="nav-item dropdown {{ (request()->is('admin/stock*') || request()->is('admin/product-purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/stock-return-history*') || request()->routeIs('purchase.edit') || request()->routeIs('returnProduct')) ? 'menu-open' : '' }}">
-            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/stock*') || request()->is('admin/product-purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/stock-return-history*') || request()->routeIs('purchase.edit') || request()->routeIs('returnProduct')) ? 'active' : '' }}">
+        <li class="nav-item dropdown {{ (request()->is('admin/stock*') || request()->is('admin/purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/stock-return-history*') || request()->routeIs('purchase.edit') || request()->routeIs('returnProduct')) ? 'menu-open' : '' }}">
+            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/stock*') || request()->is('admin/purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/stock-return-history*') || request()->routeIs('purchase.edit') || request()->routeIs('returnProduct')) ? 'active' : '' }}">
                 <i class="nav-icon fas fa-warehouse"></i>
                 <p>
                     Stocks <i class="fas fa-angle-left right"></i>
@@ -216,7 +216,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('productPurchaseHistory') }}" class="nav-link {{ (request()->is('admin/product-purchase-history*') || request()->routeIs('purchase.edit')) ? 'active' : '' }}">
+                    <a href="{{ route('productPurchaseHistory') }}" class="nav-link {{ (request()->is('admin/purchase-history*') || request()->routeIs('purchase.edit')) ? 'active' : '' }}">
                         <i class="fas fa-file-invoice-dollar nav-icon"></i>
                         <p>Purchase-order History</p>
                     </a>

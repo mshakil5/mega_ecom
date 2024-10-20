@@ -20,9 +20,8 @@
                         <table id="example1" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
-                                    <th>Customer</th>
+                                    <th>Name/Email/Phone</th>
                                     <th>Total</th>
-                                    <th>Status</th>
                                     <th>Returned Items</th>
                                     <th>Stock / System Loss</th>
                                     <th>Details</th>
@@ -32,38 +31,10 @@
                             <tbody>
                                 @foreach ($orders as $order)
                                     <tr>
-                                        <td>{{ optional($order->user)->name ?? $order->name }} {{ optional($order->user)->surname ?? '' }}
-                                            <br>
-                                            {{ optional($order->user)->email ?? $order->email }}
-                                            <br>
-                                            {{ optional($order->user)->phone ?? $order->phone }}
-                                            <br> <br>
-                                            {{ optional($order->user)->house_number ?? $order->house_number }},
-                                            {{ optional($order->user)->street_name ?? $order->street_name }},
-                                            <br>
-                                            {{ optional($order->user)->town ?? $order->town }},
-                                            {{ optional($order->user)->postcode ?? $order->postcode }}
-                                        </td>
+                                    <td>
+                                        {{ optional($order->user)->name ?? $order->name }} {{ optional($order->user)->surname ?? '' }} <br> {{ optional($order->user)->email ?? $order->email }} <br> {{ optional($order->user)->phone ?? $order->phone }}
+                                    </td>
                                         <td>{{ number_format($order->net_amount, 2) }}</td>
-                                        <td>
-                                            <p class="form-control-static">
-                                                @if($order->status == 1)
-                                                    Pending
-                                                @elseif($order->status == 2)
-                                                    Processing
-                                                @elseif($order->status == 3)
-                                                    Packed
-                                                @elseif($order->status == 4)
-                                                    Shipped
-                                                @elseif($order->status == 5)
-                                                    Delivered
-                                                @elseif($order->status == 6)
-                                                    Returned
-                                                @elseif($order->status == 7)
-                                                    Cancelled
-                                                @endif
-                                            </p>
-                                        </td>
                                         <td>
                                             @foreach ($order->orderReturns as $return)
                                                 <p>
@@ -84,7 +55,9 @@
                                             @endforeach
                                         </td>
                                         <td>
-                                            <a href="{{ route('admin.orders.details', ['orderId' => $order->id]) }}" class="btn btn-primary">Details</a>
+                                            <a href="{{ route('admin.orders.details', ['orderId' => $order->id]) }}" class="btn btn-info btn-round btn-shadow">
+                                                <i class="fas fa-info-circle"></i> Details
+                                            </a>
                                         </td>
                                         <td>
                                             <button class="btn btn-success btn-stock" data-order-id="{{ $order->id }}" data-returned-items='@json($order->orderReturns)' @if($order->orderReturns->sum('new_quantity') <= 0) disabled @endif>Send to Stock</button>

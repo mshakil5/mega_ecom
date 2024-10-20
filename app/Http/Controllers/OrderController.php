@@ -27,6 +27,7 @@ use Stripe\Stripe;
 use Stripe\PaymentIntent;
 use App\Models\CampaignRequestProduct;
 use App\Models\Transaction;
+use Carbon\Carbon;
 
 class OrderController extends Controller
 {
@@ -921,13 +922,28 @@ class OrderController extends Controller
 
             return DataTables::of($ordersQuery->orderBy('id', 'desc'))
                 ->addColumn('action', function($order) {
-                    return '<a href="'.route('admin.orders.details', ['orderId' => $order->id]).'" class="btn btn-primary">Details</a>';
-                })
+                    $invoiceButton = '';
+                    if ($order->order_type === 0) {
+                        $invoiceButton = '<a href="' . route('generate-pdf', ['encoded_order_id' => base64_encode($order->id)]) . '" class="btn btn-success btn-round btn-shadow" target="_blank">
+                                            <i class="fas fa-receipt"></i> Invoice
+                                        </a>';
+                    } elseif ($order->order_type === 1) {
+                        $invoiceButton = '<a href="' . route('in-house-sell.generate-pdf', ['encoded_order_id' => base64_encode($order->id)]) . '" class="btn btn-success btn-round btn-shadow" target="_blank">
+                                            <i class="fas fa-receipt"></i> Invoice
+                                        </a>';
+                    }
+                
+                    $detailsButton = '<a href="' . route('admin.orders.details', ['orderId' => $order->id]) . '" class="btn btn-info btn-round btn-shadow">
+                                        <i class="fas fa-info-circle"></i> Details
+                                    </a>';
+                
+                    return $invoiceButton . ' ' . $detailsButton;
+                })            
                 ->editColumn('subtotal_amount', function ($order) {
                     return number_format($order->subtotal_amount, 2);
                 })
-                ->editColumn('shipping_amount', function ($order) {
-                    return number_format($order->shipping_amount, 2);
+                ->editColumn('paid_amount', function ($order) {
+                    return number_format($order->paid_amount, 2);
                 })
                 ->editColumn('discount_amount', function ($order) {
                     return number_format($order->discount_amount, 2);
@@ -947,11 +963,13 @@ class OrderController extends Controller
                     ];
                     return isset($statusLabels[$order->status]) ? $statusLabels[$order->status] : 'Unknown';
                 })
-                ->addColumn('name', function ($order) {
-                    return $order->user->name . ', ' . $order->user->email;
+                ->addColumn('purchase_date', function ($order) {
+                    return Carbon::parse($order->purchase_date)->format('d-m-Y');
                 })
-                ->addColumn('email', function ($order) {
-                    return $order->user->email;
+                ->addColumn('name', function ($order) {
+                    return $order->user->name . '<br>' . 
+                           $order->user->email . '<br>' . 
+                           $order->user->phone;
                 })
                 ->addColumn('phone', function ($order) {
                     return $order->user->phone;
@@ -959,7 +977,7 @@ class OrderController extends Controller
                 ->addColumn('type', function ($order) {
                     return $order->order_type == 0 ? 'Frontend' : 'In-house Sale';
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['action','name'])
                 ->make(true);
         }
         return view('admin.orders.all', compact('userId'));

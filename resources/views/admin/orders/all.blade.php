@@ -13,13 +13,13 @@
                         <table id="pending-orders-table" class="table table-bordered table-striped table-fluid">
                             <thead>
                                 <tr>
-                                    <th>Name/Email</th>
-                                    <th>Phone</th>
+                                    <th>Date</th>
+                                    <th>Name/Email/Phone</th>
                                     <th>Subtotal</th>
-                                    <th>Shipping</th>
+                                    <th>Vat</th>
                                     <th>Discount</th>
                                     <th>Total</th>
-                                    <th>Payment</th>
+                                    <th>Paid</th>
                                     <th>Type</th>
                                     <th>Status</th>
                                     <th>Details</th>
@@ -55,13 +55,13 @@
                 }
             },
             columns: [
+                { data: 'purchase_date', name: 'purchase_date' },
                 { data: 'name', name: 'name' },
-                { data: 'phone', name: 'phone' },
                 { data: 'subtotal_amount', name: 'subtotal_amount' },
-                { data: 'shipping_amount', name: 'shipping_amount' },
+                { data: 'vat_amount', name: 'vat_amount' },
                 { data: 'discount_amount', name: 'discount_amount' },
                 { data: 'net_amount', name: 'net_amount' },
-                { data: 'payment_method', name: 'payment_method' },
+                { data: 'paid_amount', name: 'paid_amount' },
                 { data: 'type', name: 'type' },
                 { data: 'status', name: 'status' },
                 { data: 'action', name: 'action', orderable: false, searchable: false }

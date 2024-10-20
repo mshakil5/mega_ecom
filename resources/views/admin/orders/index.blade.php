@@ -13,34 +13,30 @@
                         <table id="example1" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
+                                    <th>Date</th>
                                     <th>Name/Email/Phone</th>
-                                    <th>Address</th>
-                                    <th>Status</th>                                    
-                                    <th>Type</th>                                    
+                                    <th>Subtotal</th>
+                                    <th>Total</th> 
+                                    <th>Type</th>  
+                                    <th>Status</th>                                       
                                      @if (!empty($orders) && $orders->contains(function ($order) {
                                             return $order->status == 4;
                                         }))
                                         <th>Action</th>
                                      @endif
-                                     <th>Details</th>
-                                    <th>Subtotal</th>
-                                    <th>Total</th>
-                                    <th>Payment Method</th>                                    
+                                     <th>Details</th>     
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($orders as $order)
                                 <tr>
+                                    <td>{{ \Carbon\Carbon::parse($order->purchase_date)->format('d-m-Y') }}</td>
                                     <td>
                                         {{ optional($order->user)->name ?? $order->name }} {{ optional($order->user)->surname ?? '' }} <br> {{ optional($order->user)->email ?? $order->email }} <br> {{ optional($order->user)->phone ?? $order->phone }}
                                     </td>
-                                    <td>
-                                        {{ optional($order->user)->house_number ?? $order->house_number }},
-                                        {{ optional($order->user)->street_name ?? $order->street_name }},
-                                        <br>
-                                        {{ optional($order->user)->town ?? $order->town }},
-                                        {{ optional($order->user)->postcode ?? $order->postcode }}
-                                    </td>
+                                    <td>{{ number_format($order->subtotal_amount, 2) }}</td>
+                                    <td>{{ number_format($order->net_amount, 2) }}</td>
+                                    <td>{{ $order->order_type == 0 ? 'Frontend' : 'In-house Sale' }}</td>
                                     <td>
                                         <select class="form-control order-status" data-order-id="{{ $order->id }}">
                                             <option value="1" {{ $order->status == 1 ? 'selected' : '' }}>Pending</option>
@@ -52,7 +48,6 @@
                                             <option value="7" {{ $order->status == 7 ? 'selected' : '' }}>Cancelled</option>
                                         </select>
                                     </td>
-                                    <td>{{ $order->order_type == 0 ? 'Frontend' : 'In-house Sale' }}</td>
                                     @if ($order->status == 4)
                                         <td>
                                             <select class="form-control select-delivery-man" data-order-id="{{ $order->id }}">
@@ -66,11 +61,13 @@
                                         </td>
                                     @endif
                                     <td>
-                                        <a href="{{ route('admin.orders.details', ['orderId' => $order->id]) }}" class="btn btn-primary">Details</a>
+                                        <a href="{{ route('in-house-sell.generate-pdf', ['encoded_order_id' => base64_encode($order->id)]) }}" class="btn btn-success btn-round btn-shadow" target="_blank">
+                                            <i class="fas fa-receipt"></i> Invoice
+                                        </a>
+                                        <a href="{{ route('admin.orders.details', ['orderId' => $order->id]) }}" class="btn btn-info btn-round btn-shadow">
+                                            <i class="fas fa-info-circle"></i> Details
+                                        </a>
                                     </td>
-                                    <td>{{ number_format($order->subtotal_amount, 2) }}</td>
-                                    <td>{{ number_format($order->net_amount, 2) }}</td>
-                                    <td>{{ ucfirst($order->payment_method) }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
