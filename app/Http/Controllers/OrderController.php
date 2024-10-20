@@ -26,6 +26,7 @@ use Omnipay\Omnipay;
 use Stripe\Stripe;
 use Stripe\PaymentIntent;
 use App\Models\CampaignRequestProduct;
+use App\Models\Transaction;
 
 class OrderController extends Controller
 {
@@ -1038,6 +1039,20 @@ class OrderController extends Controller
         if ($order) {
             $order->status = $request->status;
             $order->save();
+
+            if ($request->status == 6) {
+                $transaction = new Transaction();
+                $transaction->date = now();
+                $transaction->customer_id = $order->user_id;
+                $transaction->order_id = $order->id;
+                $transaction->table_type = 'Sales';
+                $transaction->amount = $order->net_amount;
+                $transaction->at_amount = $order->net_amount;
+                $transaction->transaction_type = 'Return';
+                $transaction->created_by = auth()->user()->id;
+                $transaction->created_ip = request()->ip();
+                $transaction->save();
+            }
 
             return response()->json(['success' => true, 'message' => 'Order status updated successfully!']);
         }

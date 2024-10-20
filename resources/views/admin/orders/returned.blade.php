@@ -46,15 +46,23 @@
                                         </td>
                                         <td>{{ number_format($order->net_amount, 2) }}</td>
                                         <td>
-                                            <select class="form-control order-status" data-order-id="{{ $order->id }}">
-                                                <option value="1" {{ $order->status == 1 ? 'selected' : '' }}>Pending</option>
-                                                <option value="2" {{ $order->status == 2 ? 'selected' : '' }}>Processing</option>
-                                                <option value="3" {{ $order->status == 3 ? 'selected' : '' }}>Packed</option>
-                                                <option value="4" {{ $order->status == 4 ? 'selected' : '' }}>Shipped</option>
-                                                <option value="5" {{ $order->status == 5 ? 'selected' : '' }}>Delivered</option>
-                                                <option value="6" {{ $order->status == 6 ? 'selected' : '' }}>Returned</option>
-                                                <option value="7" {{ $order->status == 7 ? 'selected' : '' }}>Cancelled</option>
-                                            </select>
+                                            <p class="form-control-static">
+                                                @if($order->status == 1)
+                                                    Pending
+                                                @elseif($order->status == 2)
+                                                    Processing
+                                                @elseif($order->status == 3)
+                                                    Packed
+                                                @elseif($order->status == 4)
+                                                    Shipped
+                                                @elseif($order->status == 5)
+                                                    Delivered
+                                                @elseif($order->status == 6)
+                                                    Returned
+                                                @elseif($order->status == 7)
+                                                    Cancelled
+                                                @endif
+                                            </p>
                                         </td>
                                         <td>
                                             @foreach ($order->orderReturns as $return)
