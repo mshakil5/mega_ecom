@@ -183,8 +183,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/product', [ProductController::class, 'getProduct'])->name('allproduct');
     Route::get('/create-product', [ProductController::class, 'createProduct'])->name('createproduct');
     Route::post('/product', [ProductController::class, 'store'])->name('store.product');
-    Route::get('/product/{id}/edit', [ProductController::class, 'productEdit']);
-    Route::post('/product-update', [ProductController::class, 'productUpdate']);
+    Route::get('/product/{id}/edit', [ProductController::class, 'productEdit'])->name('product.edit');
+    Route::post('/product-update', [ProductController::class, 'update'])->name('update.product');
     Route::delete('/product', [ProductController::class, 'productDelete']);
     Route::get('/product-details/{id}', [ProductController::class, 'showProductDetails'])->name('product.show.admin');
 

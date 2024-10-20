@@ -117,8 +117,18 @@ class ProductController extends Controller
 
     public function productEdit($id)
     {
-        $info = Product::where('id', $id)->with('category', 'brand', 'productModel', 'group', 'unit', 'images', 'subCategory')->first();
-        return response()->json($info);
+        $product = Product::with('colors', 'sizes')->findOrFail($id);
+
+        $brands = Brand::select('id', 'name')->orderby('id','DESC')->get();
+        $product_models = ProductModel::select('id', 'name')->orderby('id','DESC')->get();
+        $groups = Group::select('id', 'name')->orderby('id','DESC')->get();
+        $units = Unit::select('id', 'name')->orderby('id','DESC')->get();
+        $categories = Category::select('id', 'name')->orderby('id','DESC')->get();
+        $subCategories = SubCategory::select('id', 'name')->orderby('id','DESC')->get();
+        $sizes = Size::select('id', 'size')->orderby('id','DESC')->get();
+        $colors = Color::select('id', 'color', 'color_code')->orderby('id','DESC')->get();
+    
+        return view('admin.product.edit', compact('product', 'brands', 'product_models', 'groups', 'units', 'categories', 'subCategories', 'sizes', 'colors'));
     }
 
     public function productUpdate(Request $request)
@@ -228,7 +238,6 @@ class ProductController extends Controller
 
     public function productDelete(Request $request)
     {
-        // Retrieve product ID from the request
         $id = $request->input('id');
         
         $product = Product::find($id);
@@ -246,20 +255,17 @@ class ProductController extends Controller
             return response()->json(['success' => false, 'message' => 'Product is associated with orders or purchases. Status updated to 2.']);
         }
     
-        // Delete feature image if it exists
         if ($product->feature_image && file_exists(public_path('images/products/' . $product->feature_image))) {
             unlink(public_path('images/products/' . $product->feature_image));
         }
     
-        // Delete associated color images
         foreach ($product->colors as $color) {
             if ($color->image && file_exists(public_path($color->image))) {
                 unlink(public_path($color->image));
             }
             $color->delete();
         }
-    
-        // Delete the product
+
         $product->delete();
     
         return response()->json(['success' => true, 'message' => 'Product and images deleted successfully.']);
@@ -354,7 +360,7 @@ class ProductController extends Controller
             $image = $request->file('feature_image');
             $randomName = mt_rand(10000000, 99999999) . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('images/products'), $randomName);
-            $imagePath = '/images/products/' . $randomName;
+            $imagePath = $randomName;
         }
 
         $product = Product::create([
@@ -414,8 +420,127 @@ class ProductController extends Controller
     public function checkProductCode(Request $request)
     {
         $productCode = $request->product_code;
-        $exists = Product::where('product_code', $productCode)->exists();
+        $productId = $request->product_id;
+    
+        if ($productId) {
+            $exists = Product::where('product_code', $productCode)
+                            ->where('id', '!=', $productId)
+                            ->exists();
+        } else {
+            $exists = Product::where('product_code', $productCode)->exists();
+        }
+    
         return response()->json(['exists' => $exists]);
     }
+
+    public function update(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:products,id',
+            'name' => 'required|string|max:255',
+            'product_code' => 'required|string|max:255|unique:products,product_code,' . $request->id,
+            'price' => 'nullable|numeric',
+            'size_ids' => 'nullable|array',
+            'size_ids.*' => 'exists:sizes,id',
+            'sku' => 'nullable|string|max:255',
+            'short_description' => 'required|string',
+            'long_description' => 'required|string',
+            'category_id' => 'required|exists:categories,id',
+            'subcategory_id' => 'nullable|exists:subcategories,id',
+            'brand_id' => 'nullable|exists:brands,id',
+            'product_model_id' => 'nullable|exists:product_models,id',
+            'unit_id' => 'nullable|exists:units,id',
+            'group_id' => 'nullable|exists:groups,id',
+            'feature_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'color_id' => 'nullable|array',
+            'color_id.*' => 'exists:colors,id',
+            'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        $product = Product::find($request->id);
+
+        if ($request->hasFile('feature_image')) {
+            if ($product->feature_image) {
+                $oldImagePath = public_path('images/products/' . $product->feature_image);
+                if (file_exists($oldImagePath)) {
+                    unlink($oldImagePath); 
+                }
+            }
+
+            $image = $request->file('feature_image');
+            $randomName = mt_rand(10000000, 99999999) . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('images/products'), $randomName);
+            $product->feature_image = $randomName;
+        }
+
+        $product->name = $request->name;
+        $product->slug = Str::slug($request->name);
+        $product->product_code = $request->product_code;
+        $product->price = $request->price;
+        $product->sku = $request->sku;
+        $product->short_description = $request->short_description;
+        $product->long_description = $request->long_description;
+        $product->category_id = $request->category_id;
+        $product->sub_category_id = $request->subcategory_id;
+        $product->brand_id = $request->brand_id;
+        $product->product_model_id = $request->product_model_id;
+        $product->unit_id = $request->unit_id;
+        $product->group_id = $request->group_id;
+        $product->updated_by = auth()->user()->id;
+        $product->is_whole_sale = $request->is_whole_sale ? 1 : 0;
+        $product->is_featured = $request->is_featured ? 1 : 0;
+        $product->is_recent = $request->is_recent ? 1 : 0;
+        $product->is_new_arrival = $request->is_new_arrival ? 1 : 0;
+        $product->is_top_rated = $request->is_top_rated ? 1 : 0;
+        $product->is_popular = $request->is_popular ? 1 : 0;
+        $product->is_trending = $request->is_trending ? 1 : 0;
+
+        $product->save();
+
+        $product->sizes()->delete();
+
+        if ($request->size_ids) {
+            foreach ($request->size_ids as $sizeId) {
+                ProductSize::create([
+                    'product_id' => $product->id,
+                    'size_id' => $sizeId,
+                    'created_by' => auth()->user()->id,
+                ]);
+            }
+        }
+
+        if ($request->has('color_id')) {
+            $existingColors = $product->colors;
+    
+            foreach ($existingColors as $color) {
+                if ($color->image) {
+                    unlink(public_path($color->image)); 
+                }
+            }
+    
+            $product->colors()->delete();
+    
+            $validColorIds = $request->input('color_id');
+    
+            foreach ($validColorIds as $key => $colorId) {
+                $productColor = new ProductColor();
+                $productColor->product_id = $product->id;
+                $productColor->color_id = $colorId;
+    
+                if ($request->hasFile('image.' . $key)) {
+                    $colorImage = $request->file('image.' . $key);
+                    $randomName = mt_rand(10000000, 99999999) . '.' . $colorImage->getClientOriginalExtension();
+                    $colorImage->move(public_path('images/products'), $randomName);
+                    $productColor->image = '/images/products/' . $randomName;
+                }
+    
+                $productColor->created_by = auth()->user()->id;
+                $productColor->save();
+            }
+        }
+
+        return response()->json(['message' => 'Product updated successfully!', 'product' => $product], 200);
+    }
+
 
 }

@@ -67,7 +67,7 @@
                                         <a id="viewBtn" href="{{ route('product.show.admin', $data->id) }}">
                                             <i class="fa fa-eye" style="color: #4CAF50; font-size:16px;"></i>
                                         </a>
-                                        <a id="EditBtn" rid="{{ $data->id }}">
+                                        <a href="{{ route('product.edit', $data->id) }}" id="EditBtn" rid="{{ $data->id }}">
                                             <i class="fa fa-edit" style="color: #2196f3; font-size:16px;"></i>
                                         </a>
                                         <a class="deleteBtn" rid="{{ $data->id }}">
