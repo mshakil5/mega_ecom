@@ -16,23 +16,6 @@
                     <form action="#" method="GET">
                         <div class="row mb-3">
                             <div class="col-md-3">
-                                <label class="label label-primary">Filter By</label>
-                                <select class="form-control" id="filterBy" name="filterBy">
-                                    <option value="today">Today</option>
-                                    <option value="this_week">This Week</option>
-                                    <option value="this_month">This Month</option>
-                                    <option value="start_of_month">Start of the Month</option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <label class="label label-primary">From Date</label>
-                                <input type="date" class="form-control" id="fromDate" name="fromDate">
-                            </div>
-                            <div class="col-md-2">
-                                <label class="label label-primary">To Date</label>
-                                <input type="date" class="form-control" id="toDate" name="toDate">
-                            </div>
-                            <div class="col-md-3">
                                 <label class="label label-primary">Warehouses</label>
                                 <select class="form-control select2" id="supplierCustomer" name="supplierCustomer">
                                     <option value="">Select...</option>
@@ -44,6 +27,12 @@
                             <div class="col-md-2">
                                 <label class="label label-primary" style="visibility:hidden;">Action</label>
                                 <button type="submit" class="btn btn-secondary btn-block">Search</button>
+                            </div>
+                            <div class="col-md-1">
+                                <label class="label label-primary" style="visibility:hidden;">Action</label>
+                                <button type="button" id="reset-button" class="btn btn-secondary btn-block">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
                             </div>
                         </div>
                     </form>
@@ -155,10 +144,18 @@
             });
         }
 
-        $('#stock-table').DataTable({
+        var table = $('#stock-table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('allstocks') }}",
+            ajax: {
+                url: "{{ route('allstocks') }}",
+                data: function(d) {
+                    d.supplierCustomer = $('#supplierCustomer').val();
+                },
+                error: function(xhr, error, code) {
+                    console.error(xhr.responseText);
+                }
+            },
             columns: [
                 { data: 'sl', name: 'sl', orderable: false, searchable: false },
                 { data: 'product_name', name: 'product_name' },
@@ -179,6 +176,16 @@
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ]
+        });
+
+        $('form').on('submit', function(e) {
+            e.preventDefault();
+            table.draw();
+        });
+
+        $('#reset-button').on('click', function() {
+            $('#supplierCustomer').val('');
+            table.draw();
         });
 
         $('#stock-table').on('click', '.btn-open-loss-modal', function () {

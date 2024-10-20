@@ -29,9 +29,15 @@ class StockController extends Controller
         return view('admin.stock.index', compact('warehouses'));
     }
 
-    public function getStocks()
+    public function getStocks(Request $request)
     {
-       $data = Stock::orderBy('id', 'DESC')->get();
+        $query = Stock::query();
+
+        if ($request->has('supplierCustomer') && $request->supplierCustomer != '') {
+            $query->where('warehouse_id', $request->supplierCustomer);
+        }
+
+       $data = $query->orderBy('id', 'DESC')->get();
 
         return DataTables::of($data)
             ->addColumn('sl', function($row) {
