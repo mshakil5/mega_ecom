@@ -14,9 +14,9 @@
                             </figure>
 
                             <div id="product-zoom-gallery" class="product-image-gallery">
-                                @foreach($product->images as $index => $image)
-                                    <a class="product-gallery-item {{ $index == 0 ? 'active' : '' }}" href="#" data-image="{{ asset('/images/products/' . $image->image) }}" data-zoom-image="{{ asset('/images/products/' . $image->image) }}">
-                                        <img src="{{ asset('/images/products/' . $image->image) }}" alt="product image">
+                                @foreach($product->colors as $index => $image)
+                                    <a class="product-gallery-item {{ $index == 0 ? 'active' : '' }}" href="#" data-image="{{ asset($image->image) }}" data-zoom-image="{{ asset($image->image) }}">
+                                        <img src="{{ asset($image->image) }}" alt="product image">
                                     </a>
                                 @endforeach
                             </div>

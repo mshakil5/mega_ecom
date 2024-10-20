@@ -95,5 +95,15 @@ class Product extends Model
     {
         return $this->hasMany(ProductSize::class);
     }
+
+    public function orderDetails()
+    {
+        return $this->hasMany(OrderDetails::class, 'product_id');
+    }
+
+    public function purchaseHistories()
+    {
+        return $this->hasMany(PurchaseHistory::class, 'product_id');
+    }
     
 }

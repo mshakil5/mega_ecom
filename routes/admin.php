@@ -185,7 +185,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/product', [ProductController::class, 'store'])->name('store.product');
     Route::get('/product/{id}/edit', [ProductController::class, 'productEdit']);
     Route::post('/product-update', [ProductController::class, 'productUpdate']);
-    Route::get('/product/{id}', [ProductController::class, 'productDelete']);
+    Route::delete('/product', [ProductController::class, 'productDelete']);
     Route::get('/product-details/{id}', [ProductController::class, 'showProductDetails'])->name('product.show.admin');
 
     Route::get('/check-product-code', [ProductController::class, 'checkProductCode'])->name('check.product.code');

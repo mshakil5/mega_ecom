@@ -70,7 +70,7 @@
                                         <a id="EditBtn" rid="{{ $data->id }}">
                                             <i class="fa fa-edit" style="color: #2196f3; font-size:16px;"></i>
                                         </a>
-                                        <a id="deleteBtn" rid="{{ $data->id }}">
+                                        <a class="deleteBtn" rid="{{ $data->id }}">
                                             <i class="fa fa-trash-o" style="color: red; font-size:16px;"></i>
                                         </a>
                                     </td>
@@ -99,7 +99,7 @@
     });
 </script>
 
-<!-- Toggle Status Change -->
+<!-- Toggle Status Change and Delete -->
 <script>
     $(document).ready(function() {
         // Featured Toggle
@@ -200,6 +200,75 @@
                     console.error(xhr.responseText);
                 }
             });
+        });
+
+        // Delete
+        $(document).on('click', '.deleteBtn', function(e) {
+            e.preventDefault();
+
+            var productId = $(this).attr('rid'); 
+            var url = "/admin/product";
+
+            // console.log(productId);
+
+            if (confirm('Are you sure you want to delete this product?')) {
+                $.ajax({
+                    url: url,
+                    type: 'DELETE',
+                    data: {
+                        id: productId
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            swal({
+                                text: "Deleted successfully",
+                                icon: "success",
+                            });
+                        } else {
+                            swal({
+                                text: response.message,
+                                icon: "success",
+                                button: {
+                                    text: "OK",
+                                    value: true,
+                                    visible: true,
+                                    className: "btn btn-primary"
+                                }
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        console.log(xhr.responseText);
+                        try {
+                            var jsonResponse = JSON.parse(xhr.responseText);
+                            swal({
+                                text: jsonResponse.message || 'An error occurred',
+                                icon: "error",
+                                button: {
+                                    text: "OK",
+                                    value: true,
+                                    visible: true,
+                                    className: "btn btn-primary"
+                                }
+                            });
+                        } catch (e) {
+                            swal({
+                                text: 'An unexpected error occurred.',
+                                icon: "error",
+                                button: {
+                                    text: "OK",
+                                    value: true,
+                                    visible: true,
+                                    className: "btn btn-primary"
+                                }
+                            });
+                        }
+                    }
+                });
+            }
         });
     });
 </script>

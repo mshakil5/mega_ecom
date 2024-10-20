@@ -24,7 +24,7 @@ class ProductController extends Controller
 {
     public function getProduct()
     {
-        $data = Product::orderby('id','DESC')->get();
+        $data = Product::orderby('id','DESC')->where('status', 1)->get();
         return view('admin.product.index', compact('data'));
     }
 
@@ -226,28 +226,42 @@ class ProductController extends Controller
         return response()->json(['status' => 300, 'message' => $message]);
     }
 
-    public function productDelete($id)
+    public function productDelete(Request $request)
     {
+        // Retrieve product ID from the request
+        $id = $request->input('id');
+        
         $product = Product::find($id);
-
+    
         if (!$product) {
             return response()->json(['success' => false, 'message' => 'Product not found.']);
         }
-
-        $imagesToDelete = ProductImage::where('product_id', $id)->pluck('image');
-        foreach ($imagesToDelete as $imageFilename) {
-            $filePath = public_path('images/products/'.$imageFilename); 
-            if (file_exists($filePath)) {
-                unlink($filePath);
-            }
+    
+        $isInOrderDetails = $product->orderDetails()->exists();
+        $isInPurchaseHistories = $product->purchaseHistories()->exists();
+    
+        if ($isInOrderDetails || $isInPurchaseHistories) {
+            $product->status = 2; 
+            $product->save();
+            return response()->json(['success' => false, 'message' => 'Product is associated with orders or purchases. Status updated to 2.']);
         }
-
+    
+        // Delete feature image if it exists
         if ($product->feature_image && file_exists(public_path('images/products/' . $product->feature_image))) {
             unlink(public_path('images/products/' . $product->feature_image));
         }
-
+    
+        // Delete associated color images
+        foreach ($product->colors as $color) {
+            if ($color->image && file_exists(public_path($color->image))) {
+                unlink(public_path($color->image));
+            }
+            $color->delete();
+        }
+    
+        // Delete the product
         $product->delete();
-
+    
         return response()->json(['success' => true, 'message' => 'Product and images deleted successfully.']);
     }
 
