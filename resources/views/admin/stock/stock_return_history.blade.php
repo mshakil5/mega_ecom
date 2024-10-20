@@ -15,7 +15,9 @@
                             <thead>
                                 <tr>
                                     <th>Date</th>
-                                    <th>Product Name</th>
+                                    <th>Product</th>
+                                    <th>Size</th>
+                                    <th>Color</th>
                                     <th>Return Quantity</th>
                                     <th>Reason</th>
                                 </tr>
@@ -25,6 +27,8 @@
                                 <tr>
                                    <td>{{ \Illuminate\Support\Carbon::parse($purchaseReturn->date)->format('d-m-Y') }}</td>
                                     <td>{{ $purchaseReturn->product->name }}</td>
+                                    <td>{{ $purchaseReturn->purchaseHistory->product_size }}</td>
+                                    <td>{{ $purchaseReturn->purchaseHistory->product_color }}</td>
                                     <td>{{ $purchaseReturn->return_quantity }}</td>
                                     <td>{!! $purchaseReturn->reason !!}</td>
                                 </tr>

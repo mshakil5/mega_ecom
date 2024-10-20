@@ -98,7 +98,9 @@
 @section('script')
 <script>
     $(document).ready(function () {
-        function openLossModal(productId, currentQuantity) {
+        function openLossModal(productId) {
+            console.log('btn work');
+
             $('#systemLossForm')[0].reset();
             $('#lossProductId').val(productId);
             $('#systemLossModal').modal('show');
@@ -189,9 +191,8 @@
         });
 
         $('#stock-table').on('click', '.btn-open-loss-modal', function () {
-            let productId = $(this).data('id');
-            let currentQuantity = $(this).data('quantity');
-            openLossModal(productId, currentQuantity);
+            let productId = $(this).data('productId');
+            openLossModal(productId);
         });
 
         $('#systemLossModal').on('hidden.bs.modal', function () {

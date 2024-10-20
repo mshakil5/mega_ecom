@@ -61,7 +61,7 @@ class StockController extends Controller
             // return '<button class="btn btn-sm btn-danger" onclick="openLossModal('.$row->id.')">System Loss</button>';
             // })
             ->addColumn('action', function ($data) {
-                $btn = '<div class="table-actions">';
+                $btn = '<div class="table-actions"> <button class="btn btn-sm btn-danger btn-open-loss-modal" data-id="'.$data->id.'" data-productId="'.$data->product->id.'" onclick="openLossModal()">System Loss</button> ';  
                 if (Auth::user()) {
                     $url = route('admin.product.purchasehistory', ['id' => $data->product->id, 'size' => $data->size, 'color' => $data->color]);
                     $btn .= '<a href="'.$url.'" class="btn btn-sm btn-primary">History</a>';
@@ -473,7 +473,7 @@ class StockController extends Controller
 
     public function stockReturnHistory()
     {
-        $purchaseReturns = PurchaseReturn::with('product') ->orderBy('id', 'desc')->get();
+        $purchaseReturns = PurchaseReturn::with('product', 'purchaseHistory') ->orderBy('id', 'desc')->get();
         return view('admin.stock.stock_return_history', compact('purchaseReturns'));
     }
 
