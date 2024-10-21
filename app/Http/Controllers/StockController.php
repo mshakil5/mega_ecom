@@ -79,7 +79,7 @@ class StockController extends Controller
     }
 
     
-    public function getsingleProductHistory(Request $request, $id, $size, $color)
+    public function getsingleProductHistory(Request $request, $id, $size = null, $color = null)
     {
         if ($request->fromDate || $request->toDate) {
             $request->validate([

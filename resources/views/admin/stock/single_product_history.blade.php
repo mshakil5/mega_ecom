@@ -109,10 +109,13 @@
                                         <tr>
                                             <td>{{ $key + 1}}</td>
                                             <td>{{ date('d-m-Y', strtotime($data->created_at))}}</td>
-                                            <td>{{ $data->purchase->supplier->name}}
+                                            <td>
+                                                @if ($data->purchase && $data->purchase->supplier)
+                                                {{ $data->purchase->supplier->name}}
                                                 <a href="{{route('supplier.purchase', $data->purchase->supplier->id)}}" class="btn btn-sm btn-success" target="blank">
                                                     <i class="fas fa-arrow-right"></i>
                                                 </a>
+                                                @endif
                                             </td>
                                             <td>{{ $data->product_size}}</td>
                                             <td>{{ $data->product_color}}</td>

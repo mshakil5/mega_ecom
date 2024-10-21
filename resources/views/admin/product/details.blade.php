@@ -30,6 +30,9 @@
 
                 <hr>
 
+                @if($product->product_code)
+                    <h4>Code: <span>{{ $product->product_code }}</span></h4>
+                @endif
                 @if($product->category)
                     <h4>Category: <span>{{ $product->category->name }}</span></h4>
                 @endif

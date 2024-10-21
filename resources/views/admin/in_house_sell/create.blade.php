@@ -181,7 +181,7 @@
                                                     <span>Vat Amount:</span>
                                                 </div>
                                                 <div class="col-sm-6">
-                                                    <input type="number" step="0.01" class="form-control" id="vat" name="vat">
+                                                    <input type="number" step="0.01" class="form-control" id="vat" name="vat" readonly>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
