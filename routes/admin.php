@@ -328,6 +328,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::get('/order-edit/{orderId}', [InHouseSellController::class, 'editOrder'])->name('order-edit');
 
+    Route::post('/order-update', [InHouseSellController::class, 'updateOrder']);
+
     Route::post('/check-product-stock', [InHouseSellController::class, 'checkStock']);
 
     //Quotation

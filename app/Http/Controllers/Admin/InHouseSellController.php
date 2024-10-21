@@ -290,12 +290,130 @@ class InHouseSellController extends Controller
         $order = Order::with(['user','orderDetails','transactions'])->findOrFail($orderId);
         $cashAmount = $order->transactions->where('payment_type', 'Cash')->first();
         $bankAmount = $order->transactions->where('payment_type', 'Bank')->first();
+        $discountAmount = $order->transactions->where('transaction_type', 'Current')->where('discount', '>', 0)->first();
+
         $customers = User::where('is_type', '0')->orderby('id','DESC')->get();
         $products = Product::orderby('id','DESC')->get();
         $colors = Color::orderby('id','DESC')->get();
         $sizes = Size::orderby('id','DESC')->get();
         $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
-        return view('admin.in_house_sell.edit_order', compact('customers', 'products', 'colors', 'sizes','warehouses', 'order', 'cashAmount', 'bankAmount'));
+        return view('admin.in_house_sell.edit_order', compact('customers', 'products', 'colors', 'sizes','warehouses', 'order', 'cashAmount', 'bankAmount', 'discountAmount'));
+    }
+
+    public function updateOrder(Request $request)
+    {
+        $validated = $request->validate([
+            'id' => 'required|exists:orders,id',
+            'purchase_date' => 'required|date',
+            'user_id' => 'required|exists:users,id',
+            'payment_method' => 'required|string',
+            'ref' => 'nullable|string',
+            'remarks' => 'nullable|string',
+            'discount' => 'nullable|numeric',
+            'products' => 'required|json',
+        ], [
+            'user_id.required' => 'Please choose a wholesaler.',
+            'user_id.exists' => 'Please choose a valid wholesaler.',
+        ]);
+
+        $order = Order::findOrFail($validated['id']);
+        
+        $products = json_decode($validated['products'], true);
+
+        $itemTotalAmount = array_reduce($products, function ($carry, $product) {
+            return $carry + $product['total_price'];
+        }, 0);
+
+        $netAmount = $itemTotalAmount - $validated['discount'] + $request->vat;
+
+        $order->purchase_date = $validated['purchase_date'];
+        $order->user_id = $validated['user_id'];
+        $order->payment_method = $validated['payment_method'];
+        $order->ref = $validated['ref'];
+        $order->remarks = $validated['remarks'];
+        $order->discount_amount = $validated['discount'];
+        $order->net_amount = $netAmount;
+        $order->vat_amount = $request->vat;
+        $order->paid_amount = $request->cash_payment + $request->bank_payment;
+        $order->due_amount = $netAmount - $request->cash_payment - $request->bank_payment;
+        $order->subtotal_amount = $itemTotalAmount;
+        $order->status = 1;
+        $order->save();
+
+        $transaction = Transaction::where('order_id', $order->id)->where('transaction_type', 'Current')->where('payment_type', 'Credit')->first();
+        if ($transaction) {
+            $transaction->date = $validated['purchase_date'];
+            $transaction->customer_id = $validated['user_id'];
+            $transaction->amount = $itemTotalAmount;
+            $transaction->vat_amount = $request->vat;
+            $transaction->discount = $validated['discount'] ?? 0.00;
+            $transaction->at_amount = $netAmount;
+            $transaction->save();
+        }
+
+        if ($request->cash_payment) {
+            $cashtransaction = Transaction::where('order_id', $order->id)->where('payment_type', 'Cash')->first();
+            if ($cashtransaction) {
+                $cashtransaction->amount = $request->cash_payment;
+                $cashtransaction->at_amount = $request->cash_payment;
+                $cashtransaction->save();
+            }
+        }
+
+        if ($request->bank_payment) {
+            $banktransaction = Transaction::where('order_id', $order->id)->where('payment_type', 'Bank')->first();
+            if ($banktransaction) {
+                $banktransaction->amount = $request->bank_payment;
+                $banktransaction->at_amount = $request->bank_payment;
+                $banktransaction->save();
+            }
+        }
+
+        OrderDetails::where('order_id', $order->id)->delete();
+
+        foreach ($products as $product) {
+            $orderDetail = new OrderDetails();
+            $orderDetail->order_id = $order->id;
+            $orderDetail->warehouse_id = $request->warehouse_id;
+            $orderDetail->product_id = $product['product_id'];
+            $orderDetail->quantity = $product['quantity'];
+            $orderDetail->size = $product['product_size'];
+            $orderDetail->color = $product['product_color'];
+            $orderDetail->price_per_unit = $product['unit_price'];
+            $orderDetail->total_price = $product['total_price'];
+            $orderDetail->vat_percent = $product['vat_percent'];
+            $orderDetail->total_vat = $product['total_vat'];
+            $orderDetail->total_price_with_vat = $product['total_price_with_vat'];
+            $orderDetail->status = 1;
+            $orderDetail->save();
+
+            $stock = Stock::where('product_id', $product['product_id'])
+                ->where('size', $product['product_size'])
+                ->where('color', $product['product_color'])
+                ->where('warehouse_id', $request->warehouse_id)
+                ->first();
+            if ($stock) {
+                $stock->quantity -= $product['quantity'];
+                $stock->save();
+            } else {
+                $stock = new Stock();
+                $stock->warehouse_id = $request->warehouse_id;
+                $stock->product_id = $product['product_id'];
+                $stock->size = $product['product_size'];
+                $stock->color = $product['product_color'];
+                $stock->quantity = -$product['quantity'];
+                $stock->created_by = auth()->user()->id;
+                $stock->save();
+            }
+        }
+
+        $encoded_order_id = base64_encode($order->id);
+        $pdfUrl = route('in-house-sell.generate-pdf', ['encoded_order_id' => $encoded_order_id]);
+
+        return response()->json([
+            'pdf_url' => $pdfUrl,
+            'message' => 'Order updated successfully'
+        ], 200);
     }
 
 }

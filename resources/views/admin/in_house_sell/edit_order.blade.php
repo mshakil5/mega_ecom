@@ -15,6 +15,7 @@
                         <form id="createThisForm">
                             @csrf
                             <div class="row">
+                                <input type="hidden" id="orderId" value="{{ $order->id }}">
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="purchase_date">Selling Date*</label>
@@ -160,7 +161,7 @@
                                                 <td>{{ $detail->total_price }}</td>
                                                 <td>{{ $detail->total_price_with_vat }}</td>
                                                 <td>
-                                                    <button type="button" class="btn btn-danger remove-product">Remove</button>
+                                                    <button type="button" class="btn btn-sm btn-danger remove-product">Remove</button>
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -207,7 +208,8 @@
                                                     <span>Discount Amount:</span>
                                                 </div>
                                                 <div class="col-sm-6">
-                                                    <input type="number" step="0.01" class="form-control" id="discount" name="discount">
+                                                    <input type="number" step="0.01" class="form-control" id="discount" name="discount"
+                                                    value="{{ $discountAmount ? $discountAmount->discount : '' }}">
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
@@ -224,7 +226,7 @@
                                                     <span>Cash Payment:</span>
                                                 </div>
                                                 <div class="col-sm-6">
-                                                    <input type="number" class="form-control" id="cash_payment" name="cash_payment">
+                                                    <input type="number" class="form-control" id="cash_payment" name="cash_payment" value="{{ $cashAmount ? $cashAmount->at_amount : '' }}">
                                                     <span class="errmsg text-danger"></span>
                                                 </div>
                                             </div>
@@ -235,7 +237,7 @@
                                                     <span>Bank Payment:</span>
                                                 </div>
                                                 <div class="col-sm-6">
-                                                    <input type="text" class="form-control" id="bank_payment" name="bank_payment" value="{{ $bankAmount->amount }}">
+                                                    <input type="text" class="form-control" id="bank_payment" name="bank_payment" value="{{ $bankAmount ? $bankAmount->at_amount : '' }}">
                                                     <span class="errmsg text-danger"></span>
                                                 </div>
                                             </div>
@@ -246,8 +248,8 @@
 
                             </div>
                             <div class="card-footer">
-                                <button id="addBtn" class="btn btn-success" value="Create"><i class="fas fa-cart-plus"></i> Make Sales</button>  
-                                <button id="quotationBtn" class="btn btn-secondary" value="Create"><i class="fas fa-file-invoice"></i> Make Quotation</button>  
+                                <button id="addBtn" class="btn btn-success" value="Create"><i class="fas fa-cart-plus"></i> Update Sales</button>  
+                                <button id="quotationBtn" class="btn btn-secondary d-none" value="Create"><i class="fas fa-file-invoice"></i> Make Quotation</button>  
                                 <div id="loader" style="display: none;">
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                     Loading...
@@ -472,11 +474,15 @@
             formData.push({ name: 'net_amount', value: $('#net_amount').val() });
             formData.push({ name: 'cash_payment', value: $('#cash_payment').val() });
             formData.push({ name: 'bank_payment', value: $('#bank_payment').val() });
+            formData.push({ name: 'id', value: $('#orderId').val() });
 
             $('#productTable tbody tr').each(function() {
                 var productId = $(this).find('input[name="product_id[]"]').val();
                 var quantity = parseFloat($(this).find('input.quantity').val()) || 0;
                 var unitPrice = parseFloat($(this).find('input.price_per_unit').val()) || 0;
+                var vatPercent = parseFloat($(this).find('input.vat_percent').val()) || 0;
+                var vatAmount = parseFloat($(this).find('td:nth-child(7)').text()) || 0;
+                var total_price_with_vat = parseFloat($(this).find('td:nth-child(9)').text()) || 0;
                 var productSize = $(this).find('td:eq(2)').text();
                 var productColor = $(this).find('td:eq(3)').text();
                 var totalPrice = (quantity * unitPrice).toFixed(2);
@@ -487,7 +493,10 @@
                     unit_price: unitPrice,
                     product_size: productSize,
                     product_color: productColor,
-                    total_price: totalPrice
+                    total_price: totalPrice,
+                    vat_percent: vatPercent,
+                    total_vat: vatAmount,
+                    total_price_with_vat: total_price_with_vat
                 });
             });
 
@@ -500,7 +509,7 @@
             console.log(formData);
 
             $.ajax({
-                url: '/admin/in-house-sell',
+                url: '/admin/order-update',
                 method: 'POST',
                 data: formData,
                 dataType: 'json',
@@ -509,7 +518,7 @@
                 },
                 success: function(response) {
                     swal({
-                        text: "Created Successfully",
+                        text: "Updated Successfully",
                         icon: "success",
                         button: {
                             text: "OK",
