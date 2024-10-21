@@ -287,13 +287,15 @@ class InHouseSellController extends Controller
 
     public function editOrder($orderId)
     {
-        $order = Order::with(['user','orderDetails'])->findOrFail($orderId);
+        $order = Order::with(['user','orderDetails','transactions'])->findOrFail($orderId);
+        $cashAmount = $order->transactions->where('payment_type', 'Cash')->first();
+        $bankAmount = $order->transactions->where('payment_type', 'Bank')->first();
         $customers = User::where('is_type', '0')->orderby('id','DESC')->get();
         $products = Product::orderby('id','DESC')->get();
         $colors = Color::orderby('id','DESC')->get();
         $sizes = Size::orderby('id','DESC')->get();
         $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
-        return view('admin.in_house_sell.edit_order', compact('customers', 'products', 'colors', 'sizes','warehouses', 'order'));
+        return view('admin.in_house_sell.edit_order', compact('customers', 'products', 'colors', 'sizes','warehouses', 'order', 'cashAmount', 'bankAmount'));
     }
 
 }

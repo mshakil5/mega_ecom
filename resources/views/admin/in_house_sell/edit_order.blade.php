@@ -151,14 +151,14 @@
                                                 <td>{{ $detail->product->name }}
                                                     <input type="hidden" name="product_id[]" value="{{ $detail->product_id }}">
                                                 </td>
-                                                <td><input type="number" class="form-control quantity" value="{{ $detail->quantity }}" min="1" /></td>
+                                                <td><input type="number" class="form-control quantity" value="{{ $detail->quantity }}" min="1" name="" /></td>
                                                 <td>{{ $detail->size }}</td>
                                                 <td>{{ $detail->color }}</td>
                                                 <td><input type="number" step="0.01" class="form-control price_per_unit" value="{{ $detail->price_per_unit }}" /></td>
-                                                <td><input type="number" step="0.01" class="form-control vat_percent" name="" value="{{ $detail->vat_percentage }}" /></td>
-                                                <td>{{ $detail->vat_amount }}</td>
+                                                <td><input type="number" step="0.01" class="form-control vat_percent" name="" value="{{ $detail->vat_percent }}" /></td>
+                                                <td>{{ $detail->total_vat }}</td>
                                                 <td>{{ $detail->total_price }}</td>
-                                                <td>{{ $detail->total_price }}</td>
+                                                <td>{{ $detail->total_price_with_vat }}</td>
                                                 <td>
                                                     <button type="button" class="btn btn-danger remove-product">Remove</button>
                                                 </td>
@@ -191,7 +191,7 @@
                                                     <span>Item Total Amount:</span>
                                                 </div>
                                                 <div class="col-sm-6">
-                                                    <input type="text" class="form-control" id="item_total_amount" readonly>
+                                                    <input type="text" class="form-control" id="item_total_amount" readonly value="{{ $order->subtotal_amount }}">
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
@@ -199,7 +199,7 @@
                                                     <span>Vat Amount:</span>
                                                 </div>
                                                 <div class="col-sm-6">
-                                                    <input type="number" step="0.01" class="form-control" id="vat" name="vat">
+                                                    <input type="number" step="0.01" class="form-control" id="vat" name="vat" value="{{ $order->vat_amount }}" disabled>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
@@ -215,7 +215,7 @@
                                                     <span>Net Amount:</span>
                                                 </div>
                                                 <div class="col-sm-6">
-                                                    <input type="text" class="form-control" id="net_amount" readonly>
+                                                    <input type="text" class="form-control" id="net_amount" readonly value="{{ $order->net_amount }}">
                                                 </div>
                                             </div>
                                             
@@ -235,7 +235,7 @@
                                                     <span>Bank Payment:</span>
                                                 </div>
                                                 <div class="col-sm-6">
-                                                    <input type="text" class="form-control" id="bank_payment" name="bank_payment">
+                                                    <input type="text" class="form-control" id="bank_payment" name="bank_payment" value="{{ $bankAmount->amount }}">
                                                     <span class="errmsg text-danger"></span>
                                                 </div>
                                             </div>

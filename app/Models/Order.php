@@ -49,4 +49,9 @@ class Order extends Model
         return $this->hasMany(Warehouse::class);
     }
 
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
 }
