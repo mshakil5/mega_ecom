@@ -258,18 +258,18 @@
         
 
                 <a href="invoice-print.html" rel="noopener" target="_blank" class="btn btn-default"><i class="fas fa-print"></i> Print</a>
-                <form action="{{route('quotationToOrder')}}" method="POST">
-                    @csrf
-                    <input type="hidden" name="order_id" value="{{$order->id}}">
-                    <button type="submit" class="btn btn-success float-right"><i class="far fa-credit-card"></i> Create Order
-                    </button>
-                </form>
+
+                @if($order->order_type === 2)
+                    <a href="{{ route('order-edit', ['orderId' => $order->id]) }}" class="btn btn-success float-right">
+                        <i class="far fa-credit-card"></i> Create Order
+                    </a>
+                @endif
                 
                 @if ($order->order_type === 0)
                 <a href="{{ route('generate-pdf', ['encoded_order_id' => base64_encode($order->id)]) }}" class="btn btn-success float-right" target="_blank"  style="margin-right: 5px;">
                     <i class="fas fa-receipt"></i> Download
                 </a>
-                @elseif ($order->order_type === 1)
+                @else
                 <a href="{{ route('in-house-sell.generate-pdf', ['encoded_order_id' => base64_encode($order->id)]) }}" class="btn btn-success float-right" target="_blank"  style="margin-right: 5px;">
                     <i class="fas fa-receipt"></i> Download
                 </a>

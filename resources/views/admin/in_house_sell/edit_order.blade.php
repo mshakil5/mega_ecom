@@ -248,7 +248,12 @@
 
                             </div>
                             <div class="card-footer">
-                                <button id="addBtn" class="btn btn-success" value="Create"><i class="fas fa-cart-plus"></i> Update Sales</button>  
+                                <button id="addBtn" class="btn btn-success" value="Create"><i class="fas fa-cart-plus"></i> @if ($order->order_type == 2)
+                                    Make Order
+                                    @else
+                                        Update Order  
+                                    @endif
+                                </button>  
                                 <button id="quotationBtn" class="btn btn-secondary d-none" value="Create"><i class="fas fa-file-invoice"></i> Make Quotation</button>  
                                 <div id="loader" style="display: none;">
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -518,7 +523,7 @@
                 },
                 success: function(response) {
                     swal({
-                        text: "Updated Successfully",
+                        text: "Success",
                         icon: "success",
                         button: {
                             text: "OK",

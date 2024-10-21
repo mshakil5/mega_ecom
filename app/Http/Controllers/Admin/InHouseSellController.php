@@ -248,7 +248,7 @@ class InHouseSellController extends Controller
     public function allquotations()
     {
         $inHouseOrders = Order::with('user')
-        ->where('order_type', 1) 
+        ->where('order_type', 2) 
         ->orderBy('id', 'desc') 
         ->get();
 
@@ -338,6 +338,7 @@ class InHouseSellController extends Controller
         $order->due_amount = $netAmount - $request->cash_payment - $request->bank_payment;
         $order->subtotal_amount = $itemTotalAmount;
         $order->status = 1;
+        $order->order_type = 1;
         $order->save();
 
         $transaction = Transaction::where('order_id', $order->id)->where('transaction_type', 'Current')->where('payment_type', 'Credit')->first();
