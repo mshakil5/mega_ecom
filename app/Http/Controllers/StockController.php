@@ -95,7 +95,7 @@ class StockController extends Controller
         }
         
         $product = Product::select('id', 'name','product_code')->where('id', $id)->first();
-        $warehouses = Warehouse::orderby('id','DESC')->where('status', 1)->get();
+        $warehouses = Warehouse::where('status', 1)->get();
 
         $purchaseHistories = PurchaseHistory::where('product_id', $id)
                             ->when($fromDate, function ($query) use ($fromDate, $toDate) {

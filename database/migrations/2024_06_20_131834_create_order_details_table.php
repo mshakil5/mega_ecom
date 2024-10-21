@@ -20,8 +20,11 @@ return new class extends Migration
             $table->string('quantity')->nullable();
             $table->string('size')->nullable();
             $table->string('color')->nullable();
+            $table->string('vat_percent')->nullable();
+            $table->double('total_vat',10,2)->nullable();
             $table->decimal('price_per_unit', 10, 2);
             $table->decimal('total_price', 10, 2);
+            $table->double('total_price_with_vat', 10, 2);
             $table->boolean('status')->default(1);
             $table->unsignedBigInteger('campaign_request_product_id')->nullable();
             $table->string('updated_by')->nullable();

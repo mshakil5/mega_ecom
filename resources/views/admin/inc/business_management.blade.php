@@ -110,8 +110,8 @@
 
         
         <!-- orders -->
-        <li class="nav-item dropdown {{ request()->is('admin/*-orders*') ? 'menu-open' : '' }}">
-            <a href="#" class="nav-link dropdown-toggle {{ request()->is('admin/*-order*') ? 'active' : '' }}">
+        <li class="nav-item dropdown {{ request()->is('admin/*-orders*') && !request()->is('admin/all-inhouse-orders') ? 'menu-open' : '' }}">
+            <a href="#" class="nav-link dropdown-toggle {{ request()->is('admin/*-order*') && !request()->is('admin/all-inhouse-orders') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-truck"></i>
                 <p>
                     Orders <i class="fas fa-angle-left right"></i>
@@ -171,8 +171,8 @@
 
         
         <!-- In house sales -->
-        <li class="nav-item {{ (request()->is('admin/in-house-sell*') || request()->is('admin/quotations*')) ? 'menu-open' : '' }}">
-            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/in-house-sell*') || request()->is('admin/quotations*')) ? 'active' : '' }}">
+        <li class="nav-item {{ request()->is('admin/in-house-sell*') || request()->is('admin/all-inhouse-orders*') || request()->is('admin/quotations*') ? 'menu-open' : '' }}">
+            <a href="#" class="nav-link dropdown-toggle {{ request()->is('admin/in-house-sell*') || request()->is('admin/all-inhouse-orders*') || request()->is('admin/quotations*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-industry"></i>
                 <p>
                     In House<i class="fas fa-angle-left right"></i>

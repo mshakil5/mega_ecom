@@ -935,7 +935,10 @@ class OrderController extends Controller
                 
                     $detailsButton = '<a href="' . route('admin.orders.details', ['orderId' => $order->id]) . '" class="btn btn-info btn-round btn-shadow">
                                         <i class="fas fa-info-circle"></i> Details
-                                    </a>';
+                                    </a>
+                                    <a href="' . route('order-edit', ['orderId' => $order->id]) . '" class="btn btn-warning btn-round btn-shadow">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a> ';
                 
                     return $invoiceButton . ' ' . $detailsButton;
                 })            
@@ -1015,7 +1018,10 @@ class OrderController extends Controller
                 
                     $detailsButton = '<a href="' . route('admin.orders.details', ['orderId' => $order->id]) . '" class="btn btn-info btn-round btn-shadow">
                                         <i class="fas fa-info-circle"></i> Details
-                                    </a>';
+                                    </a>
+                                    <a href="' . route('order-edit', ['orderId' => $order->id]) . '" class="btn btn-warning btn-round btn-shadow">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a> ';
                 
                     return $invoiceButton . ' ' . $detailsButton;
                 })            

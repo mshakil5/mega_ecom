@@ -18,7 +18,7 @@
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="purchase_date">Selling Date*</label>
-                                        <input type="date" class="form-control" id="purchase_date" name="purchase_date" placeholder="Enter date" value="{{ now()->format('Y-m-d') }}">
+                                        <input type="date" class="form-control" id="purchase_date" name="purchase_date" placeholder="Enter date" value="{{ $order->purchase_date }}">
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
@@ -27,7 +27,7 @@
                                         <select class="form-control" id="user_id" name="user_id">
                                             <option value="" >Select...</option>
                                             @foreach($customers as $customer)
-                                                <option value="{{ $customer->id }}">{{ $customer->name }}</option>
+                                            <option value="{{ $customer->id }}" {{ $customer->id == $order->user_id ? 'selected' : '' }}>{{ $customer->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -47,7 +47,7 @@
                                         <select name="warehouse_id" id="warehouse_id" class="form-control">
                                             <option value="">Select</option>
                                             @foreach ($warehouses as $warehouse)
-                                            <option value="{{$warehouse->id}}">{{$warehouse->name}}-{{$warehouse->location}}</option>
+                                            <option value="{{ $warehouse->id }}" {{ $warehouse->id == $order->warehouse_id ? 'selected' : '' }}>{{ $warehouse->name }}-{{ $warehouse->location }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -66,13 +66,13 @@
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="ref">Ref</label>
-                                        <input type="text" class="form-control" id="ref" name="ref" placeholder="Enter reference">
+                                        <input type="text" class="form-control" id="ref" name="ref" placeholder="Enter reference" value="{{ $order->ref }}">
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
                                         <label for="remarks">Remarks</label>
-                                        <textarea class="form-control" id="remarks" name="remarks" rows="1" placeholder="Enter remarks"></textarea>
+                                        <textarea class="form-control" id="remarks" name="remarks" rows="1" placeholder="Enter remarks"> {{ $order->remarks }}</textarea>
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
@@ -146,7 +146,25 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            
+                                        @foreach ($order->orderDetails as $detail)
+                                            <tr>
+                                                <td>{{ $detail->product->name }}
+                                                    <input type="hidden" name="product_id[]" value="{{ $detail->product_id }}">
+                                                </td>
+                                                <td><input type="number" class="form-control quantity" value="{{ $detail->quantity }}" min="1" /></td>
+                                                <td>{{ $detail->size }}</td>
+                                                <td>{{ $detail->color }}</td>
+                                                <td><input type="number" step="0.01" class="form-control price_per_unit" value="{{ $detail->price_per_unit }}" /></td>
+                                                <td><input type="number" step="0.01" class="form-control vat_percent" name="" value="{{ $detail->vat_percentage }}" /></td>
+                                                <td>{{ $detail->vat_amount }}</td>
+                                                <td>{{ $detail->total_price }}</td>
+                                                <td>{{ $detail->total_price }}</td>
+                                                <td>
+                                                    <button type="button" class="btn btn-danger remove-product">Remove</button>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+
                                         </tbody>
                                     </table>
                                 </div>
@@ -459,9 +477,6 @@
                 var productId = $(this).find('input[name="product_id[]"]').val();
                 var quantity = parseFloat($(this).find('input.quantity').val()) || 0;
                 var unitPrice = parseFloat($(this).find('input.price_per_unit').val()) || 0;
-                var vatPercent = parseFloat($(this).find('input.vat_percent').val()) || 0;
-                var vatAmount = parseFloat($(this).find('td:nth-child(7)').text()) || 0;
-                var total_price_with_vat = parseFloat($(this).find('td:nth-child(9)').text()) || 0;
                 var productSize = $(this).find('td:eq(2)').text();
                 var productColor = $(this).find('td:eq(3)').text();
                 var totalPrice = (quantity * unitPrice).toFixed(2);
@@ -472,10 +487,7 @@
                     unit_price: unitPrice,
                     product_size: productSize,
                     product_color: productColor,
-                    total_price: totalPrice,
-                    vat_percent: vatPercent,
-                    total_vat: vatAmount,
-                    total_price_with_vat: total_price_with_vat
+                    total_price: totalPrice
                 });
             });
 
@@ -553,9 +565,6 @@
                 var productId = $(this).find('input[name="product_id[]"]').val();
                 var quantity = parseFloat($(this).find('input.quantity').val()) || 0;
                 var unitPrice = parseFloat($(this).find('input.price_per_unit').val()) || 0;
-                var vatPercent = parseFloat($(this).find('input.vat_percent').val()) || 0;
-                var vatAmount = parseFloat($(this).find('td:nth-child(7)').text()) || 0;
-                var total_price_with_vat = parseFloat($(this).find('td:nth-child(9)').text()) || 0;
                 var productSize = $(this).find('td:eq(2)').text();
                 var productColor = $(this).find('td:eq(3)').text();
                 var totalPrice = (quantity * unitPrice).toFixed(2);
@@ -566,10 +575,7 @@
                     unit_price: unitPrice,
                     product_size: productSize,
                     product_color: productColor,
-                    total_price: totalPrice,
-                    vat_percent: vatPercent,
-                    total_vat: vatAmount,
-                    total_price_with_vat: total_price_with_vat
+                    total_price: totalPrice
                 });
             });
 

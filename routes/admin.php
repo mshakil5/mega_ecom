@@ -227,8 +227,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/stocks', [StockController::class, 'getStocks'])->name('allstocks');
     Route::get('/stock', [StockController::class, 'getStock'])->name('allstock');
     Route::get('/add-stock', [StockController::class, 'addstock'])->name('addStock');
-    Route::get('/product-history/{id}/{size}/{color}', [StockController::class, 'getsingleProductHistory'])->name('admin.product.purchasehistory');
-    Route::post('/product-history/{id}/{size}/{color}', [StockController::class, 'getsingleProductHistory'])->name('admin.product.purchasehistorysearch');
+    Route::get('/product-history/{id}/{size?}/{color?}', [StockController::class, 'getsingleProductHistory'])->name('admin.product.purchasehistory');
+    Route::post('/product-history/{id}/{size?}/{color?}', [StockController::class, 'getsingleProductHistory'])->name('admin.product.purchasehistorysearch');
     Route::post('/process/system-loss', [StockController::class, 'processSystemLoss'])->name('process.system.loss');
     Route::get('/system-losses', [StockController::class, 'systemLosses'])->name('system-losses.index');
     Route::post('/add-stock', [StockController::class, 'stockStore']);
@@ -325,6 +325,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/in-house-sell', [InHouseSellController::class, 'inHouseSellStore'])->name('inhousesell');
     Route::post('/in-house-quotation-order', [InHouseSellController::class, 'inHouseQuotationSellStore'])->name('quotationToOrder');
     Route::get('/in-house-sell/order/{encoded_order_id}', [InHouseSellController::class, 'generatePDF'])->name('in-house-sell.generate-pdf');
+
+    Route::get('/order-edit/{orderId}', [InHouseSellController::class, 'editOrder'])->name('order-edit');
 
     Route::post('/check-product-stock', [InHouseSellController::class, 'checkStock']);
 

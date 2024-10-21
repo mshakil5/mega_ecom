@@ -38,6 +38,9 @@ class InHouseSellController extends Controller
             'remarks' => 'nullable|string',
             'discount' => 'nullable',
             'products' => 'required|json',
+        ], [
+            'user_id.required' => 'Please choose a wholesaler.',
+            'user_id.exists' => 'Please choose a valid wholesaler.',
         ]);
 
         $products = json_decode($validated['products'], true);
@@ -124,6 +127,9 @@ class InHouseSellController extends Controller
             $orderDetail->color = $product['product_color'];
             $orderDetail->price_per_unit = $product['unit_price'];
             $orderDetail->total_price = $product['total_price'];
+            $orderDetail->vat_percent = $product['vat_percent'];
+            $orderDetail->total_vat = $product['total_vat'];
+            $orderDetail->total_price_with_vat = $product['total_price_with_vat'];
             $orderDetail->status = 1;
             $orderDetail->save();
 
@@ -229,6 +235,9 @@ class InHouseSellController extends Controller
             $orderDetail->color = $product['product_color'];
             $orderDetail->price_per_unit = $product['unit_price'];
             $orderDetail->total_price = $product['total_price'];
+            $orderDetail->vat_percent = $product['vat_percent'];
+            $orderDetail->total_vat = $product['total_vat'];
+            $orderDetail->total_price_with_vat = $product['total_price_with_vat'];
             $orderDetail->status = 1;
             $orderDetail->save();
         }
@@ -274,6 +283,17 @@ class InHouseSellController extends Controller
         }
 
         return response()->json(['in_stock' => $stock->quantity > 0]);
+    }
+
+    public function editOrder($orderId)
+    {
+        $order = Order::with(['user','orderDetails'])->findOrFail($orderId);
+        $customers = User::where('is_type', '0')->orderby('id','DESC')->get();
+        $products = Product::orderby('id','DESC')->get();
+        $colors = Color::orderby('id','DESC')->get();
+        $sizes = Size::orderby('id','DESC')->get();
+        $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
+        return view('admin.in_house_sell.edit_order', compact('customers', 'products', 'colors', 'sizes','warehouses', 'order'));
     }
 
 }
