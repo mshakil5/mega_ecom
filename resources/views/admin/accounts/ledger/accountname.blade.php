@@ -53,6 +53,14 @@
                                                     <a href="{{ url('/admin/ledger/liability-details/' . $liability->id) }}" class="btn btn-block btn-default btn-xs">{{ $liability->account_name }}</a>
                                                 @endif  
                                             @endforeach
+                                            <hr>
+                                            @foreach ($suppliers as $supplier)
+                                            @if ($supplier->supplier_transaction_sum_at_amount-$supplier->total_decreament > 0)
+                                                
+                                            <a href="{{ url('/admin/supplier/transactions/' . $supplier->id) }}" class="btn btn-block btn-default btn-xs">{{ $supplier->name }} (Suppliers)</a>
+                                            @endif
+                                            @endforeach
+
                                         </td>
                                         <td>
                                             @foreach($chartOfAccounts as $equity)

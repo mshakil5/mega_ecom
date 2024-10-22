@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ChartOfAccount;
+use App\Models\Supplier;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 
@@ -13,7 +14,8 @@ class LedgerController extends Controller
     {
         $chartOfAccounts = ChartOfAccount::select('id', 'account_head', 'account_name','status')->where('status', 1)
         ->get();
-        return view('admin.accounts.ledger.accountname', compact('chartOfAccounts'));
+        $suppliers = Supplier::getAllsuppliersWithBalance();
+        return view('admin.accounts.ledger.accountname', compact('chartOfAccounts','suppliers'));
     }
 
     public function asset($id, Request $request)
