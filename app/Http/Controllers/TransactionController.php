@@ -36,6 +36,9 @@ class TransactionController extends Controller
         $transaction->transaction_type = "Current";
         $transaction->date = date('Y-m-d');
         $transaction->save();
+        $transaction->tran_id = 'AP' . date('ymd') . str_pad($transaction->id, 4, '0', STR_PAD_LEFT);
+        $transaction->save();
+
         return response()->json([
             'status' => 'success',
             'message' => 'Payment processed successfully!',

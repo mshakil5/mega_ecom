@@ -226,6 +226,7 @@ class CustomerController extends Controller
         $transaction->table_type = "Sales";
         $transaction->date = date('Y-m-d');
         $transaction->save();
+        
         return response()->json([
             'status' => 'success',
             'message' => 'Payment processed successfully!',

@@ -66,4 +66,20 @@ class LedgerController extends Controller
         $accountName = ChartOfAccount::where('id', $id)->first()->account_name;
         return view('admin.accounts.ledger.equity', compact('data', 'totalBalance','accountName'));
     }
+
+    public function purchaseLedger()
+    {
+        
+        $data = Transaction::orderBy('id', 'desc')
+                                ->whereIn('table_type', ['Purchase'])->whereIn('payment_type', ['Credit'])->select('id', 'amount', 'date', 'description','ref','transaction_type','table_type', 'discount','at_amount','document','payment_type')
+                                ->get();
+
+        $totalDrAmount = Transaction::whereIn('table_type', ['Purchase'])->whereIn('payment_type', ['Credit'])->sum('at_amount');
+
+        $totalCrAmount = 0;
+
+        // dd($totalCrAmount);
+        $totalBalance = $totalDrAmount - $totalCrAmount;
+        return view('admin.accounts.ledger.purchase', compact('data','totalBalance'));
+    }
 }

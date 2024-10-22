@@ -81,6 +81,39 @@
     </div>
 </section>
 
+<section class="content pt-3" id="contentContainer">
+    <div class="container-fluid">
+        <div class="row justify-content-md-center">
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Account Name</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="alert-container"></div>
+
+                        <table id="chartOfAccountsTable" class="table table-striped table-bordered">
+                            
+                            <tbody>
+                                    <tr>
+                                        <td> 
+                                            <p class="btn btn-block btn-default btn-xs"> <a href="{{route('ledger.purchase')}}">Purchase</a></p>
+                                        </td>
+                                        <td>
+                                            <p class="btn btn-block btn-default btn-xs"> <a href="{{route('ledger.sales')}}">Sales</a> </p>
+                                        </td>
+                                    </tr>
+                            </tbody>
+                        </table>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 
 
 @endsection
