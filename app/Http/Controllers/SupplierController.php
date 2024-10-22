@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use App\Models\SupplierTransaction;
 use Illuminate\Support\Facades\Hash;
 use App\Models\SupplierStock;
+use App\Models\Transaction;
 
 class SupplierController extends Controller
 {
@@ -178,16 +179,16 @@ class SupplierController extends Controller
     public function supplierTransactions($supplierId)
     {
         $supplier = Supplier::whereId($supplierId)->select('id', 'name')->first();
-        $transactions = SupplierTransaction::where('supplier_id', $supplierId)
+        $transactions = Transaction::where('supplier_id', $supplierId)
                                 ->orderBy('id', 'desc')
-                                ->select('id', 'amount', 'date', 'note','payment_type','table_type','vat', 'discount','total_amount','document')
+                                ->select('id', 'amount', 'date', 'note','payment_type','table_type', 'discount','at_amount','document')
                                 ->get();
 
     
                                 
-        $totalDrAmount = SupplierTransaction::where('supplier_id', $supplierId)->whereIn('table_type', ['Purchase'])->whereIn('payment_type', ['Credit'])->sum('total_amount');
+        $totalDrAmount = Transaction::where('supplier_id', $supplierId)->whereIn('table_type', ['Purchase'])->whereIn('payment_type', ['Credit'])->sum('at_amount');
 
-        $totalCrAmount = SupplierTransaction::where('supplier_id', $supplierId)->whereIn('table_type', ['Payment', 'Purchase Return'])->whereIn('payment_type', ['Cash','Bank','Return'])->sum('total_amount');
+        $totalCrAmount = Transaction::where('supplier_id', $supplierId)->whereIn('table_type', ['Purchase'])->whereIn('payment_type', ['Cash','Bank','Return'])->sum('at_amount');
 
         $totalBalance = $totalDrAmount - $totalCrAmount;
         return view('admin.supplier.transactions', compact('transactions','supplier','totalBalance'));

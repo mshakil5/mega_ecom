@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Supplier;
 use App\Models\SupplierTransaction;
+use App\Models\Transaction;
 
 class TransactionController extends Controller
 {
@@ -16,7 +17,7 @@ class TransactionController extends Controller
             'paymentNote' => 'nullable',
         ]);
 
-        $transaction = new SupplierTransaction();
+        $transaction = new Transaction();
         $transaction->supplier_id = $request->supplierId;
 
         if ($request->hasFile('document')) {
@@ -28,10 +29,11 @@ class TransactionController extends Controller
         }
 
         $transaction->amount = $request->paymentAmount;
-        $transaction->total_amount = $request->paymentAmount;
+        $transaction->at_amount = $request->paymentAmount;
         $transaction->payment_type = $request->payment_type;
-        $transaction->note = $request->paymentNote;
-        $transaction->table_type = "Payment";
+        $transaction->description = $request->paymentNote;
+        $transaction->table_type = "Purchase";
+        $transaction->transaction_type = "Current";
         $transaction->date = date('Y-m-d');
         $transaction->save();
         return response()->json([

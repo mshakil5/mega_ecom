@@ -188,8 +188,8 @@
                                     </td> --}}
                                     <td>
                                         <div class="align-items-center">
-                                            @if ($data->supplier_transaction_sum_total_amount-$data->total_decreament > 0)
-                                                <span  class="btn btn-sm btn-danger">£ {{ number_format($data->supplier_transaction_sum_total_amount - $data->total_decreament, 2) }}</span>
+                                            @if ($data->supplier_transaction_sum_at_amount-$data->total_decreament > 0)
+                                                <span  class="btn btn-sm btn-danger">£ {{ number_format($data->supplier_transaction_sum_at_amount - $data->total_decreament, 2) }}</span>
                                                 <button class="btn btn-sm btn-warning pay-btn" data-id="{{ $data->id }}" data-supplier-id="{{ $data->id }}">Pay</button>
                                             @endif
                                         </div>

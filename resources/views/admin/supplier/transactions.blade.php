@@ -67,18 +67,18 @@
                     </td>
 
                     @if(in_array($data->payment_type, ['Credit']))
-                      <td style="text-align: right">{{ number_format($data->total_amount, 2) }}</td>
+                      <td style="text-align: right">{{ number_format($data->at_amount, 2) }}</td>
                       <td></td>
                       <td style="text-align: right">{{ number_format($balance, 2) }}</td>
                       @php
-                          $balance = $balance - $data->total_amount;
+                          $balance = $balance - $data->at_amount;
                       @endphp
                     @elseif(in_array($data->payment_type, ['Cash', 'Bank', 'Return']))
                       <td></td>
-                      <td style="text-align: right">{{ number_format($data->total_amount, 2) }}</td>
+                      <td style="text-align: right">{{ number_format($data->at_amount, 2) }}</td>
                       <td style="text-align: right">{{ number_format($balance, 2) }}</td>
                       @php
-                          $balance = $balance + $data->total_amount;
+                          $balance = $balance + $data->at_amount;
                       @endphp
                     @endif
                     <td>{!! $data->note !!}</td>

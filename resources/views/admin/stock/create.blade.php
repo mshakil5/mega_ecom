@@ -169,46 +169,87 @@
                                     </table>
                                 </div>
 
-                                <div class="col-sm-12 mt-4 mb-5">
+                                
+                                <div class="col-sm-6 mt-4 mb-5">
+
+                                    <div class="row">
+                                        <div class="col-sm-6 d-flex align-items-center">
+                                            <span class="">Direct cost:</span>
+                                            <input type="number" class="form-control" id="direct_cost" style="width: 100px; margin-left: auto;">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mt-1">
+                                        <div class="col-sm-6 d-flex align-items-center">
+                                            <span class="">CNF cost:</span>
+                                            <input type="number" class="form-control" id="cnf_cost" style="width: 100px; margin-left: auto;">
+                                        </div>
+                                    </div>
+
+                                    
+                                    <div class="row mt-1">
+                                        <div class="col-sm-6 d-flex align-items-center">
+                                            <span class="">Title need:</span>
+                                            <input type="number" class="form-control" id="cost_a" style="width: 100px; margin-left: auto;">
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-1">
+                                        <div class="col-sm-6 d-flex align-items-center">
+                                            <span class="">Title need:</span>
+                                            <input type="number" class="form-control" id="cost_b" style="width: 100px; margin-left: auto;">
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-1">
+                                        <div class="col-sm-6 d-flex align-items-center">
+                                            <span class="">Others cost:</span>
+                                            <input type="number" class="form-control" id="other_cost" style="width: 100px; margin-left: auto;">
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+
+                                <div class="col-sm-6 mt-4 mb-5">
                                     <div class="row justify-content-end">
-                                        <div class="col-sm-3 d-flex align-items-center">
+                                        <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Item Total Amount:</span>
                                             <input type="text" class="form-control" id="item_total_amount" readonly style="width: 100px; margin-left: auto;">
                                         </div>
                                     </div>
                                     <div class="row justify-content-end mt-1">
-                                        <div class="col-sm-3 d-flex align-items-center">
+                                        <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Discount Amount:</span>
                                             <input type="number" step="0.01" class="form-control" id="discount" name="discount" style="width: 100px; margin-left: auto;">
                                         </div>
                                     </div>
                                     <div class="row justify-content-end mt-1">
-                                        <div class="col-sm-3 d-flex align-items-center">
+                                        <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Total VAT Amount:</span>
                                             <input type="text" class="form-control" id="total_vat_amount" readonly style="width: 100px; margin-left: auto;">
                                         </div>
                                     </div>
                                     <div class="row justify-content-end mt-1">
-                                        <div class="col-sm-3 d-flex align-items-center">
+                                        <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Net Amount:</span>
                                             <input type="text" class="form-control" id="net_amount" readonly style="width: 100px; margin-left: auto;">
                                         </div>
                                     </div>
                                     <div class="row justify-content-end mt-1 d-none">
-                                        <div class="col-sm-3 d-flex align-items-center">
+                                        <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Paid Amount:</span>
                                             <input type="number" step="0.01" class="form-control" id="paid_amount" name="paid_amount" style="width: 100px; margin-left: auto;">
                                         </div>
                                     </div>
                                     <div class="row justify-content-end mt-1">
-                                        <div class="col-sm-3 d-flex align-items-center">
+                                        <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Cash Payment:</span>
                                             <input type="number" step="0.01" class="form-control" id="cash_payment" name="cash_payment" style="width: 100px; margin-left: auto;">
                                         </div>
                                     </div>
                                     
                                     <div class="row justify-content-end mt-1">
-                                        <div class="col-sm-3 d-flex align-items-center">
+                                        <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Bank Payment:</span>
                                             <input type="number" step="0.01" class="form-control" id="bank_payment" name="bank_payment" style="width: 100px; margin-left: auto;">
                                         </div>
@@ -216,7 +257,7 @@
                                     
 
                                     <div class="row justify-content-end mt-1 d-none">
-                                        <div class="col-sm-3 d-flex align-items-center">
+                                        <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Due Amount:</span>
                                             <input type="text" class="form-control" id="due_amount" readonly style="width: 100px; margin-left: auto;" min="0">
                                         </div>
@@ -271,8 +312,16 @@
 
             $('#item_total_amount').val(itemTotalAmount.toFixed(2) || '0.00');
 
+            // add other cost
+            var direct_cost = parseFloat($('#direct_cost').val()) || 0;
+            var cnf_cost = parseFloat($('#cnf_cost').val()) || 0;
+            var cost_b = parseFloat($('#cost_b').val()) || 0;
+            var cost_a = parseFloat($('#cost_a').val()) || 0;
+            var other_cost = parseFloat($('#other_cost').val()) || 0;
+            // add other cost
+
             var discount = parseFloat($('#discount').val()) || 0;
-            var netAmount = itemTotalAmount + totalVatAmount - discount;
+            var netAmount = itemTotalAmount + totalVatAmount - discount + direct_cost + cost_b + cnf_cost + cost_a + other_cost;
             $('#total_vat_amount').val(totalVatAmount.toFixed(2) || '0.00');
             $('#net_amount').val(netAmount.toFixed(2) || '0.00');
 
@@ -369,6 +418,13 @@
             updateSummary();
         });
 
+        
+
+        $(document).on('input', '#direct_cost, #cost_a, #cost_b, #cnf_cost, #other_cost', function() {
+            updateSummary();
+        });
+
+
         $('#addBtn').on('click', function(e) {
             e.preventDefault();
 
@@ -388,6 +444,13 @@
 
             formData.total_amount = $('#item_total_amount').val();
             formData.discount = $('#discount').val();
+
+            formData.direct_cost = $('#direct_cost').val();
+            formData.cost_a = $('#cost_a').val();
+            formData.cost_b = $('#cost_b').val();
+            formData.cnf_cost = $('#cnf_cost').val();
+            formData.other_cost = $('#other_cost').val();
+
             formData.total_vat_amount = $('#total_vat_amount').val();
             formData.net_amount = $('#net_amount').val();
             formData.paid_amount = $('#paid_amount').val();
@@ -443,6 +506,7 @@
                     });
                 },
                 error: function(xhr) {
+                    console.log(xhr);
                     if (xhr.status === 422) {
                         let errors = xhr.responseJSON.errors;
                         let errorMessage = '';
@@ -520,6 +584,8 @@
 <script>
 
 $(document).ready(function() {
+
+    // new supplier add 
     $('#saveSupplierBtn').on('click', function() {
 
         let password = $('#password').val();
@@ -580,6 +646,7 @@ $(document).ready(function() {
         });
     });
 
+    // new color add 
     $('#saveColorBtn').click(function() {
         let colorName = $('#color_name').val();
         let color_code = $('#color_code').val();
@@ -638,6 +705,7 @@ $(document).ready(function() {
         });
     });
 
+    // size
     $('#saveSizeBtn').click(function() {
 
         let size = $('#size_name').val();

@@ -18,6 +18,7 @@ use App\Models\SystemLose;
 use App\Models\OrderReturn;
 use App\Models\Size;
 use App\Models\SupplierTransaction;
+use App\Models\Transaction;
 use App\Models\Warehouse;
 use Carbon\Carbon;
 
@@ -128,8 +129,8 @@ class StockController extends Controller
     {
         $products = Product::orderby('id','DESC')->select('id', 'name','price', 'product_code')->get();
         $suppliers = Supplier::where('status', 1)->select('id', 'name')->orderby('id','DESC')->get();
-        $colors = Color::orderby('id','DESC')->get();
-        $sizes = Size::orderby('id','DESC')->get();
+        $colors = Color::where('status', 1)->select('id', 'color')->orderby('id','DESC')->get();
+        $sizes = Size::where('status', 1)->select('id', 'size')->orderby('id','DESC')->get();
         $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
         return view('admin.stock.create', compact('products', 'suppliers', 'colors', 'sizes','warehouses'));
     }
@@ -172,6 +173,11 @@ class StockController extends Controller
         $purchase->remarks = $request->remarks;
         $purchase->total_amount = $request->total_amount;
         $purchase->discount = $request->discount;
+        $purchase->direct_cost = $request->direct_cost;
+        $purchase->cnf_cost = $request->cnf_cost;
+        $purchase->cost_b = $request->cost_b;
+        $purchase->cost_a = $request->cost_a;
+        $purchase->other_cost = $request->other_cost;
         $purchase->total_vat_amount = $request->total_vat_amount;
         $purchase->net_amount = $request->net_amount;
         $purchase->paid_amount = $request->cash_payment + $request->bank_payment;
@@ -179,41 +185,43 @@ class StockController extends Controller
         $purchase->created_by = Auth::user()->id;
         $purchase->save();
 
-        $supplier = new SupplierTransaction();
-        $supplier->date = $request->purchase_date;
-        $supplier->supplier_id = $request->supplier_id;
-        $supplier->purchase_id = $purchase->id;
-        $supplier->table_type = "Purchase";
-        $supplier->payment_type = "Credit";
-        $supplier->amount = $request->total_amount;
-        $supplier->vat = $request->total_vat_amount;
-        $supplier->discount = $request->discount ?? 0.00;
-        $supplier->total_amount = $request->net_amount;
-        $supplier->save();
+        
 
-        if ($request->cash_payment) {
-            $cashpayment = new SupplierTransaction();
-            $cashpayment->date = $request->purchase_date;
-            $cashpayment->supplier_id = $request->supplier_id;
-            $cashpayment->purchase_id = $purchase->id;
-            $cashpayment->table_type = "Purchase";
-            $cashpayment->payment_type = "Cash";
-            $cashpayment->amount = $request->cash_payment;
-            $cashpayment->total_amount = $request->cash_payment;
-            $cashpayment->save();
-        }
+        // $supplier = new SupplierTransaction();
+        // $supplier->date = $request->purchase_date;
+        // $supplier->supplier_id = $request->supplier_id;
+        // $supplier->purchase_id = $purchase->id;
+        // $supplier->table_type = "Purchase";
+        // $supplier->payment_type = "Credit";
+        // $supplier->amount = $request->total_amount;
+        // $supplier->vat = $request->total_vat_amount;
+        // $supplier->discount = $request->discount ?? 0.00;
+        // $supplier->total_amount = $request->net_amount;
+        // $supplier->save();
 
-        if ($request->bank_payment) {
-            $bankpayment = new SupplierTransaction();
-            $bankpayment->date = $request->purchase_date;
-            $bankpayment->supplier_id = $request->supplier_id;
-            $bankpayment->purchase_id = $purchase->id;
-            $bankpayment->table_type = "Purchase";
-            $bankpayment->payment_type = "Bank";
-            $bankpayment->amount = $request->bank_payment;
-            $bankpayment->total_amount = $request->bank_payment;
-            $bankpayment->save();
-        }
+        // if ($request->cash_payment) {
+        //     $cashpayment = new SupplierTransaction();
+        //     $cashpayment->date = $request->purchase_date;
+        //     $cashpayment->supplier_id = $request->supplier_id;
+        //     $cashpayment->purchase_id = $purchase->id;
+        //     $cashpayment->table_type = "Purchase";
+        //     $cashpayment->payment_type = "Cash";
+        //     $cashpayment->amount = $request->cash_payment;
+        //     $cashpayment->total_amount = $request->cash_payment;
+        //     $cashpayment->save();
+        // }
+
+        // if ($request->bank_payment) {
+        //     $bankpayment = new SupplierTransaction();
+        //     $bankpayment->date = $request->purchase_date;
+        //     $bankpayment->supplier_id = $request->supplier_id;
+        //     $bankpayment->purchase_id = $purchase->id;
+        //     $bankpayment->table_type = "Purchase";
+        //     $bankpayment->payment_type = "Bank";
+        //     $bankpayment->amount = $request->bank_payment;
+        //     $bankpayment->total_amount = $request->bank_payment;
+        //     $bankpayment->save();
+        // }
 
         foreach ($request->products as $product) {
             $purchaseHistory = new PurchaseHistory();
@@ -272,10 +280,114 @@ class StockController extends Controller
 
         }
 
+        $suppliertran = new Transaction();
+        $suppliertran->date = $request->purchase_date;
+        $suppliertran->supplier_id = $request->supplier_id;
+        $suppliertran->purchase_id = $purchase->id;
+        $suppliertran->table_type = "Purchase";
+        $suppliertran->description = "Purchase";
+        $suppliertran->payment_type = "Credit";
+        $suppliertran->transaction_type = "Due";
+        $suppliertran->amount = $request->total_amount;
+        $suppliertran->vat_amount = $request->total_vat_amount;
+        $suppliertran->discount = $request->discount ?? 0.00;
+        $suppliertran->at_amount = $request->net_amount;
+        $suppliertran->save();
+        $suppliertran->tran_id = 'SL' . date('ymd') . str_pad($suppliertran->id, 4, '0', STR_PAD_LEFT);
+        $suppliertran->save();
+        
+        if ($request->cash_payment) {
+            $cashpayment = new Transaction();
+            $cashpayment->date = $request->purchase_date;
+            $cashpayment->supplier_id = $request->supplier_id;
+            $cashpayment->purchase_id = $purchase->id;
+            $cashpayment->table_type = "Purchase";
+            $cashpayment->description = "Purchase";
+            $cashpayment->payment_type = "Cash";
+            $cashpayment->transaction_type = "Current";
+            $cashpayment->amount = $request->cash_payment;
+            $cashpayment->at_amount = $request->cash_payment;
+            $cashpayment->save();
+            $cashpayment->tran_id = 'SL' . date('ymd') . str_pad($cashpayment->id, 4, '0', STR_PAD_LEFT);
+            $cashpayment->save();
+        }
+
+        if ($request->bank_payment) {
+            $bankpayment = new Transaction();
+            $bankpayment->date = $request->purchase_date;
+            $bankpayment->supplier_id = $request->supplier_id;
+            $bankpayment->purchase_id = $purchase->id;
+            $bankpayment->table_type = "Purchase";
+            $bankpayment->description = "Purchase";
+            $bankpayment->payment_type = "Bank";
+            $bankpayment->transaction_type = "Current";
+            $bankpayment->amount = $request->bank_payment;
+            $bankpayment->at_amount = $request->bank_payment;
+            $bankpayment->save();
+            $bankpayment->tran_id = 'SL' . date('ymd') . str_pad($bankpayment->id, 4, '0', STR_PAD_LEFT);
+            $bankpayment->save();
+        }
+
+        
+
         return response()->json([
             'status' => 'success',
             'message' => 'Purchased Successfully',
         ]);
+    }
+
+    public function purchaseTransaction(Request $request, $purchase)
+    {
+        $supplier = new Transaction();
+        $supplier->date = $request->purchase_date;
+        $supplier->supplier_id = $request->supplier_id;
+        $supplier->purchase_id = $purchase->id;
+        $supplier->table_type = "Purchase";
+        $supplier->description = "Purchase";
+        $supplier->payment_type = "Credit";
+        $supplier->transaction_type = "Due";
+        $supplier->amount = $request->total_amount;
+        $supplier->vat_amount = $request->total_vat_amount;
+        $supplier->discount = $request->discount ?? 0.00;
+        $supplier->at_amount = $request->net_amount;
+        $supplier->save();
+        $supplier->tran_id = 'SL' . date('ymd') . str_pad($supplier->id, 4, '0', STR_PAD_LEFT);
+        $supplier->save();
+
+        if ($request->cash_payment) {
+            $cashpayment = new Transaction();
+            $cashpayment->date = $request->purchase_date;
+            $cashpayment->supplier_id = $request->supplier_id;
+            $cashpayment->purchase_id = $purchase->id;
+            $cashpayment->table_type = "Purchase";
+            $cashpayment->description = "Purchase";
+            $cashpayment->payment_type = "Cash";
+            $cashpayment->transaction_type = "Current";
+            $cashpayment->amount = $request->cash_payment;
+            $cashpayment->total_amount = $request->cash_payment;
+            $cashpayment->save();
+            $cashpayment->tran_id = 'SL' . date('ymd') . str_pad($cashpayment->id, 4, '0', STR_PAD_LEFT);
+            $cashpayment->save();
+        }
+
+        if ($request->bank_payment) {
+            $bankpayment = new Transaction();
+            $bankpayment->date = $request->purchase_date;
+            $bankpayment->supplier_id = $request->supplier_id;
+            $bankpayment->purchase_id = $purchase->id;
+            $bankpayment->table_type = "Purchase";
+            $bankpayment->description = "Purchase";
+            $bankpayment->payment_type = "Bank";
+            $bankpayment->transaction_type = "Current";
+            $bankpayment->amount = $request->bank_payment;
+            $bankpayment->total_amount = $request->bank_payment;
+            $bankpayment->save();
+            $bankpayment->tran_id = 'SL' . date('ymd') . str_pad($bankpayment->id, 4, '0', STR_PAD_LEFT);
+            $bankpayment->save();
+        }
+
+        return;
+
     }
 
     public function productPurchaseHistory()
