@@ -204,7 +204,7 @@
 
         <!-- stock -->
         <li class="nav-item dropdown {{ (request()->is('admin/stock*') || request()->is('admin/purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/stock-return-history*') || request()->is('admin/system-losses*') || request()->routeIs('purchase.edit') || request()->routeIs('returnProduct')) ? 'menu-open' : '' }}">
-            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/stock*') || request()->is('admin/purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/stock-return-history*') || request()->is('admin/system-losses*') || request()->routeIs('purchase.edit') || request()->routeIs('returnProduct')) ? 'active' : '' }}">
+            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/stock*') || request()->is('admin/purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/stock-return-history*') || request()->is('admin/system-losses*') || request()->routeIs('purchase.edit') || request()->routeIs('stockhistory') || request()->routeIs('returnProduct')) ? 'active' : '' }}">
                 <i class="nav-icon fas fa-warehouse"></i>
                 <p>
                     Stocks <i class="fas fa-angle-left right"></i>
@@ -229,6 +229,14 @@
                         <p>Purchase-order History</p>
                     </a>
                 </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('stockhistory') }}" class="nav-link {{ (request()->is('admin/stocking-history') && !request()->is('admin/add-stock*')) ? 'active' : '' }}">
+                        <i class="fas fa-list nav-icon"></i>
+                        <p>Stock History</p>
+                    </a>
+                </li>
+
                 <li class="nav-item">
                     <a href="{{ route('stockReturnHistory') }}" class="nav-link {{ (request()->is('admin/stock-return-history') || request()->routeIs('returnProduct')) ? 'active' : '' }}">
                         <i class="fas fa-undo nav-icon"></i>

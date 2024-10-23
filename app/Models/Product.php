@@ -56,6 +56,11 @@ class Product extends Model
         return $this->hasOne(Stock::class);
     }
 
+    public function stockhistory()
+    {
+        return $this->hasMany(StockHistory::class);
+    }
+
     public function specialOfferDetails()
     {
         return $this->hasOne(SpecialOfferDetails::class, 'product_id');

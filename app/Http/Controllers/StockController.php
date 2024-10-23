@@ -17,6 +17,7 @@ use DataTables;
 use App\Models\SystemLose;
 use App\Models\OrderReturn;
 use App\Models\Size;
+use App\Models\StockHistory;
 use App\Models\SupplierTransaction;
 use App\Models\Transaction;
 use App\Models\Warehouse;
@@ -68,6 +69,63 @@ class StockController extends Controller
             // })
             ->addColumn('action', function ($data) {
                 $btn = '<div class="table-actions"> <button class="btn btn-sm btn-danger btn-open-loss-modal" data-size="'.$data->size.'" data-color="'.$data->color.'" data-id="'.$data->product->id.'" >System Loss</button> ';  
+                if (Auth::user()) {
+                    $url = route('admin.product.purchasehistory', ['id' => $data->product->id, 'size' => $data->size, 'color' => $data->color]);
+                    $btn .= '<a href="'.$url.'" class="btn btn-sm btn-primary">History</a>';
+                }
+                $btn .= '</div>';
+                return $btn;
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+    public function stockingHistory()
+    {
+        $products = Product::select('id','name','product_code')->orderBy('id', 'DESC')->get();
+        $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
+
+        return view('admin.stock.stockhistory', compact('warehouses','products'));
+    }
+
+    public function getStockingHistory(Request $request)
+    {
+        
+        
+        $query = StockHistory::select('date', 'stockid', 'purchase_id', 'product_id', 'stock_id', 'warehouse_id', 'quantity', 'selling_qty', 'size','color','systemloss_qty','purchase_price');
+        if ($request->has('warehouse_id') && $request->warehouse_id != '') {
+            $query->where('warehouse_id', $request->warehouse_id);
+        }
+        if ($request->has('product_id') && $request->product_id != '') {
+            $query->where('product_id', $request->product_id);
+        }
+        $data = $query->orderBy('id', 'DESC')->get();
+
+        return DataTables::of($data)
+            ->addColumn('sl', function($row) {
+                static $i = 1;
+                return $i++;
+            })
+            ->addColumn('product_name', function ($row) {
+                return $row->product ? $row->product->name : 'N/A';
+            })
+            ->addColumn('product_code', function ($row) {
+                return $row->product ? $row->product->product_code : 'N/A';
+            })
+            ->addColumn('quantity_formatted', function ($row) {
+                return $row->quantity ? number_format($row->quantity, 0) : 'N/A';
+            })
+            
+            ->addColumn('purchase_price', function ($row) {
+                return $row->purchase_price ? $row->purchase_price : 'N/A';
+            })
+            
+
+            ->addColumn('warehouse', function ($row) {
+                return $row->warehouse ? $row->warehouse->name : 'N/A';
+            })
+            ->addColumn('action', function ($data) {
+                $btn = '<div class="table-actions"> ';  
                 if (Auth::user()) {
                     $url = route('admin.product.purchasehistory', ['id' => $data->product->id, 'size' => $data->size, 'color' => $data->color]);
                     $btn .= '<a href="'.$url.'" class="btn btn-sm btn-primary">History</a>';

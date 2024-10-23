@@ -226,6 +226,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     // Stock
     Route::get('/stocks', [StockController::class, 'getStocks'])->name('allstocks');
     Route::get('/stock', [StockController::class, 'getStock'])->name('allstock');
+    Route::get('/stocking-history', [StockController::class, 'stockingHistory'])->name('stockhistory');
+    Route::get('/get-stocking-history', [StockController::class, 'getStockingHistory'])->name('getstockhistory');
     Route::get('/add-stock', [StockController::class, 'addstock'])->name('addStock');
     Route::get('/product-history/{id}/{size?}/{color?}', [StockController::class, 'getsingleProductHistory'])->name('admin.product.purchasehistory');
     Route::post('/product-history/{id}/{size?}/{color?}', [StockController::class, 'getsingleProductHistory'])->name('admin.product.purchasehistorysearch');
