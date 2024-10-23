@@ -102,7 +102,7 @@ class ProductController extends Controller
                 
                 $image->move($destinationPath, $imageName);
 
-                $productImage = new ProductImage;
+                $productImage = new ProductColor();
                 $productImage->product_id = $product->id;
                 $productImage->image = $imageName;
                 $productImage->created_by = auth()->user()->id;
@@ -350,8 +350,8 @@ class ProductController extends Controller
             'unit_id' => 'nullable|exists:units,id',
             'group_id' => 'nullable|exists:groups,id',
             'feature_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'color_id' => 'nullable|array',
-            'color_id.*' => 'exists:colors,id',
+            // 'color_id' => 'nullable|array',
+            // 'color_id.*' => 'exists:colors,id',
             'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 

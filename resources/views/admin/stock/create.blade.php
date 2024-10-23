@@ -96,6 +96,9 @@
                                 <div class="col-sm-3">
                                     <div class="form-group">
                                         <label for="product_id">Choose Product</label>
+                                        
+                                        <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#newProductModal">Add New</span>
+
                                         <select class="form-control" id="product_id" name="product_id">
                                             <option value="">Select...</option>
                                             @foreach($products as $product)
@@ -283,11 +286,13 @@
 @include('admin.inc.modal.supplier_modal')
 @include('admin.inc.modal.size_modal')
 @include('admin.inc.modal.color_modal')
+@include('admin.inc.modal.product_create')
 
 @endsection
 
 @section('script')
 
+@include('admin.inc.modal.product_script')
 <script>
     $(document).ready(function() {
         function updateSummary() {
