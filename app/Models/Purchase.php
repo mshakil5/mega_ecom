@@ -18,4 +18,11 @@ class Purchase extends Model
     {
         return $this->belongsTo(Supplier::class);
     }
+
+    public static function purchaseHistoryCount()
+    {
+        $purchase = self::withCount('purchaseHistory')
+        ->get();
+        return $purchase;
+    }
 }

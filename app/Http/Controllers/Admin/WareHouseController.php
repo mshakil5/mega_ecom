@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\Purchase;
 use App\Models\PurchaseHistory;
 use App\Models\Stock;
+use App\Models\StockHistory;
+use Illuminate\Support\Facades\Auth;
 
 class WareHouseController extends Controller
 {
@@ -184,11 +186,17 @@ class WareHouseController extends Controller
                 $warehouseId = $request->warehouses[$historyId][$index];
     
                 $purchaseHistory = PurchaseHistory::find($historyId);
-    
+                $purchase = Purchase::withCount('purchaseHistory')->where('id', $purchaseHistory->purchase_id)->first();
+
+                
+                $additionalCost = $purchase->direct_cost + $purchase->cnf_cost + $purchase->cost_a + $purchase->cost_b + $purchase->other_cost;
+                $qty = $purchaseHistory->quantity - $purchaseHistory->missing_product_quantity;
+                $additionalCostPerProduct = $additionalCost/$purchase->purchase_history_count;
+                $additionalCostPerUnit = $additionalCostPerProduct/$qty;
+
                 if (!$purchaseHistory) {
                     continue;
                 }
-    
                 $purchaseHistory->remaining_product_quantity -= $quantity;
                 $purchaseHistory->transferred_product_quantity += $quantity;
                 $purchaseHistory->save();
@@ -196,6 +204,7 @@ class WareHouseController extends Controller
                 $size = $request->sizes[$historyId][0];
                 $color = $request->colors[$historyId][0];
                 $warehouseId = $request->warehouses[$historyId][0];
+                
     
                 $stock = Stock::where('product_id', $purchaseHistory->product_id)
                     ->where('size', $size)
@@ -208,7 +217,7 @@ class WareHouseController extends Controller
                     $stock->updated_by = auth()->id();
                     $stock->save();
                 } else {
-                    Stock::create([
+                    $stock = Stock::create([
                         'product_id' => $purchaseHistory->product_id,
                         'quantity' => $quantity,
                         'size' => $size,
@@ -217,6 +226,24 @@ class WareHouseController extends Controller
                         'warehouse_id' => $warehouseId,
                     ]);
                 }
+
+                $stockhistory = new StockHistory();
+                $stockhistory->product_id = $purchaseHistory->product_id;
+                $stockhistory->purchase_id = $purchaseHistory->purchase_id;
+                $stockhistory->stock_id = $stock->id;
+                $stockhistory->warehouse_id = $warehouseId;
+                $stockhistory->selling_qty = 0;
+                $stockhistory->quantity = $quantity;
+
+                $stockhistory->size = $purchaseHistory->product_size;
+                $stockhistory->color = $purchaseHistory->product_color;
+                $stockhistory->date = date('Y-m-d');
+                $stockhistory->stockid = date('mds').$warehouseId.str_pad($purchaseHistory->id, 4, '0', STR_PAD_LEFT);
+
+                $stockhistory->purchase_price = $purchaseHistory->purchase_price + $additionalCostPerUnit;
+                $stockhistory->selling_price = $stockhistory->purchase_price + $stockhistory->purchase_price * .2;
+                $stockhistory->created_by = Auth::user()->id;
+                $stockhistory->save();
             }
         }
     
