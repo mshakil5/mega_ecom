@@ -26,7 +26,7 @@ class IncomeStatementController extends Controller
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
-        $purchaseSum = Transaction::where('table_type', 'Cogs')
+        $purchaseSum = Transaction::where('table_type', 'Purchase')
             ->where('status', 0)
             ->where('description', 'Purchase')
             ->whereNull('chart_of_account_id')
@@ -35,10 +35,10 @@ class IncomeStatementController extends Controller
             })
             ->sum('amount');
 
-        $salesSum = Transaction::where('table_type', 'Income')
+        $salesSum = Transaction::where('table_type', 'Sales')
             ->where('status', 0)
             ->whereNull('chart_of_account_id')
-            ->whereNot('transaction_type', 'Return')
+            ->where('transaction_type', 'Current')
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
                 $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
             })

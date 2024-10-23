@@ -82,4 +82,20 @@ class LedgerController extends Controller
         $totalBalance = $totalDrAmount - $totalCrAmount;
         return view('admin.accounts.ledger.purchase', compact('data','totalBalance'));
     }
+
+    public function salesLedger()
+    {
+        
+        $data = Transaction::orderBy('id', 'desc')
+                                ->whereIn('table_type', ['Sales'])->select('id', 'amount', 'date', 'description','ref','transaction_type','table_type', 'discount','at_amount','document','payment_type')->whereIn('transaction_type', ['Current'])
+                                ->get();
+
+        $totalDrAmount = Transaction::whereIn('table_type', ['Sales'])->whereIn('payment_type', ['Credit'])->sum('at_amount');
+
+        $totalCrAmount = 0;
+
+        // dd($totalCrAmount);
+        $totalBalance = $totalDrAmount - $totalCrAmount;
+        return view('admin.accounts.ledger.sales', compact('data','totalBalance'));
+    }
 }

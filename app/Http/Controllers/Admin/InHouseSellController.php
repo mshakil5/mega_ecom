@@ -20,11 +20,12 @@ class InHouseSellController extends Controller
 {
     public function inHouseSell()
     {
-        $customers = User::where('is_type', '0')->orderby('id','DESC')->get();
-        $products = Product::orderby('id','DESC')->get();
-        $colors = Color::orderby('id','DESC')->get();
-        $sizes = Size::orderby('id','DESC')->get();
+        
+        $products = Product::orderby('id','DESC')->select('id', 'name','price', 'product_code')->get();
+        $colors = Color::where('status', 1)->select('id', 'color')->orderby('id','DESC')->get();
+        $sizes = Size::where('status', 1)->select('id', 'size')->orderby('id','DESC')->get();
         $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
+        $customers = User::where('is_type', '0')->orderby('id','DESC')->get();
         return view('admin.in_house_sell.create', compact('customers', 'products', 'colors', 'sizes','warehouses'));
     }
 

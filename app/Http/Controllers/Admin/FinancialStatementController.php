@@ -290,12 +290,19 @@ class FinancialStatementController extends Controller
         //Yesterday's product purchse by credit
         $yesProductCreditPurchase = Transaction::where('status', 0)
             ->whereNotNull('purchase_id')
-            
-            ->where('transaction_type', 'Current')
-            ->where('payment_type', 'Account Payable')
+            ->where('transaction_type', 'Due')
+            ->where('payment_type', 'Credit')
             ->where('date', '<=', $yest)
-            ->sum('at_amount');
+            ->sum('amount');
 
+        //Yesterday's product purchse by credit
+        $yesProductCreditPurchase = Transaction::where('status', 0)
+            ->whereNotNull('supplier_id')
+            ->where('transaction_type', 'Current')
+            ->whereIn('payment_type', ['Cash', 'Bank'])
+            ->where('date', '<=', $yest)
+            ->sum('amount');
+            
         //yesterday's purchase return by credit
         $yesPurchaseReturnAP = Transaction::where('table_type', 'Cogs')
             ->where('transaction_type', 'Return')
@@ -1069,20 +1076,21 @@ class FinancialStatementController extends Controller
     public function calculateNetProfit(Request $request)
     {
         $today = date('Y-m-d');
+        $startDate = $request->input('start_date');
 
         // Sales sum today
-        $salesSumToday = Transaction::where('table_type', 'Income')
+        $salesSumToday = Transaction::where('table_type', 'Sales')
             ->where('status', 0)
             ->whereNull('chart_of_account_id')
             ->whereNot('transaction_type', 'Return')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             ->sum('amount');
 
         // Sales Return
-        $salesReturnToday = Transaction::where('table_type', 'Income')
+        $salesReturnToday = Transaction::where('table_type', 'Sales')
             ->where('status', 0)
             ->where('transaction_type', 'Return')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             ->sum('amount');
 
         // Sales Discount
@@ -1092,11 +1100,11 @@ class FinancialStatementController extends Controller
             ->sum('discount_amount');
 
         // Purchase sum (Cost of Goods Sold) Today
-        $purchaseSumToday = Transaction::where('table_type', 'Cogs')
+        $purchaseSumToday = Transaction::where('table_type', 'Purchase')
             ->where('status', 0)
             ->where('description', 'Purchase')
             ->whereNull('chart_of_account_id')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             ->sum('amount');
 
         // Operating Income today
@@ -1115,11 +1123,10 @@ class FinancialStatementController extends Controller
             ->sum('amount');
 
         //Purchase return today
-        $purchaseReturnToday = Transaction::where('table_type', 'Cogs')
+        $purchaseReturnToday = Transaction::where('table_type', 'Purchase')
             ->where('transaction_type', 'Return')
             ->where('status', 0)
-            ->whereDate('date', $today)
-            
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
         // Operating Expenses today
@@ -1162,13 +1169,13 @@ class FinancialStatementController extends Controller
             ->where('status', 0)
             ->where('description', 'Purchase')
             ->whereNull('chart_of_account_id')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             ->sum('vat_amount');
 
-        $salesVatSum = Transaction::where('table_type', 'Income')
+        $salesVatSum = Transaction::where('table_type', 'Sales')
             ->where('status', 0)
             ->whereNull('chart_of_account_id')
-            ->whereDate('date', $today)
+            ->whereBetween('date', [$startDate, $today])
             ->sum('vat_amount');
 
         $operatingExpenseVatSum = Transaction::whereIn('chart_of_account_id', $operatingExpenseId)
@@ -1213,7 +1220,7 @@ class FinancialStatementController extends Controller
             ->sum('amount');
 
         //Sales sum
-        $salesSum = Transaction::where('table_type', 'Income')
+        $salesSum = Transaction::where('table_type', 'Sales')
             ->where('status', 0)
             ->whereNull('chart_of_account_id')
             ->whereNot('transaction_type', 'Return')
@@ -1221,7 +1228,7 @@ class FinancialStatementController extends Controller
             ->sum('amount');
 
         //Previous Sales Return
-        $salesReturn = Transaction::where('table_type', 'Income')
+        $salesReturn = Transaction::where('table_type', 'Sales')
             ->where('status', 0)
             ->where('transaction_type', 'Return')
             ->whereDate('date', '<=', $yest)
@@ -1232,7 +1239,7 @@ class FinancialStatementController extends Controller
             ->sum('discount_amount');
 
         //Purchase sum (Cost of Goods Sold)
-        $purchaseSum = Transaction::where('table_type', 'Cogs')
+        $purchaseSum = Transaction::where('table_type', 'Purchase')
             ->where('status', 0)
             ->where('description', 'Purchase')
             ->whereNull('chart_of_account_id')
