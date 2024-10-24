@@ -242,9 +242,18 @@ class FinancialStatementController extends Controller
             ->sum('at_amount');
 
         //Today's product purchse by credit
-        $todaysCreditPurchaseAP = Transaction::where('table_type', 'Cogs')
+        $todaysCreditPurchaseAP = Transaction::where('table_type', 'Purchase')
             ->where('status', 0)
-            ->where('payment_type', 'Account Payable')
+            ->where('payment_type', 'Credit')
+            ->where('transaction_type', 'Due')
+            ->whereBetween('date', [$startDate, $today])
+            ->sum('at_amount');
+            
+
+        //Today's product purchse payment
+        $todaysPurchaseAPRcv = Transaction::where('table_type', 'Purchase')
+            ->where('status', 0)
+            ->whereIn('payment_type', ['Cash','Bank'])
             ->where('transaction_type', 'Current')
             ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
@@ -575,7 +584,6 @@ class FinancialStatementController extends Controller
         $currentCashAsset = Transaction::whereIn('chart_of_account_id', $currentAssetIds)
             ->where('status', 0)
             ->where('payment_type', 'Cash')
-            
             ->sum('at_amount');
 
         //Account Payable
@@ -771,7 +779,7 @@ class FinancialStatementController extends Controller
             ->sum('at_amount');
 
         //Cash Purchase Decrement today
-        $purchaseCashDecrement = Transaction::where('table_type', 'Cogs')
+        $purchaseCashDecrement = Transaction::where('table_type', 'Purchase')
             ->where('status', 0)
             ->where('payment_type', 'Cash')
             ->where('transaction_type', 'Current')
@@ -833,7 +841,7 @@ class FinancialStatementController extends Controller
             ->sum('at_amount');
 
         //Bank Purchase Decrement today    
-        $purchaseBankDecrement = Transaction::where('table_type', 'Cogs')
+        $purchaseBankDecrement = Transaction::where('table_type', 'Purchase')
             ->where('status', 0)
             ->where('payment_type', 'Bank')
             ->where('transaction_type', 'Current')
@@ -1070,7 +1078,7 @@ class FinancialStatementController extends Controller
         //Yesterday Bank In Hand
         $yesBankInHand = $totalYestBankIncrement - $totalYestBankDecrement;
 
-        return view('admin.accounts.balance_sheet.index', compact('currentAssetIds', 'currentBankAsset', 'currentCashAsset', 'currentLiability', 'longTermLiabilities', 'equityCapital', 'retainedEarning', 'currentAssets', 'fixedAssets', 'shortTermLiabilities', 'currentLiabilities', 'equityCapitals', 'retainedEarnings', 'cashInHand', 'cashInBank', 'inventory', 'netProfit', 'yesCashInHand', 'yesBankInHand', 'yesAccountReceiveable', 'yesInventory', 'netProfitTillYesterday', 'totalTodayCashIncrements', 'totalTodayCashDecrements', 'totalTodayBankIncrements', 'totalTodayBankDecrements', 'todaysAccountReceivableDebit', 'todaysAssetSoldAR', 'yesAccountPayable', 'totalTodaysAccountPayableCredit', 'todaysAccountPayableDebit', 'todaysProductCreditSold', 'todaysDueAccountPayableDebit', 'todaysCreditPurchaseAP', 'totalTodaysAccountReceivableCredit','startDate'));
+        return view('admin.accounts.balance_sheet.index', compact('currentAssetIds', 'currentBankAsset', 'currentCashAsset', 'currentLiability', 'longTermLiabilities', 'equityCapital', 'retainedEarning', 'currentAssets', 'fixedAssets', 'shortTermLiabilities', 'currentLiabilities', 'equityCapitals', 'retainedEarnings', 'cashInHand', 'cashInBank', 'inventory', 'netProfit', 'yesCashInHand', 'yesBankInHand', 'yesAccountReceiveable', 'yesInventory', 'netProfitTillYesterday', 'totalTodayCashIncrements', 'totalTodayCashDecrements', 'totalTodayBankIncrements', 'totalTodayBankDecrements', 'todaysAccountReceivableDebit', 'todaysAssetSoldAR', 'yesAccountPayable', 'totalTodaysAccountPayableCredit', 'todaysAccountPayableDebit', 'todaysProductCreditSold', 'todaysDueAccountPayableDebit', 'todaysCreditPurchaseAP', 'totalTodaysAccountReceivableCredit','startDate','todaysPurchaseAPRcv'));
     }
 
     public function calculateNetProfit(Request $request)
@@ -1103,9 +1111,10 @@ class FinancialStatementController extends Controller
         $purchaseSumToday = Transaction::where('table_type', 'Purchase')
             ->where('status', 0)
             ->where('description', 'Purchase')
+            ->where('transaction_type', 'Due')
             ->whereNull('chart_of_account_id')
             ->whereBetween('date', [$startDate, $today])
-            ->sum('amount');
+            ->sum('at_amount');
 
         // Operating Income today
         $operatingIncomeSumToday = Transaction::where('table_type', 'Income')
@@ -1242,9 +1251,10 @@ class FinancialStatementController extends Controller
         $purchaseSum = Transaction::where('table_type', 'Purchase')
             ->where('status', 0)
             ->where('description', 'Purchase')
+            ->where('transaction_type', 'Due')
             ->whereNull('chart_of_account_id')
             ->whereDate('date', '<=', $yest)
-            ->sum('amount');
+            ->sum('at_amount');
 
         //Previous Purchase Return
         $previousPurchaseReturn = Transaction::where('table_type', 'Cogs')

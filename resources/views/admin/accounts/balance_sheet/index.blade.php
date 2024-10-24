@@ -268,8 +268,8 @@
                                                     {{ number_format($yesAccountPayable, 2) }}
                                                 </td>
                                                 <td style="text-align: right;">{{ number_format($todaysAccountPayableDebit + $todaysDueAccountPayableDebit + $todaysCreditPurchaseAP, 2) }}</td>
-                                                <td style="text-align: right;">{{ number_format($totalTodaysAccountPayableCredit, 2) }}</td>
-                                                <td style="text-align: right;">{{ number_format($yesAccountPayable - $totalTodaysAccountPayableCredit + $todaysCreditPurchaseAP + $todaysAccountPayableDebit+ $todaysDueAccountPayableDebit , 2) }}</td>
+                                                <td style="text-align: right;">{{ number_format($totalTodaysAccountPayableCredit + $todaysPurchaseAPRcv, 2) }}</td>
+                                                <td style="text-align: right;">{{ number_format($yesAccountPayable - $totalTodaysAccountPayableCredit  - $todaysPurchaseAPRcv + $todaysCreditPurchaseAP + $todaysAccountPayableDebit+ $todaysDueAccountPayableDebit , 2) }}</td>
                                             </tr>
                                         <!-- Account Payable -->
 
@@ -287,7 +287,7 @@
                                                                             collect($currentLiabilities)->sum('total_debit_today') + $todaysAccountPayableDebit + $todaysDueAccountPayableDebit + $todaysCreditPurchaseAP;
                                                     $totalLiabilityCreditToday = collect($shortTermLiabilities)->sum('total_credit_today') +
                                                                             collect($longTermLiabilities)->sum('total_credit_today')+
-                                                                            collect($currentLiabilities)->sum('total_credit_today') + $totalTodaysAccountPayableCredit;
+                                                                            collect($currentLiabilities)->sum('total_credit_today') + $todaysPurchaseAPRcv + $totalTodaysAccountPayableCredit;
                                                     $closingLiabilityBalance = $totalLiabilitySum + $totalLiabilityDebitToday - $totalLiabilityCreditToday;                                             
                                                     
                                                 @endphp
