@@ -13,6 +13,7 @@ use App\Models\CompanyDetails;
 use PDF;
 use App\Models\Color;
 use App\Models\Size;
+use App\Models\StockHistory;
 use App\Models\Warehouse;
 use App\Models\Transaction;
 
@@ -134,6 +135,7 @@ class InHouseSellController extends Controller
             $orderDetail->status = 1;
             $orderDetail->save();
 
+            $requiredQty = $product['quantity'];
             if ($request->warehouse_id) {
                 $stock = Stock::where('product_id', $product['product_id'])
                 ->where('size', $product['product_size'])
@@ -153,6 +155,31 @@ class InHouseSellController extends Controller
                     $stock->created_by = auth()->user()->id;
                     $stock->save();
                 }
+
+                $stockHistories = StockHistory::where('stock_id', $stock)
+                        ->where('qty', '>', 0)
+                        ->orderBy('created_at', 'asc')
+                        ->get();
+
+                        foreach ($stockHistories as $stockHistorie) {
+                            if ($requiredQty > 0) {
+                                if ($stockHistorie->qty >= $requiredQty) {
+                                    // Reduce the quantity from the current stock entry
+                                    $stockHistorie->qty -= $requiredQty;
+                                    $stockHistorie->save();
+                                    $requiredQty = 0; // All required quantity is reduced
+                                } else {
+                                    // If the stock quantity is less than required, deduct all from this entry
+                                    $requiredQty -= $stockHistorie->qty;
+                                    $stockHistorie->qty = 0;
+                                    $stockHistorie->save();
+                                }
+                            } else {
+                                break; // Exit loop if all the quantity is reduced
+                            }
+                        }
+
+
             }
             
         }

@@ -234,7 +234,7 @@ class WareHouseController extends Controller
                 $stockhistory->warehouse_id = $warehouseId;
                 $stockhistory->selling_qty = 0;
                 $stockhistory->quantity = $quantity;
-
+                $stockhistory->available_qty = $quantity;
                 $stockhistory->size = $purchaseHistory->product_size;
                 $stockhistory->color = $purchaseHistory->product_color;
                 $stockhistory->date = date('Y-m-d');

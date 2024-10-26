@@ -92,7 +92,7 @@ class StockController extends Controller
     {
         
         
-        $query = StockHistory::select('date', 'stockid', 'purchase_id', 'product_id', 'stock_id', 'warehouse_id', 'quantity', 'selling_qty', 'size','color','systemloss_qty','purchase_price');
+        $query = StockHistory::select('date', 'stockid', 'purchase_id', 'product_id', 'stock_id', 'warehouse_id', 'quantity', 'selling_qty','available_qty', 'size','color','systemloss_qty','purchase_price');
         if ($request->has('warehouse_id') && $request->warehouse_id != '') {
             $query->where('warehouse_id', $request->warehouse_id);
         }
@@ -114,6 +114,14 @@ class StockController extends Controller
             })
             ->addColumn('quantity_formatted', function ($row) {
                 return $row->quantity ? number_format($row->quantity, 0) : 'N/A';
+            })
+            
+            ->addColumn('selling_qty', function ($row) {
+                return $row->selling_qty ? $row->selling_qty : ' ';
+            })
+            
+            ->addColumn('available_qty', function ($row) {
+                return $row->available_qty ? $row->available_qty : 'N/A';
             })
             
             ->addColumn('purchase_price', function ($row) {

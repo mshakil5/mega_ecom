@@ -153,8 +153,16 @@ class FinancialStatementController extends Controller
             ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
+        $salesARpayment = Transaction::where('table_type', 'Sales')
+            ->where('status', 0)
+            ->whereNotNull('customer_id')
+            ->whereIn('payment_type', ['Cash', 'Bank'])
+            ->where('transaction_type', 'Received')
+            ->whereBetween('date', [$startDate, $today])
+            ->sum('at_amount');
+
         //Total Todays Account Receivable    
-        $totalTodaysAccountReceivableCredit = $todaysAccountReceivableCredit + $salesReturnCredit;
+        $totalTodaysAccountReceivableCredit = $todaysAccountReceivableCredit + $salesReturnCredit + $salesARpayment;
 
         //Todays Account Receivable Debit
         $todaysAccountReceivableDebit = Transaction::whereIn('chart_of_account_id', $accountReceiveableIds)
@@ -269,10 +277,11 @@ class FinancialStatementController extends Controller
         //This query is related to account receivable
         $todaysProductCreditSold = Transaction::where('status', 0)
             ->whereNotNull('order_id')
+            ->whereNotNull('customer_id')
             ->where('transaction_type', 'Current')
-            ->where('payment_type', 'Account Receivable')
+            ->where('payment_type', 'Credit')
             ->whereBetween('date', [$startDate, $today])
-            ->sum('at_amount');
+            ->sum('amount');
 
         //Yesterday's account payable credit    
         $yesAccountPayableCredit = Transaction::whereIn('chart_of_account_id', $accountPayableIds)
@@ -683,16 +692,22 @@ class FinancialStatementController extends Controller
             
             ->sum('at_amount');
 
-        $PurchaseReturnCashIncrementToday = Transaction::where('table_type', 'Cogs')
+        $PurchaseReturnCashIncrementToday = Transaction::where('table_type', 'Purchase')
             ->where('transaction_type', 'Return')
             ->where('status', 0)
             ->where('payment_type', 'Cash')
             ->whereBetween('date', [$startDate, $today])
-            
+            ->sum('at_amount');
+
+        $salesCashIncrementToday = Transaction::where('table_type', 'Sales')
+            ->where('transaction_type', 'Received')
+            ->where('status', 0)
+            ->where('payment_type', 'Cash')
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
         //Total Cash Increment today
-        $totalTodayCashIncrements = $CashIncomeIncrementToday + $CashAssetIncrementToday + $CashLiabilitiesIncrementToday + $CashEquityIncrementToday + $PurchaseReturnCashIncrementToday;
+        $totalTodayCashIncrements = $CashIncomeIncrementToday + $CashAssetIncrementToday + $salesCashIncrementToday + $CashLiabilitiesIncrementToday + $CashEquityIncrementToday + $PurchaseReturnCashIncrementToday;
 
         //Bank Income Increment today
         $todayBankIncomeIncrement = Transaction::where('table_type', 'Income')
@@ -727,16 +742,22 @@ class FinancialStatementController extends Controller
             ->sum('at_amount');
 
         //Purchase Return Bank Increment
-        $PurchaseReturnBankIncrementToday = Transaction::where('table_type', 'Cogs')
+        $PurchaseReturnBankIncrementToday = Transaction::where('table_type', 'Purchase')
             ->where('transaction_type', 'Return')
             ->where('status', 0)
             ->where('payment_type', 'Bank')
             ->whereBetween('date', [$startDate, $today])
-            
+            ->sum('at_amount');
+
+        $salesBankIncrementToday = Transaction::where('table_type', 'Sales')
+            ->where('transaction_type', 'Received')
+            ->where('status', 0)
+            ->where('payment_type', 'Bank')
+            ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
 
         //Total Today Bank Increment
-        $totalTodayBankIncrements = $todayBankIncomeIncrement + $todayBankAssetIncrement + $todayBankLiabilitiesIncrement + $todayBankEquityIncrement + $PurchaseReturnBankIncrementToday;
+        $totalTodayBankIncrements = $todayBankIncomeIncrement + $todayBankAssetIncrement+ $salesBankIncrementToday + $todayBankLiabilitiesIncrement + $todayBankEquityIncrement + $PurchaseReturnBankIncrementToday;
 
         //Cash Expense Decrement today
         $expenseCashDecrement = Transaction::where('table_type', 'Expenses')
@@ -1090,9 +1111,10 @@ class FinancialStatementController extends Controller
         $salesSumToday = Transaction::where('table_type', 'Sales')
             ->where('status', 0)
             ->whereNull('chart_of_account_id')
-            ->whereNot('transaction_type', 'Return')
+            ->whereNotNull('customer_id')
+            ->where('transaction_type', 'Current')
             ->whereBetween('date', [$startDate, $today])
-            ->sum('amount');
+            ->sum('at_amount');
 
         // Sales Return
         $salesReturnToday = Transaction::where('table_type', 'Sales')
@@ -1201,6 +1223,8 @@ class FinancialStatementController extends Controller
         $taxAndVat = $purchaseVatSum + $salesVatSum + $operatingExpenseVatSum + $administrativeExpenseVatSum;
 
         $netSalesToday = $salesSumToday - $salesReturnToday - $salesDiscount;
+
+
 
         $profitBeforeTax = $netSalesToday + $purchaseReturnToday - $purchaseSumToday + $operatingIncomeSumToday - $operatingIncomeRefundToday - $operatingExpenseSumToday - $administrativeExpenseSumToday - $overHeadExpenseSumToday - $FixedAssetDepriciationToday;
 
