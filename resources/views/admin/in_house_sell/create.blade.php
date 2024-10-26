@@ -81,7 +81,13 @@
                                         <select class="form-control" id="product_id" name="product_id">
                                             <option value="">Select...</option>
                                             @foreach($products as $product)
-                                                <option value="{{ $product->id }}" data-name="{{ $product->name }}" data-price="{{ $product->price }}">{{ $product->name }} - {{ $product->product_code }}</option>
+                                            @php
+                                                $sellingPrice = $product->stockhistory()
+                                                            ->where('available_qty', '>', 0)
+                                                            ->orderBy('id', 'asc')
+                                                            ->value('selling_price');
+                                            @endphp         
+                                                <option value="{{ $product->id }}" data-name="{{ $product->name }}" data-price="{{ $sellingPrice }}">{{ $product->name }} - {{ $product->product_code }}</option>
                                             @endforeach
                                         </select>
                                     </div>
