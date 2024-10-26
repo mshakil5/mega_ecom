@@ -29,6 +29,14 @@
                         <h1 class="product-title">{{ $product->name }}</h1>
 
                         <div class="product-price">
+
+                                @php
+                                    $sellingPrice = $product->stockhistory()
+                                        ->where('available_qty', '>', 0)
+                                        ->orderBy('id', 'asc')
+                                        ->value('selling_price');
+                                @endphp
+
                             @if(isset($offerPrice) && $offerPrice !== null)
                                 {{ $currency }} <del>{{ $oldOfferPrice }}</del> {{ $offerPrice }}
                                 @php
@@ -42,7 +50,7 @@
                                 @endphp
                                 <small>({{ round($discountPercentage, 0) }}% off)</small>
                             @else
-                                {{ $currency }} {{ $regularPrice }}
+                                {{ $currency }} {{ $sellingPrice ?? $regularPrice }}
                             @endif
                         </div>
 
@@ -119,11 +127,19 @@
                         </div>
 
                         <div class="product-details-action">
+
+                                @php
+                                    $sellingPrice = $product->stockhistory()
+                                        ->where('available_qty', '>', 0)
+                                        ->orderBy('id', 'asc')
+                                        ->value('selling_price');
+                                @endphp
+
                             <a href="#" 
                             class="btn-product btn-cart add-to-cart" 
                             data-product-id="{{ $product->id }}" 
                             data-offer-id="0" 
-                            data-price="{{ $product->price }}"
+                            data-price="{{ $sellingPrice ?? $product->price }}"
                             @if(!$product->stock || $product->stock->quantity <= 0)
                             style="pointer-events: none; opacity: 0.5;" 
                             title="Out of stock"
@@ -202,8 +218,15 @@
                                     <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $product->price }}"></a>
                                 </div>
 
+                                @php
+                                    $sellingPrice = $product->stockhistory()
+                                        ->where('available_qty', '>', 0)
+                                        ->orderBy('id', 'asc')
+                                        ->value('selling_price');
+                                @endphp
+
                                 <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $product->price }}"><span>add to cart</span></a>
+                                    <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}"><span>add to cart</span></a>
                                 </div>
                             @else
                                 <span class="product-label label-out-stock">Out of stock</span>
@@ -213,7 +236,7 @@
                         <div class="product-body">
                             <h3 class="product-title"><a href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></h3>
                             <div class="product-price">
-                                ${{ number_format($product->price, 2) }}
+                                {{ $currency }}{{ number_format($sellingPrice ?? $product->price, 2) }}
                             </div>
                         </div>
                     </div>

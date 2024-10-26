@@ -62,6 +62,16 @@ class FrontendController extends Controller
             ->take(12)
             ->get();
 
+        $mostViewedProducts = Product::where('status', 1)
+            ->where('is_recent', 1)
+            ->orderByDesc('watch')
+            ->whereDoesntHave('specialOfferDetails')
+            ->whereDoesntHave('flashSellDetails')
+            ->with('stock')
+            ->select('id', 'name', 'feature_image', 'price', 'slug')
+            ->take(12)
+            ->get();
+
         $recentProducts = Product::where('status', 1)
             ->where('is_recent', 1)
             ->orderByDesc('id')
@@ -120,11 +130,11 @@ class FrontendController extends Controller
                         ->get();
 
         if (in_array($companyDesign, ['2', '3', '4'])) {
-            return view('frontend.index2', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns', 'wholeSaleProducts'));
+            return view('frontend.index2', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns', 'wholeSaleProducts', 'mostViewedProducts'));
         } elseif ($companyDesign == '5') {
-            return view('frontend.index5', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns', 'wholeSaleProducts'));
+            return view('frontend.index5', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns', 'wholeSaleProducts', 'mostViewedProducts'));
         } else {
-            return view('frontend.index', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns', 'wholeSaleProducts'));
+            return view('frontend.index', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns', 'wholeSaleProducts', 'mostViewedProducts'));
         }
 
     }
@@ -593,7 +603,13 @@ class FrontendController extends Controller
         //     $productsQuery->where('stocks.color', $selectedColor);
         // }
 
-        $products = $productsQuery->get();
+        $products = $productsQuery->get()->map(function ($product) {
+            $product->selling_price = $product->stockhistory()
+                ->where('available_qty', '>', 0)
+                ->orderBy('id', 'asc')
+                ->value('selling_price') ?? $product->price; 
+            return $product;
+        });
 
         return response()->json(['products' => $products]);
     }

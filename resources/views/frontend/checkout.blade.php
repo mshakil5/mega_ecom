@@ -136,11 +136,17 @@
                                 $entity = $isBundle ? \App\Models\BundleProduct::find($item['bundleId']) : \App\Models\Product::find($item['productId']);
 
                                 $itemTotal = 0;
+                                $price = $item['price'];
 
-                                if (!$isBundle) {
-                                    $price = $item['price'];
-                                    $itemTotal = $price * $item['quantity'];
-                                } else {
+                                if (!$isBundle && $entity) {
+                                        $sellingPrice = $entity->stockhistory()
+                                            ->where('available_qty', '>', 0)
+                                            ->orderBy('id', 'asc')
+                                            ->value('selling_price');
+                                    
+                                        $price = $sellingPrice ?? $price;
+                                        $itemTotal = $price * $item['quantity'];
+                                    }  else {
                                     $bundlePrice = $entity->price ?? $entity->total_price;
                                     $itemTotal = $bundlePrice * $item['quantity'];
                                 }
@@ -155,7 +161,7 @@
                                         <span class="ml-2">{{ $entity->name }}</span>
                                     </div>
                                 </td>
-                                <td >{{ $currency }} {{ number_format($item['price'], 2) }}</td>
+                                <td >{{ $currency }} {{ number_format($price, 2) }}</td>
                                 <!-- <td >{{ $item['size'] }}</td>
                                 <td >{{ $item['color'] }}</td> -->
                                 <td >{{ $item['quantity'] }}</td>

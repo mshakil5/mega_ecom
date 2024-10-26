@@ -156,17 +156,25 @@
                                     <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image">
                                 </a>
                                 @if ($product->stock && $product->stock->quantity > 0)
+
+                                    @php
+                                        $sellingPrice = $product->stockhistory()
+                                            ->where('available_qty', '>', 0)
+                                            ->orderBy('id', 'asc')
+                                            ->value('selling_price');
+                                    @endphp
+
                                     <div class="product-action-vertical">
                                         <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" 
                                         title="Add to wishlist" 
                                         data-product-id="{{ $product->id }}" 
                                         data-offer-id="0" 
-                                        data-price="{{ $product->price }}">
+                                        data-price="{{ $sellingPrice ?? $product->price }}">
                                             <span>Add to wishlist</span>      
                                         </a>
                                     </div>
                                     <div class="product-action">
-                                        <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $product->price }}"><span>add to cart</span></a>
+                                        <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}"><span>add to cart</span></a>
                                     </div>
                                 @else
                                     <span class="product-label label-out-stock">Out of stock</span>
@@ -178,7 +186,7 @@
                                 </div>
                                 <h3 class="product-title"><a href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></h3>
                                 <div class="product-price">
-                                    {{ $currency }}{{ number_format($product->price, 2) }}
+                                    {{ $currency }}{{ number_format($sellingPrice ?? $product->price, 2) }}
                                 </div>
                             </div>
                         </div>
@@ -254,13 +262,20 @@
                                 <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image">
                             </a>
                             @if ($product->stock && $product->stock->quantity > 0)
+
+                                @php
+                                    $sellingPrice = $product->stockhistory()
+                                        ->where('available_qty', '>', 0)
+                                        ->orderBy('id', 'asc')
+                                        ->value('selling_price');
+                                @endphp
                                 <div class="product-action-vertical">
-                                    <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $product->price }}">
+                                    <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}">
                                         <span>Add to wishlist</span>
                                     </a>
                                 </div>
                                 <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $product->price }}"><span>add to cart</span></a>
+                                    <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}"><span>add to cart</span></a>
                                 </div>
                             @else
                                 <span class="product-label label-out-stock">Out of stock</span>
@@ -273,7 +288,7 @@
                             </div>
                             <h3 class="product-title"><a href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></h3>
                             <div class="product-price">
-                              {{ $currency }}{{ number_format($product->price, 2) }}
+                              {{ $currency }}{{ number_format($sellingPrice ?? $product->price, 2) }}
                             </div>
                         </div>
                     </div>
@@ -370,13 +385,20 @@
                                 <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image">
                             </a>
                             @if ($product->stock && $product->stock->quantity > 0)
+
+                                @php
+                                    $sellingPrice = $product->stockhistory()
+                                        ->where('available_qty', '>', 0)
+                                        ->orderBy('id', 'asc')
+                                        ->value('selling_price');
+                                @endphp
                                 <div class="product-action-vertical">
-                                    <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $product->price }}">
+                                    <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}">
                                         <span>Add to wishlist</span>
                                     </a>
                                 </div>
                                 <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $product->price }}"><span>add to cart</span></a>
+                                    <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}"><span>add to cart</span></a>
                                 </div>
                             @else
                                 <span class="product-label label-out-stock">Out of stock</span>
@@ -389,7 +411,7 @@
                             </div>
                             <h3 class="product-title"><a href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></h3>
                             <div class="product-price">
-                            {{ $currency }}{{ number_format($product->price, 2) }}
+                            {{ $currency }}{{ number_format($sellingPrice ?? $product->price, 2) }}
                             </div>
                         </div>
                     </div>
@@ -400,6 +422,82 @@
     </div>
     @endif
     <!-- Trending Products End -->
+
+    <!-- Most Viewed Products Start -->
+    @if($mostViewedProducts->count() > 0)
+    <div class="pt-5 pb-6">
+        <div class="container trending-products">
+            <div class="heading heading-flex mb-3">
+                <div class="heading-left">
+                    <h2 class="title">Most Viewed Products</h2>
+                </div>
+            </div>
+
+            <div class="owl-carousel owl-full carousel-equal-height carousel-with-shadow" data-toggle="owl" 
+                data-owl-options='{
+                    "nav": true, 
+                    "dots": true,
+                    "margin": 20,
+                    "loop": false,
+                    "responsive": {
+                        "0": {
+                            "items":2
+                        },
+                        "480": {
+                            "items":2
+                        },
+                        "768": {
+                            "items":3
+                        },
+                        "992": {
+                            "items":4
+                        }
+                    }
+                }'>
+                @if ($mostViewedProducts->count() > 0)
+                    @foreach($mostViewedProducts as $product)
+                    <div class="product product-2">
+                        <figure class="product-media">
+                            <a href="{{ route('product.show', $product->slug) }}">
+                                <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image">
+                            </a>
+                            @if ($product->stock && $product->stock->quantity > 0)
+
+                                @php
+                                    $sellingPrice = $product->stockhistory()
+                                        ->where('available_qty', '>', 0)
+                                        ->orderBy('id', 'asc')
+                                        ->value('selling_price');
+                                @endphp
+                                <div class="product-action-vertical">
+                                    <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}">
+                                        <span>Add to wishlist</span>
+                                    </a>
+                                </div>
+                                <div class="product-action">
+                                    <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}"><span>add to cart</span></a>
+                                </div>
+                            @else
+                                <span class="product-label label-out-stock">Out of stock</span>
+                            @endif
+                        </figure>
+
+                        <div class="product-body">
+                            <div class="product-cat">
+                                <a href="{{ route('category.show', $category->slug) }}">{{ $category->name }}</a>
+                            </div>
+                            <h3 class="product-title"><a href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></h3>
+                            <div class="product-price">
+                            {{ $currency }}{{ number_format($sellingPrice ?? $product->price, 2) }}
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                @endif
+            </div>
+        </div>
+    </div>
+    <!-- Most Viewed Products End -->
 
     <!-- Wholesale Products Start -->
      @if ($wholeSaleProducts->count() > 0)

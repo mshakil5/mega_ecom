@@ -15,12 +15,18 @@
                             </a>
 
                             @if ($product->stock && $product->stock->quantity > 0)
+                                @php
+                                    $sellingPrice = $product->stockhistory()
+                                        ->where('available_qty', '>', 0)
+                                        ->orderBy('id', 'asc')
+                                        ->value('selling_price');
+                                @endphp
                                 <div class="product-action-vertical">
-                                    <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $product->price }}"> <span>Add to wishlist</span> </a>
+                                    <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}"> <span>Add to wishlist</span> </a>
                                 </div>
 
                                 <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $product->price }}"><span>add to cart</span></a>
+                                    <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}"><span>add to cart</span></a>
                                 </div>
                             @else
                                 <span class="product-label label-out-stock">Out of stock</span>
@@ -30,7 +36,7 @@
                         <div class="product-body">
                             <h3 class="product-title"><a href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></h3>
                             <div class="product-price">
-                                {{ $currency }} {{ number_format($product->price, 2) }}
+                                {{ $currency }} {{ number_format($sellingPrice ?? $product->price, 2) }}
                             </div>
                         </div>
                     </div>
