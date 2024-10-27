@@ -15,12 +15,11 @@
                 </div>
                 <div class="col-12 product-image-thumbs">
                     @foreach($product->colors as $productColor)
-                        @php
-                            $color = $productColor->color;
-                        @endphp
-                        <div class="product-image-thumb">
-                            <img src="{{ asset($productColor->image) }}" data-color-image="{{ asset($productColor->image) }}" class="img-thumbnail" alt="{{ $color->color }}">
-                        </div>
+                        @isset($productColor->color)
+                            <div class="product-image-thumb">
+                                <img src="{{ asset($productColor->image) }}" data-color-image="{{ asset($productColor->image) }}" class="img-thumbnail" alt="{{ $productColor->color->color }}">
+                            </div>
+                        @endisset
                     @endforeach
                 </div>
             </div>
@@ -49,29 +48,33 @@
                 <h4>Available Colors</h4>
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
                     @foreach($product->colors as $productColor)
-                        @php
-                            $color = $productColor->color;
-                        @endphp
-                        <label class="btn btn-default text-center {{ $loop->first ? 'active' : '' }}">
-                            <input type="radio" name="color_option" id="color_option_{{ $color->id }}" autocomplete="off" {{ $loop->first ? 'checked' : '' }}>
-                            {{ $color->color ?? 'N/A' }} 
-                            <br>
-                            <i class="fas fa-circle fa-2x" style="color: {{ $color->color_code ?? '#000' }}"></i>
-                        </label>
+                        @isset($productColor->color)
+                            @php
+                                $color = $productColor->color;
+                            @endphp
+                            <label class="btn btn-default text-center {{ $loop->first ? 'active' : '' }}">
+                                <input type="radio" name="color_option" id="color_option_{{ $color->id }}" autocomplete="off" {{ $loop->first ? 'checked' : '' }}>
+                                {{ $color->color ?? 'N/A' }} 
+                                <br>
+                                <i class="fas fa-circle fa-2x" style="color: {{ $color->color_code ?? '#000' }}"></i>
+                            </label>
+                        @endisset
                     @endforeach
                 </div>
 
                 <h4 class="mt-3">Available Sizes</h4>
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
                     @foreach($product->sizes as $productSize)
-                        @php
-                            $size = $productSize->size;
-                        @endphp
-                        <label class="btn btn-default text-center {{ $loop->first ? 'active' : '' }}">
-                            <input type="radio" name="size_option" id="size_option_{{ $size->id }}" autocomplete="off" {{ $loop->first ? 'checked' : '' }}>
-                            <span class="text-xl">{{ $size->size ?? 'N/A' }}</span>
-                            <br>
-                        </label>
+                        @isset($productSize->size)
+                            @php
+                                $size = $productSize->size;
+                            @endphp
+                            <label class="btn btn-default text-center {{ $loop->first ? 'active' : '' }}">
+                                <input type="radio" name="size_option" id="size_option_{{ $size->id }}" autocomplete="off" {{ $loop->first ? 'checked' : '' }}>
+                                <span class="text-xl">{{ $size->size ?? 'N/A' }}</span>
+                                <br>
+                            </label>
+                        @endisset
                     @endforeach
                 </div>
 
