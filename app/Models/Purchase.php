@@ -25,4 +25,9 @@ class Purchase extends Model
         ->get();
         return $purchase;
     }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
 }
