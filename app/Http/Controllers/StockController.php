@@ -92,7 +92,7 @@ class StockController extends Controller
     {
         
         
-        $query = StockHistory::select('date', 'stockid', 'purchase_id', 'product_id', 'stock_id', 'warehouse_id', 'quantity', 'selling_qty','available_qty', 'size','color','systemloss_qty','purchase_price');
+        $query = StockHistory::select('date', 'stockid', 'purchase_id', 'product_id', 'stock_id', 'warehouse_id', 'quantity', 'selling_qty','available_qty', 'size','color','systemloss_qty','purchase_price','selling_price');
         if ($request->has('warehouse_id') && $request->warehouse_id != '') {
             $query->where('warehouse_id', $request->warehouse_id);
         }
@@ -118,6 +118,10 @@ class StockController extends Controller
             
             ->addColumn('selling_qty', function ($row) {
                 return $row->selling_qty ? $row->selling_qty : ' ';
+            })
+
+            ->addColumn('selling_price', function ($row) {
+                return $row->selling_price ? $row->selling_price : ' ';
             })
             
             ->addColumn('available_qty', function ($row) {
@@ -207,6 +211,7 @@ class StockController extends Controller
         $validatedData = $request->validate([
             'invoice' => 'required',
             'supplier_id' => 'required|exists:suppliers,id',
+            // 'warehouse_id' => 'required|exists:warehouses,id',
             'purchase_date' => 'required|date',
             // 'purchase_type' => 'required',
             'ref' => 'nullable|string',
@@ -250,44 +255,6 @@ class StockController extends Controller
         $purchase->due_amount = $request->net_amount - $request->cash_payment - $request->bank_payment;
         $purchase->created_by = Auth::user()->id;
         $purchase->save();
-
-        
-
-        // $supplier = new SupplierTransaction();
-        // $supplier->date = $request->purchase_date;
-        // $supplier->supplier_id = $request->supplier_id;
-        // $supplier->purchase_id = $purchase->id;
-        // $supplier->table_type = "Purchase";
-        // $supplier->payment_type = "Credit";
-        // $supplier->amount = $request->total_amount;
-        // $supplier->vat = $request->total_vat_amount;
-        // $supplier->discount = $request->discount ?? 0.00;
-        // $supplier->total_amount = $request->net_amount;
-        // $supplier->save();
-
-        // if ($request->cash_payment) {
-        //     $cashpayment = new SupplierTransaction();
-        //     $cashpayment->date = $request->purchase_date;
-        //     $cashpayment->supplier_id = $request->supplier_id;
-        //     $cashpayment->purchase_id = $purchase->id;
-        //     $cashpayment->table_type = "Purchase";
-        //     $cashpayment->payment_type = "Cash";
-        //     $cashpayment->amount = $request->cash_payment;
-        //     $cashpayment->total_amount = $request->cash_payment;
-        //     $cashpayment->save();
-        // }
-
-        // if ($request->bank_payment) {
-        //     $bankpayment = new SupplierTransaction();
-        //     $bankpayment->date = $request->purchase_date;
-        //     $bankpayment->supplier_id = $request->supplier_id;
-        //     $bankpayment->purchase_id = $purchase->id;
-        //     $bankpayment->table_type = "Purchase";
-        //     $bankpayment->payment_type = "Bank";
-        //     $bankpayment->amount = $request->bank_payment;
-        //     $bankpayment->total_amount = $request->bank_payment;
-        //     $bankpayment->save();
-        // }
 
         foreach ($request->products as $product) {
             $purchaseHistory = new PurchaseHistory();
@@ -340,6 +307,41 @@ class StockController extends Controller
                     $newStock->created_by = Auth::user()->id;
                     $newStock->save();
                 }
+                // calculate every additional cost per product
+                $additionalCost = $purchase->direct_cost + $purchase->cnf_cost + $purchase->cost_a + $purchase->cost_b + $purchase->other_cost;
+                $qty = $purchaseHistory->quantity - $purchaseHistory->missing_product_quantity;
+                $countItem = Purchase::withCount('purchaseHistory')->where('id', $purchaseHistory->purchase_id)->first();
+                $additionalCostPerProduct = $additionalCost/$countItem->purchase_history_count;
+                $additionalCostPerUnit = $additionalCostPerProduct/$qty;
+                // calculate every additional cost per product
+
+                $warehouseId = $request->warehouse_id;
+                $stockhistory = new StockHistory();
+                $stockhistory->product_id = $purchaseHistory->product_id;
+                $stockhistory->purchase_id = $purchaseHistory->purchase_id;
+                if ($stock) {
+                    $stockhistory->stock_id = $stock->id;
+                } else {
+                    $stockhistory->stock_id = $newStock->id;
+                }
+                
+                $stockhistory->warehouse_id = $warehouseId;
+                $stockhistory->selling_qty = 0;
+                $stockhistory->quantity = $product['quantity'];
+                $stockhistory->available_qty = $product['quantity'];
+                $stockhistory->size = $purchaseHistory->product_size;
+                $stockhistory->color = $purchaseHistory->product_color;
+                $stockhistory->date = date('Y-m-d');
+                $stockhistory->stockid = date('mds').$warehouseId.str_pad($purchaseHistory->id, 4, '0', STR_PAD_LEFT);
+
+                $stockhistory->purchase_price = $purchaseHistory->purchase_price + $additionalCostPerUnit;
+                $stockhistory->selling_price = $stockhistory->purchase_price + $stockhistory->purchase_price * .2;
+                $stockhistory->created_by = Auth::user()->id;
+                $stockhistory->save();
+
+
+
+
             }
 
             
