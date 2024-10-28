@@ -224,6 +224,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::post('/supplier/transactions/update', [SupplierController::class, 'updateTransaction'])->name('supplier.transactions.update');
 
+    Route::post('/whole-saler/transactions/update', [CustomerController::class, 'updateTransaction'])->name('whole-saler.transactions.update');
+
     // Stock
     Route::get('/stocks', [StockController::class, 'getStocks'])->name('allstocks');
     Route::get('/stock', [StockController::class, 'getStock'])->name('allstock');
