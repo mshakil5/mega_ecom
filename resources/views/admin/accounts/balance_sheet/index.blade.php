@@ -48,10 +48,14 @@
                                             <tr>
                                                 <td><strong>Current Asset</strong></td>
                                                 <td></td>
-                                                <td><strong>Total Till Yesterday</strong></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                {{-- <td><strong>Total Till Yesterday</strong></td>
                                                 <td><strong>Total Of All Debit Txn Today</strong></td>
                                                 <td><strong>Total Of All Credit Txn Today</strong></td>
-                                                <td><strong>CB= OB+DMV+CMV </strong></td>
+                                                <td><strong>CB= OB+DMV+CMV </strong></td> --}}
                                             </tr>
 
                                             <!-- current assets  -->
@@ -405,14 +409,14 @@
 
 
                                                     $totalLiabilityEquitySum = $totalLiabilitySum + $totalEquitySum;
-                                                    $toalLiabilityEquityDebitSum = $totalLiabilityDebitToday + $totalEquityDebitToday;
+                                                    $toalLiabilityEquityDebitSum = $totalLiabilityDebitToday + $totalEquityDebitToday + $netProfit;
                                                     $totalLiabilityEquityCreditSum = $totalLiabilityCreditToday + $totalEquityCreditToday;
                                                     $totalLiabilityEquityClosingSum = $closingLiabilityBalance + $closingEquityBalance;
 
 
                                                 @endphp
                                                 <td style="text-align: right;">{{ number_format($totalLiabilityEquitySum + $netProfitTillYesterday, 2) }}</td>
-                                                <td style="text-align: right;">{{ number_format($toalLiabilityEquityDebitSum + $netProfit, 2) }}</td>
+                                                <td style="text-align: right;">{{ number_format($toalLiabilityEquityDebitSum, 2) }}</td>
                                                 <td style="text-align: right;">{{ number_format($totalLiabilityEquityCreditSum, 2) }}</td>
                                                 <td style="text-align: right;">{{ number_format($totalLiabilityEquityClosingSum, 2) }}</td>
                                             </tr>

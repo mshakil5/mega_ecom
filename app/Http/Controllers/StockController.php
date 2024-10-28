@@ -338,14 +338,7 @@ class StockController extends Controller
                 $stockhistory->selling_price = $stockhistory->purchase_price + $stockhistory->purchase_price * .2;
                 $stockhistory->created_by = Auth::user()->id;
                 $stockhistory->save();
-
-
-
-
             }
-
-            
-
         }
 
         $suppliertran = new Transaction();
@@ -357,6 +350,7 @@ class StockController extends Controller
         $suppliertran->payment_type = "Credit";
         $suppliertran->transaction_type = "Due";
         $suppliertran->amount = $request->total_amount;
+        $suppliertran->additional_cost = $request->direct_cost + $request->cnf_cost + $request->cost_b + $request->cost_a + $request->other_cost;
         $suppliertran->vat_amount = $request->total_vat_amount;
         $suppliertran->discount = $request->discount ?? 0.00;
         $suppliertran->at_amount = $request->net_amount;
