@@ -221,6 +221,16 @@ class FinancialStatementController extends Controller
         //Total Yesterday's account receivable    
         $yesAccountReceiveable = $yesAccountReceiveablesDebit + $yesAssetSoldAR - $yesAccountReceiveablesCredit + $yesProductCreditSold - $yesReturnAR;
 
+        // vat payable calculation start 
+        $todaysVatPayableDebit = Transaction::where('table_type', 'Sales')
+            ->where('status', 0)
+            ->whereNull('chart_of_account_id')
+            ->whereNotNull('customer_id')
+            ->where('transaction_type', 'Current')
+            ->whereBetween('date', [$startDate, $today])
+            ->sum('vat_amount');
+        // vat payable calculation end
+
         //Account Payable
         $accountPayableIds = ChartOfAccount::where('sub_account_head', 'Account Payable')
             ->pluck('id');
@@ -232,7 +242,7 @@ class FinancialStatementController extends Controller
             ->whereBetween('date', [$startDate, $today])
             ->sum('at_amount');
         //Todays Purchase Return Account Payable
-        $todaysPurchaseReturnAP = Transaction::where('table_type', 'Cogs')
+        $todaysPurchaseReturnAP = Transaction::where('table_type', 'Purchase')
             ->where('transaction_type', 'Return')
             ->where('status', 0)
             ->where('payment_type', 'Account Payable')
@@ -1099,7 +1109,7 @@ class FinancialStatementController extends Controller
         //Yesterday Bank In Hand
         $yesBankInHand = $totalYestBankIncrement - $totalYestBankDecrement;
 
-        return view('admin.accounts.balance_sheet.index', compact('currentAssetIds', 'currentBankAsset', 'currentCashAsset', 'currentLiability', 'longTermLiabilities', 'equityCapital', 'retainedEarning', 'currentAssets', 'fixedAssets', 'shortTermLiabilities', 'currentLiabilities', 'equityCapitals', 'retainedEarnings', 'cashInHand', 'cashInBank', 'inventory', 'netProfit', 'yesCashInHand', 'yesBankInHand', 'yesAccountReceiveable', 'yesInventory', 'netProfitTillYesterday', 'totalTodayCashIncrements', 'totalTodayCashDecrements', 'totalTodayBankIncrements', 'totalTodayBankDecrements', 'todaysAccountReceivableDebit', 'todaysAssetSoldAR', 'yesAccountPayable', 'totalTodaysAccountPayableCredit', 'todaysAccountPayableDebit', 'todaysProductCreditSold', 'todaysDueAccountPayableDebit', 'todaysCreditPurchaseAP', 'totalTodaysAccountReceivableCredit','startDate','todaysPurchaseAPRcv'));
+        return view('admin.accounts.balance_sheet.index', compact('currentAssetIds', 'currentBankAsset', 'currentCashAsset', 'currentLiability', 'longTermLiabilities', 'equityCapital', 'retainedEarning', 'currentAssets', 'fixedAssets', 'shortTermLiabilities', 'currentLiabilities', 'equityCapitals', 'retainedEarnings', 'cashInHand', 'cashInBank', 'inventory', 'netProfit', 'yesCashInHand', 'yesBankInHand', 'yesAccountReceiveable', 'yesInventory', 'netProfitTillYesterday', 'totalTodayCashIncrements', 'totalTodayCashDecrements', 'totalTodayBankIncrements', 'totalTodayBankDecrements', 'todaysAccountReceivableDebit', 'todaysAssetSoldAR', 'yesAccountPayable', 'totalTodaysAccountPayableCredit', 'todaysAccountPayableDebit', 'todaysProductCreditSold', 'todaysDueAccountPayableDebit', 'todaysCreditPurchaseAP', 'totalTodaysAccountReceivableCredit','startDate','todaysPurchaseAPRcv','todaysVatPayableDebit'));
     }
 
     public function calculateNetProfit(Request $request)
@@ -1114,7 +1124,7 @@ class FinancialStatementController extends Controller
             ->whereNotNull('customer_id')
             ->where('transaction_type', 'Current')
             ->whereBetween('date', [$startDate, $today])
-            ->sum('at_amount');
+            ->sum('amount');
 
         // Sales Return
         $salesReturnToday = Transaction::where('table_type', 'Sales')

@@ -275,7 +275,20 @@
                                                 <td style="text-align: right;">{{ number_format($totalTodaysAccountPayableCredit + $todaysPurchaseAPRcv, 2) }}</td>
                                                 <td style="text-align: right;">{{ number_format($yesAccountPayable - $totalTodaysAccountPayableCredit  - $todaysPurchaseAPRcv + $todaysCreditPurchaseAP + $todaysAccountPayableDebit+ $todaysDueAccountPayableDebit , 2) }}</td>
                                             </tr>
-                                        <!-- Account Payable -->
+                                            <!-- Account Payable -->
+
+                                            <!-- Vat Payable -->
+                                            <tr>
+                                                <td></td>
+                                                <td>Vat Payable</td>
+                                                <td style="text-align: right;">         
+                                                    
+                                                </td>
+                                                <td style="text-align: right;">{{ number_format($todaysVatPayableDebit, 2) }}</td>
+                                                <td style="text-align: right;"></td>
+                                                <td style="text-align: right;">{{ number_format($todaysVatPayableDebit, 2) }}</td>
+                                            </tr>
+                                            <!-- Vat Payable -->
 
                                             <tr>
                                                 <td>
@@ -288,7 +301,7 @@
                                                                             collect($currentLiabilities)->sum('total_debit_yesterday') - collect($currentLiabilities)->sum('total_credit_yesterday') + $yesAccountPayable;
                                                     $totalLiabilityDebitToday = collect($shortTermLiabilities)->sum('total_debit_today') +
                                                                             collect($longTermLiabilities)->sum('total_debit_today')+
-                                                                            collect($currentLiabilities)->sum('total_debit_today') + $todaysAccountPayableDebit + $todaysDueAccountPayableDebit + $todaysCreditPurchaseAP;
+                                                                            collect($currentLiabilities)->sum('total_debit_today') + $todaysAccountPayableDebit + $todaysDueAccountPayableDebit + $todaysCreditPurchaseAP + $todaysVatPayableDebit;
                                                     $totalLiabilityCreditToday = collect($shortTermLiabilities)->sum('total_credit_today') +
                                                                             collect($longTermLiabilities)->sum('total_credit_today')+
                                                                             collect($currentLiabilities)->sum('total_credit_today') + $todaysPurchaseAPRcv + $totalTodaysAccountPayableCredit;
