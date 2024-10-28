@@ -49,6 +49,8 @@ use App\Http\Controllers\Admin\IncomeStatementController;
 use App\Http\Controllers\Admin\FinancialStatementController;
 use App\Http\Controllers\Admin\LedgerController;
 use App\Http\Controllers\Admin\WareHouseController;
+use App\Http\Controllers\Admin\CashFlowController;
+use App\Http\Controllers\Admin\DaybookController;
 
 Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], function(){
   
@@ -512,8 +514,13 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('ledger/liability-details/{id}', [LedgerController::class, 'liability']);
     Route::get('ledger/equity-details/{id}', [LedgerController::class, 'equity']);
 
-    
+    // purchase and sales ledger
     Route::get('ledger-sales', [LedgerController::class, 'salesLedger'])->name('ledger.sales');
     Route::get('ledger-purchase', [LedgerController::class, 'purchaseLedger'])->name('ledger.purchase');
+
+    // cashflow
+    Route::get('cashflow', [CashFlowController::class, 'cashflow'])->name('cashflow');
+    Route::get('cash-book', [DaybookController::class, 'cashbook'])->name('cashbook');
+    Route::get('bank-book', [DaybookController::class, 'bankbook'])->name('bankbook');
 });
   

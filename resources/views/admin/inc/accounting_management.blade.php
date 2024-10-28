@@ -70,6 +70,37 @@
             </a>
         </li>
 
+        <li class="nav-item">
+            <a href="{{ route('cashflow') }}" class="nav-link {{ (request()->is('admin/cashflow*')) ? 'active' : '' }}">
+                <i class="fa fa-users"></i>
+                <p>Cash flow</p>
+            </a>
+        </li>
+
+        <li class="nav-item dropdown {{ request()->is('admin/cash-book') || request()->is('admin/bank-book')  ? 'menu-open' : '' }}">
+
+            <a href="#" class="nav-link dropdown-toggle {{ request()->is('admin/cash-book') || request()->is('admin/bank-book') ? 'active' : '' }}">
+                <i class="nav-icon fas fa-warehouse"></i>
+                <p>
+                    Day Book <i class="fas fa-angle-left right"></i>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="{{ route('bankbook') }}" class="nav-link {{ request()->routeIs('bankbook') ? 'active' : '' }}">
+                        <i class="fas fa-plus nav-icon"></i>
+                        <p>Bank Book</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('cashbook') }}" class="nav-link {{ request()->routeIs('cashbook') ? 'active' : '' }}">
+                        <i class="fas fa-list nav-icon"></i>
+                        <p>Cash Book</p>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
         <li class="nav-item dropdown {{ request()->is('admin/income-statement') || request()->is('admin/balance-sheet')  ? 'menu-open' : '' }}">
 
             <a href="#" class="nav-link dropdown-toggle {{ request()->is('admin/income-statement') || request()->is('admin/balance-sheet') ? 'active' : '' }}">
