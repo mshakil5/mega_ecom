@@ -181,7 +181,7 @@ class SupplierController extends Controller
         $supplier = Supplier::whereId($supplierId)->select('id', 'name')->first();
         $transactions = Transaction::where('supplier_id', $supplierId)
                                 ->orderBy('id', 'desc')
-                                ->select('id', 'amount', 'date', 'note','payment_type','table_type', 'discount','at_amount','document')
+                                ->select('id', 'date', 'note', 'payment_type', 'table_type', 'at_amount', 'document')
                                 ->get();
 
     
@@ -272,6 +272,43 @@ class SupplierController extends Controller
         } else {
             return response()->json(['success' => false], 500);
         }
+    }
+
+    public function updateTransaction(Request $request)
+    {
+        $request->validate([
+            'transactionId' => 'required|integer|exists:transactions,id',
+            'at_amount' => 'required|numeric|min:0',
+            'note' => 'nullable|string',
+            'document' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048'
+        ]);
+    
+        $transaction = Transaction::findOrFail($request->transactionId);
+    
+        $transaction->at_amount = $request->at_amount;
+        $transaction->note = $request->note;
+    
+        if ($request->hasFile('document')) {
+            if ($transaction->document && file_exists(public_path($transaction->document))) {
+                unlink(public_path($transaction->document));
+            }
+    
+            $uploadedFile = $request->file('document');
+            $randomName = mt_rand(10000000, 99999999) . '.' . $uploadedFile->getClientOriginalExtension();
+            $destinationPath = 'images/supplier/document/';
+            $uploadedFile->move(public_path($destinationPath), $randomName);
+            
+            $transaction->document = '/' . $destinationPath . $randomName;
+        }
+
+        $transaction->updated_by = auth()->user()->id;
+    
+        $transaction->save();
+    
+        return response()->json([
+            'success' => true,
+            'message' => 'Transaction updated successfully!',
+        ]);
     }
 
 }

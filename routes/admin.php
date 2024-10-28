@@ -222,6 +222,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::post('/toggle-supplier-status', [SupplierController::class, 'toggleStatus'])->name('supplier.toggleStatus');
 
+    Route::post('/supplier/transactions/update', [SupplierController::class, 'updateTransaction'])->name('supplier.transactions.update');
 
     // Stock
     Route::get('/stocks', [StockController::class, 'getStocks'])->name('allstocks');
