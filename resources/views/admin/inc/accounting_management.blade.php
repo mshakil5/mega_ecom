@@ -1,5 +1,5 @@
-<nav class="mt-2">
-    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+<nav class="mt-2 mb-4">
+    <ul class="nav nav-pills nav-sidebar flex-column mb-4" data-widget="treeview" role="menu" data-accordion="false">
            
         <li class="nav-item">
             <a href="{{ route('admin.dashboard') }}" class="nav-link {{ (request()->is('admin/dashboard*')) ? 'active' : '' }}">
@@ -126,6 +126,9 @@
         </li>
 
 
+        <li class="mb-5"></li>
+        <li class="mb-5"></li>
+        <li class="mb-5"></li>
         {{--  
         <li class="nav-item">
             <a href="{{ route('view_branch') }}" class="nav-link {{ (request()->is('admin/branch*')) ? 'active' : '' }}">
