@@ -116,6 +116,19 @@
                     </div>
                 </a>
             </div>
+
+            <div class="col-lg-3 col-md-6 mb-4">
+                <a href="{{ route('allstock') }}" class="small-box bg-primary d-block text-center p-3 text-white rounded">
+                    <div class="inner">
+                        <h4 class="mb-0" style="font-size: 24px;">Stocks</h4>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-ios-analytics-outline" style="font-size: 36px;"></i>
+                    </div>
+                </a>
+            </div>
+
+
         </div>
     </div>
 </section>

@@ -99,7 +99,7 @@ class StockController extends Controller
         if ($request->has('product_id') && $request->product_id != '') {
             $query->where('product_id', $request->product_id);
         }
-        $data = $query->orderBy('id', 'DESC')->get();
+        $data = $query->orderBy('available_qty', 'DESC')->get();
 
         return DataTables::of($data)
             ->addColumn('sl', function($row) {

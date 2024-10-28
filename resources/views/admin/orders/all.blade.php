@@ -43,6 +43,7 @@
         $('#pending-orders-table').DataTable({
             processing: true,
             serverSide: true,
+            pageLength: 50,
             ajax: {
                 url: "{{ route('getallorder') }}",
                 type: 'GET',
