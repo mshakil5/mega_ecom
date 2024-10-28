@@ -110,5 +110,15 @@ class Product extends Model
     {
         return $this->hasMany(PurchaseHistory::class, 'product_id');
     }
+
+    public static function productSellingPriceCal()
+    {
+        $allproducts = self::withCount('orderDetails','purchaseHistories')
+        ->select('id', 'name', 'category_id', 'sub_category_id', 'brand_id', 'product_model_id', 'is_featured', 'is_recent', 'is_popular', 'is_trending')
+        ->orderby('id','DESC')
+        ->get();
+
+        return $allproducts;
+    }
     
 }

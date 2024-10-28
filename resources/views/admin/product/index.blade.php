@@ -30,10 +30,15 @@
                             </thead>
                             <tbody>
                                 @foreach ($data as $key => $data)
+                                @php
+                                    $price = \App\Models\StockHistory::orderby('id','asc')->where('product_id', $data->id)->first();
+                                @endphp
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
                                     <td>{{ $data->name }}</td>
-                                    <td>{{ $data->price }}</td>
+                                    <td>
+                                        {{ number_format($price ? $price->selling_price : 0, 2) }}
+                                    </td>
                                     <td>{{ $data->category->name }}</td>
                                     <td>@if ($data->subCategory) {{ $data->subCategory->name }} @endif</td>
                                     <td>@if ($data->brand) {{ $data->brand->name }} @endif</td>
@@ -94,7 +99,8 @@
     $(function () {
       $("#example1").DataTable({
         "responsive": true, "lengthChange": false, "autoWidth": false,
-        "buttons": ["copy", "csv", "excel", "pdf", "print"]
+        "buttons": ["copy", "csv", "excel", "pdf", "print"],
+        "lengthMenu": [[100, "All", 50, 25], [100, "All", 50, 25]]
       }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     });
 </script>

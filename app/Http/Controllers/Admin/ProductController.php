@@ -24,7 +24,7 @@ class ProductController extends Controller
 {
     public function getProduct()
     {
-        $data = Product::orderby('id','DESC')->where('status', 1)->get();
+        $data = Product::productSellingPriceCal();
         return view('admin.product.index', compact('data'));
     }
 
@@ -452,8 +452,8 @@ class ProductController extends Controller
             'unit_id' => 'nullable|exists:units,id',
             'group_id' => 'nullable|exists:groups,id',
             'feature_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'color_id' => 'nullable|array',
-            'color_id.*' => 'exists:colors,id',
+            // 'color_id' => 'nullable|array',
+            // 'color_id.*' => 'exists:colors,id',
             'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 

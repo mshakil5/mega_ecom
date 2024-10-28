@@ -10,7 +10,7 @@
   <!-- CSRF Token -->
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ $company->company_name }}</title>
+  <title>{{ $company->company_name }} - Admin</title>
   
     <!-- Favicon -->
     <link rel="icon" href="{{ asset('images/company/' . $company->fav_icon) }}">
