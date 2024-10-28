@@ -28,12 +28,13 @@ class IncomeStatementController extends Controller
 
         $purchaseSum = Transaction::where('table_type', 'Purchase')
             ->where('status', 0)
+            ->where('transaction_type', 'Due')
             ->where('description', 'Purchase')
             ->whereNull('chart_of_account_id')
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
                 $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
             })
-            ->sum('amount');
+            ->sum('at_amount');
 
         $salesSum = Transaction::where('table_type', 'Sales')
             ->where('status', 0)
@@ -172,7 +173,7 @@ class IncomeStatementController extends Controller
             })
             ->sum('vat_amount');
 
-        $salesVatSum = Transaction::where('table_type', 'Income')
+        $salesVatSum = Transaction::where('table_type', 'Sales')
             ->where('status', 0)
             ->whereNull('chart_of_account_id')
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
@@ -202,7 +203,7 @@ class IncomeStatementController extends Controller
             })
             ->sum('vat_amount');
 
-        $taxAndVat =  $salesVatSum + $operatingIncomeVatSum - ($purchaseVatSum + $operatingExpenseVatSum + $administrativeExpenseVatSum);
+        $taxAndVat =  $purchaseVatSum + $operatingExpenseVatSum + $administrativeExpenseVatSum - $salesVatSum - $operatingIncomeVatSum;
 
         return view('admin.accounts.income_statement.index', compact(
             'purchaseSum', 
