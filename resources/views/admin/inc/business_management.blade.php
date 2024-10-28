@@ -8,13 +8,17 @@
             </a>
         </li>
 
-        <form action="{{ route('toggle.sidebar') }}" method="POST">
+        {{-- <form action="{{ route('toggle.sidebar') }}" method="POST">
             @csrf
             <input type="hidden" name="sidebar" value="0">
             <button type="submit" class="btn btn-info my-2">
                 Switch to Accounting <i class="fas fa-arrow-right"></i>
             </button>
-        </form>
+        </form> --}}
+
+        <a href="{{ route('toggle.sidebar') }}" class="btn btn-info my-2">
+            Switch to Accounting <i class="fas fa-arrow-right"></i>
+        </a>
 
         <!-- Inventory -->
         <li class="nav-item dropdown {{ (request()->is('admin/category*') || request()->is('admin/brand*') || request()->is('admin/model*') || request()->is('admin/unit*') || request()->is('admin/group*') || request()->is('admin/size*') || request()->is('admin/color*') || request()->is('admin/product*') || request()->is('admin/bundle-product*') || request()->is('admin/sub-category*') || request()->is('admin/related-product*') || request()->is('admin/create-product*') || request()->is('admin/bogo-product*')) ? 'menu-open' : '' }}">

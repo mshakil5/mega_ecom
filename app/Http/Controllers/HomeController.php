@@ -68,7 +68,13 @@ class HomeController extends Controller
     public function toggleSidebar(Request $request)
     {
         $user = Auth::user();
-        $user->sidebar = $request->input('sidebar');
+
+        if ($user->sidebar == 0) {
+            $user->sidebar = 1;
+        } else {
+            $user->sidebar = 0;
+        }
+        // $user->sidebar = $request->input('sidebar');
         $user->save();
 
         return redirect()->route('admin.dashboard');

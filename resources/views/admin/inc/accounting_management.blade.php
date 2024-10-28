@@ -8,13 +8,17 @@
             </a>
         </li>
 
-        <form action="{{ route('toggle.sidebar') }}" method="POST">
+        {{-- <form action="{{ route('toggle.sidebar') }}" method="POST">
             @csrf
             <input type="hidden" name="sidebar" value="1">
             <button type="submit" class="btn btn-info my-2">
                 Switch to Business <i class="fas fa-arrow-right"></i>
             </button>
-        </form>
+        </form> --}}
+
+        <a href="{{ route('toggle.sidebar') }}" class="btn btn-info my-2">
+            Switch to Business <i class="fas fa-arrow-right"></i>
+        </a>
 
         <li class="nav-item">
             <a href="{{ route('admin.addchartofaccount') }}" class="nav-link {{ (request()->is('admin/chart-of-account*')) ? 'active' : '' }}">
