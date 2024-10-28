@@ -520,6 +520,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     // cashflow
     Route::get('cashflow', [CashFlowController::class, 'cashflow'])->name('cashflow');
+    // daybook
     Route::get('cash-book', [DaybookController::class, 'cashbook'])->name('cashbook');
     Route::get('bank-book', [DaybookController::class, 'bankbook'])->name('bankbook');
 });
