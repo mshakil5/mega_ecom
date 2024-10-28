@@ -179,21 +179,21 @@
             <a href="#" class="nav-link dropdown-toggle {{ request()->is('admin/in-house-sell*') || request()->is('admin/all-inhouse-orders*') || request()->is('admin/quotations*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-industry"></i>
                 <p>
-                    In House<i class="fas fa-angle-left right"></i>
+                    In House Sales<i class="fas fa-angle-left right"></i>
                 </p>
             </a>
             <ul class="nav nav-treeview">
                 <li class="nav-item">
                     <a href="{{ route('inhousesell') }}" class="nav-link {{ (request()->is('admin/in-house-sell*')) ? 'active' : '' }}">
                         <i class="fas fa-industry nav-icon"></i>
-                        <p>In House Sale</p>
+                        <p>In House Sales</p>
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="{{ route('getinhouseorder') }}" class="nav-link {{ (request()->is('admin/all-inhouse-orders*')) ? 'active' : '' }}">
                         <i class="fas fa-industry nav-icon"></i>
-                        <p>In House Sale List</p>
+                        <p>In House Sales List</p>
                     </a>
                 </li>
 
@@ -206,12 +206,12 @@
             </ul>
         </li>
 
-        <!-- stock -->
-        <li class="nav-item dropdown {{ (request()->is('admin/stock*') || request()->is('admin/purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/stock-return-history*') || request()->is('admin/system-losses*') || request()->routeIs('purchase.edit') || request()->routeIs('returnProduct')) ? 'menu-open' : '' }}">
-            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/stock*') || request()->is('admin/purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/stock-return-history*') || request()->is('admin/system-losses*') || request()->routeIs('purchase.edit') || request()->routeIs('stockhistory') || request()->routeIs('returnProduct')) ? 'active' : '' }}">
+        <!-- purchase -->
+        <li class="nav-item dropdown {{( request()->is('admin/purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/purchase-return-history*') || request()->routeIs('purchase.edit') || request()->routeIs('returnProduct')) ? 'menu-open' : '' }}">
+            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/purchase-return-history*') || request()->routeIs('purchase.edit') || request()->routeIs('returnProduct')) ? 'active' : '' }}">
                 <i class="nav-icon fas fa-warehouse"></i>
                 <p>
-                    Stocks <i class="fas fa-angle-left right"></i>
+                    Purchase <i class="fas fa-angle-left right"></i>
                 </p>
             </a>
             <ul class="nav nav-treeview">
@@ -222,31 +222,43 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('allstock') }}" class="nav-link {{ (request()->is('admin/stock') && !request()->is('admin/add-stock*')) ? 'active' : '' }}">
-                        <i class="fas fa-list nav-icon"></i>
-                        <p>Stock List</p>
-                    </a>
-                </li>
-                <li class="nav-item">
                     <a href="{{ route('productPurchaseHistory') }}" class="nav-link {{ (request()->is('admin/purchase-history*') || request()->routeIs('purchase.edit')) ? 'active' : '' }}">
                         <i class="fas fa-file-invoice-dollar nav-icon"></i>
                         <p>Purchase-order History</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('stockReturnHistory') }}" class="nav-link {{ (request()->is('admin/purchase-return-history') || request()->routeIs('returnProduct')) ? 'active' : '' }}">
+                        <i class="fas fa-undo nav-icon"></i>
+                        <p>Return History</p>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <!-- stock -->
+        <li class="nav-item dropdown {{ (request()->is('admin/stock*') || request()->is('admin/system-losses*') || request()->routeIs('purchase.edit') || request()->routeIs('returnProduct')) ? 'menu-open' : '' }}">
+            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/stock*') || request()->is('admin/system-losses*') || request()->routeIs('purchase.edit') || request()->routeIs('stockhistory') || request()->routeIs('returnProduct')) ? 'active' : '' }}">
+                <i class="nav-icon fas fa-warehouse"></i>
+                <p>
+                    Stocks <i class="fas fa-angle-left right"></i>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="{{ route('allstock') }}" class="nav-link {{ (request()->is('admin/stock') && !request()->is('admin/stock*')) ? 'active' : '' }}">
+                        <i class="fas fa-list nav-icon"></i>
+                        <p>Stock List</p>
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="{{ route('stockhistory') }}" class="nav-link {{ (request()->is('admin/stocking-history') && !request()->is('admin/add-stock*')) ? 'active' : '' }}">
                         <i class="fas fa-list nav-icon"></i>
-                        <p>Stock History</p>
+                        <p>Warehouse Stock History</p>
                     </a>
                 </li>
 
-                <li class="nav-item">
-                    <a href="{{ route('stockReturnHistory') }}" class="nav-link {{ (request()->is('admin/stock-return-history') || request()->routeIs('returnProduct')) ? 'active' : '' }}">
-                        <i class="fas fa-undo nav-icon"></i>
-                        <p>Return History</p>
-                    </a>
-                </li>
                 <li class="nav-item">
                     <a href="{{ route('system-losses.index') }}" class="nav-link {{ (request()->is('admin/system-losses') || request()->routeIs('returnProduct')) ? 'active' : '' }}">
                         <i class="fas fa-undo nav-icon"></i>

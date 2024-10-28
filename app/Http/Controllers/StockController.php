@@ -113,7 +113,7 @@ class StockController extends Controller
                 return $row->product ? $row->product->product_code : 'N/A';
             })
             ->addColumn('quantity_formatted', function ($row) {
-                return $row->quantity ? number_format($row->quantity, 0) : 'N/A';
+                return $row->quantity ? number_format($row->quantity, 0) : ' ';
             })
             
             ->addColumn('selling_qty', function ($row) {

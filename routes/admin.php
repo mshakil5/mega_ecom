@@ -241,7 +241,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/transfer-to-warehouse/{id}', [WarehouseController::class, 'transfer'])->name('transferToWarehouse');
     Route::get('/purchase-history', [StockController::class, 'productPurchaseHistory'])->name('productPurchaseHistory');
     Route::get('/purchase/{purchase}/history', [StockController::class, 'getPurchaseHistory'])->name('purchase.history');
-    Route::get('/stock-return-history', [StockController::class, 'stockReturnHistory'])->name('stockReturnHistory');
+    Route::get('/purchase-return-history', [StockController::class, 'stockReturnHistory'])->name('stockReturnHistory');
 
     Route::get('/purchase/edit/{purchase}', [StockController::class, 'editPurchaseHistory'])->name('purchase.edit');
 

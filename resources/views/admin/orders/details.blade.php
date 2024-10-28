@@ -228,8 +228,8 @@
                       <td>{{ number_format($order->subtotal_amount, 2) }}</td>
                     </tr>
                     <tr>
-                      <th>VAT (%)</th>
-                      <td> {{ $order->vat_percent }}</td>
+                      <th>Vat Amount</th>
+                      <td> {{ $order->vat_amount }}</td>
                     </tr>
                     <tr>
                       <th>Shipping:</th>

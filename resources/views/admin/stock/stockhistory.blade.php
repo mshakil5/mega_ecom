@@ -56,10 +56,10 @@
                                         <th>Sl</th>
                                         <th>Product Name</th>
                                         <th>Product Code</th>
-                                        <th>Quantity</th>
+                                        <th>Stock Qty</th>
+                                        <th>Available Qty</th>
                                         <th>Selling Qty</th>
                                         <th>Selling Price</th>
-                                        <th>Available Qty</th>
                                         <th>Purchase Price</th>
                                         <th>Warehouse</th>
                                         <th>Size</th>
@@ -203,9 +203,9 @@
                 { data: 'product_name', name: 'product_name' },
                 { data: 'product_code', name: 'product_code' },
                 { data: 'quantity_formatted', name: 'quantity' },
+                { data: 'available_qty', name: 'available_qty' },
                 { data: 'selling_qty', name: 'selling_qty' },
                 { data: 'selling_price', name: 'selling_price' },
-                { data: 'available_qty', name: 'available_qty' },
                 { data: 'purchase_price', name: 'purchase_price' },
                 { data: 'warehouse', name: 'warehouse' },
                 { data: 'size', name: 'size' },

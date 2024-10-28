@@ -157,21 +157,23 @@ class InHouseSellController extends Controller
                 }
 
                 $stockHistories = StockHistory::where('stock_id', $stock->id)
-                        ->where('quantity', '>', 0)
+                        ->where('available_qty', '>', 0)
                         ->orderBy('created_at', 'asc')
                         ->get();
 
                         foreach ($stockHistories as $stockHistorie) {
                             if ($requiredQty > 0) {
-                                if ($stockHistorie->quantity >= $requiredQty) {
+                                if ($stockHistorie->available_qty >= $requiredQty) {
                                     // Reduce the quantity from the current stock entry
-                                    $stockHistorie->quantity -= $requiredQty;
+                                    $stockHistorie->available_qty -= $requiredQty;
+                                    $stockHistorie->selling_qty += $requiredQty;
                                     $stockHistorie->save();
                                     $requiredQty = 0; // All required quantity is reduced
                                 } else {
                                     // If the stock quantity is less than required, deduct all from this entry
-                                    $requiredQty -= $stockHistorie->quantity;
-                                    $stockHistorie->quantity = 0;
+                                    $requiredQty -= $stockHistorie->available_qty;
+                                    $stockHistorie->available_qty = 0;
+                                    $stockHistorie->selling_qty += $requiredQty;
                                     $stockHistorie->save();
                                 }
                             } else {
