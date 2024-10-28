@@ -148,7 +148,7 @@
             <input type="file" class="form-control" id="editDocument" name="document">
           </div>
 
-          <button type="button" class="btn btn-primary" id="updateTransactionBtn">Update</button>
+          <button type="button" class="btn btn-secondary" id="updateTransactionBtn">Update</button>
         </form>
       </div>
     </div>
