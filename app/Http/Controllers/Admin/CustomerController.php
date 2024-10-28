@@ -291,4 +291,11 @@ class CustomerController extends Controller
         ]);
     }
 
+    public function customerEmail($id)
+    {
+        $customer = User::whereId($id)->select('id', 'name','email')->first();
+
+        return view('admin.customer.email', compact('customer'));
+    }
+
 }
