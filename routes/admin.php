@@ -290,6 +290,9 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::post('/orders/update-delivery-man', [OrderController::class, 'updateDeliveryMan']);
 
+    Route::post('/assign-warehouse', [OrderController::class, 'assignWarehouse'])->name('assign.warehouse');
+
+
     // Coupon crud
     Route::get('/coupon', [CouponController::class, 'getCoupon'])->name('allcoupon');
     Route::post('/coupon', [CouponController::class, 'couponStore']);

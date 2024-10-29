@@ -24,6 +24,7 @@ return new class extends Migration
             $table->boolean('popular_products')->default(1); 
             $table->boolean('trending_products')->default(1); 
             $table->boolean('buy_one_get_one')->default(1); 
+            $table->boolean('most_viewed_products')->default(1); 
             $table->boolean('category_products')->default(1); 
             $table->boolean('bundle_products')->default(1); 
             $table->boolean('vendors')->default(1); 

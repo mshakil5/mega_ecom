@@ -424,7 +424,7 @@
     <!-- Trending Products End -->
 
     <!-- Most Viewed Products Start -->
-    @if($mostViewedProducts->count() > 0)
+    @if($section_status->most_viewed_products == 1 && $mostViewedProducts->count() > 0)
     <div class="pt-5 pb-6">
         <div class="container trending-products">
             <div class="heading heading-flex mb-3">
@@ -497,6 +497,7 @@
             </div>
         </div>
     </div>
+    @endif
     <!-- Most Viewed Products End -->
 
     <!-- Wholesale Products Start -->

@@ -447,7 +447,7 @@
         <div class="mb-3"></div>
 
         <!-- Most Viewed Products Start -->
-        @if($section_status->trending_products == 1 && $mostViewedProducts->count() > 0)
+        @if($section_status->most_viewed_products == 1 && $mostViewedProducts->count() > 0)
         <div class="trending-products">
             <div class="heading heading-flex mb-3">
                 <div class="heading-left">

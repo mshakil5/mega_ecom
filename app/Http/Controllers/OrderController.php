@@ -28,6 +28,7 @@ use Stripe\PaymentIntent;
 use App\Models\CampaignRequestProduct;
 use App\Models\Transaction;
 use Carbon\Carbon;
+use App\Models\Warehouse;
 
 class OrderController extends Controller
 {
@@ -1161,12 +1162,13 @@ class OrderController extends Controller
 
     public function pendingOrders()
     {
-        $orders = Order::with('user')
+        $orders = Order::with('user','warehouse')
                 ->whereIn('order_type', [0, 1])
                 ->where('status', 1)
                 ->orderBy('id', 'desc')
                 ->get();
-        return view('admin.orders.index', compact('orders'));
+        $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();   
+        return view('admin.orders.index', compact('orders', 'warehouses'));
     }
 
     public function processingOrders()
@@ -1367,6 +1369,20 @@ class OrderController extends Controller
         }
 
         return response()->json(['message' => 'Order return submitted successfully'], 200);
+    }
+
+    public function assignWarehouse(Request $request)
+    {
+        $request->validate([
+            'order_id' => 'required|exists:orders,id',
+            'warehouse_id' => 'required|exists:warehouses,id',
+        ]);
+
+        $order = Order::findOrFail($request->order_id);
+        $order->warehouse_id = $request->warehouse_id;
+        $order->save();
+
+        return response()->json(['message' => 'Warehouse assigned successfully!']);
     }
 
 }

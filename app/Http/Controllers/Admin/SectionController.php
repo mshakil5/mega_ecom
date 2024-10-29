@@ -29,6 +29,7 @@ class SectionController extends Controller
             'recent_products' => 'required|in:0,1',
             'popular_products' => 'required|in:0,1',
             'trending_products' => 'required|in:0,1',
+            'most_viewed_products' => 'required|in:0,1',
             'buy_one_get_one' => 'required|in:0,1',
             'category_products' => 'required|in:0,1',
             'bundle_products' => 'required|in:0,1',
@@ -45,6 +46,7 @@ class SectionController extends Controller
         $status->recent_products = $request->input('recent_products');
         $status->popular_products = $request->input('popular_products');
         $status->trending_products = $request->input('trending_products');
+        $status->most_viewed_products = $request->input('most_viewed_products');
         $status->buy_one_get_one = $request->input('buy_one_get_one');
         $status->category_products = $request->input('category_products');
         $status->bundle_products = $request->input('bundle_products');

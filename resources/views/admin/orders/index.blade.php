@@ -24,6 +24,7 @@
                                         }))
                                         <th>Action</th>
                                      @endif
+                                     <th>Warehouse</th>     
                                      <th>Details</th>     
                                 </tr>
                             </thead>
@@ -38,7 +39,8 @@
                                     <td>{{ number_format($order->net_amount, 2) }}</td>
                                     <td>{{ $order->order_type == 0 ? 'Frontend' : 'In-house Sale' }}</td>
                                     <td>
-                                        <select class="form-control order-status" data-order-id="{{ $order->id }}">
+                                        <select class="form-control order-status" data-order-id="{{ $order->id }}"
+                                            {{ empty($order->warehouse_id) ? 'disabled' : '' }}>
                                             <option value="1" {{ $order->status == 1 ? 'selected' : '' }}>Pending</option>
                                             <option value="2" {{ $order->status == 2 ? 'selected' : '' }}>Processing</option>
                                             <option value="3" {{ $order->status == 3 ? 'selected' : '' }}>Packed</option>
@@ -60,6 +62,20 @@
                                             </select>
                                         </td>
                                     @endif
+                                    <td>
+                                        @if (empty($order->warehouse_id))
+                                            <select class="form-control select-warehouse" data-order-id="{{ $order->id }}">
+                                                <option value="">Select Warehouse</option>
+                                                @foreach ($warehouses as $warehouse)
+                                                    <option value="{{ $warehouse->id }}">
+                                                        {{ $warehouse->name }} - {{ $warehouse->location }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        @else
+                                            <span>{{ $order->warehouse->name }}</span>
+                                        @endif
+                                    </td>
                                     <td>
                                         <a href="{{ route('in-house-sell.generate-pdf', ['encoded_order_id' => base64_encode($order->id)]) }}" class="btn btn-success btn-round btn-shadow" target="_blank">
                                             <i class="fas fa-receipt"></i> Invoice
@@ -154,6 +170,46 @@
                     console.log(xhr.responseText);
                 }
             });
+        });
+
+        $('.select-warehouse').change(function() {
+            const orderId = $(this).data('order-id');
+            const warehouseId = $(this).val();
+
+            if (warehouseId) {
+                $.ajax({
+                    url: '{{ route('assign.warehouse') }}',
+                    type: 'POST',
+                    data: {
+                        order_id: orderId,
+                        warehouse_id: warehouseId,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        swal({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Warehouse assigned successfully!',
+                        }).then(() => {
+                            location.reload();
+                        });
+                    },
+                    error: function(xhr) {
+                        console.log(xhr.responseText);
+                        swal({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'There was an error assigning the warehouse. Please try again.',
+                        });
+                    }
+                });
+            } else {
+                swal({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: 'Please select a warehouse.',
+                });
+            }
         });
     });
 </script>

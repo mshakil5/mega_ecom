@@ -6,6 +6,13 @@
     <div class="container-fluid">
         <div class="row justify-content-md-center">
             <div class="col-md-11">
+
+            <div class="mb-3">
+                <a href="{{ route('allproduct') }}" class="btn btn-secondary">
+                <i class="fa fa-arrow-left"></i> Back
+                </a>
+            </div>
+
                 <div class="card card-secondary">
                     <div class="card-header">
                         <h3 class="card-title" id="cardTitle">Edit Product</h3>
@@ -185,7 +192,7 @@
                                 @foreach($product->colors as $key=> $entry )
                                     <div class="form-row dynamic-row">
                                         <div class="form-group col-md-5">
-                                            <label for="color_id">Select Color {{ $key }}</label>
+                                            <label for="color_id">Select Color</label>
                                             <select class="form-control" name="color_id[]">
                                                 <option value="">Choose Color</option>
                                                 @foreach($colors as $color)
