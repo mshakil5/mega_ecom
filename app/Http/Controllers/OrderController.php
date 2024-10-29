@@ -29,6 +29,7 @@ use App\Models\CampaignRequestProduct;
 use App\Models\Transaction;
 use Carbon\Carbon;
 use App\Models\Warehouse;
+use App\Models\StockHistory;
 
 class OrderController extends Controller
 {
@@ -370,10 +371,10 @@ class OrderController extends Controller
                                     ->value('selling_price');
                                 $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                             }
-                            if ($entity->stock) {
-                                $entity->stock->quantity -= $item['quantity'];
-                                $entity->stock->save();
-                            }
+                            // if ($entity->stock) {
+                            //     $entity->stock->quantity -= $item['quantity'];
+                            //     $entity->stock->save();
+                            // }
                         }
                         $orderDetail->price_per_unit = $totalPrice / $item['quantity'];
                         $orderDetail->total_price = $totalPrice;
@@ -632,10 +633,10 @@ class OrderController extends Controller
                                         ->value('selling_price');
                                     $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                             }
-                            if ($entity->stock) {
-                                $entity->stock->quantity -= $item['quantity'];
-                                $entity->stock->save();
-                            }
+                            // if ($entity->stock) {
+                            //     $entity->stock->quantity -= $item['quantity'];
+                            //     $entity->stock->save();
+                            // }
                         }
                         $orderDetail->price_per_unit = $totalPrice / $item['quantity'];
                         $orderDetail->total_price = $totalPrice;
@@ -919,10 +920,10 @@ class OrderController extends Controller
                                         ->value('selling_price');
                                 $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                             }
-                            if ($entity->stock) {
-                                $entity->stock->quantity -= $item['quantity'];
-                                $entity->stock->save();
-                            }
+                            // if ($entity->stock) {
+                            //     $entity->stock->quantity -= $item['quantity'];
+                            //     $entity->stock->save();
+                            // }
                         }
                         $orderDetail->price_per_unit = $totalPrice / $item['quantity'];
                         $orderDetail->total_price = $totalPrice;
@@ -1044,6 +1045,17 @@ class OrderController extends Controller
                 })
                 ->editColumn('net_amount', function ($order) {
                     return number_format($order->net_amount, 2);
+                })
+                ->editColumn('payment_method', function ($order) {
+                    if ($order->payment_method === 'cashOnDelivery') {
+                        return 'Cash On Delivery';
+                    } elseif ($order->payment_method === 'paypal') {
+                        return 'PayPal';
+                    } elseif ($order->payment_method === 'stripe') {
+                        return 'Stripe';
+                    } else {
+                        return $order->payment_method;
+                    }
                 })
                 ->editColumn('status', function ($order) {
                     $statusLabels = [
@@ -1319,10 +1331,10 @@ class OrderController extends Controller
                         ->where('color', $detail->color)
                         ->first();
 
-            if ($stock) {
-                $stock->quantity += $detail->quantity;
-                $stock->save();
-            }
+            // if ($stock) {
+            //     $stock->quantity += $detail->quantity;
+            //     $stock->save();
+            // }
         }
 
         CancelledOrder::create([
@@ -1381,8 +1393,57 @@ class OrderController extends Controller
         $order = Order::findOrFail($request->order_id);
         $order->warehouse_id = $request->warehouse_id;
         $order->save();
-
-        return response()->json(['message' => 'Warehouse assigned successfully!']);
-    }
+    
+        $orderDetails = $order->orderDetails;
+    
+        foreach ($orderDetails as $orderDetail) {
+            $stock = Stock::where('product_id', $orderDetail->product_id)
+                ->where('size', $orderDetail->size)
+                ->where('color', $orderDetail->color)
+                ->where('warehouse_id', $request->warehouse_id)
+                ->first();
+    
+            if ($stock) {
+                $stock->quantity -= $orderDetail->quantity;
+                $stock->save();
+            } else {
+                $stock = new Stock();
+                $stock->warehouse_id = $request->warehouse_id;
+                $stock->product_id = $orderDetail->product_id;
+                $stock->size = $orderDetail->size;
+                $stock->color = $orderDetail->color;
+                $stock->quantity = -$orderDetail->quantity;
+                $stock->created_by = auth()->user()->id; 
+                $stock->save();
+            }
+    
+            $stockHistories = StockHistory::where('stock_id', $stock->id)
+                ->where('available_qty', '>', 0)
+                ->orderBy('created_at', 'asc')
+                ->get();
+    
+            $requiredQty = $orderDetail->quantity;
+    
+            foreach ($stockHistories as $stockHistory) {
+                if ($requiredQty > 0) {
+                    if ($stockHistory->available_qty >= $requiredQty) {
+                        $stockHistory->available_qty -= $requiredQty;
+                        $stockHistory->selling_qty += $requiredQty;
+                        $stockHistory->save();
+                        $requiredQty = 0; 
+                    } else {
+                        $requiredQty -= $stockHistory->available_qty;
+                        $stockHistory->selling_qty += $stockHistory->available_qty;
+                        $stockHistory->available_qty = 0;
+                        $stockHistory->save();
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+    
+        return response()->json(['message' => 'Warehouse assigned and stock updated successfully!']);
+    }    
 
 }

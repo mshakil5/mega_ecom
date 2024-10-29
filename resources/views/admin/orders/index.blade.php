@@ -16,7 +16,10 @@
                                     <th>Date</th>
                                     <th>Name/Email/Phone</th>
                                     <th>Subtotal</th>
+                                    <th>Vat</th>
+                                    <th>Discount</th>
                                     <th>Total</th> 
+                                    <th>Payment Type</th> 
                                     <th>Type</th>  
                                     <th>Status</th>                                       
                                      @if (!empty($orders) && $orders->contains(function ($order) {
@@ -36,7 +39,20 @@
                                         {{ optional($order->user)->name ?? $order->name }} {{ optional($order->user)->surname ?? '' }} <br> {{ optional($order->user)->email ?? $order->email }} <br> {{ optional($order->user)->phone ?? $order->phone }}
                                     </td>
                                     <td>{{ number_format($order->subtotal_amount, 2) }}</td>
+                                    <td>{{ number_format($order->vat_amount, 2) }}</td>
+                                    <td>{{ number_format($order->discount_amount, 2) }}</td>
                                     <td>{{ number_format($order->net_amount, 2) }}</td>
+                                    <td>
+                                        @if($order->payment_method === 'cashOnDelivery')
+                                            Cash On Delivery
+                                        @elseif($order->payment_method === 'paypal')
+                                            PayPal
+                                        @elseif($order->payment_method === 'stripe')
+                                            Stripe
+                                        @else
+                                            {{ $order->payment_method }}
+                                        @endif
+                                    </td>
                                     <td>{{ $order->order_type == 0 ? 'Frontend' : 'In-house Sale' }}</td>
                                     <td>
                                         <select class="form-control order-status" data-order-id="{{ $order->id }}"
@@ -177,30 +193,42 @@
             const warehouseId = $(this).val();
 
             if (warehouseId) {
-                $.ajax({
-                    url: '{{ route('assign.warehouse') }}',
-                    type: 'POST',
-                    data: {
-                        order_id: orderId,
-                        warehouse_id: warehouseId,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        swal({
-                            icon: 'success',
-                            title: 'Success',
-                            text: 'Warehouse assigned successfully!',
-                        }).then(() => {
-                            location.reload();
+                swal({
+                    title: "Are you sure?",
+                    text: "Do you want to assign this warehouse?",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                }).then((willAssign) => {
+                    if (willAssign) {
+                        $.ajax({
+                            url: '{{ route('assign.warehouse') }}',
+                            type: 'POST',
+                            data: {
+                                order_id: orderId,
+                                warehouse_id: warehouseId,
+                                _token: '{{ csrf_token() }}'
+                            },
+                            success: function(response) {
+                                swal({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: 'Warehouse assigned successfully!',
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            },
+                            error: function(xhr) {
+                                console.log(xhr.responseText);
+                                swal({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'There was an error assigning the warehouse. Please try again.',
+                                });
+                            }
                         });
-                    },
-                    error: function(xhr) {
-                        console.log(xhr.responseText);
-                        swal({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'There was an error assigning the warehouse. Please try again.',
-                        });
+                    } else {
+                        $(this).val('');
                     }
                 });
             } else {

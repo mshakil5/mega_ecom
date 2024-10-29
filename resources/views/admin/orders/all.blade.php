@@ -22,6 +22,7 @@
                                     <th>Paid</th>
                                     <th>Due</th>
                                     <th>Type</th>
+                                    <th>Payment Type</th>
                                     <th>Status</th>
                                     <th>Details</th>
                                 </tr>
@@ -66,6 +67,7 @@
                 { data: 'paid_amount', name: 'paid_amount' },
                 { data: 'due_amount', name: 'due_amount' },
                 { data: 'type', name: 'type' },
+                { data: 'payment_method', name: 'payment_method' },
                 { data: 'status', name: 'status' },
                 { data: 'action', name: 'action', orderable: false, searchable: false }
             ]
