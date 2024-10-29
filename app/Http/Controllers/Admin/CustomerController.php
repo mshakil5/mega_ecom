@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Transaction;
+use App\Mail\CustomerEmail;
+use Illuminate\Support\Facades\Mail;
 
 class CustomerController extends Controller
 {
@@ -296,6 +298,23 @@ class CustomerController extends Controller
         $customer = User::whereId($id)->select('id', 'name','email')->first();
 
         return view('admin.customer.email', compact('customer'));
+    }
+
+    public function sendCustomerEmail(Request $request, $id)
+    {
+        $request->validate([
+            'subject' => 'required|string|max:255',
+            'body' => 'required|string',
+        ]);
+
+        $customer = User::find($id);
+
+        if (!$customer) {
+            return response()->json(['status' => 'error', 'message' => 'Customer not found.'], 404);
+        }
+
+        Mail::to($customer->email)->send(new CustomerEmail($request->subject, $request->body));
+        return response()->json(['status' => 'success', 'message' => 'Email sent successfully.']);
     }
 
 }
