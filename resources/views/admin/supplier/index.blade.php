@@ -225,9 +225,9 @@
                                     </td>
                                     <td>
 
-                                        <a class="btn btn-app">
-                                            <i class="fas fa-envelope"></i> Email
-                                        </a>
+                                    <a class="btn btn-app" href="{{route('supplier.email', $data->id)}}">
+                                        <i class="fas fa-envelope"></i> Email
+                                    </a>
                                         <a class="btn btn-app" id="EditBtn" rid="{{ $data->id }}">
                                             <i class="fas fa-edit"></i> Edit
                                         </a>

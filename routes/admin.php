@@ -82,6 +82,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/whole-saler-email/{id}', [CustomerController::class, 'customerEmail'])->name('customer.email');
     Route::post('/customer/{id}/email/send', [CustomerController::class, 'sendCustomerEmail'])->name('customer.email.send');
 
+    Route::post('/whole-saler/transactions/update', [CustomerController::class, 'updateTransaction'])->name('whole-saler.transactions.update');
+
     //Contact Email crud
     Route::get('/contact-email', [ContactMailController::class, 'getContactEmail'])->name('allcontactemail');
     Route::post('/contact-email', [ContactMailController::class, 'contactEmailStore']);
@@ -226,7 +228,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::post('/supplier/transactions/update', [SupplierController::class, 'updateTransaction'])->name('supplier.transactions.update');
 
-    Route::post('/whole-saler/transactions/update', [CustomerController::class, 'updateTransaction'])->name('whole-saler.transactions.update');
+    Route::get('/supplier-email/{id}', [SupplierController::class, 'supplierEmail'])->name('supplier.email');
+    Route::post('/supplier/{id}/email/send', [SupplierController::class, 'sendSupplierEmail'])->name('supplier.email.send');
 
     // Stock
     Route::get('/stocks', [StockController::class, 'getStocks'])->name('allstocks');

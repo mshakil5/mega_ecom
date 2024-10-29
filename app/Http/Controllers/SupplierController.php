@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\SupplierEmail;
 use App\Models\Purchase;
 use Illuminate\Http\Request;
 use App\Models\Supplier;
@@ -10,6 +11,7 @@ use App\Models\SupplierTransaction;
 use Illuminate\Support\Facades\Hash;
 use App\Models\SupplierStock;
 use App\Models\Transaction;
+use Illuminate\Support\Facades\Mail;
 
 class SupplierController extends Controller
 {
@@ -309,6 +311,29 @@ class SupplierController extends Controller
             'success' => true,
             'message' => 'Transaction updated successfully!',
         ]);
+    }
+
+    public function supplierEmail($id)
+    {
+        $supplier = Supplier::whereId($id)->select('id', 'name','email')->first();
+        return view('admin.supplier.email', compact('supplier'));
+    }
+
+    public function sendSupplierEmail(Request $request, $id)
+    {
+        $request->validate([
+            'subject' => 'required|string|max:255',
+            'body' => 'required|string',
+        ]);
+
+        $supplier = Supplier::find($id);
+
+        if (!$supplier) {
+            return response()->json(['status' => 'error', 'message' => 'supplier not found.'], 404);
+        }
+
+        Mail::to($supplier->email)->send(new SupplierEmail($request->subject, $request->body));
+        return response()->json(['status' => 'success', 'message' => 'Email sent successfully.']);
     }
 
 }
