@@ -248,6 +248,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/purchase/{purchase}/history', [StockController::class, 'getPurchaseHistory'])->name('purchase.history');
     Route::get('/purchase-return-history', [StockController::class, 'stockReturnHistory'])->name('stockReturnHistory');
 
+    Route::post('/due-pay', [TransactionController::class,'duePay'])->name('due.pay');
+
     Route::get('/purchase/edit/{purchase}', [StockController::class, 'editPurchaseHistory'])->name('purchase.edit');
 
     Route::get('/admin/purchase-return/{purchase}', [StockController::class, 'returnProduct'])->name('returnProduct');

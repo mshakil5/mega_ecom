@@ -41,7 +41,16 @@
                                     <td>{{ $purchase->ref }}</td>
                                     <td>{{ $purchase->net_amount }}</td>
                                     <td>{{ $purchase->paid_amount }}</td>
-                                    <td>{{ $purchase->due_amount }}</td>
+                                    <td>
+                                        <span  class="btn btn-sm btn-danger">£{{$purchase->due_amount }}</span>
+                                        <button class="btn btn-sm btn-warning pay-btn" 
+                                            data-id="{{ $purchase->id }}" 
+                                            data-supplier-id="{{ $purchase->supplier->id }}" 
+                                            data-toggle="modal" 
+                                            data-target="#payModal">
+                                            Pay
+                                        </button>
+                                    </td>
                                     @php
                                     $totalRemainingQuantity = $purchase->purchaseHistory->sum('remaining_product_quantity');
                                     @endphp
@@ -136,9 +145,119 @@
     </div>
 </div>
 
+<div class="modal fade" id="payModal" tabindex="-1" role="dialog" aria-labelledby="payModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="payModalLabel">Supplier Payment Form</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="payForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="paymentAmount">Payment Amount</label>
+                        <input type="number" class="form-control" id="paymentAmount" name="paymentAmount" placeholder="Enter payment amount">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="document">Document</label>
+                        <input type="file" class="form-control-file" id="document" name="document">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="payment_type">Payment Type</label>
+                        <select name="payment_type" id="payment_type" class="form-control" >
+                            <option value="Cash">Cash</option>
+                            <option value="Bank">Bank</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="paymentNote">Payment Note</label>
+                        <textarea class="form-control" id="paymentNote" name="paymentNote" rows="3" placeholder="Enter payment note"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning">Pay</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('script')
+
+<script>
+    $(document).ready(function() {
+        $('.pay-btn').click(function() {
+            var purchaseId = $(this).data('id');
+            var supplierId = $(this).data('supplier-id');
+
+            $('#payForm').data('purchase-id', purchaseId);
+            $('#payForm').data('supplier-id', supplierId);
+
+            $('#paymentAmount').val('');
+            $('#document').val('');
+            $('#payment_type').val('Cash');
+            $('#paymentNote').val('');
+        });
+
+        $('#payForm').submit(function(e) {
+            e.preventDefault();
+
+            var purchaseId = $(this).data('purchase-id');
+            var supplierId = $(this).data('supplier-id');
+            var paymentAmount = $('#paymentAmount').val();
+            var document = $('#document')[0].files[0];
+            var paymentType = $('#payment_type').val();
+            var paymentNote = $('#paymentNote').val();
+
+            var formData = new FormData();
+            formData.append('purchase_id', purchaseId);
+            formData.append('supplier_id', supplierId);
+            formData.append('payment_amount', paymentAmount);
+            formData.append('document', document);
+            formData.append('payment_type', paymentType);
+            formData.append('payment_note', paymentNote);
+
+            // for (var pair of formData.entries()) {
+            //     console.log(pair[0] + ': ' + pair[1]);
+            // }
+
+            $.ajax({
+                url: '{{ URL::to('/admin/due-pay') }}',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function (response) {
+                    $('#payModal').modal('hide');
+                    swal({
+                        text: "Payment store successfully",
+                        icon: "success",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    }).then(() => {
+                        location.reload();
+                    });
+                },
+                error: function (xhr) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
 
 <script>
     $(function () {
