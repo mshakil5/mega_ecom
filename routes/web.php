@@ -81,7 +81,7 @@ Route::get('/campaign/{slug}', [FrontendController::class, 'showCampaignDetails'
 
 Route::get('/shop', [FrontendController::class, 'shop'])->name('frontend.shop');
 
-Route::get('/about-us', [FrontendController::class, 'aboutUs'])->name('frontend.shopdetail');
+Route::get('/about-us', [FrontendController::class, 'aboutUs'])->name('frontend.about');
 
 Route::get('/contact', [FrontendController::class, 'contact'])->name('frontend.contact');
 Route::post('/contact-us', [FrontendController::class, 'storeContact'])->name('contact.store');

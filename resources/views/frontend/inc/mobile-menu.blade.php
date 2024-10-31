@@ -35,7 +35,7 @@
                             <a href="#">Pages</a>
                             <ul>
                                 <li>
-                                    <a href="{{ route('frontend.shopdetail') }}">About</a>
+                                    <a href="{{ route('frontend.about') }}">About</a>
                                 </li>
                                 <li>
                                     <a href="{{ route('frontend.contact') }}">Contact</a>

@@ -88,7 +88,7 @@
                     <div class="navbar-nav mr-auto py-0">
                         <a href="{{ route('frontend.homepage') }}" class="nav-link {{ request()->is('/') ? 'active' : '' }}">Home</a>
                         <a href="{{ route('frontend.shop') }}" class="nav-link {{ request()->is('shop') ? 'active' : '' }}">Shop</a>
-                        <a href="{{ route('frontend.shopdetail') }}" class="nav-link {{ request()->is('about-us') ? 'active' : '' }}">About Us</a>
+                        <a href="{{ route('frontend.about') }}" class="nav-link {{ request()->is('about-us') ? 'active' : '' }}">About Us</a>
                         <a href="{{ route('frontend.contact') }}" class="nav-link {{ request()->is('contact') ? 'active' : '' }}">Contact</a>
                     </div>
                     <div class="navbar-nav ml-auto py-0 d-none d-lg-block">

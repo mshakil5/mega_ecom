@@ -31,7 +31,7 @@
                         <ul class="widget-list">
                             <li><a href="{{ route('frontend.homepage') }}">Home</a></li>
                             <li><a href="{{ route('frontend.shop') }}">Our Shop</a></li>
-                            <li><a href="{{ route('frontend.shopdetail') }}">About Us</a></li>                        
+                            <li><a href="{{ route('frontend.about') }}">About Us</a></li>                        
                             <li><a href="{{ route('frontend.contact') }}">Contact us</a></li>
                         </ul>
                     </div>
