@@ -192,8 +192,8 @@
                         <li class="{{ request()->routeIs('frontend.shop') ? 'active' : '' }}">
                             <a href="{{ route('frontend.shop') }}">Shop</a>
                         </li>
-                        <li class="{{ request()->routeIs('frontend.shopdetail') ? 'active' : '' }}">
-                            <a href="{{ route('frontend.shopdetail') }}">About Us</a>
+                        <li class="{{ request()->routeIs('frontend.about') ? 'active' : '' }}">
+                            <a href="{{ route('frontend.about') }}">About Us</a>
                         </li>
                         <li class="{{ request()->routeIs('frontend.contact') ? 'active' : '' }}">
                             <a href="{{ route('frontend.contact') }}">Contact Us</a>
