@@ -88,7 +88,7 @@
                 </button>
                 
                 <a href="{{ route('frontend.homepage') }}" class="logo">
-                    <img src="{{ asset('images/company/' . $company->company_logo) }}" alt="Molla Logo" width="105" height="25">
+                    <img src="{{ asset('images/company/' . $company->company_logo) }}" alt="{{ $company->company_name }}" width="105" height="25">
                 </a>
             </div>
 

@@ -267,7 +267,7 @@ class OrderController extends Controller
             
             $order->discount_amount = $discountAmount;
             $order->subtotal_amount = $subtotal;
-            $order->vat_percent = '5';
+            $order->vat_percent = 5;
             $order->vat_amount = ($subtotal * 5) / 100;
             $order->net_amount = $subtotal + $order->vat_amount + $order->shipping_amount - $discountAmount;
 

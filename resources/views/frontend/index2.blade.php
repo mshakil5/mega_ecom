@@ -45,7 +45,7 @@
                 <!-- End of First Column -->
 
                 <!-- Second Column (Categories) -->
-                <div class="col-12 col-lg-4">
+                <div class="col-12 col-lg-4 d-none d-lg-block">
                     <div class="intro-banners">
                         @foreach($categories->take(3) as $category)
                         <div class="banner mb-3">
@@ -99,7 +99,7 @@
 
     <!-- Special Offer Start -->
     @if($section_status->special_offer == 1)
-    <div class="row justify-content-center">
+    <div class="row justify-content-center pt-2">
         @foreach($specialOffers as $specialOffer)
             <div class="col-md-6 col-lg-4">
                 <div class="banner banner-overlay banner-overlay-light">
@@ -130,7 +130,7 @@
     <!-- Category products slider Start-->
     @if ($section_status->category_products == 1 && count($categories) > 0)
     <div class="container new-arrivals">   
-        <div class="heading heading-flex mb-3">
+        <div class="heading heading-flex mb-3 pt-2">
             <div class="heading-left" style="display:none;">
                 <h2 class="title">Category Products</h2>
             </div>

@@ -106,7 +106,7 @@
                     </table>
                 </div>
                 <aside class="col-lg-3">
-                    <div class="summary summary-cart">
+                    <div class="summary summary-cart" id="order-summary">
                         <h3 class="summary-title">Cart Total</h3>
 
                         <table class="table table-summary">
@@ -152,6 +152,12 @@
             total += rowTotal;
             $(this).find('td.total-col').text(currencySymbol + ' ' + rowTotal.toFixed(2));
         });
+
+        if ($('.table-cart tbody tr').length === 0) {
+            $('#order-summary').hide();
+        } else {
+            $('#order-summary').show();
+        }
 
         $('#total').text(currencySymbol + ' ' + total.toFixed(2));
     }
