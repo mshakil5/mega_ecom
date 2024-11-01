@@ -109,7 +109,7 @@ Route::get('/order/{encoded_order_id}', [OrderController::class, 'generatePDF'])
 Route::post('/products/filter', [FrontendController::class, 'filter']);
 
 // Supplier shop
-Route::get('/{slug}', [FrontendController::class, 'supplierPage'])->name('supplier.show');
+Route::get('/suppliers-shop/{slug}', [FrontendController::class, 'supplierPage'])->name('supplier.show');
 
 // Search supplier products
 Route::get('/search/supplier-products', [FrontendController::class, 'searchSupplierProducts'])->name('search.supplier.products');

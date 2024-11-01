@@ -448,6 +448,10 @@ class FrontendController extends Controller
         $minPrice = Product::where('status', 1)->min('price'); 
         $maxPrice = Product::where('status', 1)->max('price');
 
+        
+        // $minPrice = StockHistory::where('status', 1)->min('selling_price'); 
+        // $maxPrice = StockHistory::where('status', 1)->max('selling_price');
+
         $products = Product::where('status', 1)
             ->orderBy('id', 'desc')
             ->whereDoesntHave('specialOfferDetails')
@@ -588,11 +592,11 @@ class FrontendController extends Controller
         }
     
         if (!empty($categoryId)) {
-            $productsQuery->where('products.category_id', $categoryId);
+            $productsQuery->where('category_id', $categoryId);
         }
 
         if (!empty($brandId)) {
-            $productsQuery->where('products.brand_id', $brandId);
+            $productsQuery->where('brand_id', $brandId);
         }
 
         // if (!empty($selectedSize)) {

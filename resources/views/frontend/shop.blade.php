@@ -42,7 +42,7 @@
                     <!-- Category Filter End -->
 
                     <!-- Size Filter Start -->
-                    <div class="widget widget-collapsible">
+                    <div class="widget widget-collapsible d-none">
                         <h3 class="widget-title">
                             <a data-toggle="collapse" href="#widget-size" role="button" aria-expanded="true" aria-controls="widget-size">
                                 Filter by Size
@@ -91,7 +91,7 @@
                     <!-- Size Filter End -->
 
                     <!-- Color Filter Start -->
-                    <div class="widget widget-collapsible">
+                    <div class="widget widget-collapsible d-none">
                         <h3 class="widget-title">
                             <a data-toggle="collapse" href="#widget-color" role="button" aria-expanded="true" aria-controls="widget-color">
                                 Filter by Color
@@ -324,7 +324,7 @@
             let selectedBrandId = $('input[name="brand"]:checked').val();
             let csrfToken = $('meta[name="csrf-token"]').attr('content');
 
-            // console.log(startValue, endValue, selectedCategoryId, selectedSize, selectedColor, selectedBrandId);
+             console.log(startValue, endValue, selectedCategoryId,  selectedBrandId);
 
             $.ajax({
                 url: '/products/filter',
