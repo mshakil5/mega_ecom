@@ -32,23 +32,19 @@
             var itemIndex = wishlist.findIndex(item => item.productId === productId && item.offerId === offerId && item.campaignId === campaignId);
             if (itemIndex !== -1) {
                 wishlist.splice(itemIndex, 1);
-                swal({
-                    text: "Removed from wishlist",
-                    icon: "success",
-                    button: {
-                        text: "OK",
-                        className: "swal-button--confirm"
-                    }
-                });
+                    toastr.success("Removed from wishlist", "Success", {
+                        closeButton: true, 
+                        progressBar: true,
+                        timeOut: 3000,
+                        positionClass: "toast-top-right",
+                    });
             } else {
                 wishlist.push({ productId: productId, offerId: offerId, price: price, campaignId: campaignId });
-                swal({
-                    text: "Added to wishlist",
-                    icon: "success",
-                    button: {
-                        text: "OK",
-                        className: "swal-button--confirm"
-                    }
+                toastr.success("Added to wishlist", "Success", {
+                    closeButton: true, 
+                    progressBar: true,
+                    timeOut: 3000,
+                    positionClass: "toast-top-right",
                 });
             }
 

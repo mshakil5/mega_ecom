@@ -1,5 +1,15 @@
 @extends('supplier.supplier')
 
+@if(session('session_clear'))
+    <script>
+        localStorage.removeItem('wishlist');
+        localStorage.removeItem('cart');
+        @php
+            session()->forget('session_clear');
+        @endphp
+    </script>
+@endif
+
 @section('content')
 <!-- Content Header (Page header) -->
 <div class="content-header">

@@ -238,8 +238,18 @@
                                                 <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}"><span>Add to wishlist</span></a>
                                             </div>
 
-                                            <div class="product-action">
+                                            <!-- <div class="product-action">
                                                 <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}"><span>add to cart</span></a>
+                                            </div> -->
+                                            <div class="product-action">
+                                                <a href="#" class="btn-product btn-cart" title="Add to cart"
+                                                data-product-id="{{ $product->id }}" 
+                                                data-offer-id="0" 
+                                                data-price="{{ $sellingPrice ?? $product->price }}" 
+                                                data-toggle="modal" data-target="#quickAddToCartModal" 
+                                                data-image ="{{ asset('images/products/' . $product->feature_image) }}" data-stock="{{ $product->stock->quantity }}">
+                                                    <span>add to cart</span>
+                                                </a>
                                             </div>
                                         @else
                                             <span class="product-label label-out-stock">Out of stock</span>
@@ -306,8 +316,8 @@
 
             priceSlider.noUiSlider.on('update', function(values, handle) {
                 $('#filter-price-range').text(values.join(' - '));
-                $('#price-min').val(values[0]);
-                $('#price-max').val(values[1]);
+                $('#price-min').val(values[0].replace(currencySymbol, ''));
+                $('#price-max').val(values[1].replace(currencySymbol, ''));
             });
         }
     });
@@ -323,8 +333,6 @@
             // let selectedColor = $('input[name="color"]:checked').val();
             let selectedBrandId = $('input[name="brand"]:checked').val();
             let csrfToken = $('meta[name="csrf-token"]').attr('content');
-
-             console.log(startValue, endValue, selectedCategoryId,  selectedBrandId);
 
             $.ajax({
                 url: '/products/filter',

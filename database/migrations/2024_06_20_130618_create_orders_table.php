@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('street_name')->nullable();
             $table->string('town')->nullable();
             $table->string('postcode')->nullable();
-            $table->longText('address')->nullable();
+            $table->longText('note')->nullable();
             $table->integer('vat_percent')->default(0);
             $table->decimal('vat_amount', 10, 2)->nullable();
             $table->decimal('subtotal_amount', 10, 2)->nullable();

@@ -39,11 +39,12 @@ class SupplierAuthController extends Controller
 
         $email = $request->input('email');
         $password = $request->input('password');
-        
+
         $supplier = Supplier::where('email', $email)->first();
 
         if ($supplier) {
             if (Hash::check($password, $supplier->password)) {
+                session(['session_clear' => true]);
                 Auth::guard('supplier')->login($supplier);
                 return redirect()->route('supplier.dashboard');
             } else {
@@ -120,6 +121,8 @@ class SupplierAuthController extends Controller
         $supplier->save();
 
         Cache::forget('registration_' . $token);
+
+        session(['session_clear' => true]);
 
         return Redirect::route('supplier.login')->with('status', 'Email successfully verified. You can now log in.');
     }

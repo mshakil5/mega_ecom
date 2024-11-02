@@ -54,16 +54,26 @@
             localStorage.setItem('cart', JSON.stringify(cart));
             updateCartCount();
 
-            // console.log(JSON.parse(localStorage.getItem('cart')));
+            console.log(JSON.parse(localStorage.getItem('cart')));
 
-            swal({
-                text: "Added to cart",
-                icon: "success",
-                button: {
-                    text: "OK",
-                    className: "swal-button--confirm"
-                }
+            toastr.success("Added to cart", "Success", {
+                closeButton: true, 
+                progressBar: true,
+                timeOut: 3000,
+                positionClass: "toast-top-right",
             });
+            $('#quickAddToCartModal').modal('hide');
+        });
+
+        $('#quickAddToCartModal').on('hidden.bs.modal', function() {
+            var modal = $(this);
+
+            modal.find('#modalProductImage').attr('src', '');  
+            modal.find('#productPrice').text('');       
+            modal.find('.quantity-input').val(1);        
+            modal.find('input[name="size"]').prop('checked', false);  
+            modal.find('input[name="color"]').prop('checked', false);
+            modal.find('.add-to-cart').removeData(); 
         });
 
         $(document).on('click', '.remove-from-cart', function() {
@@ -82,13 +92,11 @@
                         cart: JSON.stringify(cart)
                     },
                     success: function() {
-                        swal({
-                            text: "Removed from cart",
-                            icon: "success",
-                            button: {
-                                text: "OK",
-                                className: "swal-button--confirm"
-                            }
+                        toastr.success("Removed from cart", "Success", {
+                            closeButton: true, 
+                            progressBar: true,
+                            timeOut: 3000,
+                            positionClass: "toast-top-right",
                         });
                         updateCartCount();
                     }
@@ -98,6 +106,7 @@
 
         $(document).on('click', '.cartBtn', function(e){
             e.preventDefault();
+            // localStorage.removeItem('cart');
             var cartlist = JSON.parse(localStorage.getItem('cart')) || [];
             console.log(JSON.parse(localStorage.getItem('cart')));
             

@@ -40,6 +40,8 @@
 
     <link rel="stylesheet" href="{{ asset('frontend/css/magnific-popup/magnific-popup.css') }}">
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
     <link rel="stylesheet" href="{{ asset('frontend/css/jquery.countdown.css') }}">
 
     <link rel="stylesheet" href="{{ asset('frontend/css/style.css') }}">
@@ -101,7 +103,8 @@
         @yield('content')
         </main>
         <!-- Main Content End -->
-    
+
+        @include('frontend.modals.add_to_cart_modal')
 
         <!-- Footer Start -->
         @if($company->design == '5')
@@ -154,6 +157,8 @@
 
     <script src="{{ asset('frontend/js/wNumb.js')}}"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
     <!-- Data table js -->
     <script src="{{ asset('assets/admin/datatables/jquery.dataTables.min.js')}}"></script>
     <script src="{{ asset('assets/admin/datatables/dataTables.bootstrap4.min.js')}}"></script>
@@ -163,6 +168,18 @@
     @include('frontend.partials.wishlist_script')
     @include('frontend.partials.add_to_cart_script')
     @include('frontend.partials.search_script')
+
+    @if(session('session_clear'))
+        <script>
+            localStorage.removeItem('wishlist');
+            localStorage.removeItem('cart');
+            @php
+                session()->forget('session_clear');
+            @endphp
+        </script>
+    @endif
+
+    @include('frontend.modals.add_to_cart_modal_script')
     
 </body>
 

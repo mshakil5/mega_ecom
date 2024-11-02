@@ -196,7 +196,7 @@ class FrontendController extends Controller
 
     public function showProduct($slug, $offerId = null)
     {
-        $product = Product::where('slug', $slug)->with('colors.color')->firstOrFail();
+        $product = Product::where('slug', $slug)->with(['colors.color', 'stockhistory', 'stock'])->firstOrFail();
         $supplierPrice = null;
 
         $product->watch = $product->watch + 1;
@@ -575,9 +575,10 @@ class FrontendController extends Controller
         $startPrice = $request->input('start_price');
         $endPrice = $request->input('end_price');
         $categoryId = $request->input('category');
-        // $brandId = $request->input('brand');
+        $brandId = $request->input('brand');
         // $selectedSize = $request->input('size');
         $selectedColor = $request->input('color');
+
 
         $productsQuery = Product::select('products.id', 'products.name', 'products.price', 'products.slug', 'products.feature_image')
                                 ->where('products.status', 1)
@@ -608,7 +609,7 @@ class FrontendController extends Controller
         // }
 
         $products = $productsQuery->get()->map(function ($product) {
-            $product->selling_price = $product->stockhistory()
+            $product->price = $product->stockhistory()
                 ->where('available_qty', '>', 0)
                 ->orderBy('id', 'asc')
                 ->value('selling_price') ?? $product->price; 

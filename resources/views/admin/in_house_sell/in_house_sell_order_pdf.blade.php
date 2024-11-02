@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+@php
+    $company = \App\Models\CompanyDetails::first();
+    use Carbon\Carbon;
+@endphp 
+
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Charunta - Order Details</title>
+    <title>{{ $company->company_name }} - Invoice</title>
     <style>
         .invoice-box {
             max-width: 800px;
@@ -66,6 +71,18 @@
         .invoice-box table tr.total td:nth-child(2) {
             border-top: 2px solid #eee;
             font-weight: bold;
+        }
+
+        .sub-total td:first-child,
+        .total td:first-child {
+            width: 80%;
+            padding-left: 70%;
+            text-align: left;
+        }
+
+        .right-align {
+            text-align: right;
+            width: 50%;
         }
 
         @media only screen and (max-width: 600px) {
@@ -153,7 +170,7 @@
 
             <tr class="details">
                 <td>{{ $order->payment_method }}</td>
-                <td>{{ $order->net_amount }} {{ $currency }}</td>
+                <td>{{ $currency }} {{ $order->net_amount }}</td>
             </tr>
 
             <tr class="heading">
@@ -163,8 +180,8 @@
 
             @foreach ($order->orderDetails as $detail)
             <tr class="item {{ $loop->last ? 'last' : '' }}">
-                <td>{{ $detail->product->name }} ({{ $detail->quantity }} x {{ $detail->price_per_unit }} {{ $currency }})</td>
-                <td>{{ $detail->total_price }} {{ $currency }}</td>
+                <td>{{ $detail->product->name }} ({{ $detail->quantity }} x {{ $currency }} {{ $detail->price_per_unit }})</td>
+                <td>{{ $currency }} {{ $detail->total_price }}</td>
             </tr>
             @endforeach
 
@@ -175,28 +192,28 @@
             </tr>
 
             <tr class="sub-total">
-                <td></td>
-                <td>Vat: {{ $order->vat_amount }} {{ $currency }}</td>
+                <td class="text-left fixed-width">Vat:</td>
+                <td class="right-align">{{ $currency }} {{ $order->vat_amount }}</td>
             </tr>
 
             <tr class="sub-total">
-                <td></td>
-                <td>Shipping: {{ $order->shipping_amount }} {{ $currency }}</td>
+                <td class="text-left fixed-width">Shipping:</td>
+                <td class="right-align">{{ $currency }} {{ $order->shipping_amount }}</td>
             </tr>
 
             <tr class="sub-total">
-                <td></td>
-                <td>Discount Amount: {{ $order->discount_amount }} {{ $currency }}</td>
+                <td class="text-left fixed-width">Discount Amount:</td>
+                <td class="right-align">{{ $currency }} {{ $order->discount_amount }}</td>
             </tr>
 
             <tr class="sub-total">
-                <td></td>
-                <td>Sub Total: {{ $order->subtotal_amount }} {{ $currency }}</td>
+                <td class="text-left fixed-width">Sub Total:</td>
+                <td class="right-align">{{ $currency }} {{ $order->subtotal_amount }} </td>
             </tr>
 
             <tr class="total">
-                <td></td>
-                <td>Total: {{ $order->net_amount }} {{ $currency }}</td>
+                <td class="text-left fixed-width" style="font-weight: bold;">Total</td>
+                <td class="right-align">{{ $currency }} {{ $order->net_amount }} </td>
             </tr>
         </table>
     </div>

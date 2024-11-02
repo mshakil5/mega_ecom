@@ -12,6 +12,7 @@ use App\Http\Controllers\Supplier\SupplierAuthController;
 use App\Http\Controllers\Supplier\SupplierController;
 use App\Http\Controllers\Supplier\StockController;
 use App\Http\Controllers\Supplier\CampaignController;
+use App\Http\Controllers\Auth\LoginController;
   
 
 // cache clear
@@ -28,6 +29,8 @@ Route::get('/clear', function() {
   
   
 Auth::routes();
+
+// Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('login', function () {
     if (Auth::guard('supplier')->check()) {

@@ -247,21 +247,3 @@
 </div>
 
 @endsection
-
-@section('script')
-
-<script>
-    $(document).ready(function() {
-        var currentValue = 1;
-        $('#qty').on('input', function() {
-            var maxValue = parseInt($('#qty').attr('max'));
-            if ($(this).val() > maxValue) {
-                $(this).val(maxValue);
-            } else if ($(this).val() < 1) {
-                $(this).val(1);
-            }
-        });
-    });
-</script>
-
-@endsection

@@ -2,6 +2,16 @@
 
 @section('content')
 
+@if(session('session_clear'))
+<script>
+    localStorage.removeItem('wishlist');
+    localStorage.removeItem('cart');
+    @php
+        session()->forget('session_clear');
+    @endphp
+</script>
+@endif
+
 <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
     <div class="container">
     </div>
@@ -23,7 +33,7 @@
                             <a class="nav-link {{ Request::routeIs('user.profile') ? 'active' : '' }}" href="{{ route('user.profile') }}">Account Details</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" >Log Out</a>
+                            <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Log Out</a>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                 @csrf
                             </form>
@@ -35,46 +45,46 @@
                     @section('user_content')
                     <div class="row justify-content-center">
 
-                    @php
+                        @php
                         use Carbon\Carbon;
                         $today = Carbon::today()->toDateString();
                         $user = auth()->user();
                         $todayOrdersCount = $user->orders()->whereDate('created_at', $today)->count();
-                    @endphp
+                        @endphp
 
-                    <div class="col-lg-4 col-sm-6">
-                        <div class="icon-box text-center">
-                            <span class="icon-box-icon">
-                                <i class="icon-info-circle"></i>
-                            </span>
-                            <div class="icon-box-content">
-                                <h3 class="icon-box-title">Today's Orders</h3>
-                                <p>{{ $todayOrdersCount }}</p>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="icon-box text-center">
+                                <span class="icon-box-icon">
+                                    <i class="icon-info-circle"></i>
+                                </span>
+                                <div class="icon-box-content">
+                                    <h3 class="icon-box-title">Today's Orders</h3>
+                                    <p>{{ $todayOrdersCount }}</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    @php
+                        @php
                         $startOfWeek = Carbon::now()->startOfWeek()->toDateString();
                         $endOfWeek = Carbon::now()->endOfWeek()->toDateString();
                         $thisWeekOrdersCount = $user->orders()->whereBetween('created_at', [$startOfWeek, $endOfWeek])->count();
-                    @endphp
+                        @endphp
 
-                    <div class="col-lg-4 col-sm-6">
-                        <div class="icon-box text-center">
-                            <span class="icon-box-icon">
-                                <i class="icon-info-circle"></i>
-                            </span>
-                            <div class="icon-box-content">
-                                <h3 class="icon-box-title">This Week's Orders</h3>
-                                <p>{{ $thisWeekOrdersCount }}</p>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="icon-box text-center">
+                                <span class="icon-box-icon">
+                                    <i class="icon-info-circle"></i>
+                                </span>
+                                <div class="icon-box-content">
+                                    <h3 class="icon-box-title">This Week's Orders</h3>
+                                    <p>{{ $thisWeekOrdersCount }}</p>
+                                </div>
                             </div>
                         </div>
+                        @show
                     </div>
-                    @show
                 </div>
             </div>
         </div>
     </div>
-</div>
-@endsection
+    @endsection
