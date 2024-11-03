@@ -56,7 +56,7 @@
         <input id="confirm_password" type="password" class="form-control" name="confirm_password">
         </div>
     </div>
-    <label>Address *</label>
+    <label>Address</label>
     <textarea class="form-control" id="address" name="address" rows="3" placeholder="Enter your address">@if (!empty($user->address)){!! $user->address !!}@endif</textarea>
 
     <button type="submit" class="btn btn-outline-primary-2">
@@ -85,6 +85,7 @@
                 success: function (response) {
                     if (response.status === 300) {
                         $(".ermsg").html(response.message).removeClass('alert-warning').addClass('alert-success');
+                        window.setTimeout(function(){location.reload()},3000)
                     } else {
                         $(".ermsg").html(response.message).removeClass('alert-success').addClass('alert-warning');
                     }
