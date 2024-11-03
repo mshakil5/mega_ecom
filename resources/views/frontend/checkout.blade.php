@@ -405,7 +405,7 @@
                 '_token': '{{ csrf_token() }}'
             };
 
-            console.log(formData);
+            // console.log(formData);
 
             if (formData.payment_method === 'stripe') {
                 try {
