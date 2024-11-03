@@ -174,7 +174,14 @@
                                         </a>
                                     </div>
                                     <div class="product-action">
-                                        <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}"><span>add to cart</span></a>
+                                        <a href="#" class="btn-product btn-cart" title="Add to cart"
+                                        data-product-id="{{ $product->id }}" 
+                                        data-offer-id="0" 
+                                        data-price="{{ $sellingPrice ?? $product->price }}" 
+                                        data-toggle="modal" data-target="#quickAddToCartModal" 
+                                        data-image ="{{ asset('images/products/' . $product->feature_image) }}" data-stock="{{ $product->stock->quantity }}">
+                                            <span>add to cart</span>
+                                        </a>
                                     </div>
                                 @else
                                     <span class="product-label label-out-stock">Out of stock</span>
@@ -275,7 +282,14 @@
                                     </a>
                                 </div>
                                 <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}"><span>add to cart</span></a>
+                                    <a href="#" class="btn-product btn-cart" title="Add to cart"
+                                     data-product-id="{{ $product->id }}" 
+                                     data-offer-id="0" 
+                                     data-price="{{ $sellingPrice ?? $product->price }}" 
+                                     data-toggle="modal" data-target="#quickAddToCartModal" 
+                                     data-image ="{{ asset('images/products/' . $product->feature_image) }}" data-stock="{{ $product->stock->quantity }}">
+                                        <span>add to cart</span>
+                                    </a>
                                 </div>
                             @else
                                 <span class="product-label label-out-stock">Out of stock</span>
@@ -398,7 +412,14 @@
                                     </a>
                                 </div>
                                 <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}"><span>add to cart</span></a>
+                                    <a href="#" class="btn-product btn-cart" title="Add to cart"
+                                     data-product-id="{{ $product->id }}" 
+                                     data-offer-id="0" 
+                                     data-price="{{ $sellingPrice ?? $product->price }}" 
+                                     data-toggle="modal" data-target="#quickAddToCartModal" 
+                                     data-image ="{{ asset('images/products/' . $product->feature_image) }}" data-stock="{{ $product->stock->quantity }}">
+                                        <span>add to cart</span>
+                                    </a>
                                 </div>
                             @else
                                 <span class="product-label label-out-stock">Out of stock</span>
@@ -475,7 +496,14 @@
                                     </a>
                                 </div>
                                 <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}"><span>add to cart</span></a>
+                                    <a href="#" class="btn-product btn-cart" title="Add to cart"
+                                     data-product-id="{{ $product->id }}" 
+                                     data-offer-id="0" 
+                                     data-price="{{ $sellingPrice ?? $product->price }}" 
+                                     data-toggle="modal" data-target="#quickAddToCartModal" 
+                                     data-image ="{{ asset('images/products/' . $product->feature_image) }}" data-stock="{{ $product->stock->quantity }}">
+                                        <span>add to cart</span>
+                                    </a>
                                 </div>
                             @else
                                 <span class="product-label label-out-stock">Out of stock</span>

@@ -363,7 +363,10 @@ class FrontendController extends Controller
                         $product->flash_sell_price = $item['price'];
                         $product->offer_id = 2;
                     } else {
-                        $product->price = $item['price'];
+                        $product->price = $product->stockhistory()
+                          ->where('available_qty', '>', 0)
+                          ->orderBy('id', 'asc')
+                          ->value('selling_price') ?? $item['price'];
                         $product->offer_id = 0;
                     }
                     if (isset($item['campaignId'])) {
@@ -693,6 +696,14 @@ class FrontendController extends Controller
             ->first();
 
         return view('frontend.product.wh_single_product', compact('product', 'title', 'currency', 'wholeSaleProduct'));
+    }
+
+    public function clearAllSessionData()
+    {
+        session()->flush();
+        session()->regenerate();
+        session(['session_clear' => true]);
+        return view('auth.login');
     }
 
 }

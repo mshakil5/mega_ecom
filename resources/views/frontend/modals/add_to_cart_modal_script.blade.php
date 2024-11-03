@@ -3,11 +3,13 @@
         $('#quickAddToCartModal').on('show.bs.modal', function(event) {
             var button = $(event.relatedTarget);
             var imageSrc = button.data('image');
-            var price = ' {{ $currency }}' + button.data('price');
+            var price = '{{ $currency }}' + button.data('price');
             var maxQuantity = button.data('stock');
 
             var productId = button.data('product-id');
             var offerId = button.data('offer-id');
+            var supplierId = button.data('supplier-id') || '';
+            var campaignId = button.data('campaign-id') || '';
             
             var modal = $(this);
             modal.find('#modalProductImage').attr('src', imageSrc);
@@ -18,6 +20,8 @@
                 'data-product-id': productId,
                 'data-price': button.data('price'),
                 'data-offer-id': offerId,
+                'data-supplier-id': supplierId,
+                'data-campaign-id': campaignId
             });
         });
 

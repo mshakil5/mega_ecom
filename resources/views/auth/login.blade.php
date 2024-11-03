@@ -2,6 +2,16 @@
 
 @section('content')
 
+@if(session('session_clear'))
+<script>
+    localStorage.removeItem('wishlist');
+    localStorage.removeItem('cart');
+    @php
+        session()->forget('session_clear');
+    @endphp
+</script>
+@endif
+
 <div class="container mt-5 mb-5">
     <div class="form-box">
         <div class="form-tab">

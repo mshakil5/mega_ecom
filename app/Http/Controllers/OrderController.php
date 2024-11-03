@@ -954,12 +954,13 @@ class OrderController extends Controller
 
         session()->forget('order_data');
 
-        return redirect($pdfUrl);
+        // return redirect($pdfUrl);
+        return view('frontend.order.success', compact('pdfUrl'));
     }
 
     public function paymentCancel()
     {
-        return redirect()->route('frontend.homepage');
+        return view('frontend.order.cancel');
     }
 
     public function generatePDF($encoded_order_id)

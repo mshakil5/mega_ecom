@@ -486,10 +486,6 @@
                                 className: "swal-button--confirm"
                             }
                         }).then(() => {
-                            if(response.redirectUrl) {
-                                localStorage.removeItem('cart');
-                                localStorage.removeItem('wishlist');
-                            }
                             window.open(response.redirectUrl, '_blank');
                             window.location.href = '{{ route("frontend.homepage") }}';
                         });

@@ -30,7 +30,7 @@ Route::get('/clear', function() {
   
 Auth::routes();
 
-// Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::get('/clear-session', [FrontendController::class, 'clearAllSessionData'])->name('clearSessionData');
 
 Route::get('login', function () {
     if (Auth::guard('supplier')->check()) {

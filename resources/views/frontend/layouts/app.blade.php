@@ -40,7 +40,7 @@
 
     <link rel="stylesheet" href="{{ asset('frontend/css/magnific-popup/magnific-popup.css') }}">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link rel="stylesheet" href="{{ asset('frontend/css/toastr.min.css') }}">
 
     <link rel="stylesheet" href="{{ asset('frontend/css/jquery.countdown.css') }}">
 
@@ -157,7 +157,7 @@
 
     <script src="{{ asset('frontend/js/wNumb.js')}}"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="{{ asset('frontend/js/toastr.min.js')}}"></script>
 
     <!-- Data table js -->
     <script src="{{ asset('assets/admin/datatables/jquery.dataTables.min.js')}}"></script>

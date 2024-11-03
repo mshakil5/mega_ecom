@@ -17,8 +17,29 @@
             var bogoId = $(this).data('bogo-id') || null;
             var bundleId = $(this).data('bundle-id') || null;
 
-            var selectedSize = $('input[name="size"]:checked').val() || 'M';
-            var selectedColor = $('input[name="color"]:checked').val() || 'Black'; 
+            var selectedSize = $('input[name="size"]:checked').val();
+            var selectedColor = $('input[name="color"]:checked').val(); 
+
+            if (!selectedSize) {
+                toastr.error("Please select a size.", "Error", {
+                    closeButton: true,
+                    progressBar: true,
+                    timeOut: 3000,
+                    positionClass: "toast-top-right",
+                });
+                return;
+            }
+
+            if (!selectedColor) {
+                toastr.error("Please select a color.", "Error", {
+                    closeButton: true,
+                    progressBar: true,
+                    timeOut: 3000,
+                    positionClass: "toast-top-right",
+                });
+                return;
+            }
+
             var quantity = parseInt($('.quantity-input').val()) || 1;
 
             var cart = JSON.parse(localStorage.getItem('cart')) || [];
