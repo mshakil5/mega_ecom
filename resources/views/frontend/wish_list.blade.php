@@ -31,11 +31,6 @@
                             </div>
 
                             <div class="product-action">
-                                <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $product->id }}"
-                                data-offer-id="{{ $product->offer_id }}"
-                                data-price="{{ $product->offer_price ?? $product->flash_sell_price ?? $product->price }}" data-campaign-id="{{ $product->campaign_id }}"><span>Add to Cart</span></a>
-                            </div>
-                            <div class="product-action">
                                 <a href="#" class="btn-product btn-cart" title="Add to cart"
                                 data-product-id="{{ $product->id }}" 
                                 data-offer-id="{{ $product->offer_id }}" 
