@@ -321,7 +321,7 @@
                     brand: selectedBrandId
                 },
                 success: function(response) {
-                    console.log(response);
+                    // console.log(response);
                     var products = response.products;
                     var productListHtml = '';
                     $('#pagination').hide();
