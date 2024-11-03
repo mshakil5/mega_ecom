@@ -27,8 +27,18 @@
                                     <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $detail->product->id }}" data-offer-id="1" data-price="{{ $detail->offer_price }}"><span>Add to wishlist</span></a>
                                 </div>
 
-                                <div class="product-action">
+                                <!-- <div class="product-action">
                                     <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $detail->product->id }}" data-offer-id="1" data-price="{{ $detail->offer_price }}"><span>add to cart</span></a>
+                                </div> -->
+                                <div class="product-action">
+                                    <a href="#" class="btn-product btn-cart" title="Add to cart"
+                                    data-product-id="{{ $detail->product->id }}" 
+                                    data-offer-id="1" 
+                                    data-price="{{ $detail->offer_price }}" 
+                                    data-toggle="modal" data-target="#quickAddToCartModal" 
+                                    data-image ="{{ asset('images/products/' . $detail->product->feature_image) }}" data-stock="{{ $detail->product->stock->quantity }}">
+                                        <span>add to cart</span>
+                                    </a>
                                 </div>
                             @else
                                 <span class="product-label label-out-stock">Out of stock</span>

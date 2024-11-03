@@ -201,7 +201,7 @@
                     </ul>
                 </div>
 
-                <div class="col col-lg-3 col-xl-3 col-xxl-2 header-right">
+                <div class="col col-lg-3 col-xl-3 col-xxl-2 header-right d-none">
                     <i class="la la-lightbulb-o"></i><p>Clearance Up to 30% Off</span></p>
                 </div>
                 

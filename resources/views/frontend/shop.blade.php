@@ -269,7 +269,7 @@
                         @endforeach
                     </div>
 
-                    <div class="col-12">
+                    <div class="col-12" id="pagination">
                         <nav>
                             {{ $products->appends(['per_page' => request()->input('per_page', 10)])->links('pagination::bootstrap-4') }}
                         </nav>
@@ -298,39 +298,10 @@
         var maxPrice = {{ $maxPrice }};
         var currencySymbol = "{{ $currency }}";
 
-        if (priceSlider) {
-            noUiSlider.create(priceSlider, {
-                start: [minPrice, maxPrice],
-                connect: true,
-                step: 100,
-                range: {
-                    'min': minPrice,
-                    'max': maxPrice
-                },
-                tooltips: true,
-                format: wNumb({
-                    decimals: 0,
-                    prefix: currencySymbol
-                })
-            });
-
-            priceSlider.noUiSlider.on('update', function(values, handle) {
-                $('#filter-price-range').text(values.join(' - '));
-                $('#price-min').val(values[0].replace(currencySymbol, ''));
-                $('#price-max').val(values[1].replace(currencySymbol, ''));
-            });
-        }
-    });
-</script>
-
-<script>
-    $(document).ready(function() {
-        $('#filterForm, #brandFilterForm, #price-min, #price-max').on('change', function() {
-            let startValue = $('#price-min').val().replace('$', '');
-            let endValue = $('#price-max').val().replace('$', '');
+        function triggerFilter() {
+            let startValue = $('#price-min').val().replace(currencySymbol, '');
+            let endValue = $('#price-max').val().replace(currencySymbol, '');
             let selectedCategoryId = $('input[name="category"]:checked').val();
-            // let selectedSize = $('input[name="size"]:checked').val();
-            // let selectedColor = $('input[name="color"]:checked').val();
             let selectedBrandId = $('input[name="brand"]:checked').val();
             let csrfToken = $('meta[name="csrf-token"]').attr('content');
 
@@ -353,6 +324,7 @@
                     console.log(response);
                     var products = response.products;
                     var productListHtml = '';
+                    $('#pagination').hide();
 
                     if (products.length === 0) {
                         $('#product-list').empty();
@@ -406,6 +378,9 @@
                         });
 
                     $('#product-list').html(productListHtml);
+                    $('#product-list').html(productListHtml);
+
+                        $('#product-list').html(productListHtml);
 
                     }
                 },
@@ -413,6 +388,34 @@
                     console.error(xhr.responseText);
                 }
             });
+        }
+
+        if (priceSlider) {
+            noUiSlider.create(priceSlider, {
+                start: [minPrice, maxPrice],
+                connect: true,
+                step: 100,
+                range: {
+                    'min': minPrice,
+                    'max': maxPrice
+                },
+                tooltips: true,
+                format: wNumb({
+                    decimals: 0,
+                    prefix: currencySymbol
+                })
+            });
+
+            priceSlider.noUiSlider.on('update', function(values, handle) {
+                $('#filter-price-range').text(values.join(' - '));
+                $('#price-min').val(values[0].replace(currencySymbol, ''));
+                $('#price-max').val(values[1].replace(currencySymbol, ''));
+                triggerFilter();
+            });
+        }
+
+        $('#filterForm, #brandFilterForm, #price-min, #price-max').on('change', function() {
+            triggerFilter();
         });
     });
 </script>

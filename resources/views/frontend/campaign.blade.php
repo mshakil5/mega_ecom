@@ -29,8 +29,19 @@
                                 data-campaign-id="{{ $detail->id }}"><span>Add to wishlist</span></a>
                             </div>
 
-                            <div class="product-action">
+                            <!-- <div class="product-action">
                                 <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $detail->product->id }}" data-price="{{ $campaignPrice }}" data-offer-id="0" data-campaign-id="{{ $detail->id }}"><span>add to cart</span></a>
+                            </div> -->
+                            <div class="product-action">
+                                <a href="#" class="btn-product btn-cart" title="Add to cart"
+                                data-product-id="{{ $detail->product->id }}" 
+                                data-offer-id="0"
+                                data-campaign-id="{{ $detail->id }}" 
+                                data-price="{{ $campaignPrice }}" 
+                                data-toggle="modal" data-target="#quickAddToCartModal" 
+                                data-image ="{{ asset('images/products/' . $detail->product->feature_image) }}" data-stock="{{ $detail->quantity }}">
+                                    <span>add to cart</span>
+                                </a>
                             </div>
                         @else
                             <span class="product-label label-out-stock">Out of stock</span>

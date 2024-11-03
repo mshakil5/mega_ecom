@@ -200,7 +200,7 @@
             </nav>
         </div>
 
-        <div class="header-right">
+        <div class="header-right d-none">
             <i class="la la-lightbulb-o"></i><p>Clearance<span class="highlight">&nbsp;Up to 30% Off</span></p>
         </div>
     </div>
