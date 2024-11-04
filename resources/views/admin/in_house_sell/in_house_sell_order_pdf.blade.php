@@ -3,7 +3,6 @@
 <head>
 @php
     $company = \App\Models\CompanyDetails::first();
-    use Carbon\Carbon;
 @endphp 
 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -193,28 +192,29 @@
 
             <tr class="sub-total">
                 <td class="text-left fixed-width">Vat:</td>
-                <td class="right-align">{{ $currency }} {{ $order->vat_amount }}</td>
+                <td class="right-align">{{ $currency }} {{ number_format($order->vat_amount ?? 0.00, 2) }}</td>
             </tr>
 
             <tr class="sub-total">
                 <td class="text-left fixed-width">Shipping:</td>
-                <td class="right-align">{{ $currency }} {{ $order->shipping_amount }}</td>
+                <td class="right-align">{{ $currency }} {{ number_format($order->shipping_amount ?? 0.00, 2) }}</td>
             </tr>
 
             <tr class="sub-total">
                 <td class="text-left fixed-width">Discount Amount:</td>
-                <td class="right-align">{{ $currency }} {{ $order->discount_amount }}</td>
+                <td class="right-align">{{ $currency }} {{ number_format($order->discount_amount ?? 0.00, 2) }}</td>
             </tr>
 
             <tr class="sub-total">
                 <td class="text-left fixed-width">Sub Total:</td>
-                <td class="right-align">{{ $currency }} {{ $order->subtotal_amount }} </td>
+                <td class="right-align">{{ $currency }} {{ number_format($order->subtotal_amount ?? 0.00, 2) }}</td>
             </tr>
 
             <tr class="total">
                 <td class="text-left fixed-width" style="font-weight: bold;">Total</td>
-                <td class="right-align">{{ $currency }} {{ $order->net_amount }} </td>
+                <td class="right-align">{{ $currency }} {{ number_format($order->net_amount ?? 0.00, 2) }}</td>
             </tr>
+
         </table>
     </div>
 </body>

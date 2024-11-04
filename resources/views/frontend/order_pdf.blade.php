@@ -207,22 +207,22 @@
 
             <tr class="sub-total">
                 <td class="text-left fixed-width">Vat:</td>
-                <td class="right-align">{{ $currency }} {{ $order->vat_amount }}</td>
+                <td class="right-align">{{ $currency }} {{ number_format($order->vat_amount ?? 0.00, 2) }}</td>
             </tr>
 
             <tr class="sub-total">
                 <td class="text-left fixed-width">Shipping:</td>
-                <td class="right-align">{{ $currency }} {{ $order->shipping_amount }}</td>
+                <td class="right-align">{{ $currency }} {{ number_format($order->shipping_amount ?? 0.00, 2) }}</td>
             </tr>
 
             <tr class="sub-total">
                 <td class="text-left fixed-width">Discount Amount:</td>
-                <td class="right-align">{{ $currency }} {{ $order->discount_amount }}</td>
+                <td class="right-align">{{ $currency }} {{ number_format($order->discount_amount ?? 0.00, 2) }}</td>
             </tr>
 
             <tr class="sub-total">
                 <td class="text-left fixed-width">Sub Total:</td>
-                <td class="right-align">{{ $currency }} {{ $order->subtotal_amount }} </td>
+                <td class="right-align">{{ $currency }} {{ number_format($order->subtotal_amount ?? 0.00, 2) }}</td>
             </tr>
 
             <tr class="total">

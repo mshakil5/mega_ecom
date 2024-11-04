@@ -16,6 +16,9 @@ use App\Models\Size;
 use App\Models\StockHistory;
 use App\Models\Warehouse;
 use App\Models\Transaction;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderConfirmation;
+use App\Models\ContactEmail;
 
 class InHouseSellController extends Controller
 {
@@ -189,6 +192,14 @@ class InHouseSellController extends Controller
         $encoded_order_id = base64_encode($order->id);
         $pdfUrl = route('in-house-sell.generate-pdf', ['encoded_order_id' => $encoded_order_id]);
 
+        Mail::to($order->user->email)->send(new OrderConfirmation($order, $pdfUrl));
+
+        $contactEmails = ContactEmail::where('status', 1)->pluck('email');
+
+        foreach ($contactEmails as $email) {
+            Mail::to($email)->send(new OrderConfirmation($order, $pdfUrl));
+        }
+
         return response()->json([
             'pdf_url' => $pdfUrl,
             'message' => 'Order placed successfully'
@@ -270,6 +281,17 @@ class InHouseSellController extends Controller
             $orderDetail->total_price_with_vat = $product['total_price_with_vat'];
             $orderDetail->status = 1;
             $orderDetail->save();
+        }
+
+        $encoded_order_id = base64_encode($order->id);
+        $pdfUrl = route('in-house-sell.generate-pdf', ['encoded_order_id' => $encoded_order_id]);
+
+        Mail::to($order->user->email)->send(new OrderConfirmation($order, $pdfUrl));
+
+        $contactEmails = ContactEmail::where('status', 1)->pluck('email');
+
+        foreach ($contactEmails as $email) {
+            Mail::to($email)->send(new OrderConfirmation($order, $pdfUrl));
         }
 
         return response()->json(['message' => 'Quotation created successfully', 'order_id' => $order->id], 201);

@@ -30,6 +30,9 @@ use App\Models\Transaction;
 use Carbon\Carbon;
 use App\Models\Warehouse;
 use App\Models\StockHistory;
+use App\Models\ContactEmail;
+use App\Mail\OrderConfirmation;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -290,6 +293,8 @@ class OrderController extends Controller
     
                 $encoded_order_id = base64_encode($order->id);
                 $pdfUrl = route('generate-pdf', ['encoded_order_id' => $encoded_order_id]);
+
+                $this->sendOrderEmail($order, $pdfUrl);
     
                 if (isset($formData['order_summary']) && is_array($formData['order_summary'])) {
                     foreach ($formData['order_summary'] as $item) {
@@ -553,6 +558,8 @@ class OrderController extends Controller
 
             $encoded_order_id = base64_encode($order->id);
             $pdfUrl = route('generate-pdf', ['encoded_order_id' => $encoded_order_id]);
+
+            $this->sendOrderEmail($order, $pdfUrl);
 
             if (isset($formData['order_summary']) && is_array($formData['order_summary'])) {
                 foreach ($formData['order_summary'] as $item) {
@@ -847,6 +854,8 @@ class OrderController extends Controller
             $encoded_order_id = base64_encode($order->id);
             $pdfUrl = route('generate-pdf', ['encoded_order_id' => $encoded_order_id]);
 
+            $this->sendOrderEmail($order, $pdfUrl);
+
             if (isset($formData['order_summary']) && is_array($formData['order_summary'])) {
                 foreach ($formData['order_summary'] as $item) {
                     $isBundle = isset($item['bundleId']);
@@ -956,6 +965,16 @@ class OrderController extends Controller
 
         // return redirect($pdfUrl);
         return view('frontend.order.success', compact('pdfUrl'));
+    }
+
+    protected function sendOrderEmail($order, $pdfUrl)
+    {
+        Mail::to($order->email)->send(new OrderConfirmation($order, $pdfUrl));
+
+        $contactEmails = ContactEmail::where('status', 1)->pluck('email');
+        foreach ($contactEmails as $email) {
+            Mail::to($email)->send(new OrderConfirmation($order, $pdfUrl));
+        }
     }
 
     public function paymentCancel()
@@ -1092,12 +1111,11 @@ class OrderController extends Controller
                     return Carbon::parse($order->purchase_date)->format('d-m-Y');
                 })
                 ->addColumn('name', function ($order) {
-                    return $order->user->name . '<br>' . 
-                           $order->user->email . '<br>' . 
-                           $order->user->phone;
-                })
-                ->addColumn('phone', function ($order) {
-                    return $order->user->phone;
+                    return ($order->user ? 
+                            ($order->user->name ?? 'N/A') . '<br>' . 
+                            ($order->user->email ?? 'N/A') . '<br>' . 
+                            ($order->user->phone ?? 'N/A') : 
+                            'User  not found');
                 })
                 ->addColumn('type', function ($order) {
                     return $order->order_type == 0 ? 'Frontend' : 'In-house Sale';
@@ -1175,12 +1193,11 @@ class OrderController extends Controller
                     return Carbon::parse($order->purchase_date)->format('d-m-Y');
                 })
                 ->addColumn('name', function ($order) {
-                    return $order->user->name . '<br>' . 
-                           $order->user->email . '<br>' . 
-                           $order->user->phone;
-                })
-                ->addColumn('phone', function ($order) {
-                    return $order->user->phone;
+                    return ($order->user ? 
+                            ($order->user->name ?? 'N/A') . '<br>' . 
+                            ($order->user->email ?? 'N/A') . '<br>' . 
+                            ($order->user->phone ?? 'N/A') : 
+                            'User  not found');
                 })
                 ->addColumn('type', function ($order) {
                     return $order->order_type == 0 ? 'Frontend' : 'In-house Sale';
