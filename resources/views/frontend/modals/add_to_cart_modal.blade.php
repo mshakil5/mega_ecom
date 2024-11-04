@@ -2,7 +2,6 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-body" style="padding-left: 20px;">
-
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -15,54 +14,12 @@
 
                 <div class="details-filter-row details-row-size mb-1">
                     <label>Color:</label>
-                    <form id="colorForm">
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="color-1" name="color" value="Black">
-                            <label class="custom-control-label" for="color-1">Black</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="color-2" name="color" value="White">
-                            <label class="custom-control-label" for="color-2">White</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="color-3" name="color" value="Red">
-                            <label class="custom-control-label" for="color-3">Red</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="color-4" name="color" value="Blue">
-                            <label class="custom-control-label" for="color-4">Blue</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="color-5" name="color" value="Green">
-                            <label class="custom-control-label" for="color-5">Green</label>
-                        </div>
-                    </form>
+                    <form id="colorForm" class="color-options"></form>
                 </div>
 
                 <div class="details-filter-row details-row-size mb-1">
                     <label for="size">Size:</label>
-                    <form id="sizeForm">
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="size-1" name="size" value="XS">
-                            <label class="custom-control-label" for="size-1">XS</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="size-2" name="size" value="S">
-                            <label class="custom-control-label" for="size-2">S</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="size-3" name="size" value="M">
-                            <label class="custom-control-label" for="size-3">M</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="size-4" name="size" value="L">
-                            <label class="custom-control-label" for="size-4">L</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="size-5" name="size" value="XL">
-                            <label class="custom-control-label" for="size-5">XL</label>
-                        </div>
-                    </form>
+                    <form id="sizeForm" class="size-options"></form>
                 </div>
 
                 <div class="details-filter-row details-row-size">
@@ -72,7 +29,7 @@
                     </div>
                     <div class="product-details-action col-auto pt-3">
                         <label for=""></label>
-                        <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="" data-offer-id="" data-price="" data-supplier-id="" data-campaign-id="" >
+                        <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="" data-offer-id="" data-price="" data-supplier-id="" data-campaign-id="">
                             <span>add to cart</span>
                         </a>
                     </div>

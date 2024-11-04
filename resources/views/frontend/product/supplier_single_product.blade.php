@@ -38,56 +38,42 @@
 
                         <div class="details-filter-row details-row-size">
                             <label>Color:</label>
-
                             <div class="product-nav product-nav-thumbs">
                                 <form id="colorForm">
-                                    <div class="custom-control custom-radio custom-control-inline">
-                                        <input type="radio" class="custom-control-input" id="color-1" name="color" value="Black">
-                                        <label class="custom-control-label" for="color-1">Black</label>
-                                    </div>
-                                    <div class="custom-control custom-radio custom-control-inline">
-                                        <input type="radio" class="custom-control-input" id="color-2" name="color" value="White">
-                                        <label class="custom-control-label" for="color-2">White</label>
-                                    </div>
-                                    <div class="custom-control custom-radio custom-control-inline">
-                                        <input type="radio" class="custom-control-input" id="color-3" name="color" value="Red">
-                                        <label class="custom-control-label" for="color-3">Red</label>
-                                    </div>
-                                    <div class="custom-control custom-radio custom-control-inline">
-                                        <input type="radio" class="custom-control-input" id="color-4" name="color" value="Blue">
-                                        <label class="custom-control-label" for="color-4">Blue</label>
-                                    </div>
-                                    <div class="custom-control custom-radio custom-control-inline">
-                                        <input type="radio" class="custom-control-input" id="color-5" name="color" value="Green">
-                                        <label class="custom-control-label" for="color-5">Green</label>
-                                    </div>
-                                </form>    
+                                @php
+                                    $colors = SupplierStock::where('supplier_id', $supplierId)
+                                        ->where('product_id', $product->id)
+                                        ->where('quantity', '>', 0)
+                                        ->distinct()
+                                        ->pluck('color');
+                                @endphp
+
+                                    @foreach($colors as $index => $color)
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" class="custom-control-input" id="color-{{ $index }}" name="color" value="{{ $color }}">
+                                            <label class="custom-control-label" for="color-{{ $index }}">{{ $color }}</label>
+                                        </div>
+                                    @endforeach
+                                </form>
                             </div>
                         </div>
 
                         <div class="details-filter-row details-row-size">
                             <label for="size">Size:</label>
                             <form id="sizeForm">
-                                <div class="custom-control custom-radio custom-control-inline">
-                                    <input type="radio" class="custom-control-input" id="size-1" name="size" value="XS">
-                                    <label class="custom-control-label" for="size-1">XS</label>
-                                </div>
-                                <div class="custom-control custom-radio custom-control-inline">
-                                    <input type="radio" class="custom-control-input" id="size-2" name="size" value="S">
-                                    <label class="custom-control-label" for="size-2">S</label>
-                                </div>
-                                <div class="custom-control custom-radio custom-control-inline">
-                                    <input type="radio" class="custom-control-input" id="size-3" name="size" value="M">
-                                    <label class="custom-control-label" for="size-3">M</label>
-                                </div>
-                                <div class="custom-control custom-radio custom-control-inline">
-                                    <input type="radio" class="custom-control-input" id="size-4" name="size" value="L">
-                                    <label class="custom-control-label" for="size-4">L</label>
-                                </div>
-                                <div class="custom-control custom-radio custom-control-inline">
-                                    <input type="radio" class="custom-control-input" id="size-5" name="size" value="XL">
-                                    <label class="custom-control-label" for="size-5">XL</label>
-                                </div>
+                                @php
+                                    $sizes = SupplierStock::where('supplier_id', $supplierId)
+                                        ->where('product_id', $product->id)
+                                        ->where('quantity', '>', 0)
+                                        ->distinct()
+                                        ->pluck('color');
+                                @endphp
+                                @foreach($sizes as $index => $size)
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" class="custom-control-input" id="size-{{ $index }}" name="size" value="{{ $size }}">
+                                        <label class="custom-control-label" for="size-{{ $index }}">{{ $size }}</label>
+                                    </div>
+                                @endforeach
                             </form>
                         </div>
 
@@ -148,33 +134,5 @@
         </div>
     </div>
 </div>
-
-@endsection
-
-@section('script')
-
-<script>
-    $(document).ready(function() {
-        var currentValue = 1;
-        $('#decrementBtn').click(function() {
-            if (currentValue > 1) { 
-                currentValue--;
-                $('#quantityInput').val(currentValue);
-            } else {
-                currentValue = 1;
-                $('#quantityInput').val(currentValue);
-            }
-        });
-
-        const maxQuantity = parseInt($('#maxQuantity').val());
-        $('#incrementBtn').click(function() {
-            if (currentValue < maxQuantity) {
-                currentValue++; 
-                $('#quantityInput').val(currentValue);
-            }
-            $('#quantityInput').val(currentValue);
-        });
-    });
-</script>
 
 @endsection

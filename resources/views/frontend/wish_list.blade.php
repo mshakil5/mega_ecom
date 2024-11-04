@@ -22,6 +22,18 @@
                         </a>
 
                         @if ($product->stock && $product->stock->quantity > 0)
+
+                        @php
+                        $colors = $product->stock()
+                            ->where('quantity', '>', 0)
+                            ->distinct('color')
+                            ->pluck('color');
+
+                        $sizes = $product->stock()
+                            ->where('quantity', '>', 0)
+                            ->distinct('size')
+                            ->pluck('size');
+                        @endphp
                             <div class="product-action-vertical">
                                 <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist" title="Add to wishlist" 
                                 data-product-id="{{ $product->id }}"
@@ -36,7 +48,10 @@
                                 data-offer-id="{{ $product->offer_id }}" 
                                 data-price="{{ $product->price }}" 
                                 data-toggle="modal" data-target="#quickAddToCartModal" 
-                                data-image ="{{ asset('images/products/' . $product->feature_image) }}" data-stock="{{ $product->stock->quantity }}">
+                                data-image ="{{ asset('images/products/' . $product->feature_image) }}" 
+                                data-stock="{{ $product->stock->quantity }}"
+                                data-colors="{{ $colors->toJson() }}"
+                                data-sizes="{{ $sizes->toJson() }}">
                                     <span>add to cart</span>
                                 </a>
                             </div>

@@ -21,6 +21,16 @@
                                         ->where('available_qty', '>', 0)
                                         ->orderBy('id', 'asc')
                                         ->value('selling_price');
+
+                                    $colors = $product->stock()
+                                        ->where('quantity', '>', 0)
+                                        ->distinct('color')
+                                        ->pluck('color');
+
+                                    $sizes = $product->stock()
+                                        ->where('quantity', '>', 0)
+                                        ->distinct('size')
+                                        ->pluck('size');
                                 @endphp
 
                                 <div class="product-action-vertical">
@@ -33,7 +43,10 @@
                                     data-offer-id="0" 
                                     data-price="{{ $sellingPrice ?? $product->price }}" 
                                     data-toggle="modal" data-target="#quickAddToCartModal" 
-                                    data-image ="{{ asset('images/products/' . $product->feature_image) }}" data-stock="{{ $product->stock->quantity }}">
+                                    data-image ="{{ asset('images/products/' . $product->feature_image) }}" 
+                                    data-stock="{{ $product->stock->quantity }}"
+                                    data-colors="{{ $colors->toJson() }}"
+                                    data-sizes="{{ $sizes->toJson() }}">
                                         <span>add to cart</span>
                                     </a>
                                 </div>

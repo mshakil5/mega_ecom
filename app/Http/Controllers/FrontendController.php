@@ -336,7 +336,7 @@ class FrontendController extends Controller
         $title = $company_name . ' - ' . $product->name;
         $currency = CompanyDetails::value('currency');
 
-        return view('frontend.product.supplier_single_product', compact('product', 'title', 'regularPrice', 'currency', 'stockQuantity', 'stockDescription'));
+        return view('frontend.product.supplier_single_product', compact('product', 'title', 'regularPrice', 'currency', 'stockQuantity', 'stockDescription', 'supplierId'));
     }
 
     public function storeWishlist(Request $request)
@@ -616,6 +616,17 @@ class FrontendController extends Controller
                 ->where('available_qty', '>', 0)
                 ->orderBy('id', 'asc')
                 ->value('selling_price') ?? $product->price; 
+
+            $product->colors = $product->stock()
+                ->where('quantity', '>', 0)
+                ->distinct('color')
+                ->pluck('color');
+
+            $product->sizes = $product->stock()
+                ->where('quantity', '>', 0)
+                ->distinct('size')
+                ->pluck('size');  
+                 
             return $product;
         });
 

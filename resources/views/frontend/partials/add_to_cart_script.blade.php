@@ -75,7 +75,7 @@
             localStorage.setItem('cart', JSON.stringify(cart));
             updateCartCount();
 
-            console.log(JSON.parse(localStorage.getItem('cart')));
+            // console.log(JSON.parse(localStorage.getItem('cart')));
 
             toastr.success("Added to cart", "Success", {
                 closeButton: true, 
