@@ -17,11 +17,11 @@
             var bogoId = $(this).data('bogo-id') || null;
             var bundleId = $(this).data('bundle-id') || null;
 
-            var selectedSize = $('input[name="size"]:checked').val();
             var selectedColor = $('input[name="color"]:checked').val(); 
+            var selectedSize = $('input[name="size"]:checked').val();
 
-            if (!selectedSize) {
-                toastr.error("Please select a size.", "Error", {
+            if (!selectedColor) {
+                toastr.error("Please select a color.", "Error", {
                     closeButton: true,
                     progressBar: true,
                     timeOut: 3000,
@@ -30,8 +30,8 @@
                 return;
             }
 
-            if (!selectedColor) {
-                toastr.error("Please select a color.", "Error", {
+            if (!selectedSize) {
+                toastr.error("Please select a size.", "Error", {
                     closeButton: true,
                     progressBar: true,
                     timeOut: 3000,
