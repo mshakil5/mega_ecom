@@ -33,6 +33,7 @@ use App\Models\StockHistory;
 use App\Models\ContactEmail;
 use App\Mail\OrderConfirmation;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderStatusChangedMail;
 
 class OrderController extends Controller
 {
@@ -1205,7 +1206,7 @@ class OrderController extends Controller
                 ->rawColumns(['action','name'])
                 ->make(true);
         }
-        return view('admin.orders.all', compact('userId'));
+        return view('admin.orders.inhouse', compact('userId'));
     }
 
     public function pendingOrders()
@@ -1297,6 +1298,19 @@ class OrderController extends Controller
                 $transaction->created_ip = request()->ip();
                 $transaction->save();
             }
+
+            $emailToSend = $order->email ?? $order->user->email;
+
+            if ($emailToSend) {
+                Mail::to($emailToSend)->send(new OrderStatusChangedMail($order));
+            }
+
+            $contactEmails = ContactEmail::where('status', 1)->pluck('email');
+
+            foreach ($contactEmails as $email) {
+                Mail::to($email)->send(new OrderStatusChangedMail($order));
+            }
+
 
             return response()->json(['success' => true, 'message' => 'Order status updated successfully!']);
         }
