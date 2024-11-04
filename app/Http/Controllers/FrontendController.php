@@ -703,7 +703,7 @@ class FrontendController extends Controller
         session()->flush();
         session()->regenerate();
         session(['session_clear' => true]);
-        return view('auth.login');
+        return redirect()->route('login');
     }
 
 }

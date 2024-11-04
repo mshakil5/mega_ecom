@@ -48,7 +48,7 @@
                         use Carbon\Carbon;
                         $today = Carbon::today()->toDateString();
                         $user = auth()->user();
-                        $todayOrdersCount = $user->orders()->whereDate('created_at', $today)->count();
+                        $todayOrdersCount = $user->orders()->whereDate('purchase_date', $today)->count();
                         @endphp
 
                         <div class="col-lg-4 col-sm-6">
@@ -66,7 +66,7 @@
                         @php
                         $startOfWeek = Carbon::now()->startOfWeek()->toDateString();
                         $endOfWeek = Carbon::now()->endOfWeek()->toDateString();
-                        $thisWeekOrdersCount = $user->orders()->whereBetween('created_at', [$startOfWeek, $endOfWeek])->count();
+                        $thisWeekOrdersCount = $user->orders()->whereBetween('purchase_date', [$startOfWeek, $endOfWeek])->count();
                         @endphp
 
                         <div class="col-lg-4 col-sm-6">

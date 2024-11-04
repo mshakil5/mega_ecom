@@ -17,11 +17,15 @@
                         <p><strong>Email:</strong> {{ $order->user->email ?? $order->email }}</p>
                         <p><strong>Phone:</strong> {{ $order->user->phone ?? $order->phone }}</p>
                         <p><strong>Address:</strong> 
-                            {{ $order->user->house_number ?? $order->house_number }},
-                            {{ $order->user->street_name ?? $order->street_name }},
-                            <br>
-                            {{ $order->user->town ?? $order->town }},
-                            {{ $order->user->postcode ?? $order->postcode }}
+                            @php
+                                $addressParts = [
+                                    ($order->user->house_number ?? $order->house_number),
+                                    ($order->user->street_name ?? $order->street_name),
+                                    ($order->user->town ?? $order->town),
+                                    ($order->user->postcode ?? $order->postcode)
+                                ];
+                            @endphp
+                            {{ implode(', ', array_filter($addressParts)) }}
                         </p>
                     </div>
                     <!-- Order Information -->
