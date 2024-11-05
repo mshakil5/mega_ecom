@@ -19,6 +19,15 @@ class SpecialOfferController extends Controller
                     ->orderBy('id', 'DESC')
                     ->get();
 
+        foreach ($products as $product) {
+            $sellingPrice = $product->stockhistory()
+                                        ->where('available_qty', '>', 0)
+                                        ->orderBy('id', 'asc')
+                                        ->value('selling_price');
+
+            $product->price = $sellingPrice ?? $product->price;
+        }
+
         return view('admin.special_offer.create',compact('products'));
     }
 
@@ -83,6 +92,14 @@ class SpecialOfferController extends Controller
     {
         $specialOffer = SpecialOffer::with('specialOfferDetails')->findOrFail($id); 
         $products = Product::orderby('id','DESC')->get();
+        foreach ($products as $product) {
+            $sellingPrice = $product->stockhistory()
+                                        ->where('available_qty', '>', 0)
+                                        ->orderBy('id', 'asc')
+                                        ->value('selling_price');
+
+            $product->price = $sellingPrice ?? $product->price;
+        }
         return view('admin.special_offer.edit', compact('specialOffer', 'products'));
     }
 

@@ -17,25 +17,25 @@
                             <div class="row">
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="offer_name">Offer Name</label>
+                                        <label for="offer_name">Offer Name <span style="color: red;">*</span></label>
                                         <input type="text" class="form-control" id="offer_name" name="offer_name" placeholder="Enter offer name">
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="offer_title">Offer Title</label>
+                                        <label for="offer_title">Offer Title <span style="color: red;">*</span></label>
                                         <input type="text" class="form-control" id="offer_title" name="offer_title" placeholder="Enter offer title">
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="invoice">Start Date</label>
+                                        <label for="invoice">Start Date <span style="color: red;">*</span></label>
                                         <input type="date" class="form-control" id="start_date" name="start_date" placeholder="Enter Start Date">
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="end_date">End Date</label>
+                                        <label for="end_date">End Date <span style="color: red;">*</span></label>
                                         <input type="date" class="form-control" id="end_date" name="end_date" placeholder="Enter end date">
                                     </div>
                                 </div>
@@ -47,7 +47,7 @@
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="offer_image">Offer Image</label>
+                                        <label for="offer_image">Offer Image <span style="color: red;">*</span></label>
                                         <input type="file" class="form-control-file" id="offer_image" name="offer_image">
                                     </div>
                                 </div>
@@ -59,7 +59,7 @@
 
                                 <div class="col-sm-5">
                                     <div class="form-group">
-                                        <label for="product_id">Choose Product</label>
+                                        <label for="product_id">Choose Product <span style="color: red;">*</span></label>
                                         <select class="form-control" id="product_id" name="product_id">
                                             <option value="">Select...</option>
                                             @foreach($products as $product)

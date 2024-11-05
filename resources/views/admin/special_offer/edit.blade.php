@@ -18,37 +18,37 @@
                             <div class="row">
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="offer_name">Offer Name</label>
+                                        <label for="offer_name">Offer Name <span style="color: red;">*</span></label>
                                         <input type="text" class="form-control" id="offer_name" name="offer_name" placeholder="Enter offer name" value="{{ $specialOffer->offer_name }}">
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="offer_title">Offer Title</label>
+                                        <label for="offer_title">Offer Title <span style="color: red;">*</span></label>
                                         <input type="text" class="form-control" id="offer_title" name="offer_title" placeholder="Enter offer title" value="{{ $specialOffer->offer_title }}">
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="invoice">Start Date</label>
+                                        <label for="invoice">Start Date <span style="color: red;">*</span></label>
                                         <input type="date" class="form-control" id="start_date" name="start_date" value="{{ $specialOffer->start_date }}">
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="end_date">End Date</label>
+                                        <label for="end_date">End Date <span style="color: red;">*</span></label>
                                         <input type="date" class="form-control" id="end_date" name="end_date" value="{{ $specialOffer->end_date }}">
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-group">
-                                        <label for="end_date">Description</label>
+                                        <label for="end_date">Description <span style="color: red;">*</span></label>
                                         <textarea class="form-control" id="offer_description" name="offer_description" rows="3" placeholder="Enter offer description">{{ $specialOffer->offer_description }}</textarea>
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="offer_image">Offer Image</label>
+                                        <label for="offer_image">Offer Image <span style="color: red;">*</span></label>
                                         <input type="file" class="form-control-file" id="offer_image" name="offer_image" onchange="previewImage(event)">
                                     </div>
                                 </div>
@@ -64,7 +64,7 @@
 
                                 <div class="col-sm-5">
                                     <div class="form-group">
-                                        <label for="product_id">Choose Product</label>
+                                        <label for="product_id">Choose Product <span style="color: red;">*</span></label>
                                         <select class="form-control" id="product_id" name="product_id">
                                             <option value="">Select...</option>
                                             @foreach($products as $product)

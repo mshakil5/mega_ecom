@@ -391,6 +391,7 @@ class FrontendController extends Controller
     {
         $cartJson = $request->session()->get('cart', '[]');
         $cart = json_decode($cartJson, true);
+        // dd($cart);
         return view('frontend.cart', compact('cart'));
     }
 

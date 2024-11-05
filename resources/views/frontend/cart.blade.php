@@ -38,15 +38,6 @@
                                     $entity = $isBundle ? \App\Models\BundleProduct::find($item['bundleId']) : \App\Models\Product::find($item['productId']);
                                     $price = $item['price'];
 
-                                    if (!$isBundle && $entity) {
-                                        $sellingPrice = $entity->stockhistory()
-                                            ->where('available_qty', '>', 0)
-                                            ->orderBy('id', 'asc')
-                                            ->value('selling_price');
-                                        
-                                        $price = $sellingPrice ?? $price;
-                                    }
-
                                     if ($isBundle) {
                                         $bundle = \App\Models\BundleProduct::find($item['bundleId']);
                                         $stock = $bundle->quantity ?? 0;

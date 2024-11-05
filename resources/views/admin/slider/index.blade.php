@@ -31,7 +31,7 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="form-group">
-                                        <label>Title</label>
+                                        <label>Title*</label>
                                         <input type="text" class="form-control" id="title" name="title" placeholder="Enter title">
                                     </div>
                                 </div>

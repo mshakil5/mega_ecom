@@ -31,13 +31,13 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="form-group">
-                                        <label>Coupon Name</label>
+                                        <label>Coupon Name*</label>
                                         <input type="text" class="form-control" id="coupon_name" name="coupon_name" placeholder="Enter coupon name">
                                     </div>
                                 </div>
                                 <div class="col-sm-12">
                                     <div class="form-group">
-                                        <label>Coupon Type</label>
+                                        <label>Coupon Type*</label>
                                         <select class="form-control" id="coupon_type">
                                             <option value="">Select Coupon Type</option>
                                             <option value="1">Fixed Amount</option>
@@ -47,7 +47,7 @@
                                 </div>
                                 <div class="col-sm-12">
                                     <div class="form-group">
-                                        <label>Coupon Value</label>
+                                        <label>Coupon Value*</label>
                                         <input type="number" class="form-control" id="coupon_value" placeholder="Enter coupon value">
                                     </div>
                                 </div>

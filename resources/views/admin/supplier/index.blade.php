@@ -31,13 +31,13 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="form-group">
-                                        <label>Name*</label>
+                                        <label>Name <span style="color: red;">*</span></label>
                                         <input type="text" class="form-control" id="name" name="name" placeholder="Enter name">
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-group">
-                                        <label>Supplier ID*</label>
+                                        <label>Supplier ID <span style="color: red;">*</span></label>
                                         <input type="number" class="form-control" id="id_number" name="id_number" placeholder="Enter code">
                                     </div>
                                 </div>

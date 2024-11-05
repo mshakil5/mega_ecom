@@ -19,6 +19,15 @@ class FlashSellController extends Controller
                     ->orderBy('id', 'DESC')
                     ->get();
 
+        foreach ($products as $product) {
+            $sellingPrice = $product->stockhistory()
+                                        ->where('available_qty', '>', 0)
+                                        ->orderBy('id', 'asc')
+                                        ->value('selling_price');
+
+            $product->price = $sellingPrice ?? $product->price;
+        }
+
         return view('admin.flash_sell.create',compact('products'));
     }
 
@@ -83,6 +92,14 @@ class FlashSellController extends Controller
     {
         $flashSell = FlashSell::with('FlashSellDetails')->findOrFail($id); 
         $products = Product::orderby('id','DESC')->get();
+        foreach ($products as $product) {
+            $sellingPrice = $product->stockhistory()
+                                        ->where('available_qty', '>', 0)
+                                        ->orderBy('id', 'asc')
+                                        ->value('selling_price');
+
+            $product->price = $sellingPrice ?? $product->price;
+        }
         return view('admin.flash_sell.edit', compact('flashSell', 'products'));
     }
 

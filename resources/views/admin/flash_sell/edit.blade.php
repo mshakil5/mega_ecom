@@ -18,37 +18,37 @@
                             <div class="row">
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="flash_sell_name">Flash Sell Name</label>
+                                        <label for="flash_sell_name">Flash Sell Name <span style="color: red;">*</span></label>
                                         <input type="text" class="form-control" id="flash_sell_name" name="flash_sell_name" placeholder="Enter flash sell name" value="{{ $flashSell->flash_sell_name }}">
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="flash_sell_title">Flash Sell Title</label>
+                                        <label for="flash_sell_title">Flash Sell Title <span style="color: red;">*</span></label>
                                         <input type="text" class="form-control" id="flash_sell_title" name="flash_sell_title" placeholder="Enter flash sell title" value="{{ $flashSell->flash_sell_title }}">
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="start_date">Start Date</label>
+                                        <label for="start_date">Start Date <span style="color: red;">*</span></label>
                                         <input type="date" class="form-control" id="start_date" name="start_date" value="{{ $flashSell->start_date }}">
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="end_date">End Date</label>
+                                        <label for="end_date">End Date <span style="color: red;">*</span></label>
                                         <input type="date" class="form-control" id="end_date" name="end_date" value="{{ $flashSell->end_date }}">
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-group">
-                                        <label for="flash_sell_description">Description</label>
+                                        <label for="flash_sell_description">Description <span style="color: red;">*</span></label>
                                         <textarea class="form-control" id="flash_sell_description" name="flash_sell_description" rows="3" placeholder="Enter flash sell description">{{ $flashSell->flash_sell_description }}</textarea>
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="flash_sell_image">Flash Sell Image</label>
+                                        <label for="flash_sell_image">Flash Sell Image <span style="color: red;">*</span></label>
                                         <input type="file" class="form-control-file" id="flash_sell_image" name="flash_sell_image" onchange="previewImage(event)">
                                     </div>
                                 </div>
@@ -64,7 +64,7 @@
 
                                 <div class="col-sm-5">
                                     <div class="form-group">
-                                        <label for="product_id">Choose Product</label>
+                                        <label for="product_id">Choose Product <span style="color: red;">*</span></label>
                                         <select class="form-control" id="product_id" name="product_id">
                                             <option value="">Select...</option>
                                             @foreach($products as $product)

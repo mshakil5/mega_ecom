@@ -141,12 +141,6 @@
                                 $price = $item['price'];
 
                                 if (!$isBundle && $entity) {
-                                        $sellingPrice = $entity->stockhistory()
-                                            ->where('available_qty', '>', 0)
-                                            ->orderBy('id', 'asc')
-                                            ->value('selling_price');
-                                    
-                                        $price = $sellingPrice ?? $price;
                                         $itemTotal = $price * $item['quantity'];
                                     }  else {
                                     $bundlePrice = $entity->price ?? $entity->total_price;

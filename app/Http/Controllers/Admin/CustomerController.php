@@ -62,16 +62,7 @@ class CustomerController extends Controller
             return response()->json(['status'=> 303,'message'=>$message]);
             exit();
         }
-        if(empty($request->password)){            
-            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Password\" field..!</b></div>"; 
-            return response()->json(['status'=> 303,'message'=>$message]);
-            exit();
-        }
-        if(isset($request->password) && ($request->password != $request->confirm_password)){
-            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Password doesn't match.</b></div>";
-            return response()->json(['status'=> 303,'message'=>$message]);
-            exit();
-        }
+        
         $chkemail = User::where('email',$request->email)->first();
         if($chkemail){
             $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>This email already added.</b></div>";
@@ -126,11 +117,6 @@ class CustomerController extends Controller
             exit();
         }
         
-        if(isset($request->password) && ($request->password != $request->confirm_password)){
-            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Password doesn't match.</b></div>";
-            return response()->json(['status'=> 303,'message'=>$message]);
-            exit();
-        }
 
         $duplicateemail = User::where('email',$request->email)->where('id','!=', $request->codeid)->first();
         if($duplicateemail){

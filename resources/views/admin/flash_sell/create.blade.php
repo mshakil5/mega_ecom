@@ -17,37 +17,37 @@
                             <div class="row">
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="offer_name">Flash Sell Name</label>
+                                        <label for="offer_name">Flash Sell Name <span style="color: red;">*</span></label>
                                         <input type="text" class="form-control" id="flash_sell_name" name="flash_sell_name" placeholder="Enter flash sell name">
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="offer_title">Flash Sell Title</label>
+                                        <label for="offer_title">Flash Sell Title <span style="color: red;">*</span></label>
                                         <input type="text" class="form-control" id="flash_sell_title" name="flash_sell_title" placeholder="Enter flash title">
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="invoice">Start Date</label>
+                                        <label for="invoice">Start Date <span style="color: red;">*</span></label>
                                         <input type="date" class="form-control" id="start_date" name="start_date" placeholder="Enter Start Date">
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="end_date">End Date</label>
+                                        <label for="end_date">End Date <span style="color: red;">*</span></label>
                                         <input type="date" class="form-control" id="end_date" name="end_date" placeholder="Enter end date">
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-group">
-                                        <label for="end_date">Description</label>
+                                        <label for="end_date">Description <span style="color: red;">*</span></label>
                                         <textarea class="form-control" id="flash_sell_description" name="flash_sell_description" rows="3" placeholder="Enter flash sell description"></textarea>
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="flash_sell_image">Flash Sell Image</label>
+                                        <label for="flash_sell_image">Flash Sell Image <span style="color: red;">*</span></label>
                                         <input type="file" class="form-control-file" id="flash_sell_image" name="flash_sell_image">
                                     </div>
                                 </div>
@@ -59,7 +59,7 @@
 
                                 <div class="col-sm-5">
                                     <div class="form-group">
-                                        <label for="product_id">Choose Product</label>
+                                        <label for="product_id">Choose Product <span style="color: red;">*</span></label>
                                         <select class="form-control" id="product_id" name="product_id">
                                             <option value="">Select...</option>
                                             @foreach($products as $product)

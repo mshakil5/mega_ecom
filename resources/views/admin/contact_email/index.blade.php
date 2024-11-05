@@ -36,13 +36,13 @@
                   <div class="row">
                     <div class="col-sm-12">
                       <div class="form-group">
-                        <label>Email</label>
+                        <label>Email*</label>
                         <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
                       </div>
                     </div>
                     <div class="col-sm-12">
                       <div class="form-group">
-                        <label>Email Holder</label>
+                        <label>Email Holder*</label>
                         <input type="text" id="email_holder" name="email_holder" class="form-control" placeholder="Enter email holder name">
                       </div>
                     </div>

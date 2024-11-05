@@ -29,25 +29,25 @@
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="form-group">
-                                            <label> Warehouse Name*</label>
+                                            <label> Warehouse Name <span style="color: red;">*</span></label>
                                             <input type="text" class="form-control" id="name" name="name" placeholder="Enter warehouse name">
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
                                         <div class="form-group">
-                                            <label>Warehouse Location*</label>
+                                            <label>Warehouse Location <span style="color: red;">*</span></label>
                                             <input type="text" class="form-control" id="location" name="location" placeholder="Enter warehouse location">
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
                                         <div class="form-group">
-                                            <label>Operator Name*</label>
+                                            <label>Operator Name <span style="color: red;">*</span></label>
                                             <input type="text" class="form-control" id="operator_name" name="operator_name" placeholder="Enter operator name">
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
                                         <div class="form-group">
-                                            <label>Operator Phone*</label>
+                                            <label>Operator Phone <span style="color: red;">*</span></label>
                                             <input type="number" class="form-control" id="operator_phone" name="operator_phone" placeholder="Enter operator phone">
                                         </div>
                                     </div>
