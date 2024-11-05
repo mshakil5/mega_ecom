@@ -466,19 +466,12 @@
                     } else if (formData.payment_method === 'paypal') {
                         window.location.href = response.redirectUrl;
                     } else if(formData.payment_method === 'cashOnDelivery') {
-                        swal({
-                                text: "Order Placed Successfully. Thank you for shopping with us.",
-                                icon: "success",
-                                button: {
-                                    text: "OK",
-                                    className: "swal-button--confirm"
-                                }
-                        }).then(() => {
+                        if (response.success) {
                             localStorage.removeItem('cart');
                             localStorage.removeItem('wishlist');
-                            window.open(response.redirectUrl, '_blank');
-                            window.location.href = '{{ route("frontend.homepage") }}';
-                        });
+                            updateCartCount();
+                            window.location.href = response.redirectUrl;
+                        }
                     } else {
                         localStorage.removeItem('cart');
                         localStorage.removeItem('wishlist');
@@ -509,11 +502,12 @@
         $('#applyCoupon').click(function(e) {
             e.preventDefault();
             var couponName = $('#couponName').val();
+            var guest_email = $('#email').val();
 
             $.ajax({
                 url: '/check-coupon',
                 type: 'GET',
-                data: { coupon_name: couponName },
+                data: { guest_email: guest_email, coupon_name: couponName },
                 success: function(response) {
                     if (response.success) {
                         $('#couponDetails').show();
@@ -522,12 +516,13 @@
                         $('#couponId').val(response.coupon_id);
                         updateTotal();
                         toastr.success("Valid Coupon", "Coupon applied successfully!", "success");
-                    } else {
-                        toastr.error("Valid Coupon", "Coupon applied successfully!", "success");
+                    }  else {
+                        toastr.error(response.message, "Coupon Error");
                     }
                 },
-                error: function() {
-                    swal("Error", "Error applying coupon.", "error");
+                error: function(xhr , status, error) {
+                    // console.error(xhr.responseText);
+                    toastr.error("Error", "Error applying coupon.", "error");
                 }
             });
         });

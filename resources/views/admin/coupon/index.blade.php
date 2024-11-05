@@ -35,7 +35,7 @@
                                         <input type="text" class="form-control" id="coupon_name" name="coupon_name" placeholder="Enter coupon name">
                                     </div>
                                 </div>
-                                <div class="col-sm-12">
+                                <div class="col-sm-6">
                                     <div class="form-group">
                                         <label>Coupon Type*</label>
                                         <select class="form-control" id="coupon_type">
@@ -45,10 +45,23 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-sm-12">
+                                <div class="col-sm-6">
                                     <div class="form-group">
                                         <label>Coupon Value*</label>
                                         <input type="number" class="form-control" id="coupon_value" placeholder="Enter coupon value">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>Max Use Per User*</label>
+                                        <input type="number" class="form-control" id="max_use_per_user" placeholder="Enter max use per user" required min="1">
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>Total Max Use*</label>
+                                        <input type="number" class="form-control" id="total_max_use" placeholder="Enter total max use" required min="1">
                                     </div>
                                 </div>
                             </div>
@@ -80,8 +93,9 @@
                                     <th>Name</th>
                                     <th>Coupon Type</th>
                                     <th>Value</th>
-                                    <th>Used Times</th>
-                                    <th>Used By</th>
+                                    <th>Max Use Per User</th>
+                                    <th>Total Max Use</th>
+                                    <th>Orders</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -99,24 +113,13 @@
                                         @endif
                                     </td>
                                     <td>{{ $data->coupon_value }}</td>
-                                    <td>{{ $data->times_used }}</td>
+                                    <td>{{ $data->max_use_per_user }}</td>
+                                    <td>{{ $data->total_max_use }}</td>
                                     <td>
-                                    @php
-                                        $usages = $data->usages;
-                                        $userNames = [];
-
-                                        foreach ($usages as $usage) {
-                                            if ($usage->user_id) {
-                                                $userNames[] = $usage->user->name;
-                                            } else {
-                                                $userNames[] = $usage->guest_name;
-                                            }
-                                        }
-
-                                        $displayNames = !empty($userNames) ? implode(', ', $userNames) : 'N/A';
-                                    @endphp
-                                    {{ $displayNames }}
-                                </td>
+                                        <a href="{{ route('getallorderbycoupon', $data->id) }}" title="View Orders">
+                                            <i class="fa fa-shopping-cart" style="color: #2196f3; font-size:16px;"></i>
+                                        </a>
+                                    </td>
 
                                     <td>
                                         <div class="custom-control custom-switch">
@@ -226,6 +229,8 @@
               form_data.append("coupon_name", $("#coupon_name").val());
               form_data.append("coupon_type", $("#coupon_type").val());
               form_data.append("coupon_value", $("#coupon_value").val());
+              form_data.append("max_use_per_user", $("#max_use_per_user").val());
+              form_data.append("total_max_use", $("#total_max_use").val());
 
               $.ajax({
                 url: url,
@@ -262,6 +267,8 @@
               form_data.append("coupon_name", $("#coupon_name").val());
               form_data.append("coupon_type", $("#coupon_type").val());
               form_data.append("coupon_value", $("#coupon_value").val());
+              form_data.append("max_use_per_user", $("#max_use_per_user").val());
+              form_data.append("total_max_use", $("#total_max_use").val());
               form_data.append("codeid", $("#codeid").val());
               
               $.ajax({
@@ -343,6 +350,8 @@
           $("#coupon_name").val(data.coupon_name);
           $("#coupon_type").val(data.coupon_type);
           $("#coupon_value").val(data.coupon_value);
+          $("#max_use_per_user").val(data.max_use_per_user);
+          $("#total_max_use").val(data.total_max_use);
           $("#codeid").val(data.id);
           $("#addBtn").val('Update');
           $("#addBtn").html('Update');

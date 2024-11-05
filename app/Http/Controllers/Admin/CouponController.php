@@ -31,11 +31,23 @@ class CouponController extends Controller
             return response()->json(['status'=> 303,'message'=>$message]);
             exit();
         }
+        if(empty($request->max_use_per_user)){
+            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Max Use Per User \" field..!</b></div>";
+            return response()->json(['status'=> 303,'message'=>$message]);
+            exit();
+        }
+        if(empty($request->total_max_use)){
+            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Total Max Use \" field..!</b></div>";
+            return response()->json(['status'=> 303,'message'=>$message]);
+            exit();
+        }
 
         $data = new Coupon;
         $data->coupon_name = $request->coupon_name;
         $data->coupon_type = $request->coupon_type;
         $data->coupon_value = $request->coupon_value;
+        $data->max_use_per_user = $request->max_use_per_user;
+        $data->total_max_use = $request->total_max_use;
         $data->created_by = auth()->id(); 
         
         if ($data->save()) {
@@ -72,11 +84,23 @@ class CouponController extends Controller
             return response()->json(['status'=> 303,'message'=>$message]);
             exit();
         }
+        if(empty($request->max_use_per_user)){
+            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Max Use Per User \" field..!</b></div>";
+            return response()->json(['status'=> 303,'message'=>$message]);
+            exit();
+        }
+        if(empty($request->total_max_use)){
+            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Total Max Use \" field..!</b></div>";
+            return response()->json(['status'=> 303,'message'=>$message]);
+            exit();
+        }
 
         $data = Coupon::find($request->codeid);
         $data->coupon_name = $request->coupon_name;
         $data->coupon_type = $request->coupon_type;
         $data->coupon_value = $request->coupon_value;
+        $data->max_use_per_user = $request->max_use_per_user;
+        $data->total_max_use = $request->total_max_use;
         $data->updated_by = auth()->id();
 
           if ($data->save()) {

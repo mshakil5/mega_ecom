@@ -272,6 +272,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     //Orders
     Route::get('/all-orders/{userId?}', [OrderController::class, 'getAllOrder'])->name('getallorder');
+    Route::get('/coupon-all-orders/{couponId}', [OrderController::class, 'getAllOrderByCoupon'])->name('getallorderbycoupon');
     Route::get('/all-inhouse-orders/{userId?}', [OrderController::class, 'getInHouseOrder'])->name('getinhouseorder');
     Route::get('/pending-orders', [OrderController::class, 'pendingOrders'])->name('pendingorders');
     Route::get('/processing-orders', [OrderController::class, 'processingOrders'])->name('processingorders');

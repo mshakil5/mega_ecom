@@ -107,6 +107,8 @@ Route::post('/place-order', [OrderController::class, 'placeOrder'])->name('place
 Route::get('payment/success', [OrderController::class, 'paymentSuccess'])->name('payment.success');
 Route::get('payment/cancel', [OrderController::class, 'paymentCancel'])->name('payment.cancel');
 
+Route::get('/order/success', [OrderController::class, 'orderSuccess'])->name('order.success');
+
 Route::get('/order/{encoded_order_id}', [OrderController::class, 'generatePDF'])->name('generate-pdf');
 
 Route::post('/products/filter', [FrontendController::class, 'filter']);

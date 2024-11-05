@@ -28,6 +28,7 @@ use App\Models\Campaign;
 use App\Models\CampaignRequest;
 use App\Models\CampaignRequestProduct;
 use App\Models\Brand;
+use App\Models\CouponUsage;
 
 class FrontendController extends Controller
 {
@@ -562,18 +563,64 @@ class FrontendController extends Controller
     public function checkCoupon(Request $request)
     {
         $coupon = Coupon::where('coupon_name', $request->coupon_name)->first();
-
-        if ($coupon && $coupon->status == 1) {
+    
+        // Check if the coupon exists
+        if (!$coupon) {
             return response()->json([
-                'success' => true,
-                'coupon_id' => $coupon->id,
-                'coupon_type' => $coupon->coupon_type,
-                'coupon_value' => $coupon->coupon_value
+                'success' => false,
+                'message' => 'Coupon not found.'
             ]);
-        } else {
-            return response()->json(['success' => false]);
         }
+
+        // Check if the coupon is active
+        if ($coupon->status != 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Coupon is inactive.'
+            ]);
+        }
+    
+        //check coupon usage
+        $totalUsage = CouponUsage::where('coupon_id', $coupon->id)->count();
+        if ($coupon->total_max_use > 0 && $totalUsage >= $coupon->total_max_use) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Coupon has reached its maximum usage limit.'
+            ]);
+        }
+    
+        //check max usage per user
+        if (auth()->check()) {
+            $userId = auth()->user()->id;
+            $userUsage = CouponUsage::where('coupon_id', $coupon->id)->where('user_id', $userId)->count();
+    
+            if ($coupon->max_use_per_user > 0 && $userUsage >= $coupon->max_use_per_user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You have exceeded the limit for using this coupon.'
+                ]);
+            }
+        } else {
+            //check max usage per guest
+            $guestEmail = $request->input('guest_email');
+            $guestUsage = CouponUsage::where('coupon_id', $coupon->id)->where('guest_email', $guestEmail)->count();
+    
+            if ($coupon->max_use_per_user > 0 && $guestUsage >= $coupon->max_use_per_user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You have exceeded the limit for using this coupon.'
+                ]);
+            }
+        }
+    
+        return response()->json([
+            'success' => true,
+            'coupon_id' => $coupon->id,
+            'coupon_type' => $coupon->coupon_type,
+            'coupon_value' => $coupon->coupon_value
+        ]);
     }
+    
 
     public function filter(Request $request)
     {

@@ -422,7 +422,10 @@ class OrderController extends Controller
             });
         }
 
-        return response()->json(['redirectUrl' => $pdfUrl]);
+        return response()->json([
+            'success' => true,
+            'redirectUrl' => route('order.success', ['pdfUrl' => $pdfUrl])
+        ]);
     }
 
     private function initiateStripePayment($netAmount, $formData)
@@ -704,8 +707,9 @@ class OrderController extends Controller
         });
 
         return response()->json([
+            'success' => true,
             'client_secret' => $paymentIntent->client_secret,
-            'redirectUrl' => $pdfUrl
+            'redirectUrl' => route('order.success', ['pdfUrl' => $pdfUrl])
         ]);
     }
 
@@ -1036,6 +1040,12 @@ class OrderController extends Controller
         return view('frontend.order.cancel');
     }
 
+    public function orderSuccess(Request $request)
+    {
+        $pdfUrl = $request->input('pdfUrl');
+        return view('frontend.order.success', compact('pdfUrl'));
+    }
+
     public function generatePDF($encoded_order_id)
     {
         $order_id = base64_decode($encoded_order_id);
@@ -1260,6 +1270,82 @@ class OrderController extends Controller
                 ->make(true);
         }
         return view('admin.orders.inhouse', compact('userId'));
+    }
+
+    public function getAllOrderByCoupon(Request $request, $couponId)
+    {
+        if ($request->ajax()) {
+            $couponUsages = CouponUsage::where('coupon_id', $couponId)
+            ->pluck('order_id'); 
+            
+            $ordersQuery = Order::with('user')->whereIn('id', $couponUsages)->whereIn('order_type', [0, 1])->where('status', '!=', 7);
+
+            return DataTables::of($ordersQuery->orderBy('id', 'desc'))
+                ->addColumn('action', function($order) {
+                    $invoiceButton = '';
+                    if ($order->order_type === 0) {
+                        $invoiceButton = '<a href="' . route('generate-pdf', ['encoded_order_id' => base64_encode($order->id)]) . '" class="btn btn-success btn-round btn-shadow" target="_blank">
+                                            <i class="fas fa-receipt"></i> Invoice
+                                        </a>';
+                    } elseif ($order->order_type === 1) {
+                        $invoiceButton = '<a href="' . route('in-house-sell.generate-pdf', ['encoded_order_id' => base64_encode($order->id)]) . '" class="btn btn-success btn-round btn-shadow" target="_blank">
+                                            <i class="fas fa-receipt"></i> Invoice
+                                        </a>';
+                    }
+                
+                    $detailsButton = '<a href="' . route('admin.orders.details', ['orderId' => $order->id]) . '" class="btn btn-info btn-round btn-shadow">
+                                        <i class="fas fa-info-circle"></i> Details
+                                    </a>
+                                    <a href="' . route('order-edit', ['orderId' => $order->id]) . '" class="btn btn-warning btn-round btn-shadow">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a> ';
+                
+                    return $invoiceButton . ' ' . $detailsButton;
+                })            
+                ->editColumn('subtotal_amount', function ($order) {
+                    return number_format($order->subtotal_amount, 2);
+                })
+                ->editColumn('paid_amount', function ($order) {
+                    return number_format($order->paid_amount, 2);
+                })
+                ->editColumn('due_amount', function ($order) {
+                    return number_format($order->due_amount, 2);
+                })
+                ->editColumn('discount_amount', function ($order) {
+                    return number_format($order->discount_amount, 2);
+                })
+                ->editColumn('net_amount', function ($order) {
+                    return number_format($order->net_amount, 2);
+                })
+                ->editColumn('status', function ($order) {
+                    $statusLabels = [
+                        1 => 'Pending',
+                        2 => 'Processing',
+                        3 => 'Packed',
+                        4 => 'Shipped',
+                        5 => 'Delivered',
+                        6 => 'Returned',
+                        7 => 'Cancelled'
+                    ];
+                    return isset($statusLabels[$order->status]) ? $statusLabels[$order->status] : 'Unknown';
+                })
+                ->addColumn('purchase_date', function ($order) {
+                    return Carbon::parse($order->purchase_date)->format('d-m-Y');
+                })
+                ->addColumn('name', function ($order) {
+                    return ($order->user ? 
+                            ($order->user->name ?? 'N/A') . '<br>' . 
+                            ($order->user->email ?? 'N/A') . '<br>' . 
+                            ($order->user->phone ?? 'N/A') : 
+                            'User  not found');
+                })
+                ->addColumn('type', function ($order) {
+                    return $order->order_type == 0 ? 'Frontend' : 'In-house Sale';
+                })
+                ->rawColumns(['action','name'])
+                ->make(true);
+        }
+        return view('admin.orders.coupon', compact('couponId'));
     }
 
     public function pendingOrders()
