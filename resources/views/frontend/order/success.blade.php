@@ -16,7 +16,7 @@
         localStorage.removeItem('wishlist');
 
         setTimeout(function() {
-            window.location.href = '{{ $pdfUrl }}';
+            window.open('{{ $pdfUrl }}', '_blank');
         }, 2000);
     };
 </script>

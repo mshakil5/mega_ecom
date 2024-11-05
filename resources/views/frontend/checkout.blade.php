@@ -442,18 +442,9 @@
                 type: 'POST',
                 data: formData,
                 success: function(response) {
-
-                    swal({
-                        text: "Order Placed Successfully. Thank you for shopping with us.",
-                        icon: "success",
-                        button: {
-                            text: "OK",
-                            className: "swal-button--confirm"
-                        }
-                    }).then(() => {
-                        window.open(response.pdf_url, '_blank');
-                        window.location.href = '{{ route('frontend.homepage') }}';
-                    });
+                    if (response.pdf_url) {
+                        window.location.href = response.pdf_url;
+                    }
 
                     if (formData.payment_method === 'stripe') {
                         stripe.confirmCardPayment(response.client_secret, {
@@ -470,25 +461,14 @@
                                     localStorage.removeItem('cart');
                                     localStorage.removeItem('wishlist');
                                     updateCartCount();
-                                    window.open(response.redirectUrl, '_blank');
-                                    window.location.href = '{{ route("frontend.homepage") }}';
+                                    window.location.href = response.redirectUrl;
                                 }
                             }
                         }).finally(function() {
                             $('#loader').hide();
                         });
                     } else if (formData.payment_method === 'paypal') {
-                        swal({
-                            text: "Please proceed to PayPal to complete your payment.",
-                            icon: "info",
-                            button: {
-                                text: "OK",
-                                className: "swal-button--confirm"
-                            }
-                        }).then(() => {
-                            window.open(response.redirectUrl, '_blank');
-                            window.location.href = '{{ route("frontend.homepage") }}';
-                        });
+                        window.location.href = response.redirectUrl;
                     } else if(formData.payment_method === 'cashOnDelivery') {
                         swal({
                                 text: "Order Placed Successfully. Thank you for shopping with us.",
