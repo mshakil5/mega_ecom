@@ -217,6 +217,7 @@
                     <div id="couponDetails" class="mt-2 alert alert-success" style="display: none;">
                         <strong>Coupon Applied!</strong>
                     </div>
+                    <input type="hidden" id="couponId" name="coupon_id" value="">
                      <div style="display: none;">
                         <span id="couponValue"></span> <span id="couponType"></span>
                      </div>
@@ -401,6 +402,7 @@
                 'payment_method': $('input[name="payment_method"]:checked').val(),
                 'discount_percentage': $('#couponType').text().includes('Percentage') ? $('#couponValue').text() : null,
                 'discount_amount': $('#couponType').text().includes('Fixed Amount') ? $('#couponValue').text() : null,
+                'coupon_id': $('#couponId').val(),
                 'order_summary': {!! json_encode($cart) !!},
                 '_token': '{{ csrf_token() }}'
             };
@@ -523,10 +525,11 @@
                         $('#couponDetails').show();
                         $('#couponType').text(response.coupon_type === 1 ? 'Fixed Amount' : 'Percentage');
                         $('#couponValue').text(response.coupon_value);
+                        $('#couponId').val(response.coupon_id);
                         updateTotal();
-                        swal("Valid Coupon", "Coupon applied successfully!", "success");
+                        toastr.success("Valid Coupon", "Coupon applied successfully!", "success");
                     } else {
-                        swal("Invalid Coupon", "Please enter a valid coupon.", "error");
+                        toastr.error("Valid Coupon", "Coupon applied successfully!", "success");
                     }
                 },
                 error: function() {

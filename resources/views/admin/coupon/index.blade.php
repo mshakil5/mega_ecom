@@ -80,6 +80,8 @@
                                     <th>Name</th>
                                     <th>Coupon Type</th>
                                     <th>Value</th>
+                                    <th>Used Times</th>
+                                    <th>Used By</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -97,6 +99,25 @@
                                         @endif
                                     </td>
                                     <td>{{ $data->coupon_value }}</td>
+                                    <td>{{ $data->times_used }}</td>
+                                    <td>
+                                    @php
+                                        $usages = $data->usages;
+                                        $userNames = [];
+
+                                        foreach ($usages as $usage) {
+                                            if ($usage->user_id) {
+                                                $userNames[] = $usage->user->name;
+                                            } else {
+                                                $userNames[] = $usage->guest_name;
+                                            }
+                                        }
+
+                                        $displayNames = !empty($userNames) ? implode(', ', $userNames) : 'N/A';
+                                    @endphp
+                                    {{ $displayNames }}
+                                </td>
+
                                     <td>
                                         <div class="custom-control custom-switch">
                                             <input type="checkbox" class="custom-control-input toggle-status" id="customSwitchStatus{{ $data->id }}" data-id="{{ $data->id }}" {{ $data->status == 1 ? 'checked' : '' }}>

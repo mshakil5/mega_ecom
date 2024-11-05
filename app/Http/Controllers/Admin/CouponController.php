@@ -10,7 +10,7 @@ class CouponController extends Controller
 {
     public function getCoupon()
     {
-        $data = Coupon::orderby('id','DESC')->get();
+        $data = Coupon::orderby('id', 'DESC')->with('usages.user')->get();
         return view('admin.coupon.index', compact('data'));
     }
 

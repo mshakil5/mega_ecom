@@ -565,6 +565,7 @@ class FrontendController extends Controller
         if ($coupon && $coupon->status == 1) {
             return response()->json([
                 'success' => true,
+                'coupon_id' => $coupon->id,
                 'coupon_type' => $coupon->coupon_type,
                 'coupon_value' => $coupon->coupon_value
             ]);

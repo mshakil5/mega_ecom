@@ -34,6 +34,8 @@ use App\Models\ContactEmail;
 use App\Mail\OrderConfirmation;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\OrderStatusChangedMail;
+use App\Models\Coupon;
+use App\Models\CouponUsage;
 
 class OrderController extends Controller
 {
@@ -296,6 +298,23 @@ class OrderController extends Controller
                 $pdfUrl = route('generate-pdf', ['encoded_order_id' => $encoded_order_id]);
 
                 $this->sendOrderEmail($order, $pdfUrl);
+
+                if ($discountAmount > 0 && isset($formData['coupon_id'])) {
+                    $couponUsage = new CouponUsage();
+                    $couponUsage->coupon_id = $formData['coupon_id'];
+                    $couponUsage->order_id = $order->id;
+                
+                    if (auth()->check()) {
+                        $couponUsage->user_id = auth()->user()->id;
+                    } else {
+                        $couponUsage->guest_name = $formData['name'] ?? null;
+                        $couponUsage->guest_email = $formData['email'] ?? null;
+                    }
+                
+                    $couponUsage->save();
+    
+                    Coupon::where('id', $formData['coupon_id'])->increment('times_used', 1);
+                }
     
                 if (isset($formData['order_summary']) && is_array($formData['order_summary'])) {
                     foreach ($formData['order_summary'] as $item) {
@@ -561,6 +580,23 @@ class OrderController extends Controller
             $pdfUrl = route('generate-pdf', ['encoded_order_id' => $encoded_order_id]);
 
             $this->sendOrderEmail($order, $pdfUrl);
+
+            if ($discountAmount > 0 && isset($formData['coupon_id'])) {
+                $couponUsage = new CouponUsage();
+                $couponUsage->coupon_id = $formData['coupon_id'];
+                $couponUsage->order_id = $order->id;
+            
+                if (auth()->check()) {
+                    $couponUsage->user_id = auth()->user()->id;
+                } else {
+                    $couponUsage->guest_name = $formData['name'] ?? null;
+                    $couponUsage->guest_email = $formData['email'] ?? null;
+                }
+            
+                $couponUsage->save();
+
+                Coupon::where('id', $formData['coupon_id'])->increment('times_used', 1);
+            }
 
             if (isset($formData['order_summary']) && is_array($formData['order_summary'])) {
                 foreach ($formData['order_summary'] as $item) {
@@ -856,6 +892,23 @@ class OrderController extends Controller
             $pdfUrl = route('generate-pdf', ['encoded_order_id' => $encoded_order_id]);
 
             $this->sendOrderEmail($order, $pdfUrl);
+
+            if ($discountAmount > 0 && isset($formData['coupon_id'])) {
+                $couponUsage = new CouponUsage();
+                $couponUsage->coupon_id = $formData['coupon_id'];
+                $couponUsage->order_id = $order->id;
+            
+                if (auth()->check()) {
+                    $couponUsage->user_id = auth()->user()->id;
+                } else {
+                    $couponUsage->guest_name = $formData['name'] ?? null;
+                    $couponUsage->guest_email = $formData['email'] ?? null;
+                }
+            
+                $couponUsage->save();
+
+                Coupon::where('id', $formData['coupon_id'])->increment('times_used', 1);
+            }
 
             if (isset($formData['order_summary']) && is_array($formData['order_summary'])) {
                 foreach ($formData['order_summary'] as $item) {

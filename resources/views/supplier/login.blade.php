@@ -54,7 +54,7 @@
                         </div>
                     </form>
 
-                    <div class="text-center mt-3">
+                    <div class="text-center mt-3 d-none">
                         <button class="btn btn-primary py-2 px-4" id="registerButton" onclick="window.location.href='{{ route('supplier.register') }}'">
                             Register As Supplier
                         </button>

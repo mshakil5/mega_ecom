@@ -17,6 +17,7 @@ return new class extends Migration
             $table->boolean('coupon_type')->default(1); // 1 == Fixed Amount, 2 == Percentage
             $table->decimal('coupon_value', 10, 2)->nullable();
             $table->boolean('status')->default(1);
+            $table->integer('times_used')->default(0);
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->timestamps();
