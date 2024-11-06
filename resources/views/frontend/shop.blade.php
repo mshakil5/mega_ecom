@@ -392,9 +392,6 @@
                         });
 
                     $('#product-list').html(productListHtml);
-                    $('#product-list').html(productListHtml);
-
-                        $('#product-list').html(productListHtml);
 
                     }
                 },

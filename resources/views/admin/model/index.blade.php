@@ -31,7 +31,7 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="form-group">
-                                        <label>Name</label>
+                                        <label>Name <span style="color: red;">*</span></label>
                                         <input type="text" class="form-control" id="name" name="name" placeholder="Enter model name">
                                     </div>
                                 </div>
@@ -62,7 +62,6 @@
                                 <tr>
                                     <th>Sl</th>
                                     <th>Name</th>
-                                    <th>Slug</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -71,7 +70,6 @@
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
                                     <td>{{ $data->name }}</td>
-                                    <td>{{ $data->slug }}</td>
                                     <td>
                                         <a id="EditBtn" rid="{{ $data->id }}">
                                             <i class="fa fa-edit" style="color: #2196f3; font-size:16px;"></i>

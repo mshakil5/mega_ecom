@@ -31,7 +31,7 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="form-group">
-                                        <label>Color</label>
+                                        <label>Color <span style="color: red;">*</span></label>
                                         <input type="text" class="form-control" id="color" name="color" placeholder="Enter color">
                                     </div>
                                 </div>

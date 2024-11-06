@@ -31,7 +31,7 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="form-group">
-                                        <label>Name</label>
+                                        <label>Name <span style="color: red;">*</span></label>
                                         <input type="text" class="form-control" id="name" name="name" placeholder="Enter brand name">
                                     </div>
                                 </div>

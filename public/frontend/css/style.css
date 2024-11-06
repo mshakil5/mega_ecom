@@ -19885,4 +19885,8 @@ button:focus {
     content: '\f7e3'
 }
 
+.black {
+    color: #333 !important;
+}
+
 /*# sourceMappingURL=style.css.map */

@@ -1175,11 +1175,15 @@ class OrderController extends Controller
                     return Carbon::parse($order->purchase_date)->format('d-m-Y');
                 })
                 ->addColumn('name', function ($order) {
-                    return ($order->user ? 
-                            ($order->user->name ?? 'N/A') . '<br>' . 
-                            ($order->user->email ?? 'N/A') . '<br>' . 
-                            ($order->user->phone ?? 'N/A') : 
-                            'User  not found');
+                    if ($order->user) {
+                        return ($order->user->name ?? '') . '<br>' . 
+                               ($order->user->email ?? '') . '<br>' . 
+                               ($order->user->phone ?? '');
+                    } else {
+                        return ($order->name ?? '') . '<br>' . 
+                               ($order->email ?? '') . '<br>' . 
+                               ($order->phone ?? '');
+                    }
                 })
                 ->addColumn('type', function ($order) {
                     return $order->order_type == 0 ? 'Frontend' : 'In-house Sale';
@@ -1257,11 +1261,15 @@ class OrderController extends Controller
                     return Carbon::parse($order->purchase_date)->format('d-m-Y');
                 })
                 ->addColumn('name', function ($order) {
-                    return ($order->user ? 
-                            ($order->user->name ?? 'N/A') . '<br>' . 
-                            ($order->user->email ?? 'N/A') . '<br>' . 
-                            ($order->user->phone ?? 'N/A') : 
-                            'User  not found');
+                    if ($order->user) {
+                        return ($order->user->name ?? '') . '<br>' . 
+                               ($order->user->email ?? '') . '<br>' . 
+                               ($order->user->phone ?? '');
+                    } else {
+                        return ($order->name ?? '') . '<br>' . 
+                               ($order->email ?? '') . '<br>' . 
+                               ($order->phone ?? '');
+                    }
                 })
                 ->addColumn('type', function ($order) {
                     return $order->order_type == 0 ? 'Frontend' : 'In-house Sale';
@@ -1333,11 +1341,15 @@ class OrderController extends Controller
                     return Carbon::parse($order->purchase_date)->format('d-m-Y');
                 })
                 ->addColumn('name', function ($order) {
-                    return ($order->user ? 
-                            ($order->user->name ?? 'N/A') . '<br>' . 
-                            ($order->user->email ?? 'N/A') . '<br>' . 
-                            ($order->user->phone ?? 'N/A') : 
-                            'User  not found');
+                    if ($order->user) {
+                        return ($order->user->name ?? '') . '<br>' . 
+                               ($order->user->email ?? '') . '<br>' . 
+                               ($order->user->phone ?? '');
+                    } else {
+                        return ($order->name ?? '') . '<br>' . 
+                               ($order->email ?? '') . '<br>' . 
+                               ($order->phone ?? '');
+                    }
                 })
                 ->addColumn('type', function ($order) {
                     return $order->order_type == 0 ? 'Frontend' : 'In-house Sale';

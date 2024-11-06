@@ -30,7 +30,7 @@
                             <div class="form-row">
                                 <div id="product_display"></div>
                                 <div class="form-group col-md-12" id="product_section">
-                                    <label for="product_id">Select Product</label>
+                                    <label for="product_id">Select Product <span style="color: red;">*</span></label>
                                     <select class="form-control select2" id="product_id" name="product_id">
                                         @foreach($products as $product)
                                         <option value="{{ $product->id }}">{{ $product->name }}</option>
@@ -38,7 +38,7 @@
                                     </select>
                                 </div>
                                  <div class="form-group col-md-12">
-                                    <label for="related_product_ids">Products</label>
+                                    <label for="related_product_ids">Products <span style="color: red;">*</span></label>
                                     <select class="form-control select2" id="related_product_ids" name="related_product_ids[]" multiple="multiple" data-placeholder="Select products">
                                         @foreach($products as $product)
                                         <option value="{{ $product->id }}">{{ $product->name }}</option>

@@ -19,6 +19,11 @@ class SubCategoryController extends Controller
 
     public function subCategoryStore(Request $request)
     {
+        if(empty($request->category_id)){
+            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Category \" field..!</b></div>";
+            return response()->json(['status'=> 303,'message'=>$message]);
+            exit();
+        }
         if(empty($request->name)){
             $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Sub category name \" field..!</b></div>";
             return response()->json(['status'=> 303,'message'=>$message]);
@@ -57,6 +62,11 @@ class SubCategoryController extends Controller
 
     public function subCategoryUpdate(Request $request)
     {
+        if(empty($request->category_id)){
+            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Category \" field..!</b></div>";
+            return response()->json(['status'=> 303,'message'=>$message]);
+            exit();
+        }
         if(empty($request->name)){
             $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Sub category name \" field..!</b></div>";
             return response()->json(['status'=> 303,'message'=>$message]);

@@ -1,7 +1,7 @@
 <script>
     $(document).ready(function() {
         const $searchInput = $('#search-input');
-        const $searchResults = $('#search-results');
+        const $searchResults = $('.search-products');
         const $searchIcon = $('#search-icon');
 
         function performSearch() {
@@ -11,8 +11,57 @@
                     url: "{{ route('search.products') }}",
                     method: 'GET',
                     data: { query: query },
-                    success: function(data) {
-                        $searchResults.html(data);
+                    success: function(response) {
+                        console.log(response.products);
+                        const products = response.products;
+                        let productListHtml = '';
+
+                        products.forEach(product => {
+                            if (product.slug && product.feature_image && product.name && product.price !== undefined) {
+                                productListHtml += `
+                                    <div class="col-6 col-md-4 col-lg-4 mb-4">
+                                        <div class="product product-2" style="height: 100%; display: flex; flex-direction: column;">
+                                            <figure class="product-media">
+                                                <a href="{{ route('product.show', '') }}/${product.slug}">
+                                                    <x-image-with-loader src="{{ asset('/images/products/') }}/${product.feature_image}" alt="${product.name}" class="product-image" style="height: 200px; object-fit: cover;" />
+                                                </a>
+                                                ${product.stock && product.stock.quantity > 0 ? `
+                                                    <div class="product-action-vertical">
+                                                        <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="${product.id}" data-offer-id="0" data-price="${product.price}">
+                                                            <span>Add to wishlist</span>
+                                                        </a>
+                                                    </div>
+                                                    <div class="product-action">
+                                                        <a href="#" class="btn-product btn-cart" 
+                                                        title="Add to cart" 
+                                                        data-product-id="${product.id}" 
+                                                        data-offer-id="0" 
+                                                        data-price="${product.price}" 
+                                                        data-toggle="modal" 
+                                                        data-target="#quickAddToCartModal" 
+                                                        data-image="{{ asset('images/products/') }}/${product.feature_image}" 
+                                                        data-stock="${product.stock.quantity}"
+                                                        data-colors='${JSON.stringify(product.colors)}' 
+                                                        data-sizes='${JSON.stringify(product.sizes)}'>
+                                                            <span>Add to cart</span>
+                                                        </a>
+                                                    </div>
+                                                ` : `<span class="product-label label-out-stock">Out of stock</span>`}
+                                            </figure>
+                                            <div class="product-body" style="flex-grow: 1;">
+                                                <h3 class="product-title">
+                                                    <a href="{{ route('product.show', '') }}/${product.slug}">${product.name}</a>
+                                                </h3>
+                                                <div class="product-price">
+                                                    {{ $currency }} ${parseFloat(product.price).toFixed(2)}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>`;
+                            }
+                        });
+
+                        $searchResults.html(productListHtml);
                     },
                     error: function(xhr, status, error) {
                         console.error('Error fetching search results:', error);
@@ -20,17 +69,11 @@
                     }
                 });
             } else {
-                $searchResults.html('');
+                $searchResults.html(''); 
             }
         }
 
         $searchInput.on('keyup', performSearch);
         $searchIcon.on('click', performSearch);
-
-        $(document).on('click', function(e) {
-            if (!$(e.target).closest('#search-form').length) {
-                $searchResults.html('');
-            }
-        });
     });
 </script>

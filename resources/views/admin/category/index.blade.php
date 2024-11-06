@@ -31,7 +31,7 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="form-group">
-                                        <label>Name</label>
+                                        <label>Name <span style="color: red;">*</span></label>
                                         <input type="text" class="form-control" id="name" name="name" placeholder="Enter category name">
                                     </div>
                                 </div>
@@ -77,7 +77,7 @@
                                 <tr>
                                     <th>Sl</th>
                                     <th>Name</th>
-                                    <th>Slug</th>
+                                    <th>Image</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -87,7 +87,7 @@
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
                                     <td>{{ $data->name }}</td>
-                                    <td>{{ $data->slug }}</td>
+                                    <td><img src="{{ asset('/images/category/' . $data->image) }}" alt="" style="max-width: 100px; width: 100%; height: auto;"></td>
                                     <td>
                                         <div class="custom-control custom-switch">
                                             <input type="checkbox" class="custom-control-input toggle-status" id="customSwitchStatus{{ $data->id }}" data-id="{{ $data->id }}" {{ $data->status == 1 ? 'checked' : '' }}>

@@ -29,7 +29,7 @@
                                 <div class="row">
                                     <div class="col-sm-12">
                                         <div class="form-group">
-                                            <label>Category</label>
+                                            <label>Category <span style="color: red;">*</span></label>
                                             <select class="form-control" id="category_id" name="category_id">
                                                 <option value="">Select Category</option>
                                                 @foreach ($categories as $category)
@@ -40,7 +40,7 @@
                                     </div>
                                     <div class="col-sm-12">
                                         <div class="form-group">
-                                            <label>Sub Category Name</label>
+                                            <label>Sub Category Name <span style="color: red;">*</span></label>
                                             <input type="text" class="form-control" id="name" name="name" placeholder="Enter subcategory name">
                                         </div>
                                     </div>

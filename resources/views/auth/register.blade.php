@@ -29,7 +29,7 @@
                     <form name="registerForm" id="registerForm" method="POST" action="{{ route('register') }}">
                          @csrf
                         <div class="form-group mt-2">
-                            <label for="name">Your Name<span class="text-danger">*</span></label>
+                            <label for="name" class="black">Your Name<span class="text-danger">*</span></label>
                             <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" placeholder="John Doe" value="{{ old('name') }}" required />
                             @error('name')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -37,7 +37,7 @@
                         </div>
 
                         <div class="form-group mt-2">
-                            <label for="email">Your Email Address<span class="text-danger">*</span></label>
+                            <label for="email" class="black">Your Email Address<span class="text-danger">*</span></label>
                             <input type="email" class="form-control" id="email" name="email" placeholder="john@example.com" value="{{ old('email') }}" required />
                             @error('email')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -45,7 +45,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="password">Password<span class="text-danger">*</span></label>
+                            <label for="password" class="black">Password<span class="text-danger">*</span></label>
                             <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" placeholder="" required>
                             @error('password')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -53,7 +53,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="password">Confirm Password<span class="text-danger">*</span></label>
+                            <label for="password" class="black">Confirm Password<span class="text-danger">*</span></label>
                             <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="" required>
                             @error('password_confirmation')
                                 <div class="invalid-feedback">{{ $message }}</div>

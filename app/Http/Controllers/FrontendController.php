@@ -402,36 +402,71 @@ class FrontendController extends Controller
         return view('frontend.checkout', compact('cart'));
     }
 
+    // public function search(Request $request)
+    // {
+    //     $query = $request->input('query');
+    //     $products = Product::where('name', 'LIKE', "%$query%")
+    //                         ->where('status', 1)
+    //                         ->orderBy('id', 'desc')
+    //                         ->whereDoesntHave('specialOfferDetails')
+    //                         ->whereDoesntHave('flashSellDetails')
+    //                         ->take(15)
+    //                         ->get();
+
+    //     if ($products->isEmpty()) {
+    //         return response()->json('<div class="p-2">No products found</div>');
+    //     }
+
+    //     $output = '<li class="dropdown">
+    //                     <a class="sf-with-ul">Search Results</a>
+    //                     <ul>';
+    //     foreach ($products as $product) {
+    //         $output .= '<li>
+    //                         <a href="'.route('product.show', $product->slug).'">
+    //                             '.$product->name.'
+    //                         </a>
+    //                     </li>';
+    //     }
+    //     $output .= '</ul>
+    //                 </li>';
+    
+    //     return response()->json($output);
+    // }
+
     public function search(Request $request)
     {
         $query = $request->input('query');
         $products = Product::where('name', 'LIKE', "%$query%")
                             ->where('status', 1)
-                            ->orderBy('id', 'desc')
                             ->whereDoesntHave('specialOfferDetails')
                             ->whereDoesntHave('flashSellDetails')
+                            ->orderBy('id', 'desc')
                             ->take(15)
+                            ->with('stock')
                             ->get();
-
-        if ($products->isEmpty()) {
-            return response()->json('<div class="p-2">No products found</div>');
-        }
-
-        $output = '<li class="dropdown">
-                        <a class="sf-with-ul">Search Results</a>
-                        <ul>';
-        foreach ($products as $product) {
-            $output .= '<li>
-                            <a href="'.route('product.show', $product->slug).'">
-                                '.$product->name.'
-                            </a>
-                        </li>';
-        }
-        $output .= '</ul>
-                    </li>';
     
-        return response()->json($output);
+        $products->each(function($product) {
+            $product->price = $product->stockhistory()
+                ->where('available_qty', '>', 0)
+                ->orderBy('id', 'asc')
+                ->value('selling_price') ?? $product->price;
+    
+            $product->colors = $product->stock()
+                ->where('quantity', '>', 0)
+                ->distinct('color')
+                ->pluck('color');
+    
+            $product->sizes = $product->stock()
+                ->where('quantity', '>', 0)
+                ->distinct('size')
+                ->pluck('size');
+    
+            return $product;
+        });
+
+        return response()->json(['products' => $products]);
     }
+    
 
     public function shop(Request $request)
     {

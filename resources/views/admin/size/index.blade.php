@@ -31,7 +31,7 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="form-group">
-                                        <label>Size</label>
+                                        <label>Size <span style="color: red;">*</span></label>
                                         <input type="text" class="form-control" id="size" name="size" placeholder="Enter size">
                                     </div>
                                 </div>
