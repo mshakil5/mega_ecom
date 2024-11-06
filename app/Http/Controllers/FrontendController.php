@@ -28,8 +28,10 @@ use App\Models\Campaign;
 use App\Models\CampaignRequest;
 use App\Models\CampaignRequestProduct;
 use App\Models\Brand;
+use App\Models\Color;
 use App\Models\CouponUsage;
 use App\Models\StockHistory;
+use App\Models\Size;
 
 class FrontendController extends Controller
 {
@@ -472,32 +474,37 @@ class FrontendController extends Controller
     public function shop(Request $request)
     {
         $currency = CompanyDetails::value('currency');
+
         $categories = Category::where('status', 1)
-            ->with('products')
+            ->whereHas('products.stock', function($query) {
+                $query->where('quantity', '>', 0);
+            })
             ->orderBy('id', 'desc')
             ->select('id', 'name')
             ->get();
-
+            
         $brands = Brand::where('status', 1)
-            ->with('products')
+            ->whereHas('products.stock', function($query) {
+                $query->where('quantity', '>', 0);
+            })
             ->orderBy('id', 'desc')
             ->select('id', 'name')
             ->get();
 
-        $perPage = $request->input('per_page', 10);
+        $colors = Stock::where('quantity', '>', 0)
+            ->groupBy('color')
+            ->select('color')
+            ->get();
+
+        $sizes = Stock::where('quantity', '>', 0)
+            ->groupBy('size')
+            ->select('size')
+            ->get();
 
         $minPrice = StockHistory::where('status', 1)->min('selling_price'); 
         $maxPrice = StockHistory::where('status', 1)->max('selling_price');
 
-        $products = Product::where('status', 1)
-            ->orderBy('id', 'desc')
-            ->whereDoesntHave('specialOfferDetails')
-            ->whereDoesntHave('flashSellDetails')
-            ->with('stock')
-            ->select('id', 'name', 'feature_image', 'price', 'slug')
-            ->paginate($perPage);
-
-        return view('frontend.shop', compact('currency', 'products', 'categories', 'brands', 'minPrice', 'maxPrice'));
+        return view('frontend.shop', compact('currency', 'categories', 'brands', 'colors', 'sizes', 'minPrice', 'maxPrice'));
     }
 
     public function supplierPage($slug)
@@ -660,8 +667,8 @@ class FrontendController extends Controller
         $endPrice = $request->input('end_price');
         $categoryId = $request->input('category');
         $brandId = $request->input('brand');
-        // $selectedSize = $request->input('size');
-        $selectedColor = $request->input('color');
+        $size = $request->input('size');
+        $color = $request->input('color');
 
 
         $productsQuery = Product::select('products.id', 'products.name', 'products.price', 'products.slug', 'products.feature_image')
@@ -684,13 +691,13 @@ class FrontendController extends Controller
             $productsQuery->where('brand_id', $brandId);
         }
 
-        // if (!empty($selectedSize)) {
-        //     $productsQuery->where('stocks.size', $selectedSize);
-        // }
+        if (!empty($size)) {
+            $productsQuery->where('stocks.size', $size);
+        }
 
-        // if (!empty($selectedColor)) {
-        //     $productsQuery->where('stocks.color', $selectedColor);
-        // }
+        if (!empty($color)) {
+            $productsQuery->where('stocks.color', $color);
+        }
 
         $products = $productsQuery->get()->map(function ($product) {
             $product->price = $product->stockhistory()
