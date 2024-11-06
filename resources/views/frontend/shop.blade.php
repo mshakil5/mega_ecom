@@ -336,7 +336,7 @@
                     // console.log(response);
                     var products = response.products;
                     var productListHtml = '';
-                    $('#pagination').hide();
+                    // $('#pagination').hide();
 
                     if (products.length === 0) {
                         $('#product-list').empty();

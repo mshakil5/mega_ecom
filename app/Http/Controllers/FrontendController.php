@@ -29,6 +29,7 @@ use App\Models\CampaignRequest;
 use App\Models\CampaignRequestProduct;
 use App\Models\Brand;
 use App\Models\CouponUsage;
+use App\Models\StockHistory;
 
 class FrontendController extends Controller
 {
@@ -485,12 +486,8 @@ class FrontendController extends Controller
 
         $perPage = $request->input('per_page', 10);
 
-        $minPrice = Product::where('status', 1)->min('price'); 
-        $maxPrice = Product::where('status', 1)->max('price');
-
-        
-        // $minPrice = StockHistory::where('status', 1)->min('selling_price'); 
-        // $maxPrice = StockHistory::where('status', 1)->max('selling_price');
+        $minPrice = StockHistory::where('status', 1)->min('selling_price'); 
+        $maxPrice = StockHistory::where('status', 1)->max('selling_price');
 
         $products = Product::where('status', 1)
             ->orderBy('id', 'desc')
