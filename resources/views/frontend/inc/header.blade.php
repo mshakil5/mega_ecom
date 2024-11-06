@@ -65,7 +65,6 @@
                                             <ul>
                                                 <li><a href="{{ route('login') }}">Log In</a></li>
                                                 <li><a href="{{ route('register') }}">Register</a></li>
-                                                <li><a href="{{ route('supplier.login') }}">Log In As Supplier</a></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -202,6 +201,12 @@
 
         <div class="header-right d-none">
             <i class="la la-lightbulb-o"></i><p>Clearance<span class="highlight">&nbsp;Up to 30% Off</span></p>
+        </div>
+    </div>
+
+    <div>
+        <div class="search-products">
+
         </div>
     </div>
     
