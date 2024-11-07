@@ -92,6 +92,7 @@
                     @endif
                     <br>
                 <strong>Order Type:</strong> {{ $order->order_type === 1 ? 'In House' : 'Frontend' }} <br>
+                <strong>Note:</strong> {!! $order->note !!}
               </div>
               <!-- /.col -->
             </div>

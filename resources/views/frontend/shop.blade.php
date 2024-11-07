@@ -57,7 +57,7 @@
                                 <form id="sizeFilterForm">
                                     <div class="filter-items">
                                         <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
-                                            <input type="radio" class="custom-control-input" id="size-all" name="size" value="">
+                                            <input type="radio" class="custom-control-input" id="size-all" name="shop-size" value="">
                                             <label class="custom-control-label d-flex justify-content-between w-100" for="size-all">
                                                 <span>All Sizes</span>
                                                 <span class="ml-auto"></span>
@@ -66,7 +66,7 @@
 
                                         @foreach ($sizes as $size)
                                             <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
-                                                <input type="radio" class="custom-control-input" id="size-{{ $size->size }}" name="size" value="{{ $size->size }}">
+                                                <input type="radio" class="custom-control-input" id="size-{{ $size->size }}" name="shop-size" value="{{ $size->size }}">
                                                 <label class="custom-control-label" for="size-{{ $size->size }}">
                                                     <span>{{ strtoupper($size->size) }}</span>
                                                     <span class="ml-auto"></span>
@@ -94,8 +94,8 @@
                             <div class="widget-body">
                                 <form id="colorFilterForm">
                                     <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
-                                        <input type="radio" class="custom-control-input" id="color-all" name="color" value="">
-                                        <label class="custom-control-label d-flex justify-content-between w-100" for="color-all">
+                                        <input type="radio" class="custom-control-input" id="shop-color-all" name="shop-color" value="">
+                                        <label class="custom-control-label d-flex justify-content-between w-100" for="shop-color-all">
                                             <span>All Colors</span>
                                             <span class="ml-auto"></span>
                                         </label>
@@ -103,8 +103,8 @@
                                     <div class="filter-items">
                                         @foreach ($colors as $color)
                                             <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
-                                                <input type="radio" class="custom-control-input" id="color-{{ $loop->index }}" name="color" value="{{ $color->color }}">
-                                                <label class="custom-control-label" for="color-{{ $loop->index }}">
+                                                <input type="radio" class="custom-control-input" id="shop-color-{{ $loop->index }}" name="shop-color" value="{{ $color->color }}">
+                                                <label class="custom-control-label" for="shop-color-{{ $loop->index }}">
                                                     <span>{{ ucfirst($color->color) }}</span>
                                                     <span class="ml-auto"></span>
                                                 </label>
@@ -238,8 +238,8 @@
             let endValue = $('#price-max').val().replace(currencySymbol, '');
             let selectedCategoryId = $('input[name="category"]:checked').val();
             let selectedBrandId = $('input[name="brand"]:checked').val();
-            let selectedColor = $('input[name="color"]:checked').val();
-            let selectedSize = $('input[name="size"]:checked').val();
+            let selectedColor = $('input[name="shop-color"]:checked').val();
+            let selectedSize = $('input[name="shop-size"]:checked').val();
             let csrfToken = $('meta[name="csrf-token"]').attr('content');
 
             $.ajax({
@@ -258,17 +258,19 @@
                     size: selectedSize
                 },
                 success: function(response) {
-                    // console.log(response);
+                    console.log(response);
                     var products = response.products;
                     var productListHtml = '';
 
                     if (products.length === 0) {
                         $('#product-list').empty();
-                        swal({
-                            title: 'Oops...',
-                            text: 'No products found!',
-                            icon: 'error',
+                        toastr.error("No products found", "Error", {
+                            closeButton: true,
+                            progressBar: true,
+                            timeOut: 3000,
+                            positionClass: "toast-top-right",
                         });
+                        return;
                     } else {
                         $.each(products, function(index, product) {
                             if (product.slug && product.feature_image && product.name && product.price !== undefined) {

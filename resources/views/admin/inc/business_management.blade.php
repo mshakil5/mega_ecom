@@ -246,7 +246,7 @@
             </a>
             <ul class="nav nav-treeview">
                 <li class="nav-item">
-                    <a href="{{ route('allstock') }}" class="nav-link {{ (request()->is('admin/stock') && !request()->is('admin/stock*')) ? 'active' : '' }}">
+                    <a href="{{ route('allstock') }}" class="nav-link {{ (request()->is('admin/stock')) ? 'active' : '' }}">
                         <i class="fas fa-list nav-icon"></i>
                         <p>Stock List</p>
                     </a>
