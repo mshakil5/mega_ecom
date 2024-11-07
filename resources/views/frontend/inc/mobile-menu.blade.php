@@ -4,13 +4,11 @@
     <div class="mobile-menu-wrapper">
         <span class="mobile-menu-close"><i class="icon-close"></i></span>
         
-        <form action="#" method="get" class="mobile-search">
-            <label for="mobile-search" class="sr-only">Search</label>
-            <input type="search" class="form-control" name="mobile-search" id="search-input" placeholder="Search Products..." required>
-            <button class="btn btn-primary" type="submit" id="search-icon"><i class="icon-search"></i></button>
+        <form class="mobile-search">
+            <label for="mobile-search-input" class="sr-only">Search</label>
+            <input type="search" class="form-control search-input" name="mobile-search" id="mobile-search-input" placeholder="Search Products..." required>
+            <button class="btn btn-primary search-icon" type="button" id="mobile-search-icon"><i class="icon-search"></i></button>
         </form>
-
-        <div id="search-results" class="bg-light position-absolute w-100" style="z-index: 1000;"></div>
 
         <ul class="nav nav-pills-mobile nav-border-anim" role="tablist">
             <li class="nav-item">

@@ -1,18 +1,21 @@
 <script>
     $(document).ready(function() {
-        const $searchInput = $('#search-input');
+        const $desktopSearchInput = $('.search-input');
+        const $mobileSearchInput = $('#mobile-search-input');
         const $searchResults = $('.search-products');
-        const $searchIcon = $('#search-icon');
+        const $desktopSearchIcon = $('.search-icon');
+        const $mobileSearchIcon = $('#mobile-search-icon');
 
-        function performSearch() {
-            let query = $searchInput.val();
+        function performSearch($input) {
+            let query = $input.val();
+            // console.log(query);
             if (query.length > 2) {
                 $.ajax({
                     url: "{{ route('search.products') }}",
                     method: 'GET',
                     data: { query: query },
                     success: function(response) {
-                        console.log(response.products);
+                        // console.log(response.products);
                         const products = response.products;
                         let productListHtml = '';
 
@@ -62,6 +65,7 @@
                         });
 
                         $searchResults.html(productListHtml);
+                        $('.mobile-menu-close').click();
                     },
                     error: function(xhr, status, error) {
                         console.error('Error fetching search results:', error);
@@ -73,7 +77,20 @@
             }
         }
 
-        $searchInput.on('keyup', performSearch);
-        $searchIcon.on('click', performSearch);
+        $desktopSearchInput.on('keyup', function() {
+            performSearch($(this));
+        });
+
+        $desktopSearchIcon.on('click', function() {
+            performSearch($desktopSearchInput);
+        });
+
+        $mobileSearchInput.on('keyup', function() {
+            performSearch($(this));
+        });
+
+        $mobileSearchIcon.on('click', function() {
+            performSearch($mobileSearchInput);
+        });
     });
 </script>

@@ -75,8 +75,8 @@
                     <form id="search-form" class="position-relative">
                         <div class="header-search-wrapper search-wrapper-wide">
                             <label for="search-input" class="sr-only">Search</label>
-                            <button class="btn btn-primary" type="button" id="search-icon"><i class="icon-search"></i></button>
-                            <input type="search" class="form-control" id="search-input" placeholder="Search product ..." required>
+                            <button class="btn btn-primary search-icon" type="button" id="search-icon"><i class="icon-search"></i></button>
+                            <input type="search" class="form-control search-input" id="search-input" placeholder="Search product ..." required>
                         </div>
                     </form>
                 </div>
