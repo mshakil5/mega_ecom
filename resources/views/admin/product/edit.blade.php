@@ -42,7 +42,9 @@
                                     <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addSizeModal">Add New</span>
                                     <select class="form-control select2" id="size_ids" name="size_ids[]" multiple="multiple" data-placeholder="Select sizes">
                                         @foreach($sizes as $size)
-                                            <option value="{{ $size->id }}" {{ in_array($size->id, $product->sizes->pluck('id')->toArray()) ? 'selected' : '' }}>{{ $size->size }}</option>
+                                            <option value="{{ $size->id }}" {{ in_array($size->id, $product->sizes->pluck('id')->toArray()) ? 'selected' : '' }}>
+                                                {{ $size->size }}
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -189,6 +191,29 @@
                             </div>  --}}
 
                             <div id="dynamic-rows">
+                                @if($product->colors->isEmpty())
+                                <div class="form-row dynamic-row">
+                                    <div class="form-group col-md-5">
+                                        <label for="color_id">Select Color</label>
+                                        <select class="form-control" name="color_id[]">
+                                            <option value="">Choose Color</option>
+                                            @foreach($colors as $color)
+                                                <option value="{{ $color->id }}" style="background-color: {{ $color->color_code }};">
+                                                    {{ $color->color }} ({{ $color->color_code }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-5">
+                                        <label for="image">Select Image</label>
+                                        <input type="file" class="form-control" name="image[]" accept="image/*">
+                                    </div>
+                                    <div class="form-group col-md-1">
+                                        <label>Action</label>
+                                        <button type="button" class="btn btn-success add-row"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                </div>
+                                @endif
                                 @foreach($product->colors as $key=> $entry )
                                     <div class="form-row dynamic-row">
                                         <div class="form-group col-md-5">
@@ -349,6 +374,11 @@
             $('#loader').show();
 
             var formData = new FormData($('#editThisForm')[0]);
+
+            formData.forEach(function(value, key) {
+                console.log(key + ": " + value);
+            });
+
 
             $.ajax({
                 url: '{{ route("update.product") }}',

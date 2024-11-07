@@ -118,7 +118,7 @@ class ProductController extends Controller
     public function productEdit($id)
     {
         $product = Product::with('colors', 'sizes')->findOrFail($id);
-
+        // dd($product);
         $brands = Brand::select('id', 'name')->orderby('id','DESC')->get();
         $product_models = ProductModel::select('id', 'name')->orderby('id','DESC')->get();
         $groups = Group::select('id', 'name')->orderby('id','DESC')->get();
@@ -497,16 +497,8 @@ class ProductController extends Controller
 
         $product->save();
 
-        $product->sizes()->delete();
-
-        if ($request->size_ids) {
-            foreach ($request->size_ids as $sizeId) {
-                ProductSize::create([
-                    'product_id' => $product->id,
-                    'size_id' => $sizeId,
-                    'created_by' => auth()->user()->id,
-                ]);
-            }
+        if ($request->has('size_ids')) {
+            $product->sizes()->sync($request->size_ids);
         }
 
         if ($request->has('color_id')) {
