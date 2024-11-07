@@ -2,14 +2,14 @@
     <div class="header-top">
         <div class="container">
             <div class="header-left">
-                <a class="black" href="tel:{{ $company->phone1 }}"><i class="icon-phone"></i>{{ $company->phone1 }}</a>
+                <a href="tel:{{ $company->phone1 }}"><i class="icon-phone"></i>{{ $company->phone1 }}</a>
             </div>
 
             <div class="header-right">
 
                 <ul class="top-menu">
                     <li>
-                        <a class="black" href="#">
+                        <a href="#">
                             @if(Auth::check())
                             {{ auth()->user()->name }}
                             @elseif(Auth::guard('supplier')->check())
@@ -21,7 +21,7 @@
                         <ul>
                             <li>
                                 @if(Auth::check())
-                                    <a class="black" href="
+                                    <a href="
                                         @if(auth()->user()->is_type == '1')
                                             {{ route('admin.dashboard') }}
                                         @elseif(auth()->user()->is_type == '0')
@@ -36,13 +36,13 @@
                                     </a>
                                 @else
                                     <div class="header-dropdown">
-                                        <a class="black">
+                                        <a>
                                             Log In / Register
                                         </a>
                                         <div class="header-menu">
                                             <ul>
-                                                <li><a class="black" href="{{ route('login') }}">Log In</a></li>
-                                                <li><a class="black" href="{{ route('register') }}">Register</a></li>
+                                                <li><a href="{{ route('login') }}">Log In</a></li>
+                                                <li><a href="{{ route('register') }}">Register</a></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -118,11 +118,11 @@
                         <ul class="menu-vertical sf-arrows">
                             @foreach($categories as $category)
                                 <li>
-                                    <a class="black" href="{{ route('category.show', $category->slug) }}">{{ $category->name }}</a>
+                                    <a href="{{ route('category.show', $category->slug) }}">{{ $category->name }}</a>
                                     @if(count($category->subcategories) > 0)
                                         <ul>
                                             @foreach($category->subcategories as $subcategory)
-                                                <li><a class="black" href="{{ route('subcategory.show', $subcategory->slug) }}">{{ $subcategory->name }}</a></li>
+                                                <li><a href="{{ route('subcategory.show', $subcategory->slug) }}">{{ $subcategory->name }}</a></li>
                                             @endforeach
                                         </ul>
                                     @endif
@@ -142,17 +142,17 @@
                     </li>
 
                     <li class="dropdown">
-                        <a class="sf-with-ul black">Products</a>
+                        <a class="sf-with-ul">Products</a>
 
                         <ul>
                             @foreach($categories as $category)
                                 @if($category->products->count() > 0)
                                     <li>
-                                        <a class="black" href="{{ route('category.show', $category->slug) }}" class="sf-with-ul">{{ $category->name }}</a>
+                                        <a href="{{ route('category.show', $category->slug) }}" class="sf-with-ul">{{ $category->name }}</a>
 
                                         <ul>
                                             @foreach($category->products as $product)
-                                                <li><a class="black" href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></li>
+                                                <li><a href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></li>
                                             @endforeach
                                         </ul>
                                     </li>
