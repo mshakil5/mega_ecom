@@ -1,7 +1,7 @@
 <div class="modal fade" id="quickAddToCartModal" tabindex="-1" role="dialog" aria-labelledby="quickAddToCartModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-body" style="padding-left: 20px;">
+            <div class="modal-body" style="padding-left: 20px; padding-top: 20px;">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
