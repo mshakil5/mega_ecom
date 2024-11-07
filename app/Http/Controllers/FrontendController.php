@@ -405,37 +405,6 @@ class FrontendController extends Controller
         return view('frontend.checkout', compact('cart'));
     }
 
-    // public function search(Request $request)
-    // {
-    //     $query = $request->input('query');
-    //     $products = Product::where('name', 'LIKE', "%$query%")
-    //                         ->where('status', 1)
-    //                         ->orderBy('id', 'desc')
-    //                         ->whereDoesntHave('specialOfferDetails')
-    //                         ->whereDoesntHave('flashSellDetails')
-    //                         ->take(15)
-    //                         ->get();
-
-    //     if ($products->isEmpty()) {
-    //         return response()->json('<div class="p-2">No products found</div>');
-    //     }
-
-    //     $output = '<li class="dropdown">
-    //                     <a class="sf-with-ul">Search Results</a>
-    //                     <ul>';
-    //     foreach ($products as $product) {
-    //         $output .= '<li>
-    //                         <a href="'.route('product.show', $product->slug).'">
-    //                             '.$product->name.'
-    //                         </a>
-    //                     </li>';
-    //     }
-    //     $output .= '</ul>
-    //                 </li>';
-    
-    //     return response()->json($output);
-    // }
-
     public function search(Request $request)
     {
         $query = $request->input('query');
@@ -470,7 +439,6 @@ class FrontendController extends Controller
         return response()->json(['products' => $products]);
     }
     
-
     public function shop(Request $request)
     {
         $currency = CompanyDetails::value('currency');
