@@ -502,24 +502,40 @@ class ProductController extends Controller
         }
 
         if ($request->has('color_id')) {
+            //existing colors
             $existingColors = $product->colors;
-    
-            foreach ($existingColors as $color) {
-                if ($color->image) {
-                    unlink(public_path($color->image)); 
+        
+            //updated colors
+            $updatedColorIds = $request->input('color_id', []);
+        
+            // Delete colors that are not in the updated list
+            foreach ($existingColors as $existingColor) {
+                if (!in_array($existingColor->color_id, $updatedColorIds)) {
+                    if ($existingColor->image && file_exists(public_path($existingColor->image))) {
+                        unlink(public_path($existingColor->image));
+                    }
+                    $existingColor->delete();
                 }
             }
-    
-            $product->colors()->delete();
-    
-            $validColorIds = $request->input('color_id');
-    
-            foreach ($validColorIds as $key => $colorId) {
-                $productColor = new ProductColor();
-                $productColor->product_id = $product->id;
-                $productColor->color_id = $colorId;
-    
+        
+            // Add new colors
+            foreach ($updatedColorIds as $key => $colorId) {
+                $productColor = $product->colors()->where('color_id', $colorId)->first();
+        
+                // Check if the product already has this color
+                if (!$productColor) {
+                    $productColor = new ProductColor();
+                    $productColor->product_id = $product->id;
+                    $productColor->color_id = $colorId;
+                }
+        
+                // Check if a new image is uploaded for this color
                 if ($request->hasFile('image.' . $key)) {
+                    if ($productColor->image && file_exists(public_path($productColor->image))) {
+                        unlink(public_path($productColor->image));
+                    }
+                    
+                    // Upload the new image
                     $colorImage = $request->file('image.' . $key);
                     $randomName = mt_rand(10000000, 99999999) . '.' . $colorImage->getClientOriginalExtension();
                     $colorImage->move(public_path('images/products'), $randomName);
