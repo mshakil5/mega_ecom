@@ -1,25 +1,3 @@
-<style>
-    #search-results ul {
-        list-style-type: none;
-        padding-left: 0;
-        margin: 0;
-    }
-
-    #search-results li {
-        padding: 10px;
-        border-bottom: 1px solid #ddd;
-    }
-
-    #search-results li a {
-        text-decoration: none;
-        color: #333;
-    }
-
-    #search-results li:hover {
-        background-color: #f8f8f8;
-    }
-</style>
-
 <header class="header header-14">
     <div class="header-top">
         <div class="container">
@@ -65,7 +43,6 @@
                                             <ul>
                                                 <li><a href="{{ route('login') }}">Log In</a></li>
                                                 <li><a href="{{ route('register') }}">Register</a></li>
-                                                <li><a href="{{ route('supplier.login') }}">Log In As Supplier</a></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -102,11 +79,10 @@
                                 <form id="search-form" class="position-relative">
                                     <div class="header-search-wrapper search-wrapper-wide">
                                         <label for="search-input" class="sr-only">Search</label>
-                                        <input type="search" class="form-control" id="search-input" placeholder="Search product ..." required>
-                                        <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
+                                        <input type="search" class="form-control search-input" id="search-input" placeholder="Search product ..." required>
+                                        <button class="btn btn-primary search-icon" type="button" id="search-icon"><i class="icon-search"></i></button>
                                     </div>
                                 </form>
-                                <div id="search-results" class="bg-light position-absolute w-100" style="z-index: 1000;"></div>
                             </div>
                         </div>
                         <div class="col-lg-4 col-xxl-5col d-flex justify-content-end align-items-center">
@@ -114,7 +90,6 @@
                                 <a href="{{ route('wishlist.index') }}" class="wishlistBtn wishlist-link" title="Wishlist">
                                     <i class="icon-heart-o"></i>
                                     <span class="wishlist-count wishlistCount">0</span>
-                                    <span class="wishlist-txt">Wishlist</span>
                                 </a>
                                 <div class="dropdown cart-dropdown">
                                     <a href="{{ route('cart.index') }}" class="dropdown-toggle cartBtn">
@@ -122,7 +97,6 @@
                                             <i class="icon-shopping-cart"></i>
                                             <span class="cart-count cartCount">0</span>
                                         </div>
-                                        <p>Cart</p>
                                     </a>
                                 </div>
                             </div>
@@ -210,3 +184,12 @@
     </div>
 
 </header>
+
+<div class="mt-3" id="searchSection">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="row search-products align-items-center py-3 px-xl-5">
+            </div>
+        </div>
+    </div>
+</div>
