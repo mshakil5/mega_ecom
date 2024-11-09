@@ -23,15 +23,15 @@
             <div class="tab-content">
                 <div class="tab-pane fade show active">
                     @if (session('message'))
-                        <div class="alert alert-danger" role="alert">
-                            {{ session('message') }}
+                        <div>
+                            <p class="text-danger">{{ session('message') }}</p>
                         </div>
                     @endif
                     <form name="loginForm" id="loginForm" method="POST" action="{{ route('login') }}">
                          @csrf
                         <div class="form-group mt-2">
                             <label for="email" class="black">Your Email Address or Phone Number<span class="text-danger">*</span></label>
-                            <input type="email" class="form-control" id="email" name="email" placeholder="john@example.com or +880xxxxxxxxxx" value="{{ old('email') }}" required />
+                            <input type="email" class="form-control" id="email" name="email" placeholder="" value="{{ old('email') }}" required />
                             <p class="help-block text-danger"></p>
                         </div>
 

@@ -3,7 +3,7 @@
 @section('content')
     <!-- Intro Slider Start-->
     @if($section_status->slider == 1)
-    <div class="container mt-3">
+    <div class="container">
         <div class="intro-slider-container mb-5">
             <div class="intro-slider owl-carousel owl-theme owl-nav-inside owl-light" data-toggle="owl" 
                 data-owl-options='{

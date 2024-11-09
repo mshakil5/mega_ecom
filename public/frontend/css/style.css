@@ -2025,8 +2025,8 @@ blockquote.text-white cite span {
 }
 
 .menu li>a {
-    color: #999999;
-    font-weight: 300;
+    color: #000000;
+    font-weight: 500;
     font-size: 1.3rem;
     letter-spacing: 0;
     padding-top: .5rem;
@@ -19883,10 +19883,6 @@ button:focus {
 
 .icon-yarn:before {
     content: '\f7e3'
-}
-
-.menu li > a {
-    color: #000000;
 }
 
 /*# sourceMappingURL=style.css.map */

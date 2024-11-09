@@ -3,7 +3,7 @@
 @section('content')
     <!-- Intro Slider Start-->
     @if($section_status->slider == 1)
-    <div class="intro-section pt-3 pb-3 mb-2">
+    <div class="intro-section pb-3 mb-2">
         <div class="container">
             <div class="row">
                 <!-- First Column (Slider) -->
@@ -73,7 +73,7 @@
     <!-- Categories Start -->
     @if($section_status->categories == 1)
     <div class="container">
-        <h2 class="title text-center mb-4">Explore Popular Categories</h2>
+        <h2 class="title text-center">Explore Popular Categories</h2>
         <div class="cat-blocks-container">
             <div class="row justify-content-center">            
                 @foreach($categories as $category)
@@ -94,8 +94,6 @@
     @endif
     <!-- Categories End -->
     --}}
-    
-    <div class="mb-4"></div>
 
     <!-- Special Offer Start -->
     @if($section_status->special_offer == 1)
