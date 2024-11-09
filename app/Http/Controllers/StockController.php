@@ -651,6 +651,17 @@ class StockController extends Controller
 
     public function returnStore(Request $request)
     {
+
+        $request->validate([
+            'date' => 'required|date',
+            'reason' => 'required|string|max:255',
+            'supplierId' => 'required|exists:suppliers,id',
+            'products' => 'required|array',
+            'products.*.purchase_history_id' => 'required|exists:purchase_histories,id',
+            'products.*.product_id' => 'required|exists:products,id',
+            'products.*.return_quantity' => 'required|numeric|min:1',
+        ]);
+
         DB::transaction(function () use ($request) {
 
             $date = $request->date;

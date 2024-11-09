@@ -61,17 +61,25 @@
                                             <tr>
                                                 <th>Product</th>
                                                 <th>Purchase Quantity</th>
+                                                <th>Available Return Quantity</th>
                                                 <th>Return Quantity</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach($purchase->purchaseHistory as $history)
+                                            @php
+                                                $totalReturnedQuantity = \App\Models\PurchaseReturn::where('purchase_history_id', $history->id)->sum('return_quantity');
+
+                                                $availableReturnQuantity = $history->quantity - $totalReturnedQuantity;
+                                                $availableReturnQuantity = max(0, $availableReturnQuantity);
+                                            @endphp
                                             <tr data-history-id="{{ $history->id }}" data-product-id="{{ $history->product->id }}">
                                                 <td>{{ $history->product->name }}</td>
                                                 <td>{{ $history->quantity }}</td>
+                                                <td>{{ $availableReturnQuantity }}</td>
                                                 <td>
-                                                    <input type="number" class="form-control return_quantity" data-max="{{ $history->quantity }}">
+                                                    <input type="number" class="form-control return_quantity" data-max="{{ $availableReturnQuantity }}">
                                                 </td>
                                                 <td>
                                                     <button type="button" class="btn btn-sm btn-primary add-to-return">Return</button>
@@ -124,7 +132,7 @@
             var historyId = row.data('history-id');
             var productId = row.data('product-id');
             var productName = row.find('td:eq(0)').text();
-            var purchaseQuantity = parseFloat(row.find('td:eq(1)').text());
+            var purchaseQuantity = parseFloat(row.find('td:eq(2)').text());
             var returnQuantity = parseFloat(row.find('input.return_quantity').val());
 
             if (isNaN(returnQuantity) || returnQuantity <= 0 || returnQuantity > purchaseQuantity) {
@@ -180,7 +188,7 @@
                 });
             });
 
-            console.log(formData);
+            // console.log(formData);
 
             $.ajax({
                 url: '/admin/submit-return',

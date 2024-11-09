@@ -32,7 +32,7 @@ class TransactionController extends Controller
         $transaction->amount = $request->paymentAmount;
         $transaction->at_amount = $request->paymentAmount;
         $transaction->payment_type = $request->payment_type;
-        $transaction->description = $request->paymentNote;
+        $transaction->note = $request->paymentNote;
         $transaction->table_type = "Purchase";
         $transaction->transaction_type = "Current";
         $transaction->date = date('Y-m-d');

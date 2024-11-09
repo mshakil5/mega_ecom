@@ -53,7 +53,11 @@
                                     </td>
                                     @php
                                     $totalRemainingQuantity = $purchase->purchaseHistory->sum('remaining_product_quantity');
+                                    $totalPurchasedQuantity = $purchase->purchaseHistory->sum('quantity');
+                                    $totalReturnedQuantity = \App\Models\PurchaseReturn::whereIn('purchase_history_id', $purchase->purchaseHistory->pluck('id'))->sum('return_quantity');
+                                    $totalNotReturnedQuantity = $totalPurchasedQuantity - $totalReturnedQuantity;
                                     @endphp
+
                                     <td>{{ $totalRemainingQuantity }}</td>
                                     <td>{{$purchase->purchaseHistory->sum('missing_product_quantity')}}</td>
                                     <td>
@@ -68,12 +72,16 @@
                                         <a class="btn btn-sm btn-info" onclick="showViewPurchaseModal({{ $purchase->id }})">
                                             <i class="fas fa-eye"></i>
                                         </a>
+                                        @if($purchase->status == 1)
                                         <a href="{{ route('purchase.edit', $purchase->id) }}" class="btn btn-sm btn-primary">
                                             <i class="fas fa-edit"></i>
                                         </a>
+                                        @endif
+                                        @if($purchase->status == 4 && $totalNotReturnedQuantity > 0)
                                         <a href="{{ route('returnProduct', $purchase->id) }}" class="btn btn-sm btn-warning">
                                             <i class="fas fa-undo-alt"></i>
                                         </a>
+                                        @endif
                                         @if ($totalRemainingQuantity > 1 && $purchase->status == 4)
                                             <a href="{{ route('transferToWarehouse', $purchase->id) }}" class="btn btn-sm btn-success">
                                                 <i class="fas fa-arrow-right"></i>
