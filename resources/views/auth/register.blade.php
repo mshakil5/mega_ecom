@@ -30,7 +30,7 @@
                          @csrf
                         <div class="form-group mt-2">
                             <label for="name" class="black">Your Name<span class="text-danger">*</span></label>
-                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" placeholder="John Doe" value="{{ old('name') }}" required />
+                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" placeholder="" value="{{ old('name') }}" required />
                             @error('name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -38,7 +38,7 @@
 
                         <div class="form-group mt-2">
                             <label for="email" class="black">Your Email Address<span class="text-danger">*</span></label>
-                            <input type="email" class="form-control" id="email" name="email" placeholder="john@example.com" value="{{ old('email') }}" required />
+                            <input type="email" class="form-control" id="email" name="email" placeholder="" value="{{ old('email') }}" required />
                             @error('email')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
