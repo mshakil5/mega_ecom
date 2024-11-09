@@ -207,8 +207,8 @@
         </li>
 
         <!-- purchase -->
-        <li class="nav-item dropdown {{( request()->is('admin/purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/purchase-return-history*') || request()->routeIs('purchase.edit') || request()->routeIs('returnProduct')) ? 'menu-open' : '' }}">
-            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/purchase-return-history*') || request()->routeIs('purchase.edit') || request()->routeIs('returnProduct')) ? 'active' : '' }}">
+        <li class="nav-item dropdown {{( request()->is('admin/purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/purchase-return-history*') || request()->routeIs('purchase.edit') || request()->routeIs('stockReturnHistory') || request()->routeIs('returnProduct')) ? 'menu-open' : '' }}">
+            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/purchase-return-history*') || request()->routeIs('purchase.edit') || request()->routeIs('stockReturnHistory') || request()->routeIs('returnProduct')) ? 'active' : '' }}">
                 <i class="nav-icon fas fa-warehouse"></i>
                 <p>
                     Purchase <i class="fas fa-angle-left right"></i>
@@ -228,7 +228,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('stockReturnHistory') }}" class="nav-link {{ (request()->is('admin/purchase-return-history') || request()->routeIs('returnProduct')) ? 'active' : '' }}">
+                    <a href="{{ route('stockReturnHistory') }}" class="nav-link {{ (request()->is('admin/purchase-return-history') || request()->routeIs('stockReturnHistory')) ? 'active' : '' }}">
                         <i class="fas fa-undo nav-icon"></i>
                         <p>Return History</p>
                     </a>
@@ -237,8 +237,8 @@
         </li>
 
         <!-- stock -->
-        <li class="nav-item dropdown {{ (request()->is('admin/stock*') || request()->is('admin/system-losses*') || request()->routeIs('purchase.edit') || request()->routeIs('returnProduct')) ? 'menu-open' : '' }}">
-            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/stock*') || request()->is('admin/system-losses*') || request()->routeIs('purchase.edit') || request()->routeIs('stockhistory') || request()->routeIs('returnProduct')) ? 'active' : '' }}">
+        <li class="nav-item dropdown {{ (request()->is('admin/stock*') || request()->is('admin/system-losses*')) ? 'menu-open' : '' }}">
+            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/stock*') || request()->is('admin/system-losses*') || request()->routeIs('stockhistory')) ? 'active' : '' }}">
                 <i class="nav-icon fas fa-warehouse"></i>
                 <p>
                     Stocks <i class="fas fa-angle-left right"></i>
@@ -260,7 +260,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <a href="{{ route('system-losses.index') }}" class="nav-link {{ (request()->is('admin/system-losses') || request()->routeIs('returnProduct')) ? 'active' : '' }}">
+                    <a href="{{ route('system-losses.index') }}" class="nav-link {{ (request()->is('admin/system-losses')) ? 'active' : '' }}">
                         <i class="fas fa-undo nav-icon"></i>
                         <p>System Loses</p>
                     </a>

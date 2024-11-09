@@ -29,15 +29,15 @@
                             <input type="hidden" class="form-control" id="codeid" name="codeid">
                             <div class="form-row">
                                 <div class="form-group col-md-4">
-                                    <label for="name">Title</label>
+                                    <label for="name">Title <span style="color: red;">*</span></label>
                                     <input type="text" class="form-control" id="title" name="title" placeholder="Enter title">
                                 </div>
                                 <div class="form-group col-md-4">
-                                    <label for="start_date">Start Date</label>
+                                    <label for="start_date">Start Date <span style="color: red;">*</span></label>
                                     <input type="date" class="form-control" id="start_date" name="start_date">
                                 </div>
                                 <div class="form-group col-md-4">
-                                    <label for="end_date">End Date</label>
+                                    <label for="end_date">End Date <span style="color: red;">*</span></label>
                                     <input type="date" class="form-control" id="end_date" name="end_date">
                                 </div>
                             </div>
@@ -51,13 +51,13 @@
 
                             <div class="form-row">
                                 <div class="form-group col-md-6">
-                                    <label for="banner_image">Banner Image</label>
+                                    <label for="banner_image">Banner Image <span style="color: red;">*</span></label>
                                     <input type="file" class="form-control-file" id="banner_image" accept="image/*">
                                     <img id="preview-image" src="#" alt="" style="max-width: 300px; width: 100%; height: auto; margin-top: 20px;">
                                 </div>
 
                                 <div class="form-group col-md-6">
-                                    <label for="small_image">Small Image</label>
+                                    <label for="small_image">Small Image <span style="color: red;">*</span></label>
                                     <input type="file" class="form-control-file" id="small_image" accept="image/*">
                                     <img id="preview-image1" src="#" alt="" style="max-width: 300px; width: 100%; height: auto; margin-top: 20px;">
                                 </div>

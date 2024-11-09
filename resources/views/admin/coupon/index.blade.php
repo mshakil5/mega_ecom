@@ -31,13 +31,13 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="form-group">
-                                        <label>Coupon Name*</label>
+                                        <label>Coupon Name <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" id="coupon_name" name="coupon_name" placeholder="Enter coupon name">
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-group">
-                                        <label>Coupon Type*</label>
+                                        <label>Coupon Type <span class="text-danger">*</span></label>
                                         <select class="form-control" id="coupon_type">
                                             <option value="">Select Coupon Type</option>
                                             <option value="1">Fixed Amount</option>
@@ -47,20 +47,20 @@
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-group">
-                                        <label>Coupon Value*</label>
+                                        <label>Coupon Value <span class="text-danger">*</span></label>
                                         <input type="number" class="form-control" id="coupon_value" placeholder="Enter coupon value">
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-group">
-                                        <label>Max Use Per User*</label>
+                                        <label>Max Use Per User <span class="text-danger">*</span></label>
                                         <input type="number" class="form-control" id="max_use_per_user" placeholder="Enter max use per user" required min="1">
                                     </div>
                                 </div>
 
                                 <div class="col-sm-6">
                                     <div class="form-group">
-                                        <label>Total Max Use*</label>
+                                        <label>Total Max Use <span class="text-danger">*</span></label>
                                         <input type="number" class="form-control" id="total_max_use" placeholder="Enter total max use" required min="1">
                                     </div>
                                 </div>

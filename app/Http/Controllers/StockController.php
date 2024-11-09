@@ -485,7 +485,9 @@ class StockController extends Controller
         $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
         $cashAmount = $purchase->transactions->where('payment_type', 'Cash')->first();
         $bankAmount = $purchase->transactions->where('payment_type', 'Bank')->first();
-        return view('admin.stock.edit_purchase_history', compact('purchase', 'products', 'suppliers', 'warehouses', 'cashAmount', 'bankAmount'));
+        $colors = Color::where('status', 1)->select('id', 'color')->orderby('id','DESC')->get();
+        $sizes = Size::where('status', 1)->select('id', 'size')->orderby('id','DESC')->get();
+        return view('admin.stock.edit_purchase_history', compact('purchase', 'products', 'suppliers', 'warehouses', 'cashAmount', 'bankAmount', 'colors', 'sizes'));
     }
 
     public function stockUpdate(Request $request)

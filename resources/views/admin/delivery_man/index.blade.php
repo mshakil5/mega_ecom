@@ -36,7 +36,7 @@
                   <div class="row">
                     <div class="col-sm-6">
                       <div class="form-group">
-                        <label>Name</label>
+                        <label>Name <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="name" name="name" placeholder="Enter name">
                       </div>
                     </div>
@@ -51,13 +51,13 @@
                   <div class="row">
                     <div class="col-sm-6">
                       <div class="form-group">
-                        <label>Email</label>
+                        <label>Email <span class="text-danger">*</span></label>
                         <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
                       </div>
                     </div>
                     <div class="col-sm-6">
                       <div class="form-group">
-                        <label>Phone</label>
+                        <label>Phone <span class="text-danger">*</span></label>
                         <input type="number" id="phone" name="phone" class="form-control" placeholder="Enter phone">
                       </div>
                     </div>
@@ -66,13 +66,13 @@
                   <div class="row">
                     <div class="col-sm-6">
                       <div class="form-group">
-                        <label>Password</label>
+                        <label>Password <span class="text-danger">*</span></label>
                         <input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
                       </div>
                     </div>
                     <div class="col-sm-6">
                       <div class="form-group">
-                        <label>Confirm Password</label>
+                        <label>Confirm Password <span class="text-danger">*</span></label>
                         <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Enter confirm password">
                       </div>
                     </div>

@@ -81,13 +81,13 @@
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="flash_sell_price">Flash Sell Price</label>
+                                        <label for="flash_sell_price">Flash Sell Price <span style="color: red;">*</span></label>
                                         <input type="number" step="0.01" class="form-control" id="flash_sell_price" name="flash_sell_price" placeholder="Enter flash sell price">
                                     </div>
                                 </div> 
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="quantity">Quantity</label>
+                                        <label for="quantity">Quantity <span style="color: red;">*</span></label>
                                         <input type="number" class="form-control" id="quantity" name="quantity" placeholder="Enter quantity">
                                     </div>
                                 </div>

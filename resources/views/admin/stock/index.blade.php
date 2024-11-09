@@ -193,6 +193,7 @@
                     console.error(xhr.responseText);
                 }
             },
+            pageLength: 50,
             columns: [
                 { data: 'sl', name: 'sl', orderable: false, searchable: false },
                 { data: 'product_name', name: 'product_name' },

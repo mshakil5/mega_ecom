@@ -17,13 +17,13 @@
                             <div class="row">
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="purchase_date">Selling Date*</label>
+                                        <label for="purchase_date">Selling Date <span class="text-danger">*</span></label>
                                         <input type="date" class="form-control" id="purchase_date" name="purchase_date" placeholder="Enter date" value="{{ now()->format('Y-m-d') }}">
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="supplier_id">Select Wholesaler*</label>
+                                        <label for="supplier_id">Select Wholesaler <span class="text-danger">*</span></label>
                                         <select class="form-control" id="user_id" name="user_id">
                                             <option value="" >Select...</option>
                                             @foreach($customers as $customer)
@@ -43,7 +43,7 @@
                                 
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="warehouse_id">Warehouse*</label>
+                                        <label for="warehouse_id">Warehouse <span class="text-danger">*</span></label>
                                         <select name="warehouse_id" id="warehouse_id" class="form-control">
                                             <option value="">Select</option>
                                             @foreach ($warehouses as $warehouse)
@@ -55,7 +55,7 @@
 
                                 <div class="col-sm-2 d-none">
                                     <div class="form-group">
-                                        <label for="purchase_type">Transaction Type*</label>
+                                        <label for="purchase_type">Transaction Type <span class="text-danger">*</span></label>
                                         <select class="form-control" id="payment_method" name="payment_method">
                                             <option value="Credit" selected>Credit</option>
                                             <option value="Cash">Cash</option>
@@ -77,7 +77,7 @@
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="product_id">Choose Product</label>
+                                        <label for="product_id">Choose Product <span class="text-danger">*</span></label>
                                         <select class="form-control" id="product_id" name="product_id">
                                             <option value="">Select...</option>
                                             @foreach($products as $product)
@@ -94,13 +94,13 @@
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="quantity">Quantity</label>
+                                        <label for="quantity">Quantity <span class="text-danger">*</span></label>
                                         <input type="number" class="form-control quantity" id="quantity" name="quantity" placeholder="Enter quantity" min="1">
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="price_per_unit">Unit Price</label>
+                                        <label for="price_per_unit">Unit Price <span class="text-danger">*</span></label>
                                         <input type="number" step="0.01" class="form-control" id="price_per_unit" name="price_per_unit" placeholder="Enter unit price">
                                     </div>
                                 </div>

@@ -41,13 +41,13 @@
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-group">
-                                        <label for="date">Return Date</label>
+                                        <label for="date">Return Date <span class="text-danger">*</span></label>
                                         <input type="date" class="form-control" id="date" name="date">
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-group">
-                                        <label for="reason">Return Reason</label>
+                                        <label for="reason">Return Reason <span class="text-danger">*</span></label>
                                         <textarea class="form-control" id="return_reason" name="return_reason" rows="1"></textarea>
                                     </div>
                                 </div>

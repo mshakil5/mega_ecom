@@ -17,13 +17,13 @@
                             <div class="row">
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="purchase_date">Purchase Date*</label>
+                                        <label for="purchase_date">Purchase Date <span class="text-danger">*</span></label>
                                         <input type="date" class="form-control" id="purchase_date" name="purchase_date" placeholder="Enter purchase date">
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label for="supplier_id">Select Supplier*</label>
+                                        <label for="supplier_id">Select Supplier <span class="text-danger">*</span></label>
                                         <select class="form-control" id="supplier_id" name="supplier_id">
                                             <option value="" >Select...</option>
                                             @foreach($suppliers as $supplier)
@@ -66,13 +66,13 @@
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="invoice">Invoice*</label>
+                                        <label for="invoice">Invoice <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" id="invoice" name="invoice" placeholder="Enter invoice">
                                     </div>
                                 </div>
                                 <div class="col-sm-3 d-none">
                                     <div class="form-group">
-                                        <label for="purchase_type">Payment Type*</label>
+                                        <label for="purchase_type">Payment Type <span class="text-danger">*</span></label>
                                         <select class="form-control" id="purchase_type" name="purchase_type">
                                             <option value="">Select...</option>
                                             <option value="Cash">Cash</option>
@@ -95,7 +95,7 @@
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="product_id">Choose Product</label>
+                                        <label for="product_id">Choose Product <span class="text-danger">*</span></label>
                                         
                                         <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#newProductModal">Add New</span>
 
@@ -109,19 +109,19 @@
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="quantity">Quantity</label>
+                                        <label for="quantity">Quantity <span class="text-danger">*</span></label>
                                         <input type="number" class="form-control quantity" id="quantity" name="quantity" placeholder="Enter quantity" min="1">
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="unit_price">Unit Price</label>
+                                        <label for="unit_price">Unit Price <span class="text-danger">*</span></label>
                                         <input type="number" step="0.01" class="form-control" id="unit_price" name="unit_price" placeholder="Enter unit price">
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="product_size">Size</label>
+                                        <label for="product_size">Size <span class="text-danger">*</span></label>
                                         <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addSizeModal">Add New</span>
                                         <select class="form-control" id="product_size" name="product_size">
                                             <option value="">Select...</option>
@@ -133,7 +133,7 @@
                                 </div>
                                  <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="product_color">Color</label>
+                                        <label for="product_color">Color <span class="text-danger">*</span></label>
                                         <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
                                         <select class="form-control" id="product_color" name="product_color">
                                             <option value="">Select...</option>

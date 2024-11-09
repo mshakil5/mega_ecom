@@ -10,6 +10,8 @@ use Illuminate\Support\Str;
 use App\Models\CampaignRequest;
 use App\Models\Product;
 use App\Models\CampaignRequestProduct;
+use App\Models\Color;
+use App\Models\Size;
 
 class CampaignController extends Controller
 {
@@ -142,7 +144,9 @@ class CampaignController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('admin.campaign.requests', compact('data', 'products', 'campaigns'));
+        $colors = Color::select('id', 'color', 'color_code')->orderBy('id', 'desc')->get();
+        $sizes = Size::select('id', 'size')->orderBy('id', 'desc')->get();
+        return view('admin.campaign.requests', compact('data', 'products', 'campaigns', 'colors', 'sizes'));
     }
 
     public function getCampaignRequestDetails($id)

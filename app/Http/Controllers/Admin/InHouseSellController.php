@@ -344,25 +344,31 @@ class InHouseSellController extends Controller
         $bankAmount = $order->transactions->where('payment_type', 'Bank')->first();
         $discountAmount = $order->transactions->where('transaction_type', 'Current')->where('discount', '>', 0)->first();
 
-        $customers = User::where('is_type', '0')->orderby('id','DESC')->get();
+        $customers = User::where('is_type', '0')->orderby('id','asc')->get();
         $products = Product::orderby('id','DESC')->get();
-        $colors = Color::orderby('id','DESC')->get();
-        $sizes = Size::orderby('id','DESC')->get();
+        $colors = Color::orderby('id','DESC')->where('status', 1)->get();
+        $sizes = Size::orderby('id','DESC')->where('status', 1)->get();
         $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
         return view('admin.in_house_sell.edit_order', compact('customers', 'products', 'colors', 'sizes','warehouses', 'order', 'cashAmount', 'bankAmount', 'discountAmount'));
     }
 
     public function updateOrder(Request $request)
     {
+        $order = Order::findOrFail($request->id);
+
+        $userIdRule = $request->user_id ? 'required|exists:users,id' : 'nullable';
+        
         $validated = $request->validate([
             'id' => 'required|exists:orders,id',
             'purchase_date' => 'required|date',
-            'user_id' => 'required|exists:users,id',
+            'warehouse_id' => 'required|exists:warehouses,id',
             'payment_method' => 'required|string',
             'ref' => 'nullable|string',
             'remarks' => 'nullable|string',
             'discount' => 'nullable|numeric',
             'products' => 'required|json',
+
+            'user_id' => $userIdRule,
         ], [
             'user_id.required' => 'Please choose a wholesaler.',
             'user_id.exists' => 'Please choose a valid wholesaler.',
@@ -390,7 +396,10 @@ class InHouseSellController extends Controller
         $order->due_amount = $netAmount - $request->cash_payment - $request->bank_payment;
         $order->subtotal_amount = $itemTotalAmount;
         $order->status = 1;
-        $order->order_type = 1;
+        if ($order->order_type != 0) {
+            $order->order_type = 1;
+            $order->save();
+        }
         $order->save();
 
         $transaction = Transaction::where('order_id', $order->id)->where('transaction_type', 'Current')->where('payment_type', 'Credit')->first();

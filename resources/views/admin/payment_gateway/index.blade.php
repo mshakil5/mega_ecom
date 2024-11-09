@@ -36,7 +36,7 @@
                   <div class="row">
                     <div class="col-sm-12" id="showStatus">
                       <div class="form-group">
-                        <label for="name">Payment Gateway</label>
+                        <label for="name">Payment Gateway <span class="text-danger">*</span></label>
                             <select id="name" name="name" class="form-control">
                                 @foreach(['paypal', 'stripe'] as $gateway)
                                     @if(!in_array($gateway, $existingGateways))
@@ -51,19 +51,19 @@
                   <div class="row">
                     <div class="col-sm-4">
                       <div class="form-group">
-                        <label>Client Id</label>
+                        <label>Client Id <span class="text-danger">*</span></label>
                         <input type="text" id="clientid" name="clientid" class="form-control" placeholder="Enter clientid">
                       </div>
                     </div>
                     <div class="col-sm-4">
                       <div class="form-group">
-                        <label>Secret Id</label>
+                        <label>Secret Id <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="secretid" name="secretid" placeholder="Enter secretid">
                       </div>
                     </div>
                     <div class="col-sm-4">
                       <div class="form-group">
-                        <label for="mode">Mode</label>
+                        <label for="mode">Mode <span class="text-danger">*</span></label>
                             <select id="mode" name="mode" class="form-control">
                                 <option value="true">True</option>
                                 <option value="false">False</option>

@@ -89,6 +89,7 @@
             processing: true,
             serverSide: true,
             ajax: "{{ route('reports.weeklyPurchasesDataTable') }}",
+            pageLength: 50,
             columns: [
                 { data: 'purchase_date', name: 'purchase_date' },
                 { data: 'invoice', name: 'invoice' },

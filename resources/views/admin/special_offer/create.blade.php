@@ -76,13 +76,13 @@
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="offer_price">Offer Price</label>
+                                        <label for="offer_price">Offer Price <span style="color: red;">*</span></label>
                                         <input type="number" step="0.01" class="form-control" id="offer_price" name="offer_price" placeholder="Enter offer price">
                                     </div>
                                 </div> 
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="quantity">Quantity</label>
+                                        <label for="quantity">Quantity <span style="color: red;">*</span></label>
                                         <input type="number" class="form-control" id="quantity" name="quantity" placeholder="Enter quantity">
                                     </div>
                                 </div>

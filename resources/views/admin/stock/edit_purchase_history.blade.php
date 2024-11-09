@@ -6,6 +6,7 @@
     <div class="container-fluid">
         <div class="row justify-content-md-center">
             <div class="col-md-12">
+                <a href="{{ route('productPurchaseHistory') }}" class="btn btn-secondary mb-3">Back</a>
                 <div class="card card-secondary">
                     <div class="card-header">
                         <h3 class="card-title" id="cardTitle">Update this purchase</h3>
@@ -18,13 +19,13 @@
                             <div class="row">
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="purchase_date">Purchase Date*</label>
+                                        <label for="purchase_date">Purchase Date <span class="text-danger">*</span></label>
                                         <input type="date" class="form-control" id="purchase_date" name="purchase_date" placeholder="Enter purchase date" value="{{ $purchase->purchase_date }}">
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label for="supplier_id">Select Supplier*</label>
+                                        <label for="supplier_id">Select Supplier <span class="text-danger">*</span></label>
                                         <select class="form-control" id="supplier_id" name="supplier_id">
                                             @foreach($suppliers as $supplier)
                                                 <option value="{{ $supplier->id }}" data-balance="{{ $supplier->balance }}" {{ $purchase->supplier_id == $supplier->id ? 'selected' : '' }}>{{ $supplier->name }}</option>
@@ -49,7 +50,7 @@
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label for="invoice">Invoice*</label>
+                                        <label for="invoice">Invoice <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" id="invoice" name="invoice" placeholder="Enter invoice" value="{{ $purchase->invoice }}">
                                     </div>
                                 </div>
@@ -83,7 +84,7 @@
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="product_id">Choose Product</label>
+                                        <label for="product_id">Choose Product <span class="text-danger">*</span></label>
                                         <select class="form-control" id="product_id" name="product_id">
                                             <option value="">Select...</option>
                                             @foreach($products as $product)
@@ -94,41 +95,37 @@
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="quantity">Quantity</label>
+                                        <label for="quantity">Quantity <span class="text-danger">*</span></label>
                                         <input type="number" class="form-control" id="quantity" name="quantity" placeholder="Enter quantity">
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="unit_price">Unit Price</label>
+                                        <label for="unit_price">Unit Price <span class="text-danger">*</span></label>
                                         <input type="number" step="0.01" class="form-control" id="unit_price" name="unit_price" placeholder="Enter unit price">
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="product_size">Size</label>
+                                        <label for="product_size">Size <span class="text-danger">*</span></label>
                                         <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addSizeModal">Add New</span>
                                         <select class="form-control" id="product_size" name="product_size">
                                             <option value="">Select...</option>
-                                            <option value="XS">XS</option>
-                                            <option value="S">S</option>
-                                            <option value="M">M</option>
-                                            <option value="L">L</option>
-                                            <option value="XL">XL</option>
+                                            @foreach ($sizes as $size)
+                                                <option value="{{ $size->size }}">{{ $size->size }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
                                  <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="product_color">Color</label>
+                                        <label for="product_color">Color <span class="text-danger">*</span></label>
                                         <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
                                         <select class="form-control" id="product_color" name="product_color">
                                             <option value="">Select...</option>
-                                            <option value="Black">Black</option>
-                                            <option value="White">White</option>
-                                            <option value="Red">Red</option>
-                                            <option value="Blue">Blue</option>
-                                            <option value="Green">Green</option>                                     
+                                            @foreach ($colors as $color)
+                                                <option value="{{ $color->color }}">{{ $color->color }}</option>
+                                            @endforeach                                    
                                         </select>
                                     </div>
                                 </div>

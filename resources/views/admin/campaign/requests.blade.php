@@ -28,7 +28,7 @@
 
                                 <div class="col-sm-6">
                                     <div class="form-group">
-                                        <label for="campaign_id">Choose Campaign</label>
+                                        <label for="campaign_id">Choose Campaign <span style="color: red;">*</span></label>
                                         <select class="form-control" id="campaign_id" name="campaign_id">
                                             <option value="">Select...</option>
                                             @foreach($campaigns as $campaign)
@@ -40,7 +40,7 @@
 
                                 <div class="col-sm-6">
                                     <div class="form-group">
-                                        <label for="product_id">Choose Product</label>
+                                        <label for="product_id">Choose Product <span style="color: red;">*</span></label>
                                         <select class="form-control" id="product_id" name="product_id">
                                             <option value="">Select...</option>
                                             @foreach($products as $product)
@@ -52,39 +52,35 @@
 
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="quantity">Quantity</label>
+                                        <label for="quantity">Quantity <span style="color: red;">*</span></label>
                                         <input type="number" class="form-control" id="quantity" name="quantity" placeholder="Enter quantity" min="1">
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="campaign_price">Unit Price</label>
+                                        <label for="campaign_price">Unit Price <span style="color: red;">*</span></label>
                                         <input type="number" step="0.01" class="form-control" id="campaign_price" name="campaign_price" placeholder="Enter price">
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="product_size">Size</label>
+                                        <label for="product_size">Size <span style="color: red;">*</span></label>
                                         <select class="form-control" id="product_size" name="product_size">
                                             <option value="">Select...</option>
-                                            <option value="XS">XS</option>
-                                            <option value="S">S</option>
-                                            <option value="M">M</option>
-                                            <option value="L">L</option>
-                                            <option value="XL">XL</option>
+                                            @foreach($sizes as $size)
+                                                <option value="{{ $size->size }}">{{ $size->size }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="product_color">Color</label>
+                                        <label for="product_color">Color <span style="color: red;">*</span></label>
                                         <select class="form-control" id="product_color" name="product_color">
                                             <option value="">Select...</option>
-                                            <option value="Black">Black</option>
-                                            <option value="White">White</option>
-                                            <option value="Red">Red</option>
-                                            <option value="Blue">Blue</option>
-                                            <option value="Green">Green</option>                                     
+                                            @foreach($colors as $color)
+                                                <option value="{{ $color->color }}">{{ $color->color }}</option>
+                                            @endforeach                                    
                                         </select>
                                     </div>
                                 </div>
