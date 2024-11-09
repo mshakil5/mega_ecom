@@ -14,19 +14,19 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="form-group">
-                                <label>Code*</label>
+                                <label>Code <span class="text-danger">*</span></label>
                                 <input type="number" class="form-control" id="supplier_id_number" name="id_number" placeholder="Enter code" required>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="form-group">
-                                <label>Name*</label>
+                                <label>Name <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="supplier_name" name="name" placeholder="Enter name" required>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="form-group">
-                                <label>Email</label>
+                                <label>Email <span class="text-danger">*</span></label>
                                 <input type="email" class="form-control" id="supplier_email" name="email" placeholder="Enter email">
                             </div>
                         </div>

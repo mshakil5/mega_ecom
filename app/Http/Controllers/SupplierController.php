@@ -249,7 +249,7 @@ class SupplierController extends Controller
         $request->validate([
             'id_number' => 'required|unique:suppliers',
             'name' => 'required|string|max:255',
-            'email' => 'nullable|email',
+            'email' => 'required|email',
             'phone' => 'nullable|numeric',
             'password' => 'nullable|string|min:6',
         ]);

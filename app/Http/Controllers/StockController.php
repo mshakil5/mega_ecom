@@ -579,6 +579,15 @@ class StockController extends Controller
                     $purchaseHistory->total_vat = $purchaseHistory->vat_amount_per_unit * $product['quantity'];
                     $purchaseHistory->total_amount = $product['unit_price'] * $product['quantity'];
                     $purchaseHistory->total_amount_with_vat = $product['total_price_with_vat'];
+                    if ($purchaseHistory->transferred_product_quantity > 0) {
+                        // If product was transferred before, keep the transferred quantity
+                        $purchaseHistory->remaining_product_quantity = 0;
+                        $purchaseHistory->transferred_product_quantity = $product['quantity'];
+                    } else {
+                        // If the product was not transferred, just update remaining quantity
+                        $purchaseHistory->remaining_product_quantity = $product['quantity'];
+                        $purchaseHistory->transferred_product_quantity = 0;
+                    }
                     $purchaseHistory->updated_by = Auth::user()->id;
                     $purchaseHistory->save();
                 }
@@ -620,6 +629,20 @@ class StockController extends Controller
                 $cashpayment->amount = $request->cash_payment;
                 $cashpayment->at_amount = $request->cash_payment;
                 $cashpayment->save();
+            } else {
+                $cashpayment = new Transaction();
+                $cashpayment->date = $request->purchase_date;
+                $cashpayment->supplier_id = $request->supplier_id;
+                $cashpayment->purchase_id = $purchase->id;
+                $cashpayment->table_type = "Purchase";
+                $cashpayment->description = "Purchase";
+                $cashpayment->payment_type = "Cash";
+                $cashpayment->transaction_type = "Current";
+                $cashpayment->amount = $request->cash_payment;
+                $cashpayment->at_amount = $request->cash_payment;
+                $cashpayment->save();
+                $cashpayment->tran_id = 'SL' . date('ymd') . str_pad($cashpayment->id, 4, '0', STR_PAD_LEFT);
+                $cashpayment->save();
             }
         }
     
@@ -631,6 +654,20 @@ class StockController extends Controller
             if ($bankpayment) {
                 $bankpayment->amount = $request->bank_payment;
                 $bankpayment->at_amount = $request->bank_payment;
+                $bankpayment->save();
+            } else {
+                $bankpayment = new Transaction();
+                $bankpayment->date = $request->purchase_date;
+                $bankpayment->supplier_id = $request->supplier_id;
+                $bankpayment->purchase_id = $purchase->id;
+                $bankpayment->table_type = "Purchase";
+                $bankpayment->description = "Purchase";
+                $bankpayment->payment_type = "Bank";
+                $bankpayment->transaction_type = "Current";
+                $bankpayment->amount = $request->bank_payment;
+                $bankpayment->at_amount = $request->bank_payment;
+                $bankpayment->save();
+                $bankpayment->tran_id = 'SL' . date('ymd') . str_pad($bankpayment->id, 4, '0', STR_PAD_LEFT);
                 $bankpayment->save();
             }
         }

@@ -4,7 +4,7 @@
 
 <div class="page-content">
     <div class="checkout">
-    <div class="container">
+    <div class="p-5">
     <div class="row">
         <div class="col-lg-7">
             <div id="alertContainer"></div>
@@ -122,7 +122,7 @@
                             <th>Price</th>
                             <!-- <th>Size</th>
                             <th>Color</th> -->
-                            <th>Qty</th>
+                            <th class="text-right">Qty</th>
                             <th>Total</th>
                         </tr>
                     </thead>
@@ -160,7 +160,7 @@
                                 <td >{{ $currency }} {{ number_format($price, 2) }}</td>
                                 <!-- <td >{{ $item['size'] }}</td>
                                 <td >{{ $item['color'] }}</td> -->
-                                <td >{{ $item['quantity'] }}</td>
+                                <td class="text-right">{{ $item['quantity'] }}</td>
                                 <td >{{ $currency }} {{ number_format($itemTotal, 2) }}</td>
                             </tr>
                         @endforeach

@@ -26,7 +26,7 @@
                                 <div class="col-sm-4">
                                     <div class="form-group">
                                         <label for="supplier_id">Select Supplier <span class="text-danger">*</span></label>
-                                        <select class="form-control" id="supplier_id" name="supplier_id">
+                                        <select class="form-control" id="supplier_id" name="supplier_id" disabled>
                                             @foreach($suppliers as $supplier)
                                                 <option value="{{ $supplier->id }}" data-balance="{{ $supplier->balance }}" {{ $purchase->supplier_id == $supplier->id ? 'selected' : '' }}>{{ $supplier->name }}</option>
                                             @endforeach
@@ -633,6 +633,8 @@
             formData.paid_amount = $('#paid_amount').val();
             formData.hidden_paid_amount = $('#hidden_paid_amount').val();
             formData.due_amount = $('#due_amount').val();
+            formData.bank_payment = $('#bank_payment').val();
+            formData.cash_payment = $('#cash_payment').val();
 
             $('#productTable tbody tr').each(function() {
                 var purchaseHistoryId = $(this).data('id');

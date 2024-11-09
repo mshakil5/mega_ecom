@@ -18,6 +18,7 @@
     window.onload = function() {
         localStorage.removeItem('cart');
         localStorage.removeItem('wishlist');
+        $('.cartCount').text(0);
     };
 </script>
 @endsection
