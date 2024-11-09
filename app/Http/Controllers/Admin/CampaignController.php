@@ -144,8 +144,8 @@ class CampaignController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $colors = Color::select('id', 'color', 'color_code')->orderBy('id', 'desc')->get();
-        $sizes = Size::select('id', 'size')->orderBy('id', 'desc')->get();
+        $colors = Color::select('id', 'color', 'color_code')->where('status', '1')->orderBy('id', 'desc')->get();
+        $sizes = Size::select('id', 'size')->where('status', '1')->orderBy('id', 'desc')->get();
         return view('admin.campaign.requests', compact('data', 'products', 'campaigns', 'colors', 'sizes'));
     }
 
