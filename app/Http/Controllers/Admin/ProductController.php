@@ -118,7 +118,6 @@ class ProductController extends Controller
     public function productEdit($id)
     {
         $product = Product::with('colors', 'sizes')->findOrFail($id);
-        // dd($product);
         $brands = Brand::select('id', 'name')->orderby('id','DESC')->get();
         $product_models = ProductModel::select('id', 'name')->orderby('id','DESC')->get();
         $groups = Group::select('id', 'name')->orderby('id','DESC')->get();

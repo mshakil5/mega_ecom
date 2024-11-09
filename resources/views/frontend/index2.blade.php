@@ -50,7 +50,7 @@
                         @foreach($categories->take(3) as $category)
                         <div class="banner mb-3">
                             <a href="{{ route('category.show', $category->slug) }}">
-                                <img src="{{ asset('images/category/' . $category->image) }}" alt="{{ $category->name }}" class="img-fluid" style="object-fit: cover; height: 153px; width: 100%;">
+                                <img src="{{ asset('images/category/' . $category->image) }}" alt="{{ $category->name }}" class="img-fluid" style="object-fit: cover; height: 145px; width: 100%;">
                             </a>
 
                             <div class="banner-content" style="background: rgba(0, 0, 0, 0.5); padding: 10px; border-radius: 10px;">
