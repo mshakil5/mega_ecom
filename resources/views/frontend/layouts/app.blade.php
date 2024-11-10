@@ -69,7 +69,7 @@
     @elseif ($company->design == '5')
 
     <link rel="stylesheet" href="{{ asset('frontend/css/skin-demo-14.css') }}">
-    <!-- <link rel="stylesheet" href="{{ asset('frontend/css/demo-14.css') }}"> -->
+    <link rel="stylesheet" href="{{ asset('frontend/css/demo-14.css') }}">
 
     @endif
 

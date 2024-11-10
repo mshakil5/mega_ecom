@@ -2,7 +2,6 @@
 
 @section('content')
 
-<div class="mb-lg-2"></div>
 
 <!-- Intro Slider Start-->
 @if($section_status->slider == 1)    
@@ -10,42 +9,39 @@
     <div class="row">
         <div class="col-xl-9 col-xxl-8 offset-lg-3 offset-xxl-2">
             <div class="intro-slider-container slider-container-ratio mb-2">
-                <div class="intro-slider owl-carousel owl-theme owl-nav-inside owl-light" data-toggle="owl" data-owl-options='{
-                    "dots": true,
-                    "nav": false, 
-                    "responsive": {
-                        "1200": {
-                            "nav": false,
-                            "dots": true
-                        }
-                    }
-                }'>
-                @foreach($sliders as $slider)
-                    <div class="intro-slide" style="background-image: url('{{ asset('images/slider/' . $slider->image) }}'); background-size: cover; background-position: center; height: 500px; display: flex; align-items: center; justify-content: flex-end;">
-                        <div class="intro-content">
-                            <h3 class="intro-subtitle">{{ $slider->sub_title }}</h3>
-                            <h1 class="intro-title">{{ $slider->title }}</h1>
-                            @if($slider->link)
-                                <a href="{{ $slider->link }}" class="btn btn-primary btn-round">
-                                    <span>Discover Now</span>
-                                    <i class="icon-long-arrow-right"></i>
-                                </a>
-                            @endif
+                <div class="intro-slider owl-carousel owl-simple owl-nav-inside" data-toggle="owl" data-owl-options='{
+                        "nav": false, 
+                        "dots": true
+                    }'>
+                    @foreach($sliders as $slider)
+                        <div class="intro-slide">
+                            <figure class="slide-image">
+                                <picture>
+                                    <source media="(max-width: 480px)" srcset="{{ asset('images/slider/' . $slider->image) }}-480w.jpg">
+                                    <img src="{{ asset('images/slider/' . $slider->image) }}" alt="{{ $slider->title }} image description">
+                                </picture>
+                            </figure>
+
+                            <div class="intro-content">
+                                <h3 class="intro-subtitle">{{ $slider->sub_title }}</h3>
+                                <h1 class="intro-title">{{ $slider->title }}</h1>
+                                @if($slider->link)
+                                    <a href="{{ $slider->link }}" class="btn btn-primary btn-round">
+                                        <span>Discover Now</span>
+                                        <i class="icon-long-arrow-right"></i>
+                                    </a>
+                                @endif
+                            </div>
                         </div>
-                    </div>
-                @endforeach
+                    @endforeach
                 </div>
                 <span class="slider-loader"></span>
-                </div>
             </div>
         </div>
-
     </div>
 </div>
 @endif
 <!-- Intro Slider End -->
-
-<div class="mb-15 mt-5"></div>
 
 <div class="container-fluid">
     <div class="row">
@@ -56,7 +52,7 @@
             
             <div class="col-lg-12 col-xxl-4-5col">
                 <div class="row">
-                    @foreach($specialOffers as $specialOffer)
+                    @foreach($specialOffers ->take(2) as $specialOffer)
                         <div class="col-md-6">
                             <div class="banner banner-overlay">
                                 <a href="{{ route('special-offers.show', $specialOffer->slug) }}">
@@ -110,9 +106,7 @@
             @endforeach
         </div>
 
-        <div class="mb-5"></div>
         @endif
-
 
         <!-- Category products slider Start-->
         @if ($section_status->category_products == 1 && count($categories) > 0)
@@ -145,7 +139,7 @@
                     <div class="tab-pane fade {{ $index == 0 ? 'show active' : '' }}" id="category-{{ $category->id }}-tab" role="tabpanel" aria-labelledby="category-{{ $category->id }}-link">
                         <div class="owl-carousel owl-full carousel-equal-height carousel-with-shadow" data-toggle="owl" 
                             data-owl-options='{
-                                "nav": false, 
+                                "nav": true, 
                                 "dots": true,
                                 "margin": 20,
                                 "loop": false,
@@ -234,13 +228,11 @@
         @endif
         <!-- Category products slider End-->
 
-        <div class="mb-5"></div>
-
         <!-- Recent advertisements start-->
         <div class="trending-products">
             @foreach($advertisements as $advertisement)
                 @if($advertisement->type == 'recent')
-                    <div class="cta cta-border mb-5" style="background-image: url('{{ asset('images/ads/' . $advertisement->image) }}');">
+                    <div class="cta cta-border" style="background-image: url('{{ asset('images/ads/' . $advertisement->image) }}');">
                         <div class="row justify-content-center">
                             <div class="col-md-12">
                                 <div class="cta-content">
@@ -258,8 +250,6 @@
         </div>
         <!-- Recent advertisements end-->
 
-        <div class="mb-5"></div>
-
         <!-- Recent Products Start -->
         @if($section_status->recent_products == 1 && $recentProducts->count() > 0)
         <div class="trending-products">
@@ -271,10 +261,10 @@
 
             <div class="owl-carousel owl-full carousel-equal-height carousel-with-shadow" data-toggle="owl" 
                 data-owl-options='{
-                    "nav": false, 
-                    "dots": true,
+                    "nav": true, 
+                    "dots": false,
                     "margin": 20,
-                    "loop": false,
+                    "loop": true,
                     "responsive": {
                         "0": {
                             "items":2
@@ -355,8 +345,6 @@
         @endif
         <!-- Recent Products End -->
 
-        <div class="mb-8"></div>
-
         <!-- Campaigns Start -->
         @if($section_status->campaigns == 1)
         
@@ -382,12 +370,11 @@
         @endif
         <!-- Campaigns End -->
 
-
         <!-- supplier advertisements start-->
         <div class="trending-products">
             @foreach($advertisements as $advertisement)
                 @if($advertisement->type == 'vendor')
-                    <div class="cta cta-border mb-5" style="background-image: url('{{ asset('images/ads/' . $advertisement->image) }}');">
+                    <div class="cta cta-border" style="background-image: url('{{ asset('images/ads/' . $advertisement->image) }}');">
                         <div class="row justify-content-center">
                             <div class="col-md-12">
                                 <div class="cta-content">
@@ -405,8 +392,6 @@
         </div>
         <!-- supplier advertisements end-->
 
-        <div class="mb-3"></div>
-
         <!-- Trending Products Start -->
         @if($section_status->trending_products == 1 && $trendingProducts->count() > 0)
         <div class="trending-products">
@@ -418,10 +403,10 @@
 
             <div class="owl-carousel owl-full carousel-equal-height carousel-with-shadow" data-toggle="owl" 
                 data-owl-options='{
-                    "nav": false, 
-                    "dots": true,
+                    "nav": true, 
+                    "dots": false,
                     "margin": 20,
-                    "loop": false,
+                    "loop": true,
                     "responsive": {
                         "0": {
                             "items":2
@@ -504,8 +489,6 @@
         @endif
         <!-- Trending Products End -->
 
-        <div class="mb-3"></div>
-
         <!-- Most Viewed Products Start -->
         @if($section_status->most_viewed_products == 1 && $mostViewedProducts->count() > 0)
         <div class="trending-products">
@@ -517,10 +500,10 @@
 
             <div class="owl-carousel owl-full carousel-equal-height carousel-with-shadow" data-toggle="owl" 
                 data-owl-options='{
-                    "nav": false, 
-                    "dots": true,
+                    "nav": true, 
+                    "dots": false,
                     "margin": 20,
-                    "loop": false,
+                    "loop": true,
                     "responsive": {
                         "0": {
                             "items":2
@@ -599,32 +582,28 @@
         @endif
         <!-- Most Viewed Products End -->
 
-        <div class="mb-3"></div>
-
-        <div class="mb-8"></div>
-
         <!-- Flash Sell Start -->
         @if($section_status->flash_sell == 1)
             <div class="row">
-                @foreach($flashSells as $flashSell)
+                @foreach($flashSells->take(2) as $flashSell)
                     <div class="col-md-6">
-                        <div class="banner banner-overlay banner-overlay-light">
+                        <div class="banner banner-overlay">
                             <a href="{{ route('flash-sells.show', $flashSell->slug) }}">
-                                <img src="{{ asset('images/flash_sell/' . $flashSell->flash_sell_image) }}" alt="Banner" tyle="width: 100%; height: 300px; object-fit: cover;">
+                                <img src="{{ asset('images/flash_sell/' . $flashSell->flash_sell_image) }}" alt="{{ $flashSell->flash_sell_title }} image description" style="width: 100%; height: 300px; object-fit: cover;">
                             </a>
                             <div class="banner-content">
                                 <h3 class="banner-subtitle text-white">
                                     <a href="{{ route('flash-sells.show', $flashSell->slug) }}">
                                         {{ $flashSell->flash_sell_name }}
                                     </a>
-                                </h4>
+                                </h3>
                                 <h3 class="banner-title text-white">
                                     <a href="{{ route('flash-sells.show', $flashSell->slug) }}">
                                         <strong>{{ $flashSell->flash_sell_title }}</strong>
                                     </a>
                                 </h3>
                                 <a href="{{ route('flash-sells.show', $flashSell->slug) }}" class="banner-link">
-                                    Shop Now<i class="icon-long-arrow-right"></i>
+                                    Shop Now <i class="icon-long-arrow-right"></i>
                                 </a>
                             </div>
                         </div>
@@ -633,12 +612,7 @@
             </div>
         @endif
         <!-- Flash Sell End -->
-
         </div>
-
-
-
-        
 
         <aside class="col-xl-3 col-xxl-2 order-xl-first">
             <div class="sidebar sidebar-home">
@@ -749,6 +723,5 @@
         </aside>
     </div>
 </div>
-
 
 @endsection
