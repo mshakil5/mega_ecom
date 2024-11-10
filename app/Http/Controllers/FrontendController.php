@@ -128,17 +128,12 @@ class FrontendController extends Controller
 
         $companyDesign = CompanyDetails::value('design');
 
-        $wholeSaleProducts = Product::where('status', 1)
-                        ->orderBy('id', 'desc')
-                        ->has('prices')
-                        ->get();
-
         if (in_array($companyDesign, ['2', '3', '4'])) {
-            return view('frontend.index2', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns', 'wholeSaleProducts', 'mostViewedProducts'));
+            return view('frontend.index2', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns', 'mostViewedProducts'));
         } elseif ($companyDesign == '5') {
-            return view('frontend.index5', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns', 'wholeSaleProducts', 'mostViewedProducts'));
+            return view('frontend.index5', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns', 'mostViewedProducts'));
         } else {
-            return view('frontend.index', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns', 'wholeSaleProducts', 'mostViewedProducts'));
+            return view('frontend.index', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns', 'mostViewedProducts'));
         }
 
     }
