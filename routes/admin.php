@@ -199,6 +199,12 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/toggle-popular', [ProductController::class, 'togglePopular'])->name('togglePopular');
     Route::post('/toggle-trending', [ProductController::class, 'toggleTrending'])->name('toggleTrending');
 
+    Route::get('product/{product}/prices', [ProductController::class, 'showProductPrices'])->name('product.prices.show');
+    Route::post('/product-price', [ProductController::class, 'storePrice'])->name('product-price.store');
+    Route::get('/product-price/{id}/edit', [ProductController::class, 'priceEdit']);
+    Route::post('/product-price-update', [ProductController::class, 'updatePrice'])->name('product-price.update');
+    Route::post('/product-price-status', [ProductController::class, 'updatePriceStatus'])->name('product-price.update-status');
+    Route::get('/product-price/{id}', [ProductController::class, 'deletePrice']);
 
     // Slider crud
     Route::get('/slider', [SliderController::class, 'getSlider'])->name('allslider');

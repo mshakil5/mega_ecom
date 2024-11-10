@@ -70,10 +70,13 @@
 
                                     <td>
                                         <a id="viewBtn" href="{{ route('product.show.admin', $data->id) }}">
-                                            <i class="fa fa-eye" style="color: #4CAF50; font-size:16px;"></i>
+                                            <i class="fa fa-eye" style="color: #4CAF50; font-size:16px; margin-right: 10px;"></i>
+                                        </a>
+                                        <a href="{{ route('product.prices.show', $data->id) }}">
+                                            <i class="fa fa-money" style="color: #FF9800; font-size:16px; margin-right: 10px;"></i>
                                         </a>
                                         <a href="{{ route('product.edit', $data->id) }}" id="EditBtn" rid="{{ $data->id }}">
-                                            <i class="fa fa-edit" style="color: #2196f3; font-size:16px;"></i>
+                                            <i class="fa fa-edit" style="color: #2196f3; font-size:16px; margin-right: 10px;"></i>
                                         </a>
                                         <a class="deleteBtn" rid="{{ $data->id }}">
                                             <i class="fa fa-trash-o" style="color: red; font-size:16px;"></i>

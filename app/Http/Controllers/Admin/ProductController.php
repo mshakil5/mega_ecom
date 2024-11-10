@@ -19,6 +19,7 @@ use App\Models\CompanyDetails;
 use App\Models\SubCategory;
 use App\Models\ProductSize;
 use App\Models\ProductColor;
+use App\Models\ProductPrice;
 
 class ProductController extends Controller
 {
@@ -549,5 +550,93 @@ class ProductController extends Controller
         return response()->json(['message' => 'Product updated successfully!', 'product' => $product], 200);
     }
 
+    public function showProductPrices($productId)
+    {
+        $product = Product::findOrFail($productId);
+        $prices = $product->prices;
+        return view('admin.product.prices', compact('product', 'prices'));
+    }
+
+    public function storePrice(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'min_quantity' => 'required|integer',
+            'max_quantity' => 'required|integer',
+            'price' => 'required|numeric',
+        ]);
+
+        $data = new ProductPrice;
+        $data->product_id = $request->product_id;
+        $data->min_quantity = $request->min_quantity;
+        $data->max_quantity = $request->max_quantity;
+        $data->price = $request->price;
+        $data->status = $request->status ?? 1;
+        $data->created_by = auth()->id();
+
+        if ($data->save()) {
+            return response()->json(['status' => 300, 'message' => 'Price created successfully.']);
+        } else {
+            return response()->json(['status' => 303, 'message' => 'Server Error!']);
+        }
+    }
+
+    public function priceEdit($id)
+    {
+        $price = ProductPrice::findOrFail($id);
+        return response()->json($price);
+    }
+
+    public function updatePrice(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'min_quantity' => 'required|integer',
+            'max_quantity' => 'required|integer',
+            'price' => 'required|numeric',
+            'priceId' => 'required|exists:product_prices,id',
+        ]);
+
+        $price = ProductPrice::find($request->priceId);
+        $price->min_quantity = $request->min_quantity;
+        $price->max_quantity = $request->max_quantity;
+        $price->price = $request->price;
+        $price->status = $request->status ?? 1;
+        $price->updated_by = auth()->id();
+
+        if ($price->save()) {
+            return response()->json(['status' => 300, 'message' => 'Price updated successfully.']);
+        } else {
+            return response()->json(['status' => 303, 'message' => 'Failed to update price.']);
+        }
+    }
+
+    public function deletePrice($id)
+    {
+        $price = ProductPrice::find($id);
+        
+        if (!$price) {
+            return response()->json(['success' => false, 'message' => 'Price not found.'], 404);
+        }
+
+        if ($price->delete()) {
+            return response()->json(['success' => true, 'message' => 'Price deleted successfully.']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Failed to delete price.'], 500);
+        }
+    }
+
+    public function updatePriceStatus(Request $request)
+    {
+        $price = ProductPrice::find($request->price_id);
+        if (!$price) {
+            return response()->json(['status' => 404, 'message' => 'Price not found']);
+        }
+
+        $price->status = $request->status;
+        $price->save();
+
+        return response()->json(['status' => 200, 'message' => 'Price status updated successfully']);
+    }
 
 }
