@@ -67,32 +67,32 @@
     @endif
     <!-- Categories End -->
 
-    <div class="mb-4"></div>
-
     <!-- Special Offer Start -->
     @if($section_status->special_offer == 1)
-    <div class="row justify-content-center">
-        @foreach($specialOffers as $specialOffer)
-            <div class="col-md-6 col-lg-4">
-                <div class="banner banner-overlay banner-overlay-light">
-                    <a href="{{ route('special-offers.show', $specialOffer->slug) }}">
-                        <img src="{{ asset('images/special_offer/' . $specialOffer->offer_image) }}" alt="Banner" style="height: 300px; object-fit: cover;">
-                    </a>
-                    <div class="banner-content" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
-                        <h4 class="banner-subtitle">
-                            <a href="{{ route('special-offers.show', $specialOffer->slug) }}" style="color: #fff;">
-                                {{ $specialOffer->offer_name }}
-                            </a>
-                        </h4>
-                        <h3 class="banner-title">
-                            <a href="{{ route('special-offers.show', $specialOffer->slug) }}">
-                                <strong style="color: #fff;">{{ $specialOffer->offer_title }}</strong>
-                            </a>
-                        </h3>
+    <div class="container">
+        <div class="row justify-content-center">
+            @foreach($specialOffers->take(3) as $specialOffer)
+                <div class="col-md-6 col-lg-4">
+                    <div class="banner banner-overlay banner-overlay-light">
+                        <a href="{{ route('special-offers.show', $specialOffer->slug) }}">
+                            <img src="{{ asset('images/special_offer/' . $specialOffer->offer_image) }}" alt="Banner" style="height: 300px; object-fit: cover;">
+                        </a>
+                        <div class="banner-content" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
+                            <h4 class="banner-subtitle">
+                                <a href="{{ route('special-offers.show', $specialOffer->slug) }}" style="color: #fff;">
+                                    {{ $specialOffer->offer_name }}
+                                </a>
+                            </h4>
+                            <h3 class="banner-title">
+                                <a href="{{ route('special-offers.show', $specialOffer->slug) }}">
+                                    <strong style="color: #fff;">{{ $specialOffer->offer_title }}</strong>
+                                </a>
+                            </h3>
+                        </div>
                     </div>
                 </div>
-            </div>
-        @endforeach
+            @endforeach
+        </div>
     </div>
     @endif
     <!-- Special Offer End -->
@@ -133,7 +133,7 @@
                             "nav": true, 
                             "dots": true,
                             "margin": 20,
-                            "loop": false,
+                            "loop": true,
                             "responsive": {
                                 "0": {
                                     "items":2
@@ -219,10 +219,8 @@
     @endif
     <!-- Category products slider End-->
 
-    <div class="mb-6"></div>
-
     <!-- Recent advertisements start-->
-    <div class="container">
+    <div class="container mt-5">
         @foreach($advertisements as $advertisement)
             @if($advertisement->type == 'recent')
                 <div class="cta cta-border mb-5" style="background-image: url('{{ asset('images/ads/' . $advertisement->image) }}');">
@@ -245,96 +243,94 @@
 
     <!-- Recent Products Start -->
     @if($section_status->recent_products == 1 && $recentProducts->count() > 0)
-    <div class="pt-5 pb-6">
-        <div class="container trending-products">
-            <div class="heading heading-flex mb-3">
-                <div class="heading-left">
-                    <h2 class="title">Recent Products</h2>
-                </div>
+    <div class="container trending-products">
+        <div class="heading heading-flex mb-3">
+            <div class="heading-left">
+                <h2 class="title">Recent Products</h2>
             </div>
+        </div>
 
-            <div class="owl-carousel owl-full carousel-equal-height carousel-with-shadow" data-toggle="owl" 
-                data-owl-options='{
-                    "nav": true, 
-                    "dots": true,
-                    "margin": 20,
-                    "loop": false,
-                    "responsive": {
-                        "0": {
-                            "items":2
-                        },
-                        "480": {
-                            "items":2
-                        },
-                        "768": {
-                            "items":3
-                        },
-                        "992": {
-                            "items":4
-                        }
+        <div class="owl-carousel owl-full carousel-equal-height carousel-with-shadow" data-toggle="owl" 
+            data-owl-options='{
+                "nav": true, 
+                "dots": false,
+                "margin": 20,
+                "loop": true,
+                "responsive": {
+                    "0": {
+                        "items":2
+                    },
+                    "480": {
+                        "items":2
+                    },
+                    "768": {
+                        "items":3
+                    },
+                    "992": {
+                        "items":4
                     }
-                }'>
-                @if ($recentProducts->count() > 0)
-                    @foreach($recentProducts as $product)
-                    <div class="product product-2">
-                        <figure class="product-media">
-                            <a href="{{ route('product.show', $product->slug) }}">
-                                <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image">
-                            </a>
-                            @if ($product->stock && $product->stock->quantity > 0)
+                }
+            }'>
+            @if ($recentProducts->count() > 0)
+                @foreach($recentProducts as $product)
+                <div class="product product-2">
+                    <figure class="product-media">
+                        <a href="{{ route('product.show', $product->slug) }}">
+                            <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image">
+                        </a>
+                        @if ($product->stock && $product->stock->quantity > 0)
 
-                                @php
-                                    $sellingPrice = $product->stockhistory()
-                                        ->where('available_qty', '>', 0)
-                                        ->orderBy('id', 'asc')
-                                        ->value('selling_price');
+                            @php
+                                $sellingPrice = $product->stockhistory()
+                                    ->where('available_qty', '>', 0)
+                                    ->orderBy('id', 'asc')
+                                    ->value('selling_price');
 
-                                    $colors = $product->stock()
-                                        ->where('quantity', '>', 0)
-                                        ->distinct('color')
-                                        ->pluck('color');
+                                $colors = $product->stock()
+                                    ->where('quantity', '>', 0)
+                                    ->distinct('color')
+                                    ->pluck('color');
 
-                                    $sizes = $product->stock()
-                                        ->where('quantity', '>', 0)
-                                        ->distinct('size')
-                                        ->pluck('size');
-                                @endphp
-                                <div class="product-action-vertical">
-                                    <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}">
-                                        <span>Add to wishlist</span>
-                                    </a>
-                                </div>
-                                <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart" title="Add to cart"
-                                     data-product-id="{{ $product->id }}" 
-                                     data-offer-id="0" 
-                                     data-price="{{ $sellingPrice ?? $product->price }}" 
-                                     data-toggle="modal" data-target="#quickAddToCartModal" 
-                                     data-image ="{{ asset('images/products/' . $product->feature_image) }}" 
-                                     data-stock="{{ $product->stock->quantity }}"
-                                     data-colors="{{ $colors->toJson() }}"
-                                     data-sizes="{{ $sizes->toJson() }}">
-                                        <span>add to cart</span>
-                                    </a>
-                                </div>
-                            @else
-                                <span class="product-label label-out-stock">Out of stock</span>
-                            @endif
-                        </figure>
-
-                        <div class="product-body">
-                            <div class="product-cat">
-                                <a href="{{ route('category.show', $category->slug) }}">{{ $category->name }}</a>
+                                $sizes = $product->stock()
+                                    ->where('quantity', '>', 0)
+                                    ->distinct('size')
+                                    ->pluck('size');
+                            @endphp
+                            <div class="product-action-vertical">
+                                <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}">
+                                    <span>Add to wishlist</span>
+                                </a>
                             </div>
-                            <h3 class="product-title"><a href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></h3>
-                            <div class="product-price">
-                              {{ $currency }}{{ number_format($sellingPrice ?? $product->price, 2) }}
+                            <div class="product-action">
+                                <a href="#" class="btn-product btn-cart" title="Add to cart"
+                                    data-product-id="{{ $product->id }}" 
+                                    data-offer-id="0" 
+                                    data-price="{{ $sellingPrice ?? $product->price }}" 
+                                    data-toggle="modal" data-target="#quickAddToCartModal" 
+                                    data-image ="{{ asset('images/products/' . $product->feature_image) }}" 
+                                    data-stock="{{ $product->stock->quantity }}"
+                                    data-colors="{{ $colors->toJson() }}"
+                                    data-sizes="{{ $sizes->toJson() }}">
+                                    <span>add to cart</span>
+                                </a>
                             </div>
+                        @else
+                            <span class="product-label label-out-stock">Out of stock</span>
+                        @endif
+                    </figure>
+
+                    <div class="product-body">
+                        <div class="product-cat">
+                            <a href="{{ route('category.show', $category->slug) }}">{{ $category->name }}</a>
+                        </div>
+                        <h3 class="product-title"><a href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></h3>
+                        <div class="product-price">
+                            {{ $currency }}{{ number_format($sellingPrice ?? $product->price, 2) }}
                         </div>
                     </div>
-                    @endforeach
-                @endif
-            </div>
+                </div>
+                @endforeach
+            @endif
         </div>
     </div>
     @endif
@@ -342,24 +338,26 @@
 
     <!-- Campaigns Start -->
     @if($section_status->campaigns == 1)
-    <div class="row justify-content-center mt-5">
-        @foreach($campaigns as $campaign)
-        <div class="col-md-6 col-lg-4">
-            <div class="banner banner-overlay banner-overlay-light">
-                <a href="{{ route('campaign.details.frontend', $campaign->slug) }}">
-                    <img src="{{ asset('images/campaign_banner/' . $campaign->banner_image) }}" alt="{{ $campaign->title }}" style="height: 300px; object-fit: cover;">
-                </a>
+    <div class="container mb-2 mt-2">
+        <div class="row justify-content-center">
+            @foreach($campaigns as $campaign)
+            <div class="col-md-6 col-lg-4">
+                <div class="banner banner-overlay banner-overlay-light">
+                    <a href="{{ route('campaign.details.frontend', $campaign->slug) }}">
+                        <img src="{{ asset('images/campaign_banner/' . $campaign->banner_image) }}" alt="{{ $campaign->title }}" style="height: 300px; object-fit: cover;">
+                    </a>
 
-                <div class="banner-content" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
-                    <h3 class="banner-title">
-                        <a href="{{ route('campaign.details.frontend', $campaign->slug) }}">
-                            <strong style="color: #fff;">{{ $campaign->title }}</strong>
-                        </a>
-                    </h3>
+                    <div class="banner-content" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
+                        <h3 class="banner-title">
+                            <a href="{{ route('campaign.details.frontend', $campaign->slug) }}">
+                                <strong style="color: #fff;">{{ $campaign->title }}</strong>
+                            </a>
+                        </h3>
+                    </div>
                 </div>
             </div>
+            @endforeach
         </div>
-        @endforeach
     </div>
     @endif
     <!-- Campaigns End -->
@@ -368,7 +366,7 @@
     <div class="container">
         @foreach($advertisements as $advertisement)
             @if($advertisement->type == 'vendor')
-                <div class="cta cta-border mb-5" style="background-image: url('{{ asset('images/ads/' . $advertisement->image) }}');">
+                <div class="cta cta-border" style="background-image: url('{{ asset('images/ads/' . $advertisement->image) }}');">
                     <div class="row justify-content-center">
                         <div class="col-md-12">
                             <div class="cta-content d-lg-flex justify-content-lg-end">
@@ -388,7 +386,7 @@
 
     <!-- Trending Products Start -->
     @if($section_status->trending_products == 1 && $trendingProducts->count() > 0)
-    <div class="pt-5 pb-6">
+    <div class="pt-5">
         <div class="container trending-products">
             <div class="heading heading-flex mb-3">
                 <div class="heading-left">
@@ -399,9 +397,9 @@
             <div class="owl-carousel owl-full carousel-equal-height carousel-with-shadow" data-toggle="owl" 
                 data-owl-options='{
                     "nav": true, 
-                    "dots": true,
+                    "dots": false,
                     "margin": 20,
-                    "loop": false,
+                    "loop": true,
                     "responsive": {
                         "0": {
                             "items":2
@@ -485,7 +483,7 @@
 
     <!-- Most Viewed Products Start -->
     @if($section_status->most_viewed_products == 1 && $mostViewedProducts->count() > 0)
-    <div class="pt-5 pb-6">
+    <div class="pt-5">
         <div class="container trending-products">
             <div class="heading heading-flex mb-3">
                 <div class="heading-left">
@@ -496,9 +494,9 @@
             <div class="owl-carousel owl-full carousel-equal-height carousel-with-shadow" data-toggle="owl" 
                 data-owl-options='{
                     "nav": true, 
-                    "dots": true,
+                    "dots": false,
                     "margin": 20,
-                    "loop": false,
+                    "loop": true,
                     "responsive": {
                         "0": {
                             "items":2
@@ -581,36 +579,36 @@
 
     <!-- Flash Sell Start -->
     @if($section_status->flash_sell == 1)
-    <div class="row justify-content-center">
-        @foreach($flashSells as $flashSell)
-            <div class="col-md-6 col-lg-4">
-                <div class="banner banner-overlay banner-overlay-light">
-                    <a href="{{ route('flash-sells.show', $flashSell->slug) }}">
-                        <img src="{{ asset('images/flash_sell/' . $flashSell->flash_sell_image) }}" alt="Banner" style="height: 300px; object-fit: cover;">
-                    </a>
-                    <div class="banner-content" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
-                        <h4 class="banner-subtitle">
-                            <a href="{{ route('flash-sells.show', $flashSell->slug) }}" style="color: #fff;">
-                                {{ $flashSell->flash_sell_name }}
-                            </a>
-                        </h4>
-                        <h3 class="banner-title">
-                            <a href="{{ route('flash-sells.show', $flashSell->slug) }}">
-                                <strong style="color: #fff;">{{ $flashSell->flash_sell_title }}</strong>
-                            </a>
-                        </h3>
-                        <a href="{{ route('flash-sells.show', $flashSell->slug) }}" class="banner-link">
-                            Shop Now<i class="icon-long-arrow-right"></i>
+    <div class="container mt-2 mb-2">
+        <div class="row justify-content-center">
+            @foreach($flashSells as $flashSell)
+                <div class="col-md-6 col-lg-4">
+                    <div class="banner banner-overlay banner-overlay-light">
+                        <a href="{{ route('flash-sells.show', $flashSell->slug) }}">
+                            <img src="{{ asset('images/flash_sell/' . $flashSell->flash_sell_image) }}" alt="Banner" style="height: 300px; object-fit: cover;">
                         </a>
+                        <div class="banner-content" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
+                            <h4 class="banner-subtitle">
+                                <a href="{{ route('flash-sells.show', $flashSell->slug) }}" style="color: #fff;">
+                                    {{ $flashSell->flash_sell_name }}
+                                </a>
+                            </h4>
+                            <h3 class="banner-title">
+                                <a href="{{ route('flash-sells.show', $flashSell->slug) }}">
+                                    <strong style="color: #fff;">{{ $flashSell->flash_sell_title }}</strong>
+                                </a>
+                            </h3>
+                            <a href="{{ route('flash-sells.show', $flashSell->slug) }}" class="banner-link">
+                                Shop Now<i class="icon-long-arrow-right"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
-        @endforeach
+            @endforeach
+        </div>
     </div>
     @endif
     <!-- Flash Sell End -->
-
-    <div class="mb-5"></div>
 
     <!-- Buy One Get One Start -->
     @if($section_status->buy_one_get_one == 1 && count($buyOneGetOneProducts) > 0)
@@ -643,10 +641,9 @@
             </div>
         </div>
     </div>
+    <div class="mb-2"></div>
     @endif
     <!-- Buy One Get One End -->
-
-    <div class="mb-4"></div>
 
     <!-- Bundle Products Start -->
     @if($section_status->bundle_products == 1 && count($bundleProducts) > 0)
