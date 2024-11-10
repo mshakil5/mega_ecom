@@ -21,7 +21,7 @@
     <div class="dashboard">
         <div class="container">
             <div class="row">
-                <aside class="col-md-4 col-lg-3">
+                <aside class="col-md-4 col-lg-2">
                     <ul class="nav nav-dashboard flex-column mb-3 mb-md-0">
                         <li class="nav-item">
                             <a class="nav-link {{ Request::routeIs('user.dashboard') ? 'active' : '' }}" href="{{ route('user.dashboard') }}">Dashboard</a>
@@ -40,7 +40,7 @@
                     </ul>
                 </aside>
 
-                <div class="col-md-8 col-lg-9">
+                <div class="col-md-8 col-lg-10">
                     @section('user_content')
                     <div class="row justify-content-center">
 
@@ -51,14 +51,14 @@
                         $todayOrdersCount = $user->orders()->whereDate('purchase_date', $today)->count();
                         @endphp
 
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="icon-box text-center">
-                                <span class="icon-box-icon">
-                                    <i class="icon-info-circle"></i>
-                                </span>
-                                <div class="icon-box-content">
-                                    <h3 class="icon-box-title">Today's Orders</h3>
-                                    <p>{{ $todayOrdersCount }}</p>
+                        <div class="col-lg-4 col-sm-6 mb-4">
+                            <div class="card text-center shadow-sm border-0 rounded-3">
+                                <div class="card-body py-4">
+                                    <div class="icon-box-icon mb-3">
+                                        <i class="icon-info-circle fa-3x text-primary"></i>
+                                    </div>
+                                    <h3 class="card-title">Today's Orders</h3>
+                                    <p class="card-text display-6">{{ $todayOrdersCount }}</p>
                                 </div>
                             </div>
                         </div>
@@ -69,14 +69,14 @@
                         $thisWeekOrdersCount = $user->orders()->whereBetween('purchase_date', [$startOfWeek, $endOfWeek])->count();
                         @endphp
 
-                        <div class="col-lg-4 col-sm-6">
-                            <div class="icon-box text-center">
-                                <span class="icon-box-icon">
-                                    <i class="icon-info-circle"></i>
-                                </span>
-                                <div class="icon-box-content">
-                                    <h3 class="icon-box-title">This Week's Orders</h3>
-                                    <p>{{ $thisWeekOrdersCount }}</p>
+                        <div class="col-lg-4 col-sm-6 mb-4">
+                            <div class="card text-center shadow-sm border-0 rounded-3">
+                                <div class="card-body py-4">
+                                    <div class="icon-box-icon mb-3">
+                                        <i class="icon-info-circle fa-3x text-primary"></i>
+                                    </div>
+                                    <h3 class="card-title">This Week's Orders</h3>
+                                    <p class="card-text display-6">{{ $thisWeekOrdersCount }}</p>
                                 </div>
                             </div>
                         </div>

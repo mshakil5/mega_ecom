@@ -14,7 +14,7 @@ body {
 
 body {
     font: normal 300 1.4rem/1.86 "Poppins", sans-serif;
-    color: #666;
+    color: #000000;
     background-color: #fff;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -674,11 +674,11 @@ blockquote.text-white cite span {
 }
 
 .header-top {
-    font-weight: 300;
+    font-weight: 500;
     font-size: 1.3rem;
     line-height: 1.5;
     letter-spacing: 0;
-    color: #777;
+    color: #333333;
     margin-bottom: .1rem
 }
 
@@ -2040,7 +2040,7 @@ blockquote.text-white cite span {
 }
 
 .menu>li>a {
-    color: #333;
+    color: #000000;
     font-weight: 500;
     font-size: 1.4rem;
     letter-spacing: -.01em;
@@ -2575,8 +2575,8 @@ blockquote.text-white cite span {
 }
 
 .menu-vertical li>a {
-    color: #666;
-    font-weight: 300;
+    color: #000000;
+    font-weight: 500;
     font-size: 1.3rem;
     letter-spacing: 0;
     padding-top: .6rem;
@@ -2599,8 +2599,8 @@ blockquote.text-white cite span {
 
 .menu-vertical>li>a {
     display: block;
-    color: #666;
-    font-weight: 300;
+    color: #333333;
+    font-weight: 500;
     font-size: 1.4rem;
     line-height: 1.5;
     letter-spacing: -.01em;
@@ -3119,10 +3119,10 @@ a {
 p {
     margin-bottom: 0;
     font-size: 1.4rem;
-    font-weight: 300;
+    font-weight: 500;
     font-family: 'Poppins';
     letter-spacing: 0;
-    color: #777
+    color: #000000
 }
 
 .header-2 {
@@ -5678,9 +5678,9 @@ p {
 
 .footer {
     width: 100%;
-    font-weight: 300;
+    font-weight: 500;
     font-size: 1.4rem;
-    color: #777;
+    color: #000000;
     background-color: #fff
 }
 
@@ -10184,8 +10184,8 @@ textarea.form-control {
 }
 
 label {
-    color: #666;
-    font-weight: 300;
+    color: #333333;
+    font-weight: 500;
     font-size: 1.4rem;
     margin: 0 0 1.1rem
 }
@@ -10686,10 +10686,10 @@ small.form-text {
 }
 
 .table th {
-    font-weight: 400;
+    font-weight: 500;
     font-size: 1.4rem;
     line-height: 1.5;
-    color: #999
+    color: #000000
 }
 
 .table th,
@@ -15889,7 +15889,7 @@ button:focus {
 
 .table.table-summary {
     line-height: 1.43;
-    color: #666;
+    color: #000000;
     border: none;
     margin-bottom: 0
 }
@@ -16515,11 +16515,11 @@ button:focus {
 .nav-dashboard .nav-link {
     overflow: hidden;
     position: relative;
-    font-weight: 300;
+    font-weight: 500;
     font-size: 1.4rem;
     line-height: 1.5;
     padding: 1.4rem 0;
-    color: #333;
+    color: #000000;
     border-bottom: .1rem solid #ebebeb
 }
 

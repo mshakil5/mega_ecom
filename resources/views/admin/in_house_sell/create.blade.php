@@ -371,6 +371,9 @@
                         $('#productTable tbody').append(productRow);
                         $('#quantity').val('');
                         $('#price_per_unit').val('');
+                        $('#color').val('');
+                        $('#size').val('');
+                        $('#product_id').val(null).trigger('change');
                         updateSummary();
                     },
                     error: function(xhr) {
@@ -392,12 +395,6 @@
             $(this).closest('tr').remove();
             updateSummary();
             $('#product_id').val(null).trigger('change');
-        });
-
-        $(document).on('input', '.quantity', function() {
-            if ($(this).val() < 1) {
-                $(this).val(1);
-            }
         });
 
         $(document).on('input', '#productTable input.quantity, #productTable input.price_per_unit, #productTable input.vat_percent', function() {
@@ -663,12 +660,6 @@
 
 <script>
     $(document).ready(function() {
-
-        $('#quantity').on('input', function() {
-            if ($(this).val() < 0) {
-                $(this).val(1);
-            }
-        });
 
         $('#product_id').change(function() {
             var selectedProduct = $(this).find(':selected');

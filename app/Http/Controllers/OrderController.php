@@ -36,6 +36,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\OrderStatusChangedMail;
 use App\Models\Coupon;
 use App\Models\CouponUsage;
+use App\Mail\AdminNotificationMail;
 
 class OrderController extends Controller
 {
@@ -309,6 +310,7 @@ class OrderController extends Controller
                     } else {
                         $couponUsage->guest_name = $formData['name'] ?? null;
                         $couponUsage->guest_email = $formData['email'] ?? null;
+                        $couponUsage->guest_phone = $formData['phone'] ?? null;
                     }
                 
                     $couponUsage->save();
@@ -594,6 +596,7 @@ class OrderController extends Controller
                 } else {
                     $couponUsage->guest_name = $formData['name'] ?? null;
                     $couponUsage->guest_email = $formData['email'] ?? null;
+                    $couponUsage->guest_phone = $formData['phone'] ?? null;
                 }
             
                 $couponUsage->save();
@@ -907,6 +910,7 @@ class OrderController extends Controller
                 } else {
                     $couponUsage->guest_name = $formData['name'] ?? null;
                     $couponUsage->guest_email = $formData['email'] ?? null;
+                    $couponUsage->guest_phone = $formData['phone'] ?? null;
                 }
             
                 $couponUsage->save();
@@ -1645,6 +1649,29 @@ class OrderController extends Controller
         }
     
         return response()->json(['message' => 'Warehouse assigned and stock updated successfully!']);
-    }    
+    }
+    
+    public function sendMailToAdmin(Request $request)
+    {
+        $validated = $request->validate([
+            'message' => 'required|string|max:1000',
+            'orderId' => 'required|exists:orders,id',
+        ]);
+
+        $message = $validated['message'];
+        $orderId = $validated['orderId'];
+
+        $order = Order::findOrFail($orderId);
+
+        $contactEmail = ContactEmail::orderBy('id', 'asc')->first();
+
+        if (!$contactEmail) {
+            return response()->json(['success' => false, 'message' => 'No contact email found.']);
+        }
+
+        Mail::to($contactEmail->email)->send(new AdminNotificationMail($message, $order));
+        return response()->json(['success' => true, 'message' => 'Mail sent successfully!']);
+
+    }
 
 }

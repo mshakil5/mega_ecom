@@ -14,7 +14,7 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="form-group">
-                                <label>Name*</label>
+                                <label>Name <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="name" name="name" placeholder="Enter name" required>
                             </div>
                         </div>
@@ -26,7 +26,7 @@
                         </div>
                         <div class="col-sm-6">
                             <div class="form-group">
-                                <label>Email*</label>
+                                <label>Email <span class="text-danger">*</span></label>
                                 <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
                             </div>
                         </div>

@@ -3,7 +3,7 @@
 @section('content')
     <!-- Intro Slider Start-->
     @if($section_status->slider == 1)
-    <div class="intro-section pb-3 mb-2">
+    <div class="intro-section">
         <div class="container">
             <div class="row">
                 <!-- First Column (Slider) -->
@@ -123,15 +123,12 @@
     @endif
     <!-- Special Offer End -->
 
-    <div class="mb-3"></div>
+    <div class="mb-1"></div>
 
     <!-- Category products slider Start-->
     @if ($section_status->category_products == 1 && count($categories) > 0)
     <div class="container new-arrivals">   
-        <div class="heading heading-flex mb-3 pt-2">
-            <div class="heading-left" style="display:none;">
-                <h2 class="title">Category Products</h2>
-            </div>
+        <div class="heading heading-flex">
             <div class="heading-right" style="width: 100%; text-align: center;">
                 <ul class="nav nav-pills nav-border-anim nav-big justify-content-center" role="tablist">
                      @foreach($categories->take(3) as $index => $category)
@@ -248,13 +245,11 @@
     @endif
     <!-- Category products slider End-->
 
-    <div class="mb-6"></div>
-
     <!-- Recent advertisements start-->
     <div class="container">
         @foreach($advertisements as $advertisement)
             @if($advertisement->type == 'recent')
-                <div class="cta cta-border mb-5" style="background-image: url('{{ asset('images/ads/' . $advertisement->image) }}');">
+                <div class="cta cta-border" style="background-image: url('{{ asset('images/ads/' . $advertisement->image) }}');">
                     <div class="row justify-content-center">
                         <div class="col-md-12">
                             <div class="cta-content">
@@ -274,7 +269,7 @@
 
     <!-- Recent Products Start -->
     @if($section_status->recent_products == 1)
-    <div class="pt-5 pb-6">
+    <div class="pt-5">
         <div class="container trending-products">
             <div class="heading heading-flex mb-3">
                 <div class="heading-left">
@@ -376,7 +371,7 @@
 
     <!-- Campaigns Start -->
     @if($section_status->campaigns == 1)
-    <div class="row justify-content-center mt-5">
+    <div class="row justify-content-center">
         @foreach($campaigns as $campaign)
         <div class="col-md-6 col-lg-4">
             <div class="banner banner-overlay banner-overlay-light">
@@ -402,7 +397,7 @@
     <div class="container">
         @foreach($advertisements as $advertisement)
             @if($advertisement->type == 'vendor')
-                <div class="cta cta-border mb-5" style="background-image: url('{{ asset('images/ads/' . $advertisement->image) }}');">
+                <div class="cta cta-border" style="background-image: url('{{ asset('images/ads/' . $advertisement->image) }}');">
                     <div class="row justify-content-center">
                         <div class="col-md-12">
                             <div class="cta-content">
@@ -422,7 +417,7 @@
 
     <!-- Trending Products Start -->
     @if($section_status->trending_products == 1)
-    <div class="pt-5 pb-6">
+    <div class="pt-5">
         <div class="container trending-products">
             <div class="heading heading-flex mb-3">
                 <div class="heading-left">
@@ -523,7 +518,7 @@
 
     <!-- Most Viewed Products Start -->
     @if($section_status->most_viewed_products == 1 && $mostViewedProducts->count() > 0)
-    <div class="pt-5 pb-6">
+    <div class="pt-5">
         <div class="container trending-products">
             <div class="heading heading-flex mb-3">
                 <div class="heading-left">
@@ -624,7 +619,7 @@
 
     <!-- Wholesale Products Start -->
     @if ($wholeSaleProducts->count() > 0)
-    <div class="pt-5 pb-6">
+    <div class="pt-5">
         <div class="container wholesale-products">
             <div class="heading heading-flex mb-3">
                 <div class="heading-left">

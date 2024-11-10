@@ -106,6 +106,9 @@ class StockController extends Controller
                 static $i = 1;
                 return $i++;
             })
+            ->addColumn('date', function ($row) {
+                return $row->date ? Carbon::parse($row->date)->format('d-m-Y') : 'N/A';
+            })
             ->addColumn('product_name', function ($row) {
                 return $row->product ? $row->product->name : 'N/A';
             })
@@ -256,6 +259,11 @@ class StockController extends Controller
         $purchase->created_by = Auth::user()->id;
         $purchase->save();
 
+        if ($request->warehouse_id) {
+            $purchase->status = 4;
+            $purchase->save();
+        }
+        
         foreach ($request->products as $product) {
             $purchaseHistory = new PurchaseHistory();
             $purchaseHistory->purchase_id = $purchase->id;

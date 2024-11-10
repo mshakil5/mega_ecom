@@ -587,7 +587,7 @@ class FrontendController extends Controller
             ]);
         }
     
-        //check coupon usage
+        // Check coupon usage
         $totalUsage = CouponUsage::where('coupon_id', $coupon->id)->count();
         if ($coupon->total_max_use > 0 && $totalUsage >= $coupon->total_max_use) {
             return response()->json([
@@ -596,7 +596,7 @@ class FrontendController extends Controller
             ]);
         }
     
-        //check max usage per user
+        // Check max usage per user or guest
         if (auth()->check()) {
             $userId = auth()->user()->id;
             $userUsage = CouponUsage::where('coupon_id', $coupon->id)->where('user_id', $userId)->count();
@@ -608,9 +608,20 @@ class FrontendController extends Controller
                 ]);
             }
         } else {
-            //check max usage per guest
+            // Check max usage per guest based on either email or phone
             $guestEmail = $request->input('guest_email');
-            $guestUsage = CouponUsage::where('coupon_id', $coupon->id)->where('guest_email', $guestEmail)->count();
+            $guestPhone = $request->input('guest_phone');
+            
+            $guestUsage = CouponUsage::where('coupon_id', $coupon->id)
+                ->where(function ($query) use ($guestEmail, $guestPhone) {
+                    if ($guestEmail) {
+                        $query->where('guest_email', $guestEmail);
+                    }
+                    if ($guestPhone) {
+                        $query->orWhere('guest_phone', $guestPhone);
+                    }
+                })
+                ->count();
     
             if ($coupon->max_use_per_user > 0 && $guestUsage >= $coupon->max_use_per_user) {
                 return response()->json([
@@ -626,7 +637,7 @@ class FrontendController extends Controller
             'coupon_type' => $coupon->coupon_type,
             'coupon_value' => $coupon->coupon_value
         ]);
-    }
+    }    
     
 
     public function filter(Request $request)

@@ -54,6 +54,7 @@
                                 <thead>
                                     <tr>
                                         <th>Sl</th>
+                                        <th>Date</th>
                                         <th>Product Name</th>
                                         <th>Product Code</th>
                                         <th>Stock Qty</th>
@@ -198,8 +199,10 @@
                     console.error(xhr.responseText);
                 }
             },
+            pageLength: 100,
             columns: [
                 { data: 'sl', name: 'sl', orderable: false, searchable: false },
+                { data: 'date', name: 'date' },
                 { data: 'product_name', name: 'product_name' },
                 { data: 'product_code', name: 'product_code' },
                 { data: 'quantity_formatted', name: 'quantity' },

@@ -136,6 +136,8 @@ Route::group(['prefix' =>'user/', 'middleware' => ['auth', 'is_user']], function
     Route::get('/orders/details', [OrderController::class, 'getOrderDetailsModal'])->name('orders.details.modal');
 
     Route::post('/order-return', [OrderController::class, 'returnStore'])->name('orders.return');
+
+    Route::post('/send-admin-mail', [OrderController::class, 'sendMailToAdmin'])->name('send.admin.mail');
 });
   
 

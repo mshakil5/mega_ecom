@@ -24,12 +24,11 @@ class InHouseSellController extends Controller
 {
     public function inHouseSell()
     {
-        
         $products = Product::orderby('id','DESC')->select('id', 'name','price', 'product_code')->get();
         $colors = Color::where('status', 1)->select('id', 'color')->orderby('id','DESC')->get();
         $sizes = Size::where('status', 1)->select('id', 'size')->orderby('id','DESC')->get();
         $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
-        $customers = User::where('is_type', '0')->orderby('id','DESC')->get();
+        $customers = User::where('is_type', '0')->where('status', 1)->orderby('id','DESC')->get();
         return view('admin.in_house_sell.create', compact('customers', 'products', 'colors', 'sizes','warehouses'));
     }
 
@@ -344,7 +343,7 @@ class InHouseSellController extends Controller
         $bankAmount = $order->transactions->where('payment_type', 'Bank')->first();
         $discountAmount = $order->transactions->where('transaction_type', 'Current')->where('discount', '>', 0)->first();
 
-        $customers = User::where('is_type', '0')->orderby('id','asc')->get();
+        $customers = User::where('is_type', '0')->where('status', 1)->orderby('id','asc')->get();
         $products = Product::orderby('id','DESC')->get();
         $colors = Color::orderby('id','DESC')->where('status', 1)->get();
         $sizes = Size::orderby('id','DESC')->where('status', 1)->get();

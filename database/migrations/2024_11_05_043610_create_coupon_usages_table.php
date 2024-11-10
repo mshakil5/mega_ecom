@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
             $table->string('guest_name')->nullable();
             $table->string('guest_email')->nullable();
+            $table->string('guest_phone')->nullable();
             $table->string('order_id')->nullable();
             $table->timestamps();
         });

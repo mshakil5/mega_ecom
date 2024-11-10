@@ -82,7 +82,7 @@
                                                     <input type="number" class="form-control return_quantity" data-max="{{ $availableReturnQuantity }}">
                                                 </td>
                                                 <td>
-                                                    <button type="button" class="btn btn-sm btn-primary add-to-return">Return</button>
+                                                    <button type="button" class="btn btn-sm btn-secondary add-to-return">Return</button>
                                                 </td>
                                             </tr>
                                             @endforeach

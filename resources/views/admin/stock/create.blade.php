@@ -178,14 +178,14 @@
                                     <div class="row">
                                         <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Direct cost:</span>
-                                            <input type="number" class="form-control" id="direct_cost" style="width: 100px; margin-left: auto;">
+                                            <input type="number" class="form-control" id="direct_cost" style="width: 100px; margin-left: auto;" min="0">
                                         </div>
                                     </div>
                                     
                                     <div class="row mt-1">
                                         <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">CNF cost:</span>
-                                            <input type="number" class="form-control" id="cnf_cost" style="width: 100px; margin-left: auto;">
+                                            <input type="number" class="form-control" id="cnf_cost" style="width: 100px; margin-left: auto;" min="0">
                                         </div>
                                     </div>
 
@@ -193,21 +193,21 @@
                                     <div class="row mt-1">
                                         <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Title need:</span>
-                                            <input type="number" class="form-control" id="cost_a" style="width: 100px; margin-left: auto;">
+                                            <input type="number" class="form-control" id="cost_a" style="width: 100px; margin-left: auto;" min="0">
                                         </div>
                                     </div>
 
                                     <div class="row mt-1">
                                         <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Title need:</span>
-                                            <input type="number" class="form-control" id="cost_b" style="width: 100px; margin-left: auto;">
+                                            <input type="number" class="form-control" id="cost_b" style="width: 100px; margin-left: auto;" min="0">
                                         </div>
                                     </div>
 
                                     <div class="row mt-1">
                                         <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Others cost:</span>
-                                            <input type="number" class="form-control" id="other_cost" style="width: 100px; margin-left: auto;">
+                                            <input type="number" class="form-control" id="other_cost" style="width: 100px; margin-left: auto;" min="0">
                                         </div>
                                     </div>
                                     
@@ -223,7 +223,7 @@
                                     <div class="row justify-content-end mt-1">
                                         <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Discount Amount:</span>
-                                            <input type="number" step="0.01" class="form-control" id="discount" name="discount" style="width: 100px; margin-left: auto;">
+                                            <input type="number" step="0.01" class="form-control" id="discount" name="discount" style="width: 100px; margin-left: auto;" min="0">
                                         </div>
                                     </div>
                                     <div class="row justify-content-end mt-1">
@@ -247,14 +247,14 @@
                                     <div class="row justify-content-end mt-1">
                                         <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Cash Payment:</span>
-                                            <input type="number" step="0.01" class="form-control" id="cash_payment" name="cash_payment" style="width: 100px; margin-left: auto;">
+                                            <input type="number" step="0.01" class="form-control" id="cash_payment" name="cash_payment" style="width: 100px; margin-left: auto;" min="0">
                                         </div>
                                     </div>
                                     
                                     <div class="row justify-content-end mt-1">
                                         <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Bank Payment:</span>
-                                            <input type="number" step="0.01" class="form-control" id="bank_payment" name="bank_payment" style="width: 100px; margin-left: auto;">
+                                            <input type="number" step="0.01" class="form-control" id="bank_payment" name="bank_payment" style="width: 100px; margin-left: auto;" min="0">
                                         </div>
                                     </div>
                                     
@@ -316,6 +316,27 @@
             });
 
             $('#item_total_amount').val(itemTotalAmount.toFixed(2) || '0.00');
+
+            $(document).on('input', '#cash_payment, #bank_payment', function() {
+                var cashPayment = parseFloat($('#cash_payment').val()) || 0;
+                var bankPayment = parseFloat($('#bank_payment').val()) || 0;
+
+                var totalPayment = cashPayment + bankPayment;
+
+                var netAmount = parseFloat($('#net_amount').val()) || 0;
+
+                if (totalPayment > netAmount) {
+                    swal({
+                        title: "Error!",
+                        text: "The total payment (cash + bank) cannot exceed the net amount.",
+                        icon: "error",
+                        button: "OK",
+                    }).then(() => {
+                        $('#cash_payment').val('0.00');
+                        $('#bank_payment').val('0.00');
+                    });
+                }
+            });
 
             // add other cost
             var direct_cost = parseFloat($('#direct_cost').val()) || 0;
@@ -387,14 +408,9 @@
                 $('#unit_price').val('');
                 $('#product_size').val('');
                 $('#product_color').val('');
+                $('#product_id').val(null).trigger('change');
 
                 updateSummary();
-            }
-        });
-
-        $(document).on('input', '.quantity', function() {
-            if ($(this).val() < 1) {
-                $(this).val(1);
             }
         });
 

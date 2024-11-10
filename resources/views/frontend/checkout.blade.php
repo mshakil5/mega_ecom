@@ -12,40 +12,40 @@
             <div class="row">
             <div class="col-md-6 form-group">
                 <label>First Name<span style="color: red;">*</span></label>
-                <input class="form-control" id="first_name" type="text" placeholder="John" value="{{ Auth::user()->name ?? '' }}" required>
+                <input class="form-control" id="first_name" type="text" placeholder="" value="{{ Auth::user()->name ?? '' }}" required>
             </div>
             <div class="col-md-6 form-group">
                 <label>Last Name<span style="color: red;">*</span></label>
-                <input class="form-control" id="last_name" type="text" placeholder="Doe" value="{{ Auth::user()->surname ?? '' }}" >
+                <input class="form-control" id="last_name" type="text" placeholder="" value="{{ Auth::user()->surname ?? '' }}" >
             </div>
             <div class="col-md-6 form-group">
                 <label>Email<span style="color: red;">*</span></label>
-                <input class="form-control" id="email" type="email" placeholder="example@email.com" value="{{ Auth::user()->email ?? '' }}">
+                <input class="form-control" id="email" type="email" placeholder="" value="{{ Auth::user()->email ?? '' }}">
             </div>
             <div class="col-md-6 form-group">
                 <label>Phone<span style="color: red;">*</span></label>
-                <input class="form-control" id="phone" type="text" placeholder="+123 456 789" value="{{ Auth::user()->phone ?? '' }}">
+                <input class="form-control" id="phone" type="text" placeholder="" value="{{ Auth::user()->phone ?? '' }}">
             </div>
             <div class="col-md-6 form-group">
                 <label>House Number<span style="color: red;">*</span></label>
-                <input class="form-control" type="text" placeholder="123" id="house_number" value="{{ Auth::user()->house_number ?? '' }}">
+                <input class="form-control" type="text" placeholder="" id="house_number" value="{{ Auth::user()->house_number ?? '' }}">
             </div>
             <div class="col-md-6 form-group">
                 <label>Street Name<span style="color: red;">*</span></label>
-                <input class="form-control" type="text" placeholder="123 Street" id="street_name" value="{{ Auth::user()->street_name ?? '' }}">
+                <input class="form-control" type="text" placeholder="" id="street_name" value="{{ Auth::user()->street_name ?? '' }}">
             </div>
             <div class="col-md-6 form-group">
                 <label>Town<span style="color: red;">*</span></label>
-                <input class="form-control" type="text" placeholder="Dhaka" id="town" value="{{ Auth::user()->town ?? '' }}">
+                <input class="form-control" type="text" placeholder="" id="town" value="{{ Auth::user()->town ?? '' }}">
             </div>
             <div class="col-md-6 form-group">
                 <label>Postcode<span style="color: red;">*</span></label>
-                <input class="form-control" type="text" placeholder="123" id="postcode" value="{{ Auth::user()->postcode ?? '' }}">
+                <input class="form-control" type="text" placeholder="" id="postcode" value="{{ Auth::user()->postcode ?? '' }}">
             </div>
             <div class="col-md-12">
                 <div class="form-group">
                     <label for="note">Note</label>
-                    <textarea class="form-control" id="note" name="note" rows="3" placeholder="Enter your  short note about your order"></textarea>
+                    <textarea class="form-control" id="note" name="note" rows="3" placeholder=""></textarea>
                 </div>
             </div>
             <div class="col-md-12 form-group">
@@ -503,11 +503,22 @@
             e.preventDefault();
             var couponName = $('#couponName').val();
             var guest_email = $('#email').val();
+            var guest_phone = $('#phone').val();
+
+            if (!guest_email) {
+                toastr.error("Please enter your email before applying the coupon.", "Email Required");
+                return;
+            }
+
+            if (!guest_phone) {
+                toastr.error("Please enter your phone before applying the coupon.", "Phone Required");
+                return;
+            }
 
             $.ajax({
                 url: '/check-coupon',
                 type: 'GET',
-                data: { guest_email: guest_email, coupon_name: couponName },
+                data: { guest_email: guest_email, guest_phone: guest_phone, coupon_name: couponName },
                 success: function(response) {
                     if (response.success) {
                         $('#couponDetails').show();

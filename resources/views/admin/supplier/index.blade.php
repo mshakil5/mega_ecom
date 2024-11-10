@@ -123,7 +123,7 @@
             <form id="payForm">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="paymentAmount">Payment Amount</label>
+                        <label for="paymentAmount">Payment Amount <span style="color: red;">*</span></label>
                         <input type="number" class="form-control" id="paymentAmount" name="paymentAmount" placeholder="Enter payment amount">
                     </div>
                     
@@ -133,7 +133,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="payment_type">Payment Type</label>
+                        <label for="payment_type">Payment Type <span style="color: red;">*</span></label>
                         <select name="payment_type" id="payment_type" class="form-control" >
                             <option value="Cash">Cash</option>
                             <option value="Bank">Bank</option>

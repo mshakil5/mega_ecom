@@ -6,12 +6,13 @@
     <div class="col-lg-12">
         <div class="card card-dashboard">
             <div class="card-body">
-                <h3 class="card-title">Order Details</h3>
+                <h1 class="card-title font-weight-bold">Order Details</h1>
+                <hr>
             </div>
-            <div class="card-body">
+            <div class="card-body pt-0">
                 <div class="row">
                     <!-- User Information -->
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <h4 class="mb-3">User Information</h4>
                         <p><strong>Name:</strong> {{ $order->user->name ?? $order->name }} {{ $order->user->surname ?? '' }}</p>
                         <p><strong>Email:</strong> {{ $order->user->email ?? $order->email }}</p>
@@ -28,6 +29,65 @@
                             {{ implode(', ', array_filter($addressParts)) }}
                         </p>
                     </div>
+                </div>
+
+                <!-- Product Details -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h4 class="mb-3">Product Details</h4>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Product Image</th>
+                                    <th>Product Name</th>
+                                    <th>Quantity</th>
+                                    <th>Size</th>
+                                    <th>Color</th>
+                                    <th>Per Unit</th>
+                                    <th>Total Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($order->orderDetails as $orderDetail)
+                                    <tr>
+                                        <td>
+                                            <img src="{{ asset('/images/products/' . $orderDetail->product->feature_image) }}" alt="{{ $orderDetail->product->name }}" style="width: 100px; height: auto;">
+                                        </td>
+                                        <td>{{ $orderDetail->product->name }}</td>
+                                        <td>{{ $orderDetail->quantity }}</td>
+                                        <td>{{ $orderDetail->size }}</td>
+                                        <td>{{ $orderDetail->color }}</td>
+                                        <td>{{ number_format($orderDetail->price_per_unit, 2) }}</td>
+                                        <td>{{ number_format($orderDetail->total_price, 2) }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        
+                        <a href="{{ url()->previous() }}" class="btn btn-primary btn-rounded btn-shadow">Back</a>
+
+                        <button class="btn btn-info btn-rounded btn-mail" data-toggle="modal" data-target="#mailModal">
+                            <i class="fas fa-envelope"></i> Mail
+                        </button>
+
+                        @if (!in_array($order->status, [4, 5, 6, 7]))
+                            <button class="btn btn-warning btn-rounded btn-cancel d-none" data-order-id="{{ $order->id }}" data-toggle="modal" data-target="#cancelModal">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        @endif
+
+                        @if ($order->status == 5)
+                            <button class="btn btn-success btn-rounded btn-return" data-order-id="{{ $order->id }}" data-toggle="modal" data-target="#returnModal">
+                                <i class="fas fa-undo"></i> Return
+                            </button>
+                        @endif
+                    </div>
+
                     <!-- Order Information -->
                     <div class="col-md-6">
                         <h4 class="mb-3">Order Information</h4>
@@ -69,7 +129,9 @@
                                 Unknown
                             @endif
                         </p>
-                            @if ($order->order_type === 0)
+                        <p><strong>Note:</strong> {!! $order->note !!}</p>
+
+                        @if ($order->order_type === 0)
                         <a href="{{ route('generate-pdf', ['encoded_order_id' => base64_encode($order->id)]) }}" class="btn btn-success btn-round btn-shadow" target="_blank">
                             <i class="fas fa-receipt"></i> Invoice
                         </a>
@@ -80,61 +142,35 @@
                         @endif
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-                <!-- Product Details -->
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <h4 class="mb-3">Product Details</h4>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Product Image</th>
-                                    <th>Product Name</th>
-                                    <th>Quantity</th>
-                                    <th>Size</th>
-                                    <th>Color</th>
-                                    <th>Per Unit</th>
-                                    <th>Total Price</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($order->orderDetails as $orderDetail)
-                                    <tr>
-                                        <td>
-                                            <img src="{{ asset('/images/products/' . $orderDetail->product->feature_image) }}" alt="{{ $orderDetail->product->name }}" style="width: 100px; height: auto;">
-                                        </td>
-                                        <td>{{ $orderDetail->product->name }}</td>
-                                        <td>{{ $orderDetail->quantity }}</td>
-                                        <td>{{ $orderDetail->size }}</td>
-                                        <td>{{ $orderDetail->color }}</td>
-                                        <td>{{ number_format($orderDetail->price_per_unit, 2) }}</td>
-                                        <td>{{ number_format($orderDetail->total_price, 2) }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
 
-                <div class="row mt-4">
-                    <div class="col-2">
-                        <a href="{{ url()->previous() }}" class="btn btn-primary btn-rounded btn-shadow">Back</a>
+<!-- Mail Modal Structure -->
+<div class="modal fade" id="mailModal" tabindex="-1" role="dialog" aria-labelledby="mailModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mailModalLabel">Send Mail to Admin</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="mailForm">
+                    @csrf
+                    <div class="form-group mx-3">
+                        <label for="mail-message">Your Message:</label>
+                        <textarea class="form-control" id="mail-message" name="mail-message" rows="4" placeholder="Write your message here..." required></textarea>
                     </div>
-                    <div class="col-5"></div>
-                    <div class="col-5">
-                        @if (!in_array($order->status, [4, 5, 6, 7]))
-                            <button class="btn btn-warning btn-rounded btn-cancel" data-order-id="{{ $order->id }}" data-toggle="modal" data-target="#cancelModal">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        @endif
-
-                        @if ($order->status == 5)
-                            <button class="btn btn-success btn-rounded btn-return" data-order-id="{{ $order->id }}" data-toggle="modal" data-target="#returnModal">
-                                <i class="fas fa-undo"></i>
-                            </button>
-                        @endif
-                    </div>
-                </div>
+                    <input type="hidden" id="orderId" name="orderId" value="{{ $order->id }}">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-rounded" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary btn-rounded" id="submitMail">Send Mail</button>
             </div>
         </div>
     </div>
@@ -188,6 +224,30 @@
         </div>
     </div>
 </div>
+
+<div id='loading' style='display:none ;'>
+    <img src="{{ asset('loader.gif') }}" id="loading-image" alt="Loading..." />
+</div>
+
+<style>
+    #loading {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0.7;
+    background-color: #fff;
+    z-index: 99;
+}
+
+    #loading-image {
+        z-index: 100;
+    }
+</style>
 
 @endsection
 
@@ -277,7 +337,6 @@
         });
 
         $('#submitReturn').click(function() {
-
             var returnItems = [];
             $('[name^="return_items["]').each(function() {
                 var productId = $(this).find('[name$="[product_id]"]').val();
@@ -322,6 +381,48 @@
                 }
             });
         });
+
+        $(document).ready(function() {
+            $('#submitMail').click(function() {
+                var message = $('#mail-message').val();
+                var orderId = $('#orderId').val();
+
+                if (message.trim() === "") {
+                    toastr.warning("Please enter a message.");
+                    return;
+                }
+
+                $.ajax({
+                    url: "{{ route('send.admin.mail') }}",
+                    method: "POST",
+                    beforeSend: function() {
+                        $('#mailModal').modal('hide');
+                        $('#loading').show();
+                    },
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        message: message,
+                        orderId: orderId
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            toastr.success("Mail sent successfully!");
+                            // $('#mailModal').modal('hide');
+                        } else {
+                            toastr.error("Failed to send mail. Please try again.");
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                        toastr.error("An error occurred while sending the mail. Please try again."); 
+                    },
+                    complete: function() {
+                        $('#loading').hide();
+                    }
+                });
+            });
+        });
+
     });
 </script>
 
