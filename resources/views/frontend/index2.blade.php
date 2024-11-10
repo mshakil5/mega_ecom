@@ -3,6 +3,7 @@
 @section('content')
     <!-- Intro Slider Start-->
     @if($section_status->slider == 1)
+    {{--
     <div class="intro-section">
         <div class="container">
             <div class="row">
@@ -26,6 +27,70 @@
                                         <div class="row justify-content-left">
                                             <div class="col-auto col-sm-7 col-md-6 col-lg-5" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
                                                 <h3 class="intro-subtitle text-third" style="color: #fff;">{{ $slider->sub_title }}</h3>
+                                                <h1 class="intro-title" style="color: #fff;">{{ $slider->title }}</h1>
+                                                @if($slider->link)
+                                                <a href="{{ $slider->link }}" class="btn btn-primary btn-round">
+                                                    <span>Shop More</span>
+                                                    <i class="icon-long-arrow-right"></i>
+                                                </a>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                        <span class="slider-loader"></span>
+                    </div>
+                </div>
+                <!-- End of First Column -->
+
+                <!-- Second Column (Categories) -->
+                <div class="col-12 col-lg-4 d-none d-lg-block">
+                    <div class="intro-banners">
+                        @foreach($categories->take(3) as $category)
+                        <div class="banner mb-3">
+                            <a href="{{ route('category.show', $category->slug) }}">
+                                <img src="{{ asset('images/category/' . $category->image) }}" alt="{{ $category->name }}" class="img-fluid" style="object-fit: cover; height: 145px; width: 100%;">
+                            </a>
+
+                            <div class="banner-content" style="background: rgba(0, 0, 0, 0.5); padding: 10px; border-radius: 10px;">
+                                <h4 class="banner-title text-center">
+                                    <a href="{{ route('category.show', $category->slug) }}" style="color: #fff;">{{ $category->name }}</a>
+                                </h4>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                <!-- End of Second Column -->
+            </div>
+        </div>
+    </div> --}}
+
+    <div class="intro-section pb-3 mb-2">
+        <div class="container mobile-margin">
+            <div class="row">
+                <!-- First Column (Slider) -->
+                <div class="col-12 col-lg-8 mb-3 mb-lg-0">
+                    <div class="intro-slider-container slider-container-ratio mb-2 mb-lg-0">
+                        <div class="intro-slider owl-carousel owl-simple owl-dark owl-nav-inside" data-toggle="owl"
+                            data-owl-options='{
+                                "dots": true,
+                                "nav": false,
+                                "responsive": {
+                                    "1200": {
+                                        "nav": true,
+                                        "dots": false
+                                    }
+                                }
+                            }'>
+                            @foreach($sliders as $slider)
+                                <div class="intro-slide" style="background-image: url('{{ asset('images/slider/' . $slider->image) }}'); background-size: cover; background-position: center; height: 500px;">
+                                    <div class="intro-content" style="padding: 20px; display: flex; align-items: center; justify-content: center; height: 100%;">
+                                        <div class="row justify-content-left">
+                                            <div class="col-auto col-sm-7 col-md-6 col-lg-5" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
+                                                <h3 class="intro-subtitle text-primary" style="color: #fff;">{{ $slider->sub_title }}</h3>
                                                 <h1 class="intro-title" style="color: #fff;">{{ $slider->title }}</h1>
                                                 @if($slider->link)
                                                 <a href="{{ $slider->link }}" class="btn btn-primary btn-round">

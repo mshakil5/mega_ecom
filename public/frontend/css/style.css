@@ -19885,4 +19885,10 @@ button:focus {
     content: '\f7e3'
 }
 
+@media (max-width: 575.98px) {
+    .mobile-margin {
+        margin-bottom: 100px;
+    }
+}
+
 /*# sourceMappingURL=style.css.map */
