@@ -218,6 +218,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/slider-update', [SliderController::class, 'sliderUpdate']);
     Route::get('/slider/{id}', [SliderController::class, 'sliderDelete']);
 
+    Route::post('/slider-status', [SliderController::class, 'toggleStatus']);
+
     // Supplier crud
     Route::get('/supplier', [SupplierController::class, 'getSupplier'])->name('allsupplier');
     Route::post('/supplier', [SupplierController::class, 'supplierStore']);

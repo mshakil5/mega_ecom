@@ -38,6 +38,10 @@ class AdController extends Controller
             return response()->json(['status'=> 303,'message'=>$message]);
             exit();
         }
+
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
         
         $data = new Ad;
         $data->type = $request->type;
@@ -126,7 +130,7 @@ class AdController extends Controller
     {
         $ad = Ad::find($request->ad_id);
         if (!$ad) {
-            return response()->json(['status' => 404, 'message' => 'Category not found']);
+            return response()->json(['status' => 404, 'message' => 'Not found']);
         }
 
         $ad->status = $request->status;

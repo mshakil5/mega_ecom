@@ -31,7 +31,7 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="form-group">
-                                        <label>Title*</label>
+                                        <label>Title</label>
                                         <input type="text" class="form-control" id="title" name="title" placeholder="Enter title">
                                     </div>
                                 </div>
@@ -51,7 +51,7 @@
                             <div class="row">
                                 <div class="col-10">
                                     <div class="form-group">
-                                        <label for="feature-img">Slider Image</label>
+                                        <label for="feature-img">Slider Image  <span style="color: red;">*</span></label>
                                         <input type="file" class="form-control-file" id="image" accept="image/*">
                                         <img id="preview-image" src="#" alt="" style="max-width: 300px; width: 100%; height: auto; margin-top: 20px;">
                                     </div>
@@ -83,8 +83,9 @@
                                 <tr>
                                     <th>Sl</th>
                                     <th>Title</th>
-                                    <th>Sub Title</th>
                                     <th>Link</th>
+                                    <th>Slider</th>
+                                    <th>Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -93,8 +94,14 @@
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
                                     <td>{{ $data->title }}</td>
-                                    <td>{{ $data->sub_title }}</td>
                                     <td>{{ $data->link }}</td>
+                                    <td><img src="{{ asset('images/slider/' . $data->image) }}" alt="" style="max-width: 100px; height: auto;"></td>
+                                    <td>
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input toggle-status" id="customSwitchStatus{{ $data->id }}" data-id="{{ $data->id }}" {{ $data->status == 1 ? 'checked' : '' }}>
+                                            <label class="custom-control-label" for="customSwitchStatus{{ $data->id }}"></label>
+                                        </div>
+                                    </td>
                                     <td>
                                         <a id="EditBtn" rid="{{ $data->id }}">
                                             <i class="fa fa-edit" style="color: #2196f3; font-size:16px;"></i>
@@ -185,6 +192,15 @@
                     }
                 },
                 error: function(xhr, status, error) {
+                    var response = JSON.parse(xhr.responseText);
+                    swal({
+                        text: response.message,
+                        icon: "error",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    })
                    console.error(xhr.responseText);
                 }
             });
@@ -231,6 +247,15 @@
                       }
                   },
                   error: function(xhr, status, error) {
+                    var response = JSON.parse(xhr.responseText);
+                    swal({
+                        text: response.message,
+                        icon: "error",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    })
                    console.error(xhr.responseText);
                 }
               });
@@ -321,4 +346,35 @@
     });
 </script>
 
+<script>
+    $(document).ready(function() {
+        $('.toggle-status').change(function() {
+            var slider_id = $(this).data('id');
+            var status = $(this).prop('checked') ? 1 : 0;
+
+            $.ajax({
+                url: '/admin/slider-status',
+                method: "POST",
+                data: {
+                    slider_id: slider_id,
+                    status: status,
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(d) {
+                    swal({
+                          text: "Status updated",
+                          icon: "success",
+                          button: {
+                              text: "OK",
+                              className: "swal-button--confirm"
+                          }
+                      });
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
 @endsection

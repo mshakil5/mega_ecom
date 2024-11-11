@@ -36,7 +36,7 @@
                   <div class="row">
                     <div class="col-sm-12" id="typeInput">
                       <div class="form-group">
-                        <label>Type</label>
+                        <label>Type <span style="color: red;">*</span></label>
                         <select class="form-control" id="type" name="type">
                             <option value="">Plese select...</option>
                             @foreach ($availableTypes as $type)
@@ -47,7 +47,7 @@
                     </div>
                     <div class="col-sm-12">
                       <div class="form-group">
-                        <label>Link</label>
+                        <label>Link <span style="color: red;">*</span></label>
                         <input type="url" id="link" name="link" class="form-control" placeholder="Enter link">
                       </div>
                     </div>
@@ -55,7 +55,7 @@
                     <div class="row">
                           <div class="col-10">
                               <div class="form-group">
-                                  <label for="feature-img">Ad Image</label>
+                                  <label for="feature-img">Ad Image <span style="color: red;">*</span></label>
                                   <input type="file" class="form-control-file" id="image" accept="image/*">
                                   <img id="preview-image" src="#" alt="" style="max-width: 300px; width: 100%; height: auto; margin-top: 20px;">
                               </div>
@@ -100,6 +100,7 @@
                   <th>Sl</th>
                   <th>Type</th>
                   <th>Link</th>
+                  <th>Image</th>
                   <th>Status</th>
                   <th>Action</th>
                 </tr>
@@ -110,6 +111,7 @@
                     <td>{{ $key + 1 }}</td>
                     <td>{{$data->type}}</td>
                     <td>{{$data->link}}</td>
+                    <td><img src="{{ asset('images/ads/' . $data->image) }}" alt="" style="max-width: 100px; height: auto;"></td>
                     <td>
                         <div class="custom-control custom-switch">
                             <input type="checkbox" class="custom-control-input toggle-status" id="customSwitchStatus{{ $data->id }}" data-id="{{ $data->id }}" {{ $data->status == 1 ? 'checked' : '' }}>
@@ -205,6 +207,15 @@
                     }
                 },
                 error: function(xhr, status, error) {
+                    var response = JSON.parse(xhr.responseText);
+                    swal({
+                        text: response.message,
+                        icon: "error",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    });
                    console.error(xhr.responseText);
                 }
             });
@@ -248,8 +259,17 @@
                         });
                     }
                 },
-                error: function(d) {
-                    console.log(d);
+                error: function(xhr, status, error) {
+                    var response = JSON.parse(xhr.responseText);
+                    swal({
+                        text: response.message,
+                        icon: "error",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    });
+                   console.error(xhr.responseText);
                 }
             });
           }

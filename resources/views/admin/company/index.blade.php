@@ -38,7 +38,7 @@
 
                 <div class="col-sm-4">
                   <div class="form-group">
-                    <label>Company name*</label>
+                    <label>Company name <span style="color: red;">*</span></label>
                     <input type="text" class="form-control @error('company_name') is-invalid @enderror" id="company_name" name="company_name" value="{{$data->company_name}}">
                     @error('company_name')
                         <span class="invalid-feedback" role="alert">

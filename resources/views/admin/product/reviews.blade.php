@@ -1,13 +1,18 @@
 @extends('admin.layouts.admin')
 
 @section('content')
-<section class="content" id="contentContainer">
+<section class="content pt-3" id="contentContainer">
+    <div class="col-2 my-2">
+        <a href="{{ route('allproduct') }}" class="btn btn-secondary">
+            <i class="fa fa-arrow-left"></i> Back
+        </a>
+    </div>
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
                 <div class="card card-secondary">
                     <div class="card-header">
-                        <h3 class="card-title">All Reviews</h3>
+                        <h3 class="card-title">All Reviews for {{ $product->name }}</h3>
                     </div>
                     <div class="card-body">
                         <table id="example1" class="table table-bordered table-striped">

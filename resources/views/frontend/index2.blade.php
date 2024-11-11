@@ -3,7 +3,7 @@
 @section('content')
     <!-- Intro Slider Start-->
     @if($section_status->slider == 1)
-    <div class="intro-section pb-3 mb-2">
+    <div class="intro-section pb-2">
         <div class="container mobile-margin">
             <div class="row">
                 <!-- First Column (Slider) -->
@@ -23,10 +23,11 @@
                             @foreach($sliders as $slider)
                                 <div class="intro-slide" style="background-image: url('{{ asset('images/slider/' . $slider->image) }}'); background-size: cover; background-position: center; height: 500px;">
                                     <div class="intro-content" style="padding: 20px; display: flex; align-items: center; justify-content: center; height: 100%;">
+                                    @if($slider->sub_title || $slider->title || $slider->link)
                                         <div class="row justify-content-left">
-                                            <div class="col-auto col-sm-7 col-md-6 col-lg-5" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
-                                                <h3 class="intro-subtitle text-primary" style="color: #fff;">{{ $slider->sub_title }}</h3>
-                                                <h1 class="intro-title" style="color: #fff;">{{ $slider->title }}</h1>
+                                            <div class="col-auto col-sm-7 col-md-6 col-lg-8" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
+                                                @if($slider->sub_title)<h3 class="intro-subtitle text-primary" style="color: #fff;">{{ $slider->sub_title }}</h3>@endif
+                                                @if($slider->title)<h1 class="intro-title" style="color: #fff;">{{ $slider->title }}</h1>@endif
                                                 @if($slider->link)
                                                 <a href="{{ $slider->link }}" class="btn btn-primary btn-round">
                                                     <span>Shop More</span>
@@ -35,6 +36,7 @@
                                                 @endif
                                             </div>
                                         </div>
+                                        @endif
                                     </div>
                                 </div>
                             @endforeach
@@ -98,8 +100,6 @@
     </div>
     @endif
     <!-- Special Offer End -->
-
-    <div class="mb-1"></div>
 
     <!-- Category products slider Start-->
     @if ($section_status->category_products == 1 && count($categories) > 0)
@@ -181,10 +181,6 @@
                                         data-price="{{ $sellingPrice ?? $product->price }}"><span>Add to wishlist</span>      
                                         </a>
                                     </div>
-                                    <!-- <div class="product-action">
-                                        <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $product->id }}" data-offer-id="0" 
-                                        data-price="{{ $sellingPrice ?? $product->price }}"><span>add to cart</span></a>
-                                    </div> -->
                                     <div class="product-action">
                                         <a href="#" class="btn-product btn-cart" title="Add to cart"
                                         data-product-id="{{ $product->id }}" 
@@ -232,9 +228,9 @@
                             <div class="cta-content">
                                 <div class="cta-text text-right text-white">
                                 </div>
-                                <a href="{{ $advertisement->link }}" class="btn btn-primary btn-round" target="_blank">
+                                @if($advertisement->link)<a href="{{ $advertisement->link }}" class="btn btn-primary btn-round" target="_blank">
                                     <span>Shop Now</span><i class="icon-long-arrow-right"></i>
-                                </a>
+                                </a> @endif
                             </div>
                         </div>
                     </div>
@@ -307,9 +303,6 @@
                                         <span>Add to wishlist</span>
                                     </a>
                                 </div>
-                                <!-- <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}"><span>add to cart</span></a>
-                                </div> -->
 
                                 <div class="product-action">
                                     <a href="#" class="btn-product btn-cart" title="Add to cart"
@@ -360,9 +353,9 @@
 
                     <div class="banner-content" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
                         <h3 class="banner-title">
-                            <a href="{{ route('campaign.details.frontend', $campaign->slug) }}">
+                           @if($campaign->title) <a href="{{ route('campaign.details.frontend', $campaign->slug) }}">
                                 <strong style="color: #fff;">{{ $campaign->title }}</strong>
-                            </a>
+                            </a>@endif
                         </h3>
                     </div>
                 </div>
@@ -383,9 +376,9 @@
                             <div class="cta-content">
                                 <div class="cta-text text-right text-white">
                                 </div>
-                                <a href="{{ $advertisement->link }}" class="btn btn-primary btn-round" target="_blank">
+                                @if($advertisement->link)<a href="{{ $advertisement->link }}" class="btn btn-primary btn-round" target="_blank">
                                     <span>Shop Now</span><i class="icon-long-arrow-right"></i>
-                                </a>
+                                </a>@endif
                             </div>
                         </div>
                     </div>
@@ -457,9 +450,6 @@
                                         <span>Add to wishlist</span>
                                     </a>
                                 </div>
-                                <!-- <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}"><span>add to cart</span></a>
-                                </div> -->
                                 <div class="product-action">
                                     <a href="#" class="btn-product btn-cart" title="Add to cart"
                                      data-product-id="{{ $product->id }}" 
@@ -558,9 +548,6 @@
                                         <span>Add to wishlist</span>
                                     </a>
                                 </div>
-                                <!-- <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart add-to-cart" title="Add to cart" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}"><span>add to cart</span></a>
-                                </div> -->
                                 <div class="product-action">
                                     <a href="#" class="btn-product btn-cart" title="Add to cart"
                                      data-product-id="{{ $product->id }}" 

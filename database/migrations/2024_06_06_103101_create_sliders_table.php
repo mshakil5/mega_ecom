@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('link')->nullable(); 
             $table->string('slug')->nullable();
             $table->string('image')->nullable(); 
+            $table->boolean('status')->default(1); 
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->timestamps();

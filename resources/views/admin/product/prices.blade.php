@@ -32,6 +32,21 @@
                             <input type="hidden" class="form-control" id="priceId" name="priceId">
                             <input type="hidden" class="form-control" id="productId" name="productId" value="{{ $product->id }}">
                             <div class="row">
+                                @php
+                                    $sellingPrice = $product->stockhistory()
+                                        ->where('available_qty', '>', 0)
+                                        ->orderBy('id', 'asc')
+                                        ->value('selling_price');
+                                @endphp
+                                @if($sellingPrice)
+                                    <div class="col-sm-12">
+                                        <div class="card text-center">
+                                            <div class="card-body">
+                                                <h5 class="card-title d-inline">Per Unit Selling Price of {{ $product->name }}: {{ number_format($sellingPrice, 2) }}</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
                                 <div class="col-sm-12">
                                     <div class="form-group">
                                         <label>Min Quantity <span style="color: red;">*</span></label>
@@ -98,7 +113,7 @@
                                     <td>{{ $key + 1 }}</td>
                                     <td>{{ $price->min_quantity }}</td>
                                     <td>{{ $price->max_quantity }}</td>
-                                    <td>${{ number_format($price->price, 2) }}</td>
+                                    <td>{{ number_format($price->price, 2) }}</td>
                                     <td>
                                         <div class="custom-control custom-switch">
                                             <input type="checkbox" class="custom-control-input toggle-status" id="customSwitchStatus{{ $price->id }}" data-id="{{ $price->id }}" {{ $price->status == 1 ? 'checked' : '' }}>

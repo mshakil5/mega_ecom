@@ -19,7 +19,8 @@
                 @foreach($sliders as $slider)
                     <div class="intro-slide" style="background-image: url('{{ asset('images/slider/' . $slider->image) }}'); background-size: cover; background-position: center; height: 500px; display: flex; align-items: center; justify-content: flex-end;">
                         <div class="container intro-content">
-                            <div class="row justify-content-end">
+                            @if($slider->sub_title || $slider->title || $slider->link)
+                            <div class="row justify-content-center">
                                 <div class="col-auto col-sm-7 col-md-6 col-lg-5" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
                                     <h3 class="intro-subtitle text-third" style="color: #fff;">{{ $slider->sub_title }}</h3>
                                     <h1 class="intro-title" style="color: #fff;">{{ $slider->title }}</h1>
@@ -31,6 +32,7 @@
                                     @endif
                                 </div>
                             </div>
+                            @endif
                         </div>
                     </div>
                 @endforeach
@@ -46,7 +48,7 @@
     <!-- Categories Start -->
     @if($section_status->categories == 1 && count($categories) > 0)
     <div class="container">
-        <h2 class="title text-center mb-4">Explore Popular Categories</h2>
+        <h2 class="title text-center">Explore Popular Categories</h2>
         <div class="cat-blocks-container">
             <div class="row justify-content-center">            
                 @foreach($categories->sortBy('id')->take(6) as $category)
@@ -96,8 +98,6 @@
     </div>
     @endif
     <!-- Special Offer End -->
-
-    <div class="mb-3"></div>
 
     <!-- Category products slider Start-->
     @if ($section_status->category_products == 1 && count($categories) > 0)

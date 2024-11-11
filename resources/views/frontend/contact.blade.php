@@ -40,8 +40,8 @@
 
                     <div id="success" class="mb-3">
                         @if (session('success'))
-                            <div class="alert alert-success">
-                                {{ session('success') }}
+                            <div>
+                                <p class="text-success">{{ session('success') }}</p>
                             </div>
                         @endif
 

@@ -17,17 +17,9 @@ class SliderController extends Controller
 
     public function sliderStore(Request $request)
     {
-        if(empty($request->title)){
-            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Title \" field..!</b></div>";
-            return response()->json(['status'=> 303,'message'=>$message]);
-            exit();
-        }
-        $chkname = Slider::where('title',$request->title)->first();
-        if($chkname){
-            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>This category already added.</b></div>";
-            return response()->json(['status'=> 303,'message'=>$message]);
-            exit();
-        }
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
         
         $data = new Slider;
         $data->title = $request->title;
@@ -63,19 +55,6 @@ class SliderController extends Controller
 
     public function sliderUpdate(Request $request)
     {
-        if(empty($request->title)){
-            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"title \" field..!</b></div>";
-            return response()->json(['status'=> 303,'message'=>$message]);
-            exit();
-        }
-
-        $duplicatename = Slider::where('title',$request->title)->where('id','!=', $request->codeid)->first();
-        if($duplicatename){
-            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>This slider already added.</b></div>";
-            return response()->json(['status'=> 303,'message'=>$message]);
-            exit();
-        }
-
          $slider = Slider::find($request->codeid);
          $slider->title = $request->title;
          $slider->sub_title = $request->sub_title;
@@ -123,5 +102,18 @@ class SliderController extends Controller
         } else {
             return response()->json(['success' => false, 'message' => 'Failed to delete.'], 500);
         }
+    }
+
+    public function toggleStatus(Request $request)
+    {
+        $slider = slider::find($request->slider_id);
+        if (!$slider) {
+            return response()->json(['status' => 404, 'message' => 'Not found']);
+        }
+
+        $slider->status = $request->status;
+        $slider->save();
+
+        return response()->json(['status' => 200, 'message' => 'Status updated successfully']);
     }
 }
