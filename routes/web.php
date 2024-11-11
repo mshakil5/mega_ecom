@@ -62,6 +62,8 @@ Route::get('/product/{slug}/{offerId?}', [FrontendController::class, 'showProduc
 Route::get('/sup-product/{slug}/{supplierId?}', [FrontendController::class, 'showSupplierProduct'])->name('product.show.supplier');
 Route::get('/campaign/product/{slug}/{supplierId?}', [FrontendController::class, 'showCampaignProduct'])->name('product.show.campaign');
 
+Route::post('/products/reviews', [FrontendController::class, 'storeReview'])->name('reviews.store');
+
 //Wholesale product
 Route::get('/wh-product/{slug}', [FrontendController::class, 'wholesaleProductDetails'])->name('wh.product.details');
 

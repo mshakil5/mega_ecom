@@ -151,6 +151,9 @@
                 <li class="nav-item">
                     <a class="nav-link active" id="product-desc-link" data-toggle="tab" href="#product-desc-tab" role="tab" aria-controls="product-desc-tab" aria-selected="true">Description</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="product-review-link" data-toggle="tab" href="#product-review-tab" role="tab" aria-controls="product-review-tab" aria-selected="false">Reviews ({{ $product->reviews->count() }})</a>
+                </li>
             </ul>
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="product-desc-tab" role="tabpanel" aria-labelledby="product-desc-link">
@@ -158,6 +161,69 @@
                         <h3>Product Information</h3>
                         {!! $product->description !!}
                     </div>
+                </div>
+                <div class="tab-pane fade" id="product-review-tab" role="tabpanel" aria-labelledby="product-review-link">
+                    <div class="reviews">
+                        <h3>Reviews ({{ $product->reviews->count() }})</h3>
+
+                        @foreach ($product->reviews as $review)
+                            <div class="review">
+                                <div class="row no-gutters">
+                                    <div class="col-auto">
+                                        <h4><a href="#">{{ $review->user->name }}</a></h4>
+                                        <div class="ratings-container">
+                                            <div class="ratings">
+                                                <div class="ratings-val" style="width: {{ $review->rating * 20 }}%;"></div>
+                                            </div>
+                                        </div>
+                                        <span class="review-date">{{ $review->created_at->diffForHumans() }}</span>
+                                    </div>
+                                    <div class="col">
+                                        <h4>{{ $review->title }}</h4>
+
+                                        <div class="review-content">
+                                            <p>{{ Str::limit($review->description, 200) }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    @auth
+                    <div class="review-form">
+                        <h4 class="mt-3">Submit a Review</h4>
+                        <form id="reviewForm" method="POST">
+                            <input type="hidden" name="product_id" id="product_id" value="{{ $product->id }}">
+                            @csrf
+                            <div class="row">
+                                <div class="form-group col-6">
+                                    <label for="reviewTitle">Title</label>
+                                    <input type="text" id="reviewTitle" name="title" class="form-control" placeholder="Review Title" required>
+                                </div>
+                                <div class="form-group col-6">
+                                    <label for="reviewRating">Rating</label>
+                                    <select id="reviewRating" name="rating" class="form-control" required>
+                                        <option value="5">5 Stars</option>
+                                        <option value="4">4 Stars</option>
+                                        <option value="3">3 Stars</option>
+                                        <option value="2">2 Stars</option>
+                                        <option value="1">1 Star</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="reviewDescription">Description</label>
+                                <textarea id="reviewDescription" name="description" class="form-control" rows="3" placeholder="Your review" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit Review</button>
+                        </form>
+                    </div>
+                    @endauth
+
+                    @guest
+                    <p>You need to <a href="{{ route('login') }}">log in</a> to submit a review.</p>
+                    @endguest
                 </div>
             </div>
         </div>
@@ -241,5 +307,37 @@
         </div>
     </div>
 </div>
+
+@endsection
+
+@section('script')
+
+<script>
+    $(document).ready(function() {
+        $('#reviewForm').on('submit', function(e) {
+            e.preventDefault();
+
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('reviews.store') }}',
+                data: {
+                    _token: $('input[name="_token"]').val(),
+                    product_id: $('#product_id').val(),
+                    title: $('#reviewTitle').val(),
+                    description: $('#reviewDescription').val(),
+                    rating: $('#reviewRating').val(),
+                },
+                success: function(response) {
+                    toastr.success('Review submitted successfully!');
+                    $('#reviewForm')[0].reset();
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                    toastr.error('An error occurred while submitting your review.');
+                }
+            });
+        });
+    });
+</script>
 
 @endsection

@@ -120,5 +120,10 @@ class Product extends Model
 
         return $allproducts;
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(ProductReview::class);
+    }
     
 }

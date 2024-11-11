@@ -32,6 +32,7 @@ use App\Models\Color;
 use App\Models\CouponUsage;
 use App\Models\StockHistory;
 use App\Models\Size;
+use App\Models\ProductReview;
 
 class FrontendController extends Controller
 {
@@ -195,7 +196,7 @@ class FrontendController extends Controller
 
     public function showProduct($slug, $offerId = null)
     {
-        $product = Product::where('slug', $slug)->with(['colors.color', 'stockhistory', 'stock'])->firstOrFail();
+        $product = Product::where('slug', $slug)->with(['colors.color', 'stockhistory', 'stock', 'reviews'])->firstOrFail();
         $supplierPrice = null;
 
         $product->watch = $product->watch + 1;
@@ -777,6 +778,27 @@ class FrontendController extends Controller
         session()->regenerate();
         session(['session_clear' => true]);
         return redirect()->route('login');
+    }
+
+    public function storeReview(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'rating' => 'required|integer|between:1,5',
+        ]);
+
+        $review = new ProductReview();
+        $review->user_id = auth()->id();
+        $review->product_id = $request->product_id;
+        $review->title = $request->title;
+        $review->description = $request->description;
+        $review->rating = $request->rating;
+        $review->created_by = auth()->id();
+        $review->save();
+    
+        return response()->json(['success' => true]);
     }
 
 }

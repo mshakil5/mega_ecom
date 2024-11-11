@@ -72,6 +72,9 @@
                                         <a id="viewBtn" href="{{ route('product.show.admin', $data->id) }}">
                                             <i class="fa fa-eye" style="color: #4CAF50; font-size:16px; margin-right: 10px;"></i>
                                         </a>
+                                        <a href="{{ route('product.reviews.show', $data->id) }}" class="reviewBtn">
+                                            <i class="fa fa-comments" style="color: #FF5722; font-size:16px; margin-right: 10px;" title="View Reviews"></i>
+                                        </a>
                                         <a href="{{ route('product.prices.show', $data->id) }}">
                                             <i class="fa fa-money" style="color: #FF9800; font-size:16px; margin-right: 10px;"></i>
                                         </a>

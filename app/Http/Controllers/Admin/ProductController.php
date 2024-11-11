@@ -20,6 +20,7 @@ use App\Models\SubCategory;
 use App\Models\ProductSize;
 use App\Models\ProductColor;
 use App\Models\ProductPrice;
+use App\Models\ProductReview;
 
 class ProductController extends Controller
 {
@@ -637,6 +638,22 @@ class ProductController extends Controller
         $price->save();
 
         return response()->json(['status' => 200, 'message' => 'Price status updated successfully']);
+    }
+
+    public function productReviews($productId)
+    {
+        $product = Product::with('reviews')->findOrFail($productId);
+        return view('admin.product.reviews', compact('product'));
+    }
+
+    public function changeReviewStatus(Request $request)
+    {
+        $review = ProductReview::findOrFail($request->review_id);
+        $review->is_approved = $request->is_approved;
+        $review->updated_by = auth()->id();
+        $review->save();
+
+        return response()->json(['success' => true]);
     }
 
 }
