@@ -36,7 +36,7 @@
                         closeButton: true, 
                         progressBar: true,
                         timeOut: 3000,
-                        positionClass: "toast-top-right",
+                        positionClass: "toast-top-center",
                     });
             } else {
                 wishlist.push({ productId: productId, offerId: offerId, price: price, campaignId: campaignId });
@@ -44,7 +44,7 @@
                     closeButton: true, 
                     progressBar: true,
                     timeOut: 3000,
-                    positionClass: "toast-top-right",
+                    positionClass: "toast-top-center",
                 });
             }
 

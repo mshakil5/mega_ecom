@@ -25,7 +25,7 @@
                     closeButton: true,
                     progressBar: true,
                     timeOut: 3000,
-                    positionClass: "toast-top-right",
+                    positionClass: "toast-top-center",
                 });
                 return;
             }
@@ -35,7 +35,7 @@
                     closeButton: true,
                     progressBar: true,
                     timeOut: 3000,
-                    positionClass: "toast-top-right",
+                    positionClass: "toast-top-center",
                 });
                 return;
             }
@@ -81,7 +81,7 @@
                 closeButton: true, 
                 progressBar: true,
                 timeOut: 3000,
-                positionClass: "toast-top-right",
+                positionClass: "toast-top-center",
             });
             $('#quickAddToCartModal').modal('hide');
         });
@@ -117,7 +117,7 @@
                             closeButton: true, 
                             progressBar: true,
                             timeOut: 3000,
-                            positionClass: "toast-top-right",
+                            positionClass: "toast-top-center",
                         });
                         updateCartCount();
                     }

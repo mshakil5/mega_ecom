@@ -164,10 +164,49 @@
                     <li class="{{ request()->routeIs('frontend.shop') ? 'active' : '' }}">
                         <a href="{{ route('frontend.shop') }}">Shop</a>
                     </li>
-                    <li class="{{ request()->routeIs('frontend.about') ? 'active' : '' }}">
+
+                    <li class="dropdown">
+                        <a class="sf-with-ul">Brands</a>
+
+                        <ul>
+                            @foreach($brands as $brand)
+                                @if($brand->products->count() > 0)
+                                    <li>
+                                        <a class="sf-with-ul">{{ $brand->name }}</a>
+                                        <ul>
+                                            @foreach($brand->products as $product)
+                                                <li><a href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></li>
+                                            @endforeach
+                                        </ul>
+                                    </li>
+                                @endif
+                            @endforeach
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
+                        <a class="sf-with-ul">More Products</a>
+
+                        <ul>
+                            @foreach($sub_categories as $sub_category)
+                                @if($sub_category->products->count() > 0)
+                                    <li>
+                                        <a class="sf-with-ul">{{ $sub_category->name }}</a>
+                                        <ul>
+                                            @foreach($sub_category->products as $product)
+                                                <li><a href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></li>
+                                            @endforeach
+                                        </ul>
+                                    </li>
+                                @endif
+                            @endforeach
+                        </ul>
+                    </li>
+                    
+                    <li class="{{ request()->routeIs('frontend.about') ? 'active' : '' }} d-none">
                         <a href="{{ route('frontend.about') }}">About Us</a>
                     </li>
-                    <li class="{{ request()->routeIs('frontend.contact') ? 'active' : '' }}">
+                    <li class="{{ request()->routeIs('frontend.contact') ? 'active' : '' }} d-none">
                         <a href="{{ route('frontend.contact') }}">Contact Us</a>
                     </li>
                 </ul>
