@@ -258,6 +258,7 @@ class CustomerController extends Controller
         $orderDueCollection->user_id = $request->customer_id;
         $orderDueCollection->received_amount = $request->paymentAmount;
         $orderDueCollection->payment_type = $request->payment_type;
+        $orderDueCollection->transaction_id = $transaction->id;
         $orderDueCollection->save();
 
         $totalReceived = OrderDueCollection::where('order_id', $request->order_id)->sum('received_amount');
@@ -325,6 +326,14 @@ class CustomerController extends Controller
         $transaction->updated_by = auth()->user()->id;
     
         $transaction->save();
+
+        $orderDueCollection = OrderDueCollection::where('transaction_id', $transaction->id)->first();
+
+        if ($orderDueCollection) {
+            $orderDueCollection->received_amount = $request->at_amount;
+            $orderDueCollection->save();
+        }
+
     
         return response()->json([
             'success' => true,
