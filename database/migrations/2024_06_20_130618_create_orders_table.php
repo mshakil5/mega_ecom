@@ -37,6 +37,7 @@ return new class extends Migration
             $table->string('remarks')->nullable();
             $table->boolean('order_type')->default(0);  //0==ecommerce, 1==in_house, 2==quotation
             $table->boolean('status')->default(1);  //1== pending, 2==processing, 3==packed, 4==shipped, 5==delivered 6==returned, 7==cancelled
+            $table->boolean('due_status')->default(0); //0==full_paid, 1==due_pending
             $table->unsignedBigInteger('delivery_man_id')->nullable();
             $table->foreign('delivery_man_id')->references('id')->on('delivery_men');
             $table->boolean('admin_notify')->default(0);

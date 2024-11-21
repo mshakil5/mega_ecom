@@ -517,6 +517,11 @@
                 form_data.append("payment_type", $("#payment_type").val());
                 form_data.append("paymentNote", $("#paymentNote").val());
 
+                if (!$("#paymentAmount").val()) {
+                    alert('Please enter a payment amount.');
+                    return;
+                }
+
                 var paydoc = document.getElementById('document');
                     if(paydoc.files && paydoc.files[0]) {
                         form_data.append("document", paydoc.files[0]);

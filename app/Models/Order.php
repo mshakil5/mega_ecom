@@ -54,4 +54,10 @@ class Order extends Model
         return $this->hasMany(Transaction::class);
     }
 
+    public function getReceivedAmountAttribute()
+    {
+        return $this->hasMany(OrderDueCollection::class, 'order_id')
+                    ->sum('received_amount');
+    }
+
 }

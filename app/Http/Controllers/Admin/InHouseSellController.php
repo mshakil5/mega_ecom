@@ -191,13 +191,13 @@ class InHouseSellController extends Controller
         $encoded_order_id = base64_encode($order->id);
         $pdfUrl = route('in-house-sell.generate-pdf', ['encoded_order_id' => $encoded_order_id]);
 
-        Mail::to($order->user->email)->send(new OrderConfirmation($order, $pdfUrl));
+        // Mail::to($order->user->email)->send(new OrderConfirmation($order, $pdfUrl));
 
-        $contactEmails = ContactEmail::where('status', 1)->pluck('email');
+        // $contactEmails = ContactEmail::where('status', 1)->pluck('email');
 
-        foreach ($contactEmails as $email) {
-            Mail::to($email)->send(new OrderConfirmation($order, $pdfUrl));
-        }
+        // foreach ($contactEmails as $email) {
+        //     Mail::to($email)->send(new OrderConfirmation($order, $pdfUrl));
+        // }
 
         return response()->json([
             'pdf_url' => $pdfUrl,

@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\Transaction;
 use App\Mail\CustomerEmail;
 use Illuminate\Support\Facades\Mail;
+use App\Models\OrderDueCollection;
+use App\Models\Order;
 
 class CustomerController extends Controller
 {
@@ -40,7 +42,7 @@ class CustomerController extends Controller
                 $query->where('status', '!=', 7) // exclude cancelled orders
                       ->whereIn('order_type', [0, 1]); 
             }])
-            ->get();
+            ->orderBy('id', 'desc')->get();
 
         return view('admin.customer.index', compact('data'));
     }
@@ -214,6 +216,57 @@ class CustomerController extends Controller
         $transaction->table_type = "Sales";
         $transaction->date = date('Y-m-d');
         $transaction->save();
+        
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Payment processed successfully!',
+        ]);
+    }
+
+    public function orderDuePayment(Request $request)
+    {
+        $request->validate([
+            'customer_id' => 'required',
+            'order_id' => 'required',
+            'paymentAmount' => 'required',
+            'paymentNote' => 'nullable',
+        ]);
+
+        $transaction = new Transaction();
+        $transaction->customer_id = $request->customer_id;
+
+        if ($request->hasFile('document')) {
+            $uploadedFile = $request->file('document');
+            $randomName = mt_rand(10000000, 99999999).'.'.$uploadedFile->getClientOriginalExtension();
+            $destinationPath = 'images/customer/document/';
+            $uploadedFile->move(public_path($destinationPath), $randomName);
+            $transaction->document = '/' . $destinationPath . $randomName;
+        }
+
+        $transaction->amount = $request->paymentAmount;
+        $transaction->at_amount = $request->paymentAmount;
+        $transaction->payment_type = $request->payment_type;
+        $transaction->transaction_type = "Received";
+        $transaction->note = $request->paymentNote;
+        $transaction->table_type = "Sales";
+        $transaction->date = date('Y-m-d');
+        $transaction->save();
+
+        $orderDueCollection = new OrderDueCollection();
+        $orderDueCollection->date = date('Y-m-d');
+        $orderDueCollection->order_id = $request->order_id;
+        $orderDueCollection->user_id = $request->customer_id;
+        $orderDueCollection->received_amount = $request->paymentAmount;
+        $orderDueCollection->payment_type = $request->payment_type;
+        $orderDueCollection->save();
+
+        $totalReceived = OrderDueCollection::where('order_id', $request->order_id)->sum('received_amount');
+        $order = Order::findOrFail($request->order_id);
+
+        if ($totalReceived >= $order->due_amount) {
+            $order->due_status = 1;
+            $order->save();
+        }
         
         return response()->json([
             'status' => 'success',

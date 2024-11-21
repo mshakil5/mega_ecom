@@ -1674,4 +1674,13 @@ class OrderController extends Controller
 
     }
 
+    public function orderDueList($userId)
+    {
+        $orders = Order::where('user_id', $userId)
+                    ->where('due_amount', '>', 0)
+                    ->get();
+
+        return view('admin.orders.due_orders', compact('orders'));
+    }
+
 }

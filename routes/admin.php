@@ -295,6 +295,10 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/returned-orders', [OrderController::class, 'returnedOrders'])->name('returnedorders');
     Route::get('/cancelled-orders', [OrderController::class, 'cancelledOrders'])->name('cancelledorders');
 
+    Route::get('/order-due/{user_id}', [OrderController::class, 'orderDueList'])->name('admin.due.list');
+    Route::post('/payments/store', [CustomerController::class, 'orderDuePayment'])->name('due.payment.store');
+    Route::post('/customer-order-pay', [CustomerController::class,'orderDuePayment']);   
+
     Route::post('/send-to-stock', [StockController::class, 'sendToStock'])->name('send.to.stock');
     Route::post('/send-to-systemlose', [StockController::class, 'sendToSystemLose'])->name('send.to.systemlose');
 

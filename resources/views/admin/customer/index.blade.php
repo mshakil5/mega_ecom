@@ -117,9 +117,10 @@
                 <tr>
                   <th>Sl</th>
                   <th>Name/Email/Number</th>
-                  <th>Balance</th>
+                  <!-- <th>Balance</th> -->
                   <th>Transactions</th>
                   <th>Sales</th>
+                  <th>Due Amount</th>
                   <th>Active</th>
                   <th>Action</th>
                 </tr>
@@ -129,6 +130,7 @@
                   <tr>
                     <td>{{ $key + 1 }}</td>
                     <td>{{$data->name}} {{$data->surname}} <br> {{$data->email}} <br> {{$data->phone}}</td>
+                    {{-- 
                     <td>
                         <div class="align-items-center">
 
@@ -143,13 +145,13 @@
                         </div>
                       <input type="hidden" id="customerId" name="customerId">  
                     </td>
+                    --}}
                     <td>
                       <a href="{{ route('customer.transactions', ['wholeSalerId' => $data->id]) }}" class="btn btn-info">
                           Transactions
                       </a>
                     </td>
                     <td>
-
                         @if ($data->sales_count > 0)
                             <a href="{{ route('getallorder', $data->id) }}" class="btn btn-info">
                                 Sales ({{ $data->sales_count }})
@@ -157,6 +159,19 @@
                         @else
                             0
                         @endif
+                    </td>
+                    <td>
+                    @php
+                      $dueAmount = $data->total_increament - $data->total_decrement;
+                    @endphp
+
+                    @if ($dueAmount > 0)
+                      <a href="{{ route('admin.due.list', $data->id) }}" class="btn btn-danger">
+                            Due Amount({{ number_format($dueAmount, 2) }})
+                        </a>
+                    @else
+                        0
+                    @endif
                     </td>
                     <td>
                       
@@ -307,39 +322,39 @@
         "lengthMenu": [[100, "All", 50, 25], [100, "All", 50, 25]]
       }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     });
-  </script>
+</script>
 
 <script>
   // customer status change 
   $(document).ready(function() {
-  $('.toggle-status').change(function() {
-      var isChecked = $(this).is(':checked');
-      var customerId = $(this).data('id');
+    $('.toggle-status').change(function() {
+        var isChecked = $(this).is(':checked');
+        var customerId = $(this).data('id');
 
-      $.ajax({
-          url: '/admin/toggle-customer-status',
-          method: 'POST',
-          data: {
-              _token: '{{ csrf_token() }}',
-              id: customerId,
-              status: isChecked ? 1 : 0
-          },
-          success: function(response) {
-              swal({
-                  text: "Status updated successfully",
-                  icon: "success",
-              });
-          },
-          error: function(xhr) {
-              console.error(xhr.responseText);
-              swal({
-                  text: "There was an error updating the supplier status.",
-                  icon: "error",
-              });
-          }
-      });
+        $.ajax({
+            url: '/admin/toggle-customer-status',
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                id: customerId,
+                status: isChecked ? 1 : 0
+            },
+            success: function(response) {
+                swal({
+                    text: "Status updated successfully",
+                    icon: "success",
+                });
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+                swal({
+                    text: "There was an error updating the supplier status.",
+                    icon: "error",
+                });
+            }
+        });
+    });
   });
-});
 
 </script>
 
