@@ -176,7 +176,7 @@
             formData.append('order_id', $(this).data('order-id'));
             formData.append('customer_id', $(this).data('customer-id'));
 
-            if (!formData.get('amount')) {
+            if (!formData.get('paymentAmount')) {
                 alert('Please enter an amount.');
                 return;
             }
