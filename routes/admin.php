@@ -299,6 +299,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/payments/store', [CustomerController::class, 'orderDuePayment'])->name('due.payment.store');
     Route::post('/customer-order-pay', [CustomerController::class,'orderDuePayment']);   
 
+    Route::get('/due-orders', [CustomerController::class, 'allDueOrders'])->name('admin.all.due.list');
+
     Route::post('/send-to-stock', [StockController::class, 'sendToStock'])->name('send.to.stock');
     Route::post('/send-to-systemlose', [StockController::class, 'sendToSystemLose'])->name('send.to.systemlose');
 

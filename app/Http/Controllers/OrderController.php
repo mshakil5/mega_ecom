@@ -1678,6 +1678,8 @@ class OrderController extends Controller
     {
         $orders = Order::where('user_id', $userId)
                     ->where('due_amount', '>', 0)
+                    ->where('status', '!=', 7)
+                    ->latest()
                     ->get();
 
         return view('admin.orders.due_orders', compact('orders'));

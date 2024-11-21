@@ -356,4 +356,14 @@ class CustomerController extends Controller
         return response()->json(['status' => 'success', 'message' => 'Email sent successfully.']);
     }
 
+    public function allDueOrders()
+    {
+        $orders = Order::where('due_amount', '>', 0)
+                    ->where('status', '!=', 7)
+                    ->latest()
+                    ->get();
+
+        return view('admin.orders.all_due_orders', compact('orders'));
+    }
+
 }
