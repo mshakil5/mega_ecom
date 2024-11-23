@@ -231,8 +231,8 @@ class StockController extends Controller
             'products.*.product_size' => 'nullable|string',
             'products.*.product_color' => 'nullable|string',
             'products.*.unit_price' => 'required|numeric',
-            'products.*.vat_percent' => 'required|numeric',
-            'products.*.vat_amount' => 'required|numeric',
+            'products.*.vat_percent' => 'nullable|numeric',
+            'products.*.vat_amount' => 'nullable|numeric',
             'products.*.total_price_with_vat' => 'required|numeric',
         ]);
 

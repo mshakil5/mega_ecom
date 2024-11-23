@@ -367,7 +367,7 @@
             var productName = selectedProduct.data('name');
             var quantity = $('#quantity').val() || 1;
             var unitPrice = $('#unit_price').val();
-            var vatPercent = 5;
+            var vatPercent = 0;
 
             if (isNaN(quantity) || quantity <= 0) {
                 alert('Quantity must be a positive number.');
