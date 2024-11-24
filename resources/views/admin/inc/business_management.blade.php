@@ -275,6 +275,13 @@
                 </li>
 
                 <li class="nav-item">
+                    <a href="{{ route('stockLedger') }}" class="nav-link {{ (request()->is('admin/stock-ledger') && request()->is('admin/stock-ledger')) ? 'active' : '' }}">
+                        <i class="fas fa-list nav-icon"></i>
+                        <p>Stock Ledger</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
                     <a href="{{ route('stockhistory') }}" class="nav-link {{ (request()->is('admin/stocking-history') && !request()->is('admin/add-stock*')) ? 'active' : '' }}">
                         <i class="fas fa-list nav-icon"></i>
                         <p>Warehouse Stock</p>

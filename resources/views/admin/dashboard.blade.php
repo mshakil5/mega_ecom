@@ -74,13 +74,11 @@
         <div class="small-box bg-success">
           <div class="inner">
             @php
-            $today = Carbon::today()->toDateString();
-            $currency = \App\Models\CompanyDetails::select('currency')->orderBy('id', 'asc')->first()?->currency ?? '$';
-            $totalTransaction = \App\Models\Order::whereDate('created_at', $today)
-            ->sum('net_amount');
+              $totalQty = \App\Models\Stock::sum('quantity');
             @endphp
-            <h3>{{$totalTransaction}} {{$currency}}<sup style='font-size: 20px'></sup></h3>
-            <p>Today's Transactions</p>
+            
+            <h3>{{ number_format($totalQty, 0) }} <sup style='font-size: 20px'></sup></h3>
+            <p>Total Stock Product</p>
           </div>
           <div class="icon">
             <i class="ion ion-stats-bars"></i>
@@ -115,7 +113,7 @@
     </div>
 
     <div class="row">
-      <section class="col-lg-12 connectedSortable">
+      <section class="col-lg-5 connectedSortable">
         <div class="card">
           <div class="card-header">
             <h3 class="card-title">
@@ -174,6 +172,49 @@
         </div>
     </div>
 </section>
+
+<section class="col-lg-7">
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">
+        <i class="ion ion-clipboard mr-1"></i>
+        Product Quantity in warehouse
+      </h3>
+      <div class="card-tools">
+        <a href="{{route('productHistory')}}" class="btn btn-tool">
+            <i class="fas fa-envelope"></i>
+        </a>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped" id="stock-table">
+            <thead>
+                <tr>
+                    <th>Warehouse Name</th>
+                    <th>Total Stock</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                    $warehousestock = \App\Models\Stock::groupBy('warehouse_id')
+                            ->selectRaw('*, sum(quantity) as totalquantity')
+                            ->get();
+                @endphp     
+                @foreach ($warehousestock as $item)
+                <tr>
+                    <td>{{ $item->warehouse->name }}</td>
+                    <td>{{ number_format($item->totalquantity, 0)  }}</td>
+                </tr>
+                @endforeach
+                
+                
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
 </div>
 
 </div>

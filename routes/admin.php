@@ -249,6 +249,11 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/stock', [StockController::class, 'getStock'])->name('allstock');
     Route::get('/stocking-history', [StockController::class, 'stockingHistory'])->name('stockhistory');
     Route::get('/get-stocking-history', [StockController::class, 'getStockingHistory'])->name('getstockhistory');
+
+    // stock ledger
+    Route::get('/stock-ledger', [StockController::class, 'getStockLedger'])->name('stockLedger');
+    Route::get('/product-stock-history', [StockController::class, 'getproductHistory'])->name('productHistory');
+    // stock ledger end
     Route::get('/add-stock', [StockController::class, 'addstock'])->name('addStock');
     Route::get('/product-history/{id}/{size?}/{color?}', [StockController::class, 'getsingleProductHistory'])->name('admin.product.purchasehistory');
     Route::post('/product-history/{id}/{size?}/{color?}', [StockController::class, 'getsingleProductHistory'])->name('admin.product.purchasehistorysearch');
@@ -270,9 +275,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/purchases/update-status', [StockController::class, 'updateStatus'])->name('purchases.updateStatus');
 
     Route::post('/update-stock', [StockController::class, 'stockUpdate']);
-
     Route::post('/submit-return', [StockController::class, 'returnStore']);
-
     Route::post('/supplier-pay', [TransactionController::class,'pay'])->name('pay');
 
     Route::get('/ads', [AdController::class, 'getAds'])->name('alladds');
