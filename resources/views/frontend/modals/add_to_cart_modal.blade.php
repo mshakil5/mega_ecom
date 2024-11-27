@@ -8,16 +8,16 @@
 
                 <img id="modalProductImage" src="" alt="" class="product-image mb-1" style="max-width: 300px; height: auto; display: block; margin: 0 auto;">
                 
-                <div class="product-price mb-1">
-                    <strong>Price:</strong>&nbsp;&nbsp;<span id="productPrice"></span>
+                <div class="product-price mb-1" style="margin: 0; padding: 0; color: black;">
+                    <strong>Price:</strong>&nbsp;&nbsp;<span id="productPrice" style="font-weight: bold; color: black;"></span>
                 </div>
 
-                <div class="details-filter-row details-row-size mb-1">
+                <div class="details-filter-row details-row-size">
                     <label>Color:</label>
                     <form id="colorForm" class="color-options"></form>
                 </div>
 
-                <div class="details-filter-row details-row-size mb-1">
+                <div class="details-filter-row details-row-size">
                     <label for="size">Size:</label>
                     <form id="sizeForm" class="size-options"></form>
                 </div>

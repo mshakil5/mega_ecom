@@ -15,86 +15,89 @@
         <h1 class="title text-center mb-5 mt-4">Shopping Cart</h1>
             <div class="row">
                 <div class="col-lg-9">
-                    <table class="table table-cart table-mobile">
-                        <thead>
-                            <tr>
-                                <th>Product</th>
-                                <th>Price</th>
-                                <th>Size</th>
-                                <th>Color</th>
-                                <th>Quantity</th>
-                                <th>Total</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            
-                            @foreach ($cart as $item)
-                                @php
-                                    $isBundle = isset($item['bundleId']);
-                                    $isCampaign = isset($item['campaignId']);
-                                    $isBogo = isset($item['bogoId']);
-                                    $isSupplier = isset($item['supplierId']);
-                                    $entity = $isBundle ? \App\Models\BundleProduct::find($item['bundleId']) : \App\Models\Product::find($item['productId']);
-                                    $price = $item['price'];
-
-                                    if ($isBundle) {
-                                        $bundle = \App\Models\BundleProduct::find($item['bundleId']);
-                                        $stock = $bundle->quantity ?? 0;
-                                    } elseif ($isCampaign) {
-                                        $campaign = \App\Models\CampaignRequestProduct::find($item['campaignId']);
-                                        $stock = $campaign->quantity ?? 0;
-                                    } elseif ($isBogo) {
-                                        $bogo = \App\Models\BuyOneGetOne::find($item['bogoId']);
-                                        $stock = $bogo->quantity ?? 0;
-                                    } elseif ($isSupplier) {
-                                        $supplierProduct = \App\Models\SupplierStock::where('supplier_id', $item['supplierId'])
-                                                        ->where('product_id', $item['productId'])
-                                                        ->first();
-                                        $stock = $supplierProduct->quantity ?? 0;
-                                    } else {
-                                        $stock = $entity->stock->quantity ?? 0;
-                                    }
-                                @endphp
-                                <tr data-entity-id="{{ $isBundle ? $entity->id : $entity->id }}" data-entity-type="{{ $isBundle ? 'bundle' : 'product' }}" data-stock="{{ $stock }}">
-                                    <td class="product-col">
-                                        <div class="product">
-                                            <figure class="product-media">
-                                                <a href="#">
-                                                    <x-image-with-loader src="{{ asset('/images/' . ($isBundle ? 'bundle_product' : 'products') . '/' . $entity->feature_image) }}" alt="{{ $entity->name }}"/>
-                                                </a>
-                                            </figure>
-                                            <h3 class="product-title">
-                                                <a>{{ $entity->name }}</a>
-                                            </h3>
-                                        </div>
-                                    </td>
-                                    <td class="price-col">
-                                        {{ $currency }} {{ number_format($price, 2) }}
-                                    </td>
-                                    <td class="price-col">
-                                        {{ $item['size'] }}
-                                    </td>
-                                    <td class="price-col">
-                                        {{ $item['color'] }}
-                                    </td>
-                                    <td class="quantity-col">
-                                        <div class="cart-product-quantity">
-                                            <input type="number" class="form-control" value="{{ $item['quantity'] }}" min="1" max="{{ $stock }}" step="1" data-decimals="0">
-                                        </div>
-                                    </td>
-                                    <td class="total-col">
-                                        {{ $currency }} {{ number_format($price * $item['quantity'], 2) }}
-                                    </td>
-                                    <td class="remove-col">
-                                        <button class="btn-remove remove-from-cart" data-entity-id="{{ $entity->id }}" data-cart-index="{{ $loop->index }}">
-                                            <i class="icon-close"></i>
-                                        </button>
-                                    </td>
+                    <div class="card" style="border: 1px dashed #ddd; border-radius: 5px; padding: 20px;">
+                        <table class="table table-cart table-mobile">
+                            <thead class="d-none">
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <!-- <th>Size</th>
+                                    <th>Color</th> -->
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                    <th>Action</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach ($cart as $item)
+                                    @php
+                                        $isBundle = isset($item['bundleId']);
+                                        $isCampaign = isset($item['campaignId']);
+                                        $isBogo = isset($item['bogoId']);
+                                        $isSupplier = isset($item['supplierId']);
+                                        $entity = $isBundle ? \App\Models\BundleProduct::find($item['bundleId']) : \App\Models\Product::find($item['productId']);
+                                        $price = $item['price'];
+
+                                        if ($isBundle) {
+                                            $bundle = \App\Models\BundleProduct::find($item['bundleId']);
+                                            $stock = $bundle->quantity ?? 0;
+                                        } elseif ($isCampaign) {
+                                            $campaign = \App\Models\CampaignRequestProduct::find($item['campaignId']);
+                                            $stock = $campaign->quantity ?? 0;
+                                        } elseif ($isBogo) {
+                                            $bogo = \App\Models\BuyOneGetOne::find($item['bogoId']);
+                                            $stock = $bogo->quantity ?? 0;
+                                        } elseif ($isSupplier) {
+                                            $supplierProduct = \App\Models\SupplierStock::where('supplier_id', $item['supplierId'])
+                                                            ->where('product_id', $item['productId'])
+                                                            ->first();
+                                            $stock = $supplierProduct->quantity ?? 0;
+                                        } else {
+                                            $stock = $entity->stock->quantity ?? 0;
+                                        }
+                                    @endphp
+                                    <tr data-entity-id="{{ $isBundle ? $entity->id : $entity->id }}" data-entity-type="{{ $isBundle ? 'bundle' : 'product' }}" data-stock="{{ $stock }}">
+                                        <td class="product-col">
+                                            <div class="product">
+                                                <figure class="product-media">
+                                                    <a href="#">
+                                                        <x-image-with-loader src="{{ asset('/images/' . ($isBundle ? 'bundle_product' : 'products') . '/' . $entity->feature_image) }}" alt="{{ $entity->name }}"/>
+                                                    </a>
+                                                </figure>
+                                                <h3 class="product-title">
+                                                    <a>{{ $entity->name }}</a>
+                                                    <p style="font-size: 14px;"> <b>Size: </b>{{ $item['size'] }}</p>
+                                                    <p style="font-size: 14px;"> <b>Color: </b>{{ $item['color'] }}</p>
+                                                </h3>
+                                            </div>
+                                        </td>
+                                        <td class="price-col">
+                                            {{ $currency }}{{ number_format($price, 2) }}
+                                        </td>
+                                        <!-- <td class="price-col">
+                                            {{ $item['size'] }}
+                                        </td>
+                                        <td class="price-col">
+                                            {{ $item['color'] }}
+                                        </td> -->
+                                        <td class="quantity-col">
+                                                <div class="cart-product-quantity">
+                                                <input type="number" class="form-control" value="{{ $item['quantity'] }}" min="1" max="{{ $stock }}" step="1" data-decimals="0">
+                                            </div>
+                                        </td>
+                                        <td class="total-col" style="width: 100px; color: #000;">
+                                            {{$currency}}{{ number_format($price * $item['quantity'], 2) }}
+                                        </td>
+                                        <td class="remove-col">
+                                            <button class="btn-remove remove-from-cart" data-entity-id="{{ $entity->id }}" data-cart-index="{{ $loop->index }}">
+                                                <i class="fas fa-trash" style="color: red;"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <aside class="col-lg-3">
                     <div class="summary summary-cart" id="order-summary">
@@ -113,7 +116,7 @@
                         <form id="checkout-form" action="{{ route('checkout.store') }}" method="POST">
                             @csrf
                             <input type="hidden" name="cart" value="{{ json_encode($cart) }}">
-                            <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">Proceed To Checkout</button>
+                            <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block"><i class="fas fa-shopping-basket"></i>Proceed To Checkout</button>
                         </form>
                     </div>
 
@@ -141,7 +144,7 @@
             let quantity = parseInt($(this).find('td.quantity-col input').val());
             let rowTotal = price * quantity;
             total += rowTotal;
-            $(this).find('td.total-col').text(currencySymbol + ' ' + rowTotal.toFixed(2));
+            $(this).find('td.total-col').text(currencySymbol + rowTotal.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
         });
 
         if ($('.table-cart tbody tr').length === 0) {
