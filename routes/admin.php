@@ -51,6 +51,7 @@ use App\Http\Controllers\Admin\LedgerController;
 use App\Http\Controllers\Admin\WareHouseController;
 use App\Http\Controllers\Admin\CashFlowController;
 use App\Http\Controllers\Admin\DaybookController;
+use App\Http\Controllers\Admin\DeliveryChargeController;
 
 Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], function(){
   
@@ -449,7 +450,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/payment-gateway/{id}/edit', [PaymentGatewayController::class, 'edit']);
     Route::post('/payment-gateway-update', [PaymentGatewayController::class, 'update']);
 
-    // Payment gateway crud
+    // warehouse crud
     Route::get('/warehouse', [WareHouseController::class, 'index'])->name('allwarehouse');
     Route::post('/warehouse', [WareHouseController::class, 'store']);
     Route::get('/warehouse/{id}/edit', [WareHouseController::class, 'edit']);
@@ -458,6 +459,13 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/warehouse-status', [WareHouseController::class, 'toggleStatus']);
 
     Route::post('/warehouse-store', [WareHouseController::class, 'storeWarehouse'])->name('warehouse.store');
+
+    // warehouse crud
+    Route::get('/delivery-charge', [DeliveryChargeController::class, 'index'])->name('alldeliverycharge');
+    Route::post('/delivery-charge', [DeliveryChargeController::class, 'store']);
+    Route::get('/delivery-charge/{id}/edit', [DeliveryChargeController::class, 'edit']);
+    Route::post('/delivery-charge-update', [DeliveryChargeController::class, 'update']);
+    Route::get('/delivery-charge/{id}', [DeliveryChargeController::class, 'delete']);
 
     Route::post('/transfer-to-warehouse/{id}', [WarehouseController::class, 'transferToWarehouse'])->name('transferToWarehouse');
     Route::post('/missing-purchase-product/{id}', [StockController::class, 'missingPurchaseProduct'])->name('missingPurchaseProduct');

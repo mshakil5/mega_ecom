@@ -159,7 +159,7 @@ class OrderController extends Controller
 
         $vat_percent = 5;
         $vat_amount = ($subtotal * $vat_percent) / 100;
-        $shippingAmount = $formData['delivery_location'] === 'insideDhaka' ? 0.00 : 60.00;
+        $shippingAmount = $formData['shipping'] ?? 0;
         $netAmount = $subtotal - $discountAmount + $vat_amount + $shippingAmount;
 
         if ($formData['payment_method'] === 'paypal') {
@@ -186,7 +186,7 @@ class OrderController extends Controller
                 $order->postcode = $formData['postcode'] ?? null;
                 $order->note = $formData['note'] ?? null;
                 $order->payment_method = $formData['payment_method'] ?? null;
-                $order->shipping_amount = $formData['delivery_location'] === 'insideDhaka' ? 0.00 : 60.00;
+                $order->shipping_amount = $formData['shipping'] ?? 0;
                 $order->status = 1;
                 $order->admin_notify = 1;
                 $order->order_type = 0;
@@ -473,7 +473,7 @@ class OrderController extends Controller
             $order->postcode = $formData['postcode'] ?? null;
             $order->note = $formData['note'] ?? null;
             $order->payment_method = $formData['payment_method'] ?? null;
-            $order->shipping_amount = $formData['delivery_location'] === 'insideDhaka' ? 0.00 : 60.00;
+            $order->shipping_amount = $formData['shipping'] ?? 0;
             $order->status = 1;
             $order->admin_notify = 1;
             $order->order_type = 0;
@@ -781,11 +781,7 @@ class OrderController extends Controller
             $order->postcode = $formData['postcode'] ?? null;
             $order->note = $formData['note'] ?? null;
             $order->payment_method = $formData['payment_method'] ?? null;
-            if (isset($formData['delivery_location'])) {
-                $order->shipping_amount = $formData['delivery_location'] === 'insideDhaka' ? 0.00 : 60.00;
-            } else {
-                $order->shipping_amount = 60.00;
-            }
+            $order->shipping_amount = $formData['shipping'] ?? 0.00;
             $order->status = 1;
             $order->admin_notify = 1;
             $order->order_type = 0;

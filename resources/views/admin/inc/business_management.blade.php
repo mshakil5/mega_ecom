@@ -396,6 +396,7 @@
                 request()->is('admin/ads') ||
                 request()->is('admin/deliveryman') ||
                 request()->is('admin/payment-gateway') ||
+                request()->is('admin/delivery-charge') ||
                 request()->is('admin/coupon')
                 ? 'menu-open' : '' }}">
             <a href="#" class="nav-link dropdown-toggle {{ 
@@ -410,6 +411,7 @@
                 request()->is('admin/ads*')||
                 request()->is('admin/deliveryman*')||
                 request()->is('admin/payment-gateway*')||
+                request()->is('admin/delivery-charge') ||
                 request()->is('admin/coupon*'))
                  ? 'active' : '' }}">
                 <i class="nav-icon fas fa-cogs"></i>
@@ -499,6 +501,14 @@
                     <a href="{{ route('alldeliverymen') }}" class="nav-link {{ (request()->is('admin/deliveryman*')) ? 'active' : '' }}">
                         <i class="nav-icon fas fa-user"></i>
                         <p>Delivery Men</p>
+                    </a>
+                </li>
+
+                <!-- delivery charge -->
+                <li class="nav-item">
+                    <a href="{{ route('alldeliverycharge') }}" class="nav-link {{ (request()->is('admin/delivery-charge*')) ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-truck"></i>
+                        <p>Delivery Charge</p>
                     </a>
                 </li>
 
