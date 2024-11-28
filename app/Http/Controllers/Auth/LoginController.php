@@ -56,7 +56,7 @@ class LoginController extends Controller
         if ($user) {
             if ($user->status == 1) {
                 if (auth()->attempt([$loginField => $input['email'], 'password' => $input['password']])) {
-                    session(['session_clear' => true]);
+                    // session(['session_clear' => true]);
                     if (auth()->user()->is_type == '1') {
                         return redirect()->route('admin.dashboard');
                     } elseif (auth()->user()->is_type == '2') {

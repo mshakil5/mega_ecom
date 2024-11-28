@@ -10120,7 +10120,7 @@ p {
 }
 
 .form-group {
-    margin-bottom: 2rem
+    /* margin-bottom: 2rem */
 }
 
 .form-group .form-control,
@@ -10282,7 +10282,7 @@ small.form-text {
 }
 
 .custom-control-label {
-    position: static;
+    /* position: static; */
     margin-bottom: 0;
     margin-top: .1rem;
     font-size: 1.4rem;
@@ -10696,7 +10696,7 @@ small.form-text {
 .table thead th,
 .table td {
     border-top: none;
-    border-bottom: .1rem solid #ebebeb
+    /* border-bottom: .1rem solid #ebebeb */
 }
 
 .table th,
@@ -15874,8 +15874,8 @@ button:focus {
     border: .1rem dashed #d7d7d7;
     background-color: #f9f9f9;
     border-radius: .3rem;
-    margin-top: 2rem;
-    margin-bottom: 2rem
+    /* margin-top: 2rem; */
+    /* margin-bottom: 2rem */
 }
 
 .summary-title {
@@ -15917,8 +15917,8 @@ button:focus {
 
 .table.table-summary tbody td {
     padding: 0;
-    height: 70px;
-    border-bottom: .1rem solid #ebebeb
+    height: 50px;
+    /* border-bottom: .1rem solid #ebebeb */
 }
 
 .table.table-summary thead th,

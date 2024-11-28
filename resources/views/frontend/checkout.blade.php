@@ -4,263 +4,298 @@
 
 <div class="page-content">
     <div class="checkout">
-    <div class="p-5">
-    <div class="row">
-        <div class="col-lg-7">
-            <div id="alertContainer"></div>
-            <h2 class="checkout-title">Billing Details</h2>
+        <div class="container">
             <div class="row">
-            <div class="col-md-6 form-group">
-                <label>First Name<span style="color: red;">*</span></label>
-                <input class="form-control" id="first_name" type="text" placeholder="" value="{{ Auth::user()->name ?? '' }}" required>
-            </div>
-            <div class="col-md-6 form-group">
-                <label>Last Name<span style="color: red;">*</span></label>
-                <input class="form-control" id="last_name" type="text" placeholder="" value="{{ Auth::user()->surname ?? '' }}" >
-            </div>
-            <div class="col-md-6 form-group">
-                <label>Email<span style="color: red;">*</span></label>
-                <input class="form-control" id="email" type="email" placeholder="" value="{{ Auth::user()->email ?? '' }}">
-            </div>
-            <div class="col-md-6 form-group">
-                <label>Phone<span style="color: red;">*</span></label>
-                <input class="form-control" id="phone" type="text" placeholder="" value="{{ Auth::user()->phone ?? '' }}">
-            </div>
-            <div class="col-md-6 form-group">
-                <label>House Number<span style="color: red;">*</span></label>
-                <input class="form-control" type="text" placeholder="" id="house_number" value="{{ Auth::user()->house_number ?? '' }}">
-            </div>
-            <div class="col-md-6 form-group">
-                <label>Street Name<span style="color: red;">*</span></label>
-                <input class="form-control" type="text" placeholder="" id="street_name" value="{{ Auth::user()->street_name ?? '' }}">
-            </div>
-            <div class="col-md-6 form-group">
-                <label>Town<span style="color: red;">*</span></label>
-                <input class="form-control" type="text" placeholder="" id="town" value="{{ Auth::user()->town ?? '' }}">
-            </div>
-            <div class="col-md-6 form-group">
-                <label>Postcode<span style="color: red;">*</span></label>
-                <input class="form-control" type="text" placeholder="" id="postcode" value="{{ Auth::user()->postcode ?? '' }}">
-            </div>
-            <div class="col-md-12">
-                <div class="form-group">
-                    <label for="note">Note</label>
-                    <textarea class="form-control" id="note" name="note" rows="3" placeholder=""></textarea>
-                </div>
-            </div>
-            <div class="col-md-12 form-group">
-                @guest
-                    <a href="{{ route('register') }}" class="custom-control custom-checkbox">
-                        Create an account ?
-                    </a>
-                @endguest
-            </div>
-            {{--
-            @if(auth()->check())
-            <div class="col-md-12">
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="shipto">
-                    <label class="custom-control-label" for="shipto" data-toggle="collapse" data-target="#shipping-address">Ship to different address</label>
-                </div>
-            </div>
-            @endif
-            --}}
-            </div>
-            <div class="collapse mb-5" id="shipping-address">
-            <h2 class="checkout-title">Shipping Address</h2>
-                <div class="row">
-                    <div class="col-md-6 form-group">
-                        <label>First Name</label>
-                        <input class="form-control" type="text" placeholder="John" id="ship_first_name">
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label>Last Name</label>
-                        <input class="form-control" type="text" placeholder="Doe" id="ship_last_name">
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label>Email</label>
-                        <input class="form-control" id="ship_email" type="email" placeholder="example@email.com" id="ship_email">
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label>Phone</label>
-                        <input class="form-control" id="ship_phone" type="text" placeholder="+123 456 789" id="ship_phone">
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label>House Number</label>
-                        <input class="form-control" id="ship_house_number" type="text" placeholder="123" id="ship_house_number">
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label>Street Name</label>
-                        <input class="form-control" id="ship_street_name" type="text" placeholder="123 Street" id="ship_street_name">
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label>Town</label>
-                        <input class="form-control" id="ship_town" type="text" placeholder="123 Street" id="ship_town">
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label>Postcode</label>
-                        <input class="form-control" id="ship_postcode" type="text" placeholder="123" id="ship_postcode">
-                    </div>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="ship_address">Address</label>
-                            <textarea class="form-control" id="ship_address" name="ship_address" rows="3" placeholder="Enter shipping address"></textarea>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                <div class="col-lg-8">
+                    <div id="alertContainer"></div>
 
-        <!-- Order Summary -->
-        <aside class="col-lg-5">
-        <div class="summary">
-            <h3 class="summary-title">Your Order</h3>
-                <table class="table table-summary">
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Price</th>
-                            <!-- <th>Size</th>
-                            <th>Color</th> -->
-                            <th class="text-right">Qty</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php
-                            $currency = \App\Models\CompanyDetails::value('currency');
-                            $total = 0;
-                        @endphp
-
-                        @foreach ($cart as $item)
-                            @php
-                                $isBundle = isset($item['bundleId']);
-                                $entity = $isBundle ? \App\Models\BundleProduct::find($item['bundleId']) : \App\Models\Product::find($item['productId']);
-
-                                $itemTotal = 0;
-                                $price = $item['price'];
-
-                                if (!$isBundle && $entity) {
-                                        $itemTotal = $price * $item['quantity'];
-                                    }  else {
-                                    $bundlePrice = $entity->price ?? $entity->total_price;
-                                    $itemTotal = $bundlePrice * $item['quantity'];
-                                }
-
-                                $total += $itemTotal;
-                            @endphp
-
-                            <tr data-entity-id="{{ $entity->id }}" data-entity-type="{{ $isBundle ? 'bundle' : 'product' }}">
-                                <td >
-                                    <div class="d-flex align-items-center">
-                                        <x-image-with-loader src="{{ asset('/images/' . ($isBundle ? 'bundle_product' : 'products') . '/' . $entity->feature_image) }}" alt="{{ $entity->name }}" style="width: 50px; height: 50px; object-fit: contain;" />
-                                        <span class="ml-2">{{ $entity->name }}</span>
+                    <h4>Billing and Collection Options</h4>
+                    <div class="accordion" id="accordionWithRadioExample">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="row" style="border: 1px dashed #ccc; padding: 5px 10px 15px 10px; margin: 5px; border-radius: 5px;">
+                                    <div class="custom-control custom-radio">
+                                        <input data-toggle="collapse" data-target="#collapseBilling" type="radio" id="customRadioBilling" name="customRadio" class="custom-control-input" checked />
+                                        <label class="custom-control-label" for="customRadioBilling">Billing Details</label>
                                     </div>
-                                </td>
-                                <td >{{ $currency }} {{ number_format($price, 2) }}</td>
-                                <!-- <td >{{ $item['size'] }}</td>
-                                <td >{{ $item['color'] }}</td> -->
-                                <td class="text-right">{{ $item['quantity'] }}</td>
-                                <td >{{ $currency }} {{ number_format($itemTotal, 2) }}</td>
-                            </tr>
-                        @endforeach
-                        <tr class="summary-subtotal">
-                            <td>Subtotal:</td>
-                            <td></td>
-                            <td></td>
-                            <td>{{ $currency }} {{ number_format($total, 2) }}</td>
-                        </tr>
-                        <tr>
-                            <td>Shipping:</td>
-                            <td></td>
-                            <td></td>
-                            <td id="shipping-charge">{{ $currency }} $00.00</td>
-                        </tr>
-                        <tr>
-                            <td>Vat(5%):</td>
-                            <td></td>
-                            <td></td>
-                            <td id="vat-charge">{{ $currency }} $00.00</td>
-                        </tr>
-                        <tr class="d-none" id="discount-row">
-                            <td>Discount:</td>
-                            <td></td>
-                            <td></td>
-                            <td id="discount">{{ $currency }} $00.00</td>
-                        </tr>
-                    </tbody>
-                </table>
+                                </div>
+                                <div class="row" style="border: 1px dashed #ccc; padding: 5px 10px 15px 10px; margin: 5px; border-radius: 5px;">
+                                    <div class="custom-control custom-radio">
+                                        <input data-toggle="collapse" data-target="#collapseCollectStore" type="radio" id="customRadioCollectStore" name="customRadio" class="custom-control-input" />
+                                        <label class="custom-control-label" for="customRadioCollectStore">Collect From Store</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="collapseBilling" class="collapse show" data-parent="#accordionWithRadioExample">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 form-group">
+                                            <label>First Name<span style="color: red;">*</span></label>
+                                            <input class="form-control" id="first_name" type="text" placeholder="" value="{{ Auth::user()->name ?? '' }}" required>
+                                        </div>
+                                        <div class="col-md-6 form-group">
+                                            <label>Last Name<span style="color: red;">*</span></label>
+                                            <input class="form-control" id="last_name" type="text" placeholder="" value="{{ Auth::user()->surname ?? '' }}">
+                                        </div>
+                                        <div class="col-md-6 form-group">
+                                            <label>Email<span style="color: red;">*</span></label>
+                                            <input class="form-control" id="email" type="email" placeholder="" value="{{ Auth::user()->email ?? '' }}">
+                                        </div>
+                                        <div class="col-md-6 form-group">
+                                            <label>Phone<span style="color: red;">*</span></label>
+                                            <input class="form-control" id="phone" type="text" placeholder="" value="{{ Auth::user()->phone ?? '' }}">
+                                        </div>
+                                        <div class="col-md-6 form-group">
+                                            <label>House Number<span style="color: red;">*</span></label>
+                                            <input class="form-control" type="text" placeholder="" id="house_number" value="{{ Auth::user()->house_number ?? '' }}">
+                                        </div>
+                                        <div class="col-md-6 form-group">
+                                            <label>Street Name<span style="color: red;">*</span></label>
+                                            <input class="form-control" type="text" placeholder="" id="street_name" value="{{ Auth::user()->street_name ?? '' }}">
+                                        </div>
+                                        <div class="col-md-6 form-group">
+                                            <label>Town<span style="color: red;">*</span></label>
+                                            <input class="form-control" type="text" placeholder="" id="town" value="{{ Auth::user()->town ?? '' }}">
+                                        </div>
+                                        <div class="col-md-6 form-group">
+                                            <label>Postcode<span style="color: red;">*</span></label>
+                                            <input class="form-control" type="text" placeholder="" id="postcode" value="{{ Auth::user()->postcode ?? '' }}">
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="note">Note</label>
+                                                <textarea class="form-control" id="note" name="note" rows="2" placeholder=""></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 form-group">
+                                            @guest
+                                                <a href="{{ route('register') }}" class="btn btn-primary">
+                                                    Create an account?
+                                                </a>
+                                            @endguest
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                <div class="form-group mt-3">
-                    <h6 for="delivery-location">Delivery Location:</h6>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" class="custom-control-input" name="delivery_location" id="insideDhaka" value="insideDhaka" checked>
-                        <label class="custom-control-label" for="insideDhaka">Inside Dhaka</label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" class="custom-control-input" name="delivery_location" id="outsideDhaka" value="outsideDhaka">
-                        <label class="custom-control-label" for="outsideDhaka">Outside Dhaka</label>
-                    </div>
-                </div>
-
-                <div class="form-group checkout-discount mb-5">
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="couponName" required placeholder="coupon code">
-                    </div>
-                    <button class="btn btn-outline-dark-2" type="submit" id="applyCoupon"><span>Apply Coupon</span><i class="icon-refresh"></i></button>
-                    <div id="couponDetails" class="mt-2 alert alert-success" style="display: none;">
-                        <strong>Coupon Applied!</strong>
-                    </div>
-                    <input type="hidden" id="couponId" name="coupon_id" value="">
-                     <div style="display: none;">
-                        <span id="couponValue"></span> <span id="couponType"></span>
-                     </div>
-                </div>
-
-                <div class="mb-5">
-                    <div class="d-flex justify-content-between mt-2">
-                        <h5>Total</h5>
-                        <h5 id="total-amount" class="summary-total">{{ $currency }} {{ number_format($total, 2) }}</h5>
-                    </div>
-                </div>
-
-                <div id="loader" style="display: none;">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                </div>
-
-                <div class="accordion-summary mb-5">
-                    <div class="form-group">
-                        <div class="custom-control custom-radio">
-                            <input type="radio" class="custom-control-input" name="payment_method" id="paypal" value="paypal" checked>
-                            <label class="custom-control-label" for="paypal">Paypal</label>
+                        <div class="card">
+                            <div class="card-header">
+                            </div>
+                            <div id="collapseCollectStore" class="collapse" data-parent="#accordionWithRadioExample">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 form-group">
+                                            <label>Store Name<span style="color: red;">*</span></label>
+                                            <input class="form-control" type="text" placeholder="" id="store_name" required>
+                                        </div>
+                                        <div class="col-md-6 form-group">
+                                            <label>Contact Person<span style="color: red;">*</span></label>
+                                            <input class="form-control" type="text" placeholder="" id="contact_person" required>
+                                        </div>
+                                        <div class="col-md-6 form-group">
+                                            <label>Phone<span style="color: red;">*</span></label>
+                                            <input class="form-control" type="text" placeholder="" id="store_phone" required>
+                                        </div>
+                                        <div class="col-md-6 form-group">
+                                            <label>Email<span style="color: red;">*</span></label>
+                                            <input class="form-control" type="email" placeholder="" id="store_email" required>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="store_address">Store Address</label>
+                                                <textarea class="form-control" id="store_address" name="store_address" rows="3" placeholder=""></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <div class="custom-control custom-radio">
-                            <input type="radio" class="custom-control-input" name="payment_method" id="stripe" value="stripe">
-                            <label class="custom-control-label" for="stripe">Stripe</label>
-                        </div>
+                </div> 
+
+                <!-- Order Summary -->
+                <aside class="col-lg-4">
+                    <div class="summary">
+                        <h3 class="summary-title">Order Summary</h3>
+                            <table class="table table-summary">
+                                <thead class="d-none">
+                                    <tr>
+                                        <th class="text-left">Product</th>
+                                        <th>Price</th>
+                                        <th class="text-right">Qty</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php
+                                        $currency = \App\Models\CompanyDetails::value('currency');
+                                        $total = 0;
+                                        $shippingCharge = 0;
+                                    @endphp
+
+                                    @foreach ($cart as $item)
+                                        @php
+                                            $isBundle = isset($item['bundleId']);
+                                            $entity = $isBundle ? \App\Models\BundleProduct::find($item['bundleId']) : \App\Models\Product::find($item['productId']);
+
+                                            $itemTotal = 0;
+                                            $price = $item['price'];
+
+                                            if (!$isBundle && $entity) {
+                                                    $itemTotal = $price * $item['quantity'];
+                                                }  else {
+                                                $bundlePrice = $entity->price ?? $entity->total_price;
+                                                $itemTotal = $bundlePrice * $item['quantity'];
+                                            }
+
+                                            $total += $itemTotal;
+
+                                            $deliveryCharges = \App\Models\DeliveryCharge::get();
+
+                                            foreach ($deliveryCharges as $charge) {
+                                                if ($total >= $charge->min_price && $total <= $charge->max_price) {
+                                                    $shippingCharge = $charge->delivery_charge;
+                                                    break;
+                                                }
+                                            }
+                                        @endphp
+
+                                    <tr data-entity-id="{{ $entity->id }}" data-entity-type="{{ $isBundle ? 'bundle' : 'product' }}">
+                                        <td>
+                                            <div class="d-flex align-items-start">
+                                                <x-image-with-loader 
+                                                    src="{{ asset('/images/' . ($isBundle ? 'bundle_product' : 'products') . '/' . $entity->feature_image) }}" 
+                                                    alt="{{ $entity->name }}" 
+                                                    style="width: 80px; height: 80px; object-fit: contain; margin-right: 10px;" 
+                                                />       
+
+                                                <div>
+                                                    <div style="font-size: 16px;">
+                                                        <b>{{ $entity->name }}</b>
+                                                    </div>
+
+                                                    <div style="font-size: 16px; margin-top: 5px;" class="text-center">           
+                                                        <span>{{ $item['color'] }} | {{ $item['size'] }}</span>
+                                                    </div>
+
+                                                    <div style="font-size: 16px; margin-top: 5px;">           
+                                                        <span>{{ $item['quantity'] }} x {{ number_format($price, 2) }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <!-- <td>{{ $currency }} {{ number_format($price, 2) }}</td>
+                                        <td class="text-right">{{ $item['quantity'] }}</td> -->
+                                        <!-- <td>{{ $currency }} {{ number_format($itemTotal, 2) }}</td> -->
+                                    </tr>
+                                    @endforeach
+                                    <input type="hidden" id="shipping-charge-input" value="{{ $shippingCharge }}">
+                                    <tr class="summary-subtotal">
+                                        <td>Subtotal:</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>{{ $currency }} {{ number_format($total, 2) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Shipping:</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td id="shipping-charge">{{ $currency }} {{ number_format($shippingCharge, 2) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Vat(5%):</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td id="vat-charge">{{ $currency }} $00.00</td>
+                                    </tr>
+                                    <tr class="d-none" id="discount-row">
+                                        <td>Discount:</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td id="discount">{{ $currency }} $00.00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="form-group mt-3 d-none">
+                                <h6 for="delivery-location">Delivery Location:</h6>
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <input type="radio" class="custom-control-input" name="delivery_location" id="insideDhaka" value="insideDhaka" checked>
+                                    <label class="custom-control-label" for="insideDhaka">Inside Dhaka</label>
+                                </div>
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <input type="radio" class="custom-control-input" name="delivery_location" id="outsideDhaka" value="outsideDhaka">
+                                    <label class="custom-control-label" for="outsideDhaka">Outside Dhaka</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group checkout-discount mb-2">
+                                <div class="coupon-input">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="couponName" required placeholder="Coupon Code">
+                                    </div>
+                                </div>
+                                <div class="coupon-button">
+                                    <button class="btn btn-outline-dark-2 btn-block" type="submit" id="applyCoupon">
+                                        <span>Apply</span>
+                                        <i class="icon-refresh"></i>
+                                    </button>
+                                </div>
+                                <div id="couponDetails" class="mt-2 alert alert-success" style="display: none; width: 100%;">
+                                    <strong>Coupon Applied!</strong>
+                                </div>
+                                <input type="hidden" id="couponId" name="coupon_id" value="">
+                                <div style="display: none;">
+                                    <span id="couponValue"></span>
+                                    <span id="couponType"></span>
+                                </div>
+                            </div>
+
+                            <div class="">
+                                <div class="d-flex justify-content-between mt-2">
+                                    <h5>Total</h5>
+                                    <h5 id="total-amount" class="summary-total">{{ $currency }} {{ number_format($total, 2) }}</h5>
+                                </div>
+                            </div>
+
+                            <div id="loader" style="display: none;">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </div>
+
+                            <div class="accordion-summary">
+                                <div class="form-group">
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" class="custom-control-input" name="payment_method" id="paypal" value="paypal" checked>
+                                        <label class="custom-control-label" for="paypal">Paypal</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" class="custom-control-input" name="payment_method" id="stripe" value="stripe">
+                                        <label class="custom-control-label" for="stripe">Stripe</label>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" class="custom-control-input" name="payment_method" id="cashOnDelivery" value="cashOnDelivery">
+                                        <label class="custom-control-label" for="cashOnDelivery">Cash On Delivery</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <script src="https://js.stripe.com/v3/"></script>
+                                    <div id="card-element-container" style="display: none;">
+                                        <div id="card-element"></div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-outline-primary-2 btn-order btn-block" type="submit" id="placeOrderBtn">Place Order</button>
+                            </div>
                     </div>
-                    <div class="form-group mb-4">
-                        <div class="custom-control custom-radio">
-                            <input type="radio" class="custom-control-input" name="payment_method" id="cashOnDelivery" value="cashOnDelivery">
-                            <label class="custom-control-label" for="cashOnDelivery">Cash On Delivery</label>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <script src="https://js.stripe.com/v3/"></script>
-                        <div id="card-element-container" style="display: none;">
-                            <div id="card-element"></div>
-                        </div>
-                    </div>
-                    <button class="btn btn-outline-primary-2 btn-order btn-block" type="submit" id="placeOrderBtn">Place Order</button>
-                </div>
+                </aside>
+            </div>
         </div>
-        </aside>
-    </div>
-    </div>
     </div>
 </div>
 
@@ -278,6 +313,25 @@
         width: 5rem;
         height: 5rem;
         border-width: 0.5rem;
+    }
+
+    .accordion-summary .form-group {
+        margin-top: 0;
+        padding-top: 0;
+    }
+
+    .accordion-summary .custom-control {
+        margin-top: 0;
+    }
+
+    .coupon-input {
+        width: 50%;
+        display: inline-block;
+    }
+
+    .coupon-button {
+        width: 20%;
+        display: inline-block;
     }
 </style>
 
@@ -318,7 +372,7 @@
 
         function updateTotal() {
             var subtotal = parseFloat('{{ $total }}');
-            var shippingCharge = $('#outsideDhaka').is(':checked') ? 60.00 : 0.00;
+            var shippingCharge = parseFloat($('#shipping-charge-input').val());
             var discount = updateDiscount();
             var vatAmount = updateVat();
             var totalAmount = subtotal + shippingCharge - discount + vatAmount;
@@ -331,18 +385,12 @@
         });
 
         function updateShippingCharge() {
-            var shippingCharge = 0.00;
-
-            if ($('#outsideDhaka').is(':checked')) {
-                shippingCharge = 60.00; 
-            } 
+            var shippingCharge = parseFloat($('#shipping-charge-input').val());
+            var subtotal = parseFloat('{{ $total }}');
 
             var currencySymbol = '{{ $currency }}';
             $('#shipping-charge').text(`${currencySymbol} ${shippingCharge.toFixed(2)}`);
 
-            var subtotal = parseFloat('{{ $total }}');
-            var totalAmount = subtotal + shippingCharge;
-            $('#total-amount').text(`${currencySymbol} ${totalAmount.toFixed(2)}`);
             updateTotal();
         }
 
@@ -353,11 +401,6 @@
         }
 
         updateShippingCharge();
-
-        $('input[name="delivery_location"]').change(function() {
-            updateShippingCharge();
-        });
-
 
         $.ajaxSetup({
             headers: {
@@ -392,7 +435,7 @@
                 'town': $('#shipto').is(':checked') ? $('#ship_town').val() : $('#town').val(),
                 'postcode': $('#shipto').is(':checked') ? $('#ship_postcode').val() : $('#postcode').val(),
                 'note': $('#shipto').is(':checked') ? $('#ship_address').val() : $('#note').val(),
-                'delivery_location': $('input[name="delivery_location"]:checked').val(),
+                'shipping': $('#shipping-charge-input').val(),
                 'payment_method': $('input[name="payment_method"]:checked').val(),
                 'discount_percentage': $('#couponType').text().includes('Percentage') ? $('#couponValue').text() : null,
                 'discount_amount': $('#couponType').text().includes('Fixed Amount') ? $('#couponValue').text() : null,
@@ -521,7 +564,7 @@
                 data: { guest_email: guest_email, guest_phone: guest_phone, coupon_name: couponName },
                 success: function(response) {
                     if (response.success) {
-                        $('#couponDetails').show();
+                        // $('#couponDetails').show();
                         $('#couponType').text(response.coupon_type === 1 ? 'Fixed Amount' : 'Percentage');
                         $('#couponValue').text(response.coupon_value);
                         $('#couponId').val(response.coupon_id);
