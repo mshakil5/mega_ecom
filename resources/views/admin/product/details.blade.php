@@ -62,21 +62,22 @@
                     @endforeach
                 </div>
 
-                <h4 class="mt-3">Available Sizes</h4>
-                <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                    @foreach($product->sizes as $productSize)
-                        @isset($productSize->size)
+                @if($product->sizes->count() > 0)
+                    <h4 class="mt-3">Available Sizes</h4>
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        @foreach($product->sizes as $productSize)
                             @php
-                                $size = $productSize->size;
+                                $sizeId = $productSize->id;
+                                $sizeName = $productSize->size;
                             @endphp
                             <label class="btn btn-default text-center {{ $loop->first ? 'active' : '' }}">
-                                <input type="radio" name="size_option" id="size_option_{{ $size->id }}" autocomplete="off" {{ $loop->first ? 'checked' : '' }}>
-                                <span class="text-xl">{{ $size->size ?? 'N/A' }}</span>
+                                <input type="radio" name="size_option" id="size_option_{{ $sizeId }}" autocomplete="off" {{ $loop->first ? 'checked' : '' }}>
+                                <span class="text-xl">{{ $sizeName ?? 'N/A' }}</span>
                                 <br>
                             </label>
-                        @endisset
-                    @endforeach
-                </div>
+                        @endforeach
+                    </div>
+                @endif
 
                 <div class="bg-gray py-2 px-3 mt-4">
                 <h2 class="mb-0">
