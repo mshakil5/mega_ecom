@@ -13,7 +13,7 @@
                                 <x-image-with-loader src="{{ asset('/images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image" />
                             </figure>
 
-                            <div id="product-zoom-gallery" class="product-image-gallery">
+                            <div id="product-zoom-gallery" class="product-image-gallery d-none">
                                 @foreach($product->colors as $index => $image)
                                     <a class="product-gallery-item {{ $index == 0 ? 'active' : '' }}" href="#" data-image="{{ asset($image->image) }}" data-zoom-image="{{ asset($image->image) }}">
                                         <img src="{{ asset($image->image) }}" alt="product image">
@@ -58,7 +58,7 @@
                             <p>{!! $product->short_description !!} </p>
                         </div>
 
-                        <div class="details-filter-row details-row-size">
+                        <div class="details-filter-row details-row-size d-none">
                             <label>Color:</label>
                             <div class="product-nav product-nav-thumbs">
                                 <form id="colorForm">
@@ -79,6 +79,47 @@
                             </div>
                         </div>
 
+                        @php
+                            $availableColors = $product->stock()
+                                ->where('quantity', '>', 0)
+                                ->distinct('color')
+                                ->pluck('color');
+                        @endphp
+
+                        <div class="details-filter-row details-row-size">
+                            <label>Color:</label>
+                            <div class="product-nav product-nav-thumbs">
+                                @foreach($availableColors as $index => $color)
+                                    @php
+                                        $colorId = \App\Models\Color::where('color', $color)->value('id'); 
+                                        $colorImage = $product->colors->firstWhere('color_id', $colorId);
+                                    @endphp
+                                    @if($colorImage)
+                                        <div class="color-option-wrapper">
+                                        <span class="color-name">{{ $color }}</span>
+                                        <input type="radio" class="custom-control-input" id="color-{{ $index }}" name="color" value="{{ $color }}" style="display: none;">
+                                        <button type="button" 
+                                                class="color-option" 
+                                                data-image="{{ asset($colorImage->image) }}" 
+                                                onclick="selectColor(this, 'color-{{ $index }}')">
+                                            <img src="{{ asset($colorImage->image) }}" alt="Color Image">
+                                        </button>
+                                        </div>
+                                    @else
+                                    <div class="color-option-wrapper">
+                                        <span class="color-name">{{ $color }}</span>
+                                        <input type="radio" class="custom-control-input" id="color-{{ $index }}" name="color" value="{{ $color }}" style="display: none;">
+                                        <button type="button" 
+                                            class="color-option" 
+                                            style="background-color: {{ $color }}; width: 55px; height: 55px;" 
+                                            onclick="selectColor(this, 'color-{{ $index }}', false)">
+                                        </button>
+                                    </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+
                         <div class="details-filter-row details-row-size">
                             <label for="size">Size:</label>
                             <form id="sizeForm">
@@ -91,8 +132,8 @@
 
                                 @foreach($sizes as $index => $size)
                                     <div class="custom-control custom-radio custom-control-inline">
-                                        <input type="radio" class="custom-control-input" id="size-{{ $index }}" name="size" value="{{ $size }}">
-                                        <label class="custom-control-label" for="size-{{ $index }}">{{ $size }}</label>
+                                        <input type="radio" class="custom-control-input largerRadiobox" id="size-{{ $index }}" name="size" value="{{ $size }}" style="display: none;">
+                                        <label class="custom-control-label largerRadiobox-label" for="size-{{ $index }}">{{ $size }}</label>
                                     </div>
                                 @endforeach
                             </form>
@@ -111,7 +152,7 @@
                             </div>
                         </div>
 
-                        <div class="product-details-action">
+                        <div class="product-details-action mt-1">
 
                                 @php
                                     $sellingPrice = $product->stockhistory()
@@ -308,9 +349,85 @@
     </div>
 </div>
 
+<style>
+.product-nav-thumbs {
+    display: flex;
+    gap: 10px;
+}
+
+.color-option {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: border-color 0.3s;
+}
+
+.color-option.active {
+    border-color: green;
+}
+
+.color-option img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.color-name {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input.largerRadiobox {
+    display: none;
+}
+
+.largerRadiobox-label {
+    display: inline-block;
+    background-color: white;
+    padding: 5px;
+    border-radius: 5%;
+    border: 1px solid #ddd;
+    vertical-align: middle;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    text-align: center;
+}
+
+input.largerRadiobox:checked + .largerRadiobox-label {
+    background-color: #193d5b;
+    border-color: #193d5b;
+    color: white;
+}
+
+</style>
+
 @endsection
 
 @section('script')
+
+<script>
+function selectColor(element, radioId, hasImage = true) {
+    document.querySelectorAll('.color-option').forEach(option => {
+        option.classList.remove('active');
+    });
+
+    element.classList.add('active');
+
+    if (hasImage) {
+        const newImage = element.getAttribute('data-image');
+        document.querySelector('.product-main-image img').src = newImage;
+    }
+
+    const radioButton = document.getElementById(radioId);
+    if (radioButton) {
+        radioButton.checked = true;
+    }
+}
+</script>
 
 <script>
     $(document).ready(function() {
