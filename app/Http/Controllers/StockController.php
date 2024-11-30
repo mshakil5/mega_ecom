@@ -978,4 +978,43 @@ class StockController extends Controller
         return response()->json(['exists' => $exists]);
     }
 
+    public function shipping()
+    {
+        return view('admin.shipping.create');
+    }
+
+    public function searchInvoice(Request $request)
+    {
+        $invoice = $request->input('invoice');
+        $date = $request->input('date');
+        $query = Purchase::where('invoice', $invoice)
+                ->where('is_selling_cost_added', 0);
+    
+        if (!empty($date)) {
+            $query->where('purchase_date', $date);
+        }
+    
+        $purchase = $query->first();
+    
+        if ($purchase) {
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'purchase_id' => $purchase->id,
+                    'purchase_date' => $purchase->purchase_date,
+                    'invoice' => $purchase->invoice,
+                    'supplier' => $purchase->supplier ? $purchase->supplier->name : '',
+                    'ref' => $purchase->ref,
+                    'net_amount' => $purchase->net_amount,
+                    'paid_amount' => $purchase->paid_amount,
+                    'due_amount' => $purchase->due_amount,
+                ]
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invoice not found.'
+            ]);
+        }
+    }
 }

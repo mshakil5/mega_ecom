@@ -52,6 +52,7 @@ use App\Http\Controllers\Admin\WareHouseController;
 use App\Http\Controllers\Admin\CashFlowController;
 use App\Http\Controllers\Admin\DaybookController;
 use App\Http\Controllers\Admin\DeliveryChargeController;
+use App\Http\Controllers\Admin\ShippingController;
 
 Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], function(){
   
@@ -264,6 +265,11 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::post('/check-invoice', [StockController::class, 'checkInvoice'])->name('admin.check.invoice');
 
+    Route::get('/shipping', [StockController::class, 'shipping'])->name('admin.shipping');
+    Route::post('/shipping/search', [StockController::class, 'searchInvoice'])->name('admin.shipping.search');
+
+    Route::post('/shipping/store', [ShippingController::class, 'storeShipping'])->name('admin.shipping.store');
+    
     Route::get('/missing-purchase-product/{id}', [StockController::class, 'missingProduct'])->name('missingProduct');
     Route::get('/transfer-to-warehouse/{id}', [WarehouseController::class, 'transfer'])->name('transferToWarehouse');
     Route::get('/purchase-history', [StockController::class, 'productPurchaseHistory'])->name('productPurchaseHistory');
