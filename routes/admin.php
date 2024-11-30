@@ -261,6 +261,9 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/process/system-loss', [StockController::class, 'processSystemLoss'])->name('process.system.loss');
     Route::get('/system-losses', [StockController::class, 'systemLosses'])->name('system-losses.index');
     Route::post('/add-stock', [StockController::class, 'stockStore']);
+
+    Route::post('/check-invoice', [StockController::class, 'checkInvoice'])->name('admin.check.invoice');
+
     Route::get('/missing-purchase-product/{id}', [StockController::class, 'missingProduct'])->name('missingProduct');
     Route::get('/transfer-to-warehouse/{id}', [WarehouseController::class, 'transfer'])->name('transferToWarehouse');
     Route::get('/purchase-history', [StockController::class, 'productPurchaseHistory'])->name('productPurchaseHistory');

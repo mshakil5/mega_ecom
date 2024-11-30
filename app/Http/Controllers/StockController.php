@@ -966,4 +966,16 @@ class StockController extends Controller
         return redirect()->back()->with('success', 'Missing product recorded successfully.');
     }
 
+    public function checkInvoice(Request $request)
+    {
+        $invoice = $request->input('invoice');
+        $purchaseId = $request->input('purchase_id');
+        $exists = Purchase::where('invoice', $invoice)
+            ->when($purchaseId, function ($query) use ($purchaseId) {
+                $query->where('id', '!=', $purchaseId);
+            })->exists();
+
+        return response()->json(['exists' => $exists]);
+    }
+
 }

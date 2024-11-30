@@ -67,7 +67,8 @@
                                 <div class="col-sm-3">
                                     <div class="form-group">
                                         <label for="invoice">Invoice <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="invoice" name="invoice" placeholder="Enter invoice">
+                                        <input type="text" class="form-control" id="invoice" name="invoice" placeholder="Enter invoice" required>
+                                        <small id="invoice-error" class="text-danger" style="display: none;">This invoice already exists.</small>
                                     </div>
                                 </div>
                                 <div class="col-sm-3 d-none">
@@ -175,14 +176,14 @@
                                 
                                 <div class="col-sm-6 mt-4 mb-5">
 
-                                    <div class="row">
+                                    <div class="row d-none">
                                         <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Direct cost:</span>
                                             <input type="number" class="form-control" id="direct_cost" style="width: 100px; margin-left: auto;" min="0">
                                         </div>
                                     </div>
                                     
-                                    <div class="row mt-1">
+                                    <div class="row mt-1 d-none">
                                         <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">CNF cost:</span>
                                             <input type="number" class="form-control" id="cnf_cost" style="width: 100px; margin-left: auto;" min="0">
@@ -190,21 +191,21 @@
                                     </div>
 
                                     
-                                    <div class="row mt-1">
+                                    <div class="row mt-1 d-none">
                                         <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Title need:</span>
                                             <input type="number" class="form-control" id="cost_a" style="width: 100px; margin-left: auto;" min="0">
                                         </div>
                                     </div>
 
-                                    <div class="row mt-1">
+                                    <div class="row mt-1 d-none">
                                         <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Title need:</span>
                                             <input type="number" class="form-control" id="cost_b" style="width: 100px; margin-left: auto;" min="0">
                                         </div>
                                     </div>
 
-                                    <div class="row mt-1">
+                                    <div class="row mt-1 d-none">
                                         <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Others cost:</span>
                                             <input type="number" class="form-control" id="other_cost" style="width: 100px; margin-left: auto;" min="0">
@@ -552,6 +553,37 @@
                 }
             });
 
+        });
+
+        $('#invoice').on('input', function () {
+            let invoice = $(this).val();
+            let errorElement = $('#invoice-error');
+            let createButton = $('#addBtn');
+
+            if (invoice.length > 0) {
+                $.ajax({
+                    url: "{{ route('admin.check.invoice') }}",
+                    method: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        invoice: invoice
+                    },
+                    success: function (response) {
+                        if (response.exists) {
+                            errorElement.show();
+                            createButton.attr('disabled', true);
+                        } else {
+                            errorElement.hide();
+                            createButton.attr('disabled', false);
+                        }
+                    },
+                    error: function () {
+                        alert('An error occurred while checking the invoice.');
+                    }
+                });
+            } else {
+                errorElement.hide();
+            }
         });
     });
 </script>
