@@ -42,6 +42,7 @@ return new class extends Migration
             $table->longText('about_us')->nullable();
             $table->string('currency',191)->nullable();
             $table->string('design',191)->nullable();
+            $table->longText('size_guide')->nullable();
             $table->string('created_by',191)->nullable();
             $table->string('updated_by',191)->nullable();
             $table->timestamps();

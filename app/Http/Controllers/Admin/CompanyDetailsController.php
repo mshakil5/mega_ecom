@@ -99,6 +99,7 @@ class CompanyDetailsController extends Controller
         $data->footer_link = $request->footer_link;
         $data->currency = $request->currency;
         $data->design = $request->design;
+        $data->size_guide = $request->size_guide;
         $data->about_us = $request->about_us;
         $data->footer_content = $request->footer_content;
         $data->google_map = $request->google_map;

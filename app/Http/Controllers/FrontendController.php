@@ -235,6 +235,7 @@ class FrontendController extends Controller
         $company_name = CompanyDetails::value('company_name');
         $title = $company_name . ' - ' . $product->name;
         $currency = CompanyDetails::value('currency');
+        $sizeGuide = CompanyDetails::value('size_guide');
 
         $relatedProducts = RelatedProduct::where('product_id', $product->id)
             ->where('status', 1)
@@ -259,7 +260,7 @@ class FrontendController extends Controller
                 ->get();
         }
 
-        return view('frontend.product.single_product', compact('product', 'relatedProducts', 'title', 'regularPrice', 'offerPrice', 'flashSellPrice', 'offerId', 'currency', 'oldOfferPrice', 'OldFlashSellPrice'));
+        return view('frontend.product.single_product', compact('product', 'relatedProducts', 'title', 'regularPrice', 'offerPrice', 'flashSellPrice', 'offerId', 'currency', 'oldOfferPrice', 'OldFlashSellPrice', 'sizeGuide'));
     }
 
     public function bogoShowProduct($slug)
