@@ -6,10 +6,10 @@
     <div class="checkout">
         <div class="container">
             <div class="row">
-                <div class="col-lg-8">
+                <div class="col-lg-8" style="border: #d7d7d7 dashed 1px;">
                     <div id="alertContainer"></div>
 
-                    <h4>Billing and Collection Options</h4>
+                    <h4 class="mt-2">Billing and Collection Options</h4>
                     <div class="accordion" id="accordionWithRadioExample">
                         <div class="card">
                             <div class="card-header">
@@ -161,34 +161,31 @@
                                             }
                                         @endphp
 
-                                    <tr data-entity-id="{{ $entity->id }}" data-entity-type="{{ $isBundle ? 'bundle' : 'product' }}">
-                                        <td>
-                                            <div class="d-flex align-items-start">
-                                                <x-image-with-loader 
-                                                    src="{{ asset('/images/' . ($isBundle ? 'bundle_product' : 'products') . '/' . $entity->feature_image) }}" 
-                                                    alt="{{ $entity->name }}" 
-                                                    style="width: 80px; height: 80px; object-fit: contain; margin-right: 10px;" 
-                                                />       
+                                        <tr data-entity-id="{{ $entity->id }}" data-entity-type="{{ $isBundle ? 'bundle' : 'product' }}">
+                                            <td class="pt-2">
+                                                <div class="d-flex align-items-start" style="align-items: flex-start;">
+                                                    <x-image-with-loader 
+                                                        src="{{ asset('/images/' . ($isBundle ? 'bundle_product' : 'products') . '/' . $entity->feature_image) }}" 
+                                                        alt="{{ $entity->name }}" 
+                                                        style="width: 70px; height: 70px; object-fit: contain; margin-right: 10px;" 
+                                                    />       
 
-                                                <div>
-                                                    <div style="font-size: 16px;">
-                                                        <b>{{ $entity->name }}</b>
-                                                    </div>
+                                                    <div style="flex-grow: 1; text-align: left;">
+                                                        <div style="font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                                            <b>{{ $entity->name }}</b>
+                                                        </div>
 
-                                                    <div style="font-size: 16px; margin-top: 5px;" class="text-center">           
-                                                        <span>{{ $item['color'] }} | {{ $item['size'] }}</span>
-                                                    </div>
+                                                        <div style="font-size: 16px; margin-top: 5px;" class="text-left">           
+                                                            <span>{{ $item['color'] }} | {{ $item['size'] }}</span>
+                                                        </div>
 
-                                                    <div style="font-size: 16px; margin-top: 5px;">           
-                                                        <span>{{ $item['quantity'] }} x {{ number_format($price, 2) }}</span>
+                                                        <div style="font-size: 16px; margin-top: 5px;">           
+                                                            <span>{{ $item['quantity'] }} x {{ number_format($price, 2) }}</span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <!-- <td>{{ $currency }} {{ number_format($price, 2) }}</td>
-                                        <td class="text-right">{{ $item['quantity'] }}</td> -->
-                                        <!-- <td>{{ $currency }} {{ number_format($itemTotal, 2) }}</td> -->
-                                    </tr>
+                                            </td>
+                                        </tr>
                                     @endforeach
                                     <input type="hidden" id="shipping-charge-input" value="{{ $shippingCharge }}">
                                     <tr class="summary-subtotal">
