@@ -6,13 +6,15 @@
     <div class="checkout">
         <div class="container">
             <div class="row">
+                
                 <div class="col-lg-8" style="border: #d7d7d7 dashed 1px;">
                     <div id="alertContainer"></div>
 
-                    <h4 class="mt-2">Billing and Collection Options</h4>
-                    <div class="accordion" id="accordionWithRadioExample">
+                    <!-- <h4 class="mt-2">Billing and Collection Options</h4> -->
+                    <h4 class="mt-2">Billing Details</h4>
+                    <!-- <div class="accordion" id="accordionWithRadioExample"> -->
                         <div class="card">
-                            <div class="card-header">
+                            <!-- <div class="card-header">
                                 <div class="row" style="border: 1px dashed #ccc; padding: 5px 10px 15px 10px; margin: 5px; border-radius: 5px;">
                                     <div class="custom-control custom-radio">
                                         <input data-toggle="collapse" data-target="#collapseBilling" type="radio" id="customRadioBilling" name="customRadio" class="custom-control-input" checked />
@@ -25,8 +27,8 @@
                                         <label class="custom-control-label" for="customRadioCollectStore">Collect From Store</label>
                                     </div>
                                 </div>
-                            </div>
-                            <div id="collapseBilling" class="collapse show" data-parent="#accordionWithRadioExample">
+                            </div> -->
+                            <!-- <div id="collapseBilling" class="collapse show" data-parent="#accordionWithRadioExample"> -->
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-md-6 form-group">
@@ -76,10 +78,10 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            <!-- </div> -->
                         </div>
 
-                        <div class="card">
+                        <!-- <div class="card">
                             <div class="card-header">
                             </div>
                             <div id="collapseCollectStore" class="collapse" data-parent="#accordionWithRadioExample">
@@ -110,8 +112,8 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                        </div> -->
+                    <!-- </div> -->
                 </div> 
 
                 <!-- Order Summary -->
@@ -195,7 +197,7 @@
                                         <td>{{ $currency }} {{ number_format($total, 2) }}</td>
                                     </tr>
                                     <tr>
-                                        <td>Shipping:</td>
+                                        <td>Delivery Charge:</td>
                                         <td></td>
                                         <td></td>
                                         <td id="shipping-charge">{{ $currency }} {{ number_format($shippingCharge, 2) }}</td>

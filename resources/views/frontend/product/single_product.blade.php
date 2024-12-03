@@ -115,7 +115,7 @@
                                         <input type="radio" class="custom-control-input" id="color-{{ $index }}" name="color" value="{{ $color }}" style="display: none;">
                                         <button type="button" 
                                             class="color-option" 
-                                            style="background-color: {{ $color }}; width: 55px; height: 55px;" 
+                                            style="background-color: {{ $color }}; width: 70px; height: 55px;" 
                                             onclick="selectColor(this, 'color-{{ $index }}', false)">
                                         </button>
                                     </div>
@@ -192,7 +192,7 @@
         </div>
 
         <div class="product-details-tab">
-            <ul class="nav nav-pills justify-content-center" role="tablist">
+            <ul class="nav nav-pills justify-content-start" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link active" id="product-desc-link" data-toggle="tab" href="#product-desc-tab" role="tab" aria-controls="product-desc-tab" aria-selected="true">Description</a>
                 </li>
@@ -204,7 +204,7 @@
                 <div class="tab-pane fade show active" id="product-desc-tab" role="tabpanel" aria-labelledby="product-desc-link">
                     <div class="product-desc-content">
                         <h3>Product Information</h3>
-                        {!! $product->description !!}
+                        {!! $product->long_description !!}
                     </div>
                 </div>
                 <div class="tab-pane fade" id="product-review-tab" role="tabpanel" aria-labelledby="product-review-link">
@@ -391,8 +391,8 @@
 }
 
 .color-option img {
-    width: 50px;
-    height: 50px;
+    width: 55px;
+    height: 45px;
     object-fit: cover;
     border-radius: 5px;
 }
@@ -408,6 +408,7 @@ input.largerRadiobox {
 
 .largerRadiobox-label {
     display: inline-block;
+    height: 45px;
     background-color: white;
     padding: 5px;
     border-radius: 5%;

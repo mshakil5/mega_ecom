@@ -57,7 +57,7 @@
                                         }
                                     @endphp
                                     <tr data-entity-id="{{ $isBundle ? $entity->id : $entity->id }}" data-entity-type="{{ $isBundle ? 'bundle' : 'product' }}" data-stock="{{ $stock }}">
-                                        <td class="product-col">
+                                        <td class="product-col" style="padding: 5px;">
                                             <div class="product">
                                                 <figure class="product-media">
                                                     <a href="#">
