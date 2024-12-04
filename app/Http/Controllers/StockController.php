@@ -341,58 +341,58 @@ class StockController extends Controller
                 $existingProduct->save();
             }
 
-            if ($request->warehouse_id) {
-                $stock = Stock::where('product_id', $product['product_id'])
-                      ->where('size', $product['product_size'])
-                      ->where('color', $product['product_color'])
-                      ->where('warehouse_id', $request->warehouse_id)
-                      ->first();
-                if ($stock) {
-                    $stock->quantity += $product['quantity'];
-                    $stock->updated_by = Auth::user()->id;
-                    $stock->save();
-                } else {
-                    $newStock = new Stock();
-                    $newStock->warehouse_id = $request->warehouse_id;
-                    $newStock->product_id = $product['product_id'];
-                    $newStock->quantity = $product['quantity'];
-                    $newStock->size = $product['product_size'];
-                    $newStock->color = $product['product_color'];
-                    $newStock->created_by = Auth::user()->id;
-                    $newStock->save();
-                }
-                // calculate every additional cost per product
-                $additionalCost = $purchase->direct_cost + $purchase->cnf_cost + $purchase->cost_a + $purchase->cost_b + $purchase->other_cost;
-                $qty = $purchaseHistory->quantity - $purchaseHistory->missing_product_quantity;
-                $countItem = Purchase::withCount('purchaseHistory')->where('id', $purchaseHistory->purchase_id)->first();
-                $additionalCostPerProduct = $additionalCost/$countItem->purchase_history_count;
-                $additionalCostPerUnit = $additionalCostPerProduct/$qty;
-                // calculate every additional cost per product
+            // if ($request->warehouse_id) {
+            //     $stock = Stock::where('product_id', $product['product_id'])
+            //           ->where('size', $product['product_size'])
+            //           ->where('color', $product['product_color'])
+            //           ->where('warehouse_id', $request->warehouse_id)
+            //           ->first();
+            //     if ($stock) {
+            //         $stock->quantity += $product['quantity'];
+            //         $stock->updated_by = Auth::user()->id;
+            //         $stock->save();
+            //     } else {
+            //         $newStock = new Stock();
+            //         $newStock->warehouse_id = $request->warehouse_id;
+            //         $newStock->product_id = $product['product_id'];
+            //         $newStock->quantity = $product['quantity'];
+            //         $newStock->size = $product['product_size'];
+            //         $newStock->color = $product['product_color'];
+            //         $newStock->created_by = Auth::user()->id;
+            //         $newStock->save();
+            //     }
+            //     // calculate every additional cost per product
+            //     $additionalCost = $purchase->direct_cost + $purchase->cnf_cost + $purchase->cost_a + $purchase->cost_b + $purchase->other_cost;
+            //     $qty = $purchaseHistory->quantity - $purchaseHistory->missing_product_quantity;
+            //     $countItem = Purchase::withCount('purchaseHistory')->where('id', $purchaseHistory->purchase_id)->first();
+            //     $additionalCostPerProduct = $additionalCost/$countItem->purchase_history_count;
+            //     $additionalCostPerUnit = $additionalCostPerProduct/$qty;
+            //     // calculate every additional cost per product
 
-                $warehouseId = $request->warehouse_id;
-                $stockhistory = new StockHistory();
-                $stockhistory->product_id = $purchaseHistory->product_id;
-                $stockhistory->purchase_id = $purchaseHistory->purchase_id;
-                if ($stock) {
-                    $stockhistory->stock_id = $stock->id;
-                } else {
-                    $stockhistory->stock_id = $newStock->id;
-                }
+            //     $warehouseId = $request->warehouse_id;
+            //     $stockhistory = new StockHistory();
+            //     $stockhistory->product_id = $purchaseHistory->product_id;
+            //     $stockhistory->purchase_id = $purchaseHistory->purchase_id;
+            //     if ($stock) {
+            //         $stockhistory->stock_id = $stock->id;
+            //     } else {
+            //         $stockhistory->stock_id = $newStock->id;
+            //     }
                 
-                $stockhistory->warehouse_id = $warehouseId;
-                $stockhistory->selling_qty = 0;
-                $stockhistory->quantity = $product['quantity'];
-                $stockhistory->available_qty = $product['quantity'];
-                $stockhistory->size = $purchaseHistory->product_size;
-                $stockhistory->color = $purchaseHistory->product_color;
-                $stockhistory->date = date('Y-m-d');
-                $stockhistory->stockid = date('mds').$warehouseId.str_pad($purchaseHistory->id, 4, '0', STR_PAD_LEFT);
+            //     $stockhistory->warehouse_id = $warehouseId;
+            //     $stockhistory->selling_qty = 0;
+            //     $stockhistory->quantity = $product['quantity'];
+            //     $stockhistory->available_qty = $product['quantity'];
+            //     $stockhistory->size = $purchaseHistory->product_size;
+            //     $stockhistory->color = $purchaseHistory->product_color;
+            //     $stockhistory->date = date('Y-m-d');
+            //     $stockhistory->stockid = date('mds').$warehouseId.str_pad($purchaseHistory->id, 4, '0', STR_PAD_LEFT);
 
-                $stockhistory->purchase_price = $purchaseHistory->purchase_price + $additionalCostPerUnit;
-                $stockhistory->selling_price = $stockhistory->purchase_price + $stockhistory->purchase_price * .2;
-                $stockhistory->created_by = Auth::user()->id;
-                $stockhistory->save();
-            }
+            //     $stockhistory->purchase_price = $purchaseHistory->purchase_price + $additionalCostPerUnit;
+            //     $stockhistory->selling_price = $stockhistory->purchase_price + $stockhistory->purchase_price * .2;
+            //     $stockhistory->created_by = Auth::user()->id;
+            //     $stockhistory->save();
+            // }
         }
 
         $suppliertran = new Transaction();

@@ -272,6 +272,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::post('/create-shipment', [ShippingController::class, 'storeShipment']);
 
+    Route::post('/check-shipping-id', [ShippingController::class, 'checkShippingId'])->name('check.shipping.id');
+
     Route::put('/update-shipment/{id}', [ShippingController::class, 'updateShipment'])->name('update.shipment');
 
     Route::post('/search-shipment', [ShippingController::class, 'searchShipmentById']);

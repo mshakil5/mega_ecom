@@ -86,6 +86,7 @@
                     <div class="form-group">
                         <label for="shipping_id">Shipping ID <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="shipping_id" name="shipping_id" placeholder="Enter Shipping ID" required>
+                        <div id="shipping_id_error"></div>
                     </div>
                     <div class="form-group">
                         <label for="shipping_name">Shipping Name <span class="text-danger">*</span></label>
@@ -577,6 +578,42 @@
             });
         }
     });
+
+    $('#shipping_id').on('input', function () {
+        const shippingId = $(this).val().trim();
+        const csrfToken = $('meta[name="csrf-token"]').attr('content');
+        const shipmentId = $('#shipment_id').val();
+
+        if (shippingId !== '') {
+            $.ajax({
+                url: '/admin/check-shipping-id',
+                method: 'POST',
+                data: {
+                    shipping_id: shippingId,
+                    shipment_id: shipmentId,
+                    _token: csrfToken
+                },
+                success: function (response) {
+                    if (response.exists) {
+                        $('#shipping_id_error').html(`
+                            <small class="text-danger">Shipping ID already exists. Please use a different ID.</small>
+                        `);
+                        $('#createShipmentBtn').prop('disabled', true);
+                    } else {
+                        $('#shipping_id_error').html('');
+                        $('#createShipmentBtn').prop('disabled', false);
+                    }
+                },
+                error: function (xhr) {
+                    console.error('Error checking Shipping ID:', xhr.responseText);
+                }
+            });
+        } else {
+            $('#shipping_id_error').html('');
+            $('#createShipmentBtn').prop('disabled', false);
+        }
+    });
+
 
     $('#createShipmentModal').on('hidden.bs.modal', function() {
         $('#shipmentForm')[0].reset();
