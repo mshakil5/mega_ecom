@@ -35,8 +35,8 @@ return new class extends Migration
             $table->decimal('other_cost',10,2)->nullable();
 
             $table->boolean('status')->default(1);
-            $table->boolean('is_selling_cost_added')->default(0);
             // 1==Processing, 2==On The Way, 3==Customs, 4==Received
+            $table->boolean('is_selling_cost_added')->default(0);
             $table->string('payment_status')->nullable();
             $table->string('updated_by')->nullable();
             $table->string('created_by')->nullable();

@@ -53,6 +53,7 @@ use App\Http\Controllers\Admin\CashFlowController;
 use App\Http\Controllers\Admin\DaybookController;
 use App\Http\Controllers\Admin\DeliveryChargeController;
 use App\Http\Controllers\Admin\ShippingController;
+use App\Http\Controllers\Admin\ShipmentController;
 
 Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], function(){
   
@@ -265,10 +266,23 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::post('/check-invoice', [StockController::class, 'checkInvoice'])->name('admin.check.invoice');
 
-    Route::get('/shipping', [StockController::class, 'shipping'])->name('admin.shipping');
-    Route::post('/shipping/search', [StockController::class, 'searchInvoice'])->name('admin.shipping.search');
+    Route::get('/shipping', [ShippingController::class, 'shipping'])->name('admin.shipping');
 
-    Route::post('/shipping/store', [ShippingController::class, 'storeShipping'])->name('admin.shipping.store');
+    Route::get('/search-purchases', [ShippingController::class, 'searchPurchases']);
+
+    Route::post('/create-shipment', [ShippingController::class, 'storeShipment']);
+
+    Route::put('/update-shipment/{id}', [ShippingController::class, 'updateShipment'])->name('update.shipment');
+
+    Route::post('/search-shipment', [ShippingController::class, 'searchShipmentById']);
+
+    Route::post('/shipment-store', [ShipmentController::class, 'storeShipment']);
+
+    Route::get('/shipment-history/{id}/edit', [ShipmentController::class, 'editShipment'])->name('admin.shipments.edit');
+
+    Route::put('/shipment-update/{id}', [ShipmentController::class, 'updateShipment'])->name('admin.shipment.update');
+
+    Route::get('/shipment-history', [ShipmentController::class, 'shipmentHistory'])->name('admin.shipment.history');
     
     Route::get('/missing-purchase-product/{id}', [StockController::class, 'missingProduct'])->name('missingProduct');
     Route::get('/transfer-to-warehouse/{id}', [WarehouseController::class, 'transfer'])->name('transferToWarehouse');

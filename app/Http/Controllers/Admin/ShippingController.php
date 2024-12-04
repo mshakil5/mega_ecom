@@ -7,67 +7,115 @@ use Illuminate\Http\Request;
 use App\Models\ShippingCost;
 use App\Models\Purchase;
 use App\Models\StockHistory;
+use App\Models\Shipping;
+use App\Models\PurchaseHistory;
+use Carbon\Carbon;
 
 class ShippingController extends Controller
 {
-    public function storeShipping(Request $request)
+
+    public function shipping()
     {
-        $request->validate([
-            'purchase_ids' => 'required|array',
-            'direct_cost' => 'nullable|numeric',
-            'cnf_cost' => 'nullable|numeric',
-            'cost_a' => 'nullable|numeric',
-            'cost_b' => 'nullable|numeric',
-            'other_cost' => 'nullable|numeric',
-        ]);
-
-        $additionalCost = ($request->direct_cost ?? 0) +
-                        ($request->cnf_cost ?? 0) +
-                        ($request->cost_a ?? 0) +
-                        ($request->cost_b ?? 0) +
-                        ($request->other_cost ?? 0);
-
-        $shippingCost = new ShippingCost();
-        $shippingCost->purchase_ids = json_encode($request->purchase_ids);
-        $shippingCost->direct_cost = $request->direct_cost;
-        $shippingCost->cnf_cost = $request->cnf_cost;
-        $shippingCost->cost_a = $request->cost_a;
-        $shippingCost->cost_b = $request->cost_b;
-        $shippingCost->other_cost = $request->other_cost;
-        $shippingCost->additional_cost = $additionalCost;
-        $shippingCost->created_by = auth()->user()->id; 
-        $shippingCost->updated_by = auth()->user()->id;
-        $shippingCost->save();
-
-        foreach ($request->purchase_ids as $purchaseId) {
-            $purchase = Purchase::find($purchaseId);
-            if ($purchase) {
-                $purchase->is_selling_cost_added = 1;
-                $purchase->save();
-            }
-
-            $purchaseHistoryItems = StockHistory::where('purchase_id', $purchaseId)->get();
-            foreach ($purchaseHistoryItems as $purchaseHistory) {
-                $qty = $purchaseHistory->quantity - $purchaseHistory->missing_product_quantity;
-                $countItem = Purchase::withCount('purchaseHistory')->where('id', $purchaseHistory->purchase_id)->first();
-                $additionalCostPerProduct = $additionalCost / $countItem->purchase_history_count;
-
-                $additionalCostPerUnit = $additionalCostPerProduct / $qty;
-
-                $purchaseHistory->purchase_price = $purchaseHistory->purchase_price + $additionalCostPerUnit;
-
-                $purchaseHistory->selling_price = $purchaseHistory->purchase_price + ($purchaseHistory->purchase_price * 0.30);
-
-                $purchaseHistory->save();
+        $data = Shipping::orderBy('id', 'DESC')->get();
+        $purchases = Purchase::select('id', 'invoice')->latest()->get();
+        foreach ($data as $shipment) {
+            $purchaseIds = json_decode($shipment->purchase_ids);
+    
+            if ($purchaseIds) {
+                $invoices = Purchase::whereIn('id', $purchaseIds)
+                    ->pluck('invoice')
+                    ->toArray();
+                $shipment->invoice_numbers = implode(', ', $invoices);
+            } else {
+                $shipment->invoice_numbers = 'No Invoices Found';
             }
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Shipping cost added successfully and selling prices updated.',
-            'data' => $shippingCost
-        ]);
+        return view('admin.shipment.create', compact('data', 'purchases'));
     }
 
+    public function searchPurchases(Request $request)
+    {
+        $invoice = $request->get('invoice');
+
+        $purchase = Purchase::where('status', 4)->where('invoice', $invoice)->first(['id', 'invoice']);
+
+        if ($purchase) {
+            return response()->json($purchase);
+        } else {
+            return response()->json(['message' => 'Purchase not found'], 404);
+        }
+    }
+
+    public function storeShipment(Request $request)
+    {
+        $request->validate([
+            'shipping_id' => 'required|string',
+            'shipping_name' => 'required|string',
+            'shipping_date' => 'required|date',
+            'purchase_ids' => 'required|array',
+            'purchase_ids.*' => 'exists:purchases,id',
+        ]);
+
+        $shipment = Shipping::create([
+            'shipping_id' => $request->shipping_id,
+            'shipping_name' => $request->shipping_name,
+            'shipping_date' => $request->shipping_date,
+            'purchase_ids' => json_encode($request->purchase_ids),
+        ]);
+
+        return response()->json(['message' => 'Shipment created successfully', 'shipment' => $shipment], 201);
+    }
+
+    public function updateShipment($id, Request $request)
+    {
+        $request->validate([
+            'id' => 'required',
+            'shipping_id' => 'required|string',
+            'shipping_name' => 'required|string',
+            'shipping_date' => 'required|date',
+            'purchase_ids' => 'required|array',
+            'purchase_ids.*' => 'exists:purchases,id',
+        ]);
+
+        $shipment = Shipping::findOrFail($id);
+
+        $shipment->shipping_id = $request->shipping_id;
+        $shipment->shipping_name = $request->shipping_name;
+        $shipment->shipping_date = $request->shipping_date;
+        $shipment->purchase_ids = json_encode($request->purchase_ids);
+        $shipment->save();
+
+        return response()->json(['message' => 'Shipment updated successfully', 'shipment' => $shipment]);
+    }
+
+    public function searchShipmentById(Request $request)
+    {
+        $shippingId = $request->input('shipping_id');
+        $shipment = Shipping::where('shipping_id', $shippingId)->first();
+
+        if ($shipment) {
+            $purchaseIds = json_decode($shipment->purchase_ids, true);
+            $purchaseHistories = PurchaseHistory::whereIn('purchase_id', $purchaseIds)
+                ->with('product', 'purchase.supplier')
+                ->orderBy('purchase_id', 'asc')
+                ->get();
+        
+            $purchases = Purchase::with('supplier')->whereIn('id', $purchaseIds)->get();
+
+            return response()->json([
+                'success' => true,
+                'id' => $shipment->id,
+                'purchase_ids' => $purchaseIds,
+                'shipping_id' => $shipment->shipping_id,
+                'shipping_date' => Carbon::parse($shipment->shipping_date)->format('d-m-Y'),
+                'shipping_name' => $shipment->shipping_name,
+                'purchase_histories' => $purchaseHistories,
+                'purchases' => $purchases
+            ]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Shipping ID not found.']);
+    }
 
 }
