@@ -13,7 +13,9 @@ class ShipmentController extends Controller
 
     public function shipmentHistory()
     {
-        $shipments = Shipment::with(['shipping', 'shipmentDetails'])->latest()->get();
+        $shipments = Shipment::with(['shipping', 'shipmentDetails.product', 'shipmentDetails.supplier'])
+                         ->latest()
+                         ->get();
         return view('admin.shipment.history', compact('shipments'));
     }
 

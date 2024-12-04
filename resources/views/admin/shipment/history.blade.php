@@ -59,11 +59,11 @@
 
 <!-- Modal -->
 <div class="modal fade" id="shipmentModal" tabindex="-1" role="dialog" aria-labelledby="shipmentModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="card card-secondary">
                 <div class="card-header">
-                    <h3 class="card-title" id="cardTitle">Price Calculation</h3>
+                    <h3 class="card-title" id="cardTitle">Shipping Details</h3>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -90,7 +90,7 @@
                                 </div>
                             </div>
 
-                            <table class="table table-bordered">
+                            <table class="table table-bordered" id="example2">
                                 <thead>
                                     <tr>
                                         <th>Supplier</th>
@@ -141,8 +141,8 @@
                 shipmentDetails.forEach(detail => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td>${detail.supplier_id}</td>
-                        <td>${detail.product_id}</td>
+                        <td>${detail.supplier.name}</td>
+                        <td>${detail.product && detail.product.product_code ? `${detail.product.product_code} - ${detail.product.name}` : (detail.product ? detail.product.name : '')}</td>
                         <td>${detail.size || '-'}</td>
                         <td>${detail.color || '-'}</td>
                         <td>${detail.quantity}</td>
@@ -153,6 +153,14 @@
                     `;
                     purchaseDataBody.appendChild(row);
                 });
+
+                $('#example2').DataTable().destroy();
+                    $('#example2').DataTable({
+                        "responsive": true,
+                        "lengthChange": false,
+                        "autoWidth": false,
+                        "buttons": ["copy", "csv", "excel", "pdf", "print"]
+                    }).buttons().container().appendTo('#example2_wrapper .col-md-6:eq(0)');
 
                 $('#shipmentModal').modal('show');
             });
