@@ -47,6 +47,23 @@ class ShippingController extends Controller
         }
     }
 
+    public function checkShippingId(Request $request)
+    {
+        $request->validate([
+            'shipping_id' => 'required|string',
+        ]);
+
+        $query = Shipping::where('shipping_id', $request->shipping_id);
+    
+        if ($request->filled('shipment_id')) {
+            $query->where('id', '!=', $request->shipment_id);
+        }
+    
+        $exists = $query->exists();
+    
+        return response()->json(['exists' => $exists]);
+    }
+
     public function storeShipment(Request $request)
     {
         $request->validate([
