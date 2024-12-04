@@ -86,7 +86,31 @@
                                         <select class="form-control" id="product_id" name="product_id">
                                             <option value="">Select...</option>
                                             @foreach($products as $product)
-                                                <option value="{{ $product->id }}" data-name="{{ $product->name }}" data-price="{{ $product->price }}">{{ $product->name }} - {{ $product->product_code }}</option>
+
+                                            @php
+                                                $sellingPrice = $product->stockhistory()
+                                                            ->where('available_qty', '>', 0)
+                                                            ->orderBy('id', 'asc')
+                                                            ->value('selling_price');
+                                                $groundPrice = $product->stockhistory()
+                                                            ->where('available_qty', '>', 0)
+                                                            ->orderBy('id', 'asc')
+                                                            ->value('ground_price_per_unit');
+
+                                                $profitMargin = $product->stockhistory()
+                                                            ->where('available_qty', '>', 0)
+                                                            ->orderBy('id', 'asc')
+                                                            ->value('profit_margin');
+                                            @endphp 
+
+                                            <option value="{{ $product->id }}" 
+                                                    data-name="{{ $product->name }}" 
+                                                    data-price="{{ $sellingPrice }}" 
+                                                    data-ground-price="{{ $groundPrice }}" 
+                                                    data-profit-margin="{{ $profitMargin }}"
+                                                    >
+                                                    {{ $product->name }} - {{ $product->product_code }}
+                                                </option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -101,6 +125,8 @@
                                     <div class="form-group">
                                         <label for="price_per_unit">Unit Price <span class="text-danger">*</span></label>
                                         <input type="number" step="0.01" class="form-control" id="price_per_unit" name="price_per_unit" placeholder="Enter unit price">
+                                        <input type="hidden" step="0.01" class="form-control" id="ground_price">
+                                        <input type="hidden" step="0.01" class="form-control" id="profit_margin">
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
@@ -138,11 +164,11 @@
                                     <table class="table table-bordered" id="productTable">
                                         <thead>
                                             <tr>
-                                                <th>Product Name</th>
+                                                <th>Product Details</th>
                                                 <th>Quantity</th>
                                                 <th>Size</th>
                                                 <th>Color</th>
-                                                <th>Unit Price</th>
+                                                <th>Selling Price</th>
                                                 <th>VAT %</th>
                                                 <th>VAT Amount</th>
                                                 <th>Total Price</th>
@@ -331,6 +357,8 @@
             var productId = selectedProduct.val();
             var productName = selectedProduct.data('name');
             var unitPrice = parseFloat($('#price_per_unit').val()) || 0;
+            var groundPrice = parseFloat($('#ground_price').val()) || 0;
+            var profitMargin = parseFloat($('#profit_margin').val()) || 0;
             var quantity = parseFloat($('#quantity').val()) || 1;
             var selectedSize = $('#size').val() || '';
             var selectedColor = $('#color').val() || '';
@@ -377,7 +405,10 @@
                         }
 
                         var productRow = `<tr data-product-id="${productId}">
-                                            <td>${productName} ${stockStatus}
+                                            <td>
+                                                ${productName} ${stockStatus} <br>
+                                                <span>Ground Price: <strong>${groundPrice.toFixed(2)}</strong></span> <br>
+                                                <span>Profit Margin: <strong>${profitMargin.toFixed(2)}%</strong></span>
                                                 <input type="hidden" name="product_id[]" value="${productId}">
                                             </td> 
                                             <td><input type="number" class="form-control quantity" value="${quantity}" min="1" /></td>
@@ -690,12 +721,18 @@
         $('#product_id').change(function() {
             var selectedProduct = $(this).find(':selected');
             var pricePerUnit = selectedProduct.data('price');
+            var groundPrice = selectedProduct.data('ground-price');
+            var profitMargin = selectedProduct.data('profit-margin');
             $('#quantity').val(1);
             
             if(pricePerUnit) {
                 $('#price_per_unit').val(pricePerUnit);
+                $('#ground_price').val(groundPrice);
+                $('#profit_margin').val(profitMargin);
             } else {
                 $('#price_per_unit').val('');
+                $('#ground_price').val('');
+                $('#profit_margin').val('');
             }
         });
     });
