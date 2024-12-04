@@ -22,6 +22,8 @@ return new class extends Migration
             $table->decimal('warehouse_and_handling_cost',10,2)->nullable();
             $table->decimal('other_cost',10,2)->nullable();
             $table->decimal('total_additional_cost',10,2)->nullable();
+            $table->boolean('status')->default(1);
+            // 1 == Processing, 2 == On The Way, 3 == Received
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->timestamps();

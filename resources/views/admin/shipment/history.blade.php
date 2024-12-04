@@ -19,6 +19,7 @@
                                     <th>Total Product</th>
                                     <th>Total Purchase Cost</th>
                                     <th>Total Additional Cost</th>
+                                    <th>Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -30,6 +31,13 @@
                                     <td>{{ $shipment->total_product_quantity }}</td>
                                     <td>{{ $shipment->total_purchase_cost }}</td>
                                     <td>{{ $shipment->total_additional_cost }}</td>
+                                    <td>
+                                        <select class="form-control shipment-status" data-shipment-id="{{ $shipment->id }}">
+                                            <option value="1" {{ $shipment->status == 1 ? 'selected' : '' }}>Processing</option>
+                                            <option value="2" {{ $shipment->status == 2 ? 'selected' : '' }}>On The Way</option>
+                                            <option value="3" {{ $shipment->status == 3 ? 'selected' : '' }}>Received</option>
+                                        </select>
+                                    </td>
                                     <td>
                                         <button class="btn btn-info view-details" 
                                                 data-shipping-id="{{ $shipment->shipping->shipping_id }}"
@@ -180,6 +188,48 @@
         "autoWidth": false,
         "buttons": ["copy", "csv", "excel", "pdf", "print"]
       }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+    });
+</script>
+
+<script>
+    $(document).on('change', '.shipment-status', function() {
+        const shipmentId = $(this).data('shipment-id');
+        const status = $(this).val();
+
+        // console.log(shipmentId, status);
+
+        $.ajax({
+            url: '/admin/shipment/update-status',
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                shipment_id: shipmentId,
+                status: status
+            },
+            success: function(response) {
+                swal({
+                    text: "Status Changed",
+                    icon: "success",
+                    button: {
+                        text: "OK",
+                        className: "swal-button--confirm"
+                    }
+                }).then(() => {
+                    location.reload();
+                });
+            },
+            error: function(xhr, status, error) {
+                console.log(xhr.responseText);
+                swal({
+                    text: "An error occurred while changing the status.",
+                    icon: "error",
+                    button: {
+                        text: "OK",
+                        className: "swal-button--confirm"
+                    }
+                });
+            }
+        });
     });
 </script>
 

@@ -284,6 +284,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::put('/shipment-update/{id}', [ShipmentController::class, 'updateShipment'])->name('admin.shipment.update');
 
+    Route::post('/shipment/update-status', [ShipmentController::class, 'updateStatus'])->name('admin.shipment.updateStatus');
+
     Route::get('/shipment-history', [ShipmentController::class, 'shipmentHistory'])->name('admin.shipment.history');
     
     Route::get('/missing-purchase-product/{id}', [StockController::class, 'missingProduct'])->name('missingProduct');

@@ -194,4 +194,18 @@ class ShipmentController extends Controller
 
         return response()->json(['message' => 'Shipment updated successfully!']);
     }
+
+    public function updateStatus(Request $request)
+    {
+        $request->validate([
+            'shipment_id' => 'required|exists:shipments,id',
+            'status' => 'required',
+        ]);
+
+        $shipment = Shipment::findOrFail($request->shipment_id);
+        $shipment->status = $request->status;
+        $shipment->save();
+        
+        return response()->json(['message' => 'Status updated successfully'], 200);
+    }
 }

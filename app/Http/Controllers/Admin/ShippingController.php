@@ -38,7 +38,7 @@ class ShippingController extends Controller
     {
         $invoice = $request->get('invoice');
 
-        $purchase = Purchase::where('status', 4)->where('invoice', $invoice)->first(['id', 'invoice']);
+        $purchase = Purchase::where('invoice', $invoice)->first(['id', 'invoice']);
 
         if ($purchase) {
             return response()->json($purchase);
