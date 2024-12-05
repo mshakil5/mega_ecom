@@ -106,7 +106,7 @@
                                 @endphp     
                                 @foreach ($warehousestock as $item)
                                 <tr>
-                                    <td>{{ $item->warehouse->name }}</td>
+                                    <td>{{ optional($item->warehouse)->name ?? 'Not Yet Added To Warehouse' }}</td>
                                     <td>{{ number_format($item->totalquantity, 0)  }}</td>
                                 </tr>
                                 @endforeach
