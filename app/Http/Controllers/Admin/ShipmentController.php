@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Shipment;
 use App\Models\ShipmentDetails;
 use App\Models\StockHistory;
+use App\Models\Stock;
 
 class ShipmentController extends Controller
 {
@@ -70,12 +71,31 @@ class ShipmentController extends Controller
                 'profit_margin' => $detail['profit_margin'],
                 'selling_price' => $detail['selling_price'],
             ]);
-
+        
+            $stock = Stock::where('product_id', $detail['product_id'])
+                ->where('size', $detail['size'])
+                ->where('color', $detail['color'])
+                ->first();
+        
+            if ($stock) {
+                $stock->quantity += $detail['quantity'];
+                $stock->updated_by = auth()->id();
+                $stock->save();
+            } else {
+                $stock = Stock::create([
+                    'product_id' => $detail['product_id'],
+                    'quantity' => $detail['quantity'],
+                    'size' => $detail['size'],
+                    'color' => $detail['color'],
+                    'created_by' => auth()->id(),
+                ]);
+            }
+        
             $stockHistory = StockHistory::where('product_id', $detail['product_id'])
                 ->where('size', $detail['size'])
                 ->where('color', $detail['color'])
                 ->first();
-
+        
             if ($stockHistory) {
                 $stockHistory->quantity += $detail['quantity'];
                 $stockHistory->available_qty += $detail['quantity'];
@@ -88,22 +108,24 @@ class ShipmentController extends Controller
                 $stockHistory->updated_by = auth()->user()->id;
                 $stockHistory->save();
             } else {
-                $newStockHistory = new StockHistory();
-                $newStockHistory->date = date('Y-m-d');
-                $newStockHistory->product_id = $detail['product_id'];
-                $newStockHistory->quantity = $detail['quantity'];
-                $newStockHistory->size = $detail['size'];
-                $newStockHistory->color = $detail['color'];
-                $newStockHistory->available_qty = $detail['quantity'];
-                $newStockHistory->ground_price_per_unit = $detail['ground_cost'];
-                $newStockHistory->profit_margin = $detail['profit_margin'];
-                $newStockHistory->purchase_price = $detail['price_per_unit'];
-                $newStockHistory->selling_price = $detail['selling_price'];
-                $newStockHistory->created_by = auth()->user()->id;
-                $newStockHistory->save();
-
+                $stockid = date('mds') . str_pad($detail['product_id'], 4, '0', STR_PAD_LEFT);
+                StockHistory::create([
+                    'stock_id' => $stock->id,
+                    'date' => date('Y-m-d'),
+                    'product_id' => $detail['product_id'],
+                    'quantity' => $detail['quantity'],
+                    'size' => $detail['size'],
+                    'color' => $detail['color'],
+                    'available_qty' => $detail['quantity'],
+                    'ground_price_per_unit' => $detail['ground_cost'],
+                    'profit_margin' => $detail['profit_margin'],
+                    'purchase_price' => $detail['price_per_unit'],
+                    'selling_price' => $detail['selling_price'],
+                    'created_by' => auth()->id(),
+                    'stockid' => $stockid,
+                ]);
             }
-        }
+        }        
 
         return response()->json(['message' => 'Shipment created successfully!', 'shipment_id' => $shipment->id], 201);
     }
@@ -150,7 +172,7 @@ class ShipmentController extends Controller
             
             $oldQuantity = $shipmentDetail->quantity;
             $oldMissingQuantity = $shipmentDetail->missing_quantity;
-        
+
             $shipmentDetail->quantity = $detail['quantity'];
             $shipmentDetail->missing_quantity = $detail['missing_quantity'];
             $shipmentDetail->price_per_unit = $detail['price_per_unit'];
@@ -158,22 +180,38 @@ class ShipmentController extends Controller
             $shipmentDetail->profit_margin = $detail['profit_margin'];
             $shipmentDetail->selling_price = $detail['selling_price'];
             $shipmentDetail->save();
-        
+    
+            $quantityDifference = $detail['quantity'] - $oldQuantity;
+            $missingDifference = $detail['missing_quantity'] - $oldMissingQuantity;
+    
+            $stock = Stock::where('product_id', $shipmentDetail->product_id)
+                ->where('size', $shipmentDetail->size)
+                ->where('color', $shipmentDetail->color)
+                ->first();
+    
+            if ($stock) {
+                $stock->quantity += $quantityDifference;
+                $stock->updated_by = auth()->id();
+                $stock->save();
+            } else {
+                $stock = Stock::create([
+                    'product_id' => $shipmentDetail->product_id,
+                    'quantity' => $detail['quantity'],
+                    'size' => $shipmentDetail->size,
+                    'color' => $shipmentDetail->color,
+                    'created_by' => auth()->id(),
+                ]);
+            }
+    
             $stockHistory = StockHistory::where('product_id', $shipmentDetail->product_id)
                 ->where('size', $shipmentDetail->size)
                 ->where('color', $shipmentDetail->color)
                 ->first();
-        
+    
             if ($stockHistory) {
-                $quantityDifference = $detail['quantity'] - $oldQuantity;
-                $missingDifference = $detail['missing_quantity'] - $oldMissingQuantity;
-        
                 $stockHistory->quantity += $quantityDifference;
-
                 $stockHistory->available_qty += $quantityDifference;
-
                 $stockHistory->missing_product_quantity += $missingDifference;
-
                 $stockHistory->purchase_price = $detail['price_per_unit'];
                 $stockHistory->ground_price_per_unit = $detail['ground_cost'];
                 $stockHistory->profit_margin = $detail['profit_margin'];
@@ -181,28 +219,62 @@ class ShipmentController extends Controller
                 $stockHistory->updated_by = auth()->user()->id;
                 $stockHistory->save();
             } else {
-                $newStockHistory = new StockHistory();
-                $newStockHistory->date = date('Y-m-d');
-                $newStockHistory->product_id = $shipmentDetail->product_id;
-                $newStockHistory->quantity = $detail['quantity'];
-                $newStockHistory->size = $shipmentDetail->size;
-                $newStockHistory->color = $shipmentDetail->color;
-                $newStockHistory->available_qty = $detail['quantity'];
-                $newStockHistory->ground_price_per_unit = $detail['ground_cost'];
-                $newStockHistory->profit_margin = $detail['profit_margin'];
-                $newStockHistory->purchase_price = $detail['price_per_unit'];
-                $newStockHistory->selling_price = $detail['selling_price'];
-                $newStockHistory->created_by = auth()->user()->id;
-                $newStockHistory->save();
+                $stockHistoryId = date('mds') . str_pad($shipmentDetail->product_id, 4, '0', STR_PAD_LEFT);
+    
+                StockHistory::create([
+                    'stock_id' => $stock->id,
+                    'date' => date('Y-m-d'),
+                    'product_id' => $shipmentDetail->product_id,
+                    'quantity' => $detail['quantity'],
+                    'size' => $shipmentDetail->size,
+                    'color' => $shipmentDetail->color,
+                    'available_qty' => $detail['quantity'],
+                    'ground_price_per_unit' => $detail['ground_cost'],
+                    'profit_margin' => $detail['profit_margin'],
+                    'purchase_price' => $detail['price_per_unit'],
+                    'selling_price' => $detail['selling_price'],
+                    'created_by' => auth()->id(),
+                    'stockid' => $stockHistoryId,
+                ]);
             }
-        }                
-
-        if (!empty($request->removed_ids)) {
-            ShipmentDetails::whereIn('id', $request->removed_ids)->delete();
         }
-
+    
+        if (!empty($request->removed_ids)) {
+            $removedDetails = ShipmentDetails::whereIn('id', $request->removed_ids)->get();
+            foreach ($removedDetails as $removedDetail) {
+                $stock = Stock::where('product_id', $removedDetail->product_id)
+                    ->where('size', $removedDetail->size)
+                    ->where('color', $removedDetail->color)
+                    ->first();
+        
+                if ($stock) {
+                    $stock->quantity -= $removedDetail->quantity;
+                    $stock->updated_by = auth()->id();
+                    $stock->save();
+                }
+        
+                $stockHistory = StockHistory::where('product_id', $removedDetail->product_id)
+                    ->where('size', $removedDetail->size)
+                    ->where('color', $removedDetail->color)
+                    ->first();
+        
+                if ($stockHistory) {
+                    $stockHistory->quantity -= $removedDetail->quantity;
+                    $stockHistory->available_qty -= $removedDetail->quantity;
+        
+                    $stockHistory->quantity = max($stockHistory->quantity, 0);
+                    $stockHistory->available_qty = max($stockHistory->available_qty, 0);
+        
+                    $stockHistory->updated_by = auth()->id();
+                    $stockHistory->save();
+                }
+        
+                $removedDetail->delete();
+            }
+        }        
+    
         return response()->json(['message' => 'Shipment updated successfully!']);
-    }
+    }    
 
     public function updateStatus(Request $request)
     {

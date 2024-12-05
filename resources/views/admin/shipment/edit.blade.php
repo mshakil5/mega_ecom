@@ -155,6 +155,18 @@
 @section('script')
 <script>
     $(document).ready(function() {
+
+        let removedShipmentDetailIds = [];
+
+        $('.remove-row').on('click', function() {
+            const shipmentDetailId = $(this).closest('tr').find('.id').val();
+            if (shipmentDetailId) {
+                removedShipmentDetailIds.push(shipmentDetailId);
+            }
+            $(this).closest('tr').remove();
+            updateCalculations();
+        });
+
         $('#calculateSalesPriceBtn').on('click', function(event) {
             event.preventDefault();
 
@@ -162,7 +174,6 @@
             let totalQuantity = $('#totalQuantity').text();
             let totalMissingQuantity = $('#totalMissingQuantity').text();
             let shipmentDetails = [];
-            let removedShipmentDetailIds = [];
 
             $('#purchaseData tr').each(function() {
                 let id = $(this).find('.id').val();
@@ -330,16 +341,6 @@
 
         updateCalculations();
 
-        let removedShipmentDetailIds = [];
-
-        $('.remove-row').on('click', function() {
-            const shipmentDetailId = $(this).closest('tr').find('.id').val();
-            if (shipmentDetailId) {
-                removedShipmentDetailIds.push(shipmentDetailId);
-            }
-            $(this).closest('tr').remove();
-            updateCalculations();
-        });
     });
 </script>
 
