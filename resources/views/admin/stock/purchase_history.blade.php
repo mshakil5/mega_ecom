@@ -83,13 +83,13 @@
                                         </a>
                                         @endif
                                         @if ($totalRemainingQuantity > 1 && $purchase->status == 4)
-                                            <!-- <a href="{{ route('transferToWarehouse', $purchase->id) }}" class="btn btn-sm btn-success">
+                                            <a href="{{ route('transferToWarehouse', $purchase->id) }}" class="btn btn-sm btn-success">
                                                 <i class="fas fa-arrow-right"></i>
                                             </a>
                                             
                                             <a href="{{ route('missingProduct', $purchase->id) }}" class="btn btn-sm btn-danger">
                                                 <i class="fas fa-arrow-right"></i>
-                                            </a> -->
+                                            </a>
                                          @endif   
                                     </td>
                                 </tr>

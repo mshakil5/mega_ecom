@@ -17,9 +17,10 @@
                                     <th>Sl</th>
                                     <th>Shipping ID</th>
                                     <th>Total Product</th>
+                                    <th>Total Missing Product</th>
                                     <th>Total Purchase Cost</th>
                                     <th>Total Additional Cost</th>
-                                    <th>Status</th>
+                                    <!-- <th>Status</th> -->
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -29,28 +30,30 @@
                                     <td>{{ $key + 1 }}</td>
                                     <td>{{ $shipment->shipping->shipping_id }}</td>
                                     <td>{{ $shipment->total_product_quantity }}</td>
+                                    <td>{{ $shipment->total_missing_quantity }}</td>
                                     <td>{{ $shipment->total_purchase_cost }}</td>
                                     <td>{{ $shipment->total_additional_cost }}</td>
-                                    <td>
+                                    <!-- <td>
                                         <select class="form-control shipment-status" data-shipment-id="{{ $shipment->id }}">
                                             <option value="1" {{ $shipment->status == 1 ? 'selected' : '' }}>Processing</option>
                                             <option value="2" {{ $shipment->status == 2 ? 'selected' : '' }}>On The Way</option>
                                             <option value="3" {{ $shipment->status == 3 ? 'selected' : '' }}>Received</option>
                                         </select>
-                                    </td>
+                                    </td> -->
                                     <td>
-                                        <button class="btn btn-info view-details" 
+                                        <button class="btn btn-sm btn-info view-details" 
                                                 data-shipping-id="{{ $shipment->shipping->shipping_id }}"
                                                 data-shipping-date="{{ \Carbon\Carbon::parse($shipment->shipping->shipping_date)->format('d-m-Y') }}"
                                                 data-shipping-name="{{ $shipment->shipping->shipping_name }}"
                                                 data-total-quantity="{{ $shipment->total_product_quantity }}"
+                                                data-total-missing-quantity="{{ $shipment->total_missing_quantity }}"
                                                 data-total-purchase="{{ $shipment->total_purchase_cost }}"
                                                 data-total-additional="{{ $shipment->total_additional_cost }}"
                                                 data-shipment-details="{{ json_encode($shipment->shipmentDetails) }}">
                                             <i class="fas fa-eye"></i>
                                         </button>
 
-                                        <a href="{{ route('admin.shipments.edit', $shipment->id) }}" class="btn btn-primary">
+                                        <a href="{{ route('admin.shipments.edit', $shipment->id) }}" class="btn btn-sm btn-primary">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                     </td>
@@ -90,6 +93,9 @@
                                         <strong>Total Product Quantity:</strong> <span id="totalQuantity">0</span>
                                     </div>
                                     <div>
+                                        <strong>Total Missing Product Quantity:</strong> <span id="totalMissingQuantity">0</span>
+                                    </div>
+                                    <div>
                                         <strong>Total Purchase Cost:</strong> <span id="totalPurchase">0</span>
                                     </div>
                                     <div>
@@ -105,7 +111,8 @@
                                         <th>Product</th>
                                         <th>Size</th>
                                         <th>Color</th>
-                                        <th>Quantity</th>
+                                        <th>Missing Quantity</th>
+                                        <th>Net Quantity</th>
                                         <th>Purchase Price Per Unit</th>
                                         <th>Ground Price</th>
                                         <th>Profit Margin</th>
@@ -132,6 +139,7 @@
                 const shippingDate = this.getAttribute('data-shipping-date');
                 const shippingName = this.getAttribute('data-shipping-name');
                 const totalQuantity = this.getAttribute('data-total-quantity');
+                const totalMissingQuantity = this.getAttribute('data-total-missing-quantity');
                 const totalPurchase = this.getAttribute('data-total-purchase');
                 const totalAdditional = this.getAttribute('data-total-additional');
                 const shipmentDetails = JSON.parse(this.getAttribute('data-shipment-details'));
@@ -140,11 +148,16 @@
                 document.getElementById('shippingDate').textContent = shippingDate;
                 document.getElementById('shippingName').textContent = shippingName;
                 document.getElementById('totalQuantity').textContent = totalQuantity;
+                document.getElementById('totalMissingQuantity').textContent = totalMissingQuantity;
                 document.getElementById('totalPurchase').textContent = totalPurchase;
                 document.getElementById('totalAdditional').textContent = totalAdditional;
 
                 const purchaseDataBody = document.getElementById('purchaseData');
                 purchaseDataBody.innerHTML = '';
+
+                if ($.fn.DataTable.isDataTable('#example2')) {
+                    $('#example2').DataTable().clear().destroy();
+                }
 
                 shipmentDetails.forEach(detail => {
                     const row = document.createElement('tr');
@@ -153,6 +166,7 @@
                         <td>${detail.product && detail.product.product_code ? `${detail.product.product_code} - ${detail.product.name}` : (detail.product ? detail.product.name : '')}</td>
                         <td>${detail.size || '-'}</td>
                         <td>${detail.color || '-'}</td>
+                        <td>${detail.missing_quantity}</td>
                         <td>${detail.quantity}</td>
                         <td>${detail.price_per_unit}</td>
                         <td>${detail.ground_price_per_unit}</td>
@@ -162,13 +176,12 @@
                     purchaseDataBody.appendChild(row);
                 });
 
-                $('#example2').DataTable().destroy();
-                    $('#example2').DataTable({
-                        "responsive": true,
-                        "lengthChange": false,
-                        "autoWidth": false,
-                        "buttons": ["copy", "csv", "excel", "pdf", "print"]
-                    }).buttons().container().appendTo('#example2_wrapper .col-md-6:eq(0)');
+                $('#example2').DataTable({
+                    "responsive": true,
+                    "lengthChange": false,
+                    "autoWidth": false,
+                    "buttons": ["copy", "csv", "excel", "pdf", "print"]
+                }).buttons().container().appendTo('#example2_wrapper .col-md-6:eq(0)');
 
                 $('#shipmentModal').modal('show');
             });

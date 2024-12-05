@@ -45,6 +45,7 @@ class ShipmentController extends Controller
         $shipment = Shipment::create([
             'shipping_id' => $request->id,
             'total_product_quantity' => $request->total_quantity,
+            'total_missing_quantity' => $request->total_missing_quantity,
             'total_purchase_cost' => $request->direct_cost,
             'cnf_cost' => $request->cnf_cost,
             'import_duties_tax' => $request->import_taxes,
@@ -63,6 +64,7 @@ class ShipmentController extends Controller
                 'size' => $detail['size'],
                 'color' => $detail['color'],
                 'quantity' => $detail['quantity'],
+                'missing_quantity' => $detail['missing_quantity'],
                 'price_per_unit' => $detail['price_per_unit'],
                 'ground_price_per_unit' => $detail['ground_cost'],
                 'profit_margin' => $detail['profit_margin'],
@@ -74,34 +76,33 @@ class ShipmentController extends Controller
                 ->where('color', $detail['color'])
                 ->first();
 
-                if ($stockHistory) {
-                    $stockHistory->quantity += $detail['quantity'];
-                    $stockHistory->available_qty += $detail['quantity'];
-                    $stockHistory->quantity += $detail['quantity'];
-                    $stockHistory->purchase_price = $detail['price_per_unit'];
-                    $stockHistory->ground_price_per_unit = $detail['ground_cost'];
-                    $stockHistory->profit_margin = $detail['profit_margin'];
-                    $stockHistory->selling_price = $detail['selling_price'];
-                    $stockHistory->updated_by = auth()->user()->id;
-                    $stockHistory->save();
-                } else {
-                    $newStockHistory = new StockHistory();
-                    $newStockHistory->date = date('Y-m-d');
-                    $newStockHistory->product_id = $detail['product_id'];
-                    $newStockHistory->quantity = $detail['quantity'];
-                    $newStockHistory->size = $detail['size'];
-                    $newStockHistory->color = $detail['color'];
-                    $newStockHistory->available_qty = $detail['quantity'];
-                    $newStockHistory->ground_price_per_unit = $detail['ground_cost'];
-                    $newStockHistory->profit_margin = $detail['profit_margin'];
-                    $newStockHistory->purchase_price = $detail['price_per_unit'];
-                    $newStockHistory->selling_price = $detail['selling_price'];
-                    $newStockHistory->created_by = auth()->user()->id;
-                    $newStockHistory->save();
+            if ($stockHistory) {
+                $stockHistory->quantity += $detail['quantity'];
+                $stockHistory->available_qty += $detail['quantity'];
+                $stockHistory->missing_product_quantity += $detail['missing_quantity'];
+                $stockHistory->quantity += $detail['quantity'];
+                $stockHistory->purchase_price = $detail['price_per_unit'];
+                $stockHistory->ground_price_per_unit = $detail['ground_cost'];
+                $stockHistory->profit_margin = $detail['profit_margin'];
+                $stockHistory->selling_price = $detail['selling_price'];
+                $stockHistory->updated_by = auth()->user()->id;
+                $stockHistory->save();
+            } else {
+                $newStockHistory = new StockHistory();
+                $newStockHistory->date = date('Y-m-d');
+                $newStockHistory->product_id = $detail['product_id'];
+                $newStockHistory->quantity = $detail['quantity'];
+                $newStockHistory->size = $detail['size'];
+                $newStockHistory->color = $detail['color'];
+                $newStockHistory->available_qty = $detail['quantity'];
+                $newStockHistory->ground_price_per_unit = $detail['ground_cost'];
+                $newStockHistory->profit_margin = $detail['profit_margin'];
+                $newStockHistory->purchase_price = $detail['price_per_unit'];
+                $newStockHistory->selling_price = $detail['selling_price'];
+                $newStockHistory->created_by = auth()->user()->id;
+                $newStockHistory->save();
 
-                }
-                
-
+            }
         }
 
         return response()->json(['message' => 'Shipment created successfully!', 'shipment_id' => $shipment->id], 201);
@@ -135,6 +136,7 @@ class ShipmentController extends Controller
         $shipment = Shipment::findOrFail($id);
 
         $shipment->total_product_quantity = $request->total_quantity;
+        $shipment->total_missing_quantity = $request->total_missing_quantity;
         $shipment->total_purchase_cost = $request->total_purchase_cost;
         $shipment->cnf_cost = $request->cnf_cost;
         $shipment->import_duties_tax = $request->import_taxes;
@@ -145,10 +147,12 @@ class ShipmentController extends Controller
 
         foreach ($request->shipment_details as $detail) {
             $shipmentDetail = ShipmentDetails::findOrFail($detail['id']);
-        
-            // Update ShipmentDetails
+            
             $oldQuantity = $shipmentDetail->quantity;
+            $oldMissingQuantity = $shipmentDetail->missing_quantity;
+        
             $shipmentDetail->quantity = $detail['quantity'];
+            $shipmentDetail->missing_quantity = $detail['missing_quantity'];
             $shipmentDetail->price_per_unit = $detail['price_per_unit'];
             $shipmentDetail->ground_price_per_unit = $detail['ground_cost'];
             $shipmentDetail->profit_margin = $detail['profit_margin'];
@@ -162,9 +166,14 @@ class ShipmentController extends Controller
         
             if ($stockHistory) {
                 $quantityDifference = $detail['quantity'] - $oldQuantity;
-                $stockHistory->quantity += $quantityDifference;
-                $stockHistory->available_qty += $quantityDifference;
+                $missingDifference = $detail['missing_quantity'] - $oldMissingQuantity;
         
+                $stockHistory->quantity += $quantityDifference;
+
+                $stockHistory->available_qty += $quantityDifference;
+
+                $stockHistory->missing_product_quantity += $missingDifference;
+
                 $stockHistory->purchase_price = $detail['price_per_unit'];
                 $stockHistory->ground_price_per_unit = $detail['ground_cost'];
                 $stockHistory->profit_margin = $detail['profit_margin'];
@@ -186,7 +195,7 @@ class ShipmentController extends Controller
                 $newStockHistory->created_by = auth()->user()->id;
                 $newStockHistory->save();
             }
-        }        
+        }                
 
         if (!empty($request->removed_ids)) {
             ShipmentDetails::whereIn('id', $request->removed_ids)->delete();

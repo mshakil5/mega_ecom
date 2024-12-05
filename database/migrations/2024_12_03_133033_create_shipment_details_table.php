@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('size')->nullable();
             $table->string('color')->nullable();
             $table->string('quantity')->nullable();
+            $table->string('missing_quantity')->nullable();
             $table->decimal('price_per_unit',10,2)->nullable();
             $table->decimal('ground_price_per_unit',10,2)->nullable();
             $table->decimal('profit_margin',10,2)->nullable();

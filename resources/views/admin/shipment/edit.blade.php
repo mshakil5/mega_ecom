@@ -24,8 +24,9 @@
                                     <strong>Shipping Date:</strong> <span id="shippingDate">{{ \Carbon\Carbon::parse($shipment->shipping->shipping_date)->format('d-m-Y') }}</span><br>
                                     <strong>Shipping Name:</strong> <span id="shippingName">{{ $shipment->shipping->shipping_name }}</span>
                                 </div>
-                                <div>
-                                    <strong>Total Product Quantity:</strong> <span id="totalQuantity">{{ $shipment->total_product_quantity }}</span>
+                                <div> 
+                                    <strong>Total Product Quantity:</strong> <span id="totalQuantity">{{ $shipment->total_product_quantity }}</span> <br>
+                                    <strong>Total Missing Product Quantity:</strong> <span id="totalMissingQuantity">{{ $shipment->total_missing_quantity }}</span>
                                 </div>
                             </div>
 
@@ -36,7 +37,8 @@
                                         <th>Product</th>
                                         <th>Size</th>
                                         <th>Color</th>
-                                        <th>Quantity</th>
+                                        <th>Missing Quantity</th>
+                                        <th>Net Quantity</th>
                                         <th>Purchase Price Per Unit</th>
                                         <th>Ground Price</th>
                                         <th>Profit Margin</th>
@@ -60,7 +62,11 @@
                                         <td>{{ $detail->color ?? '' }}</td>
 
                                         <td>
-                                            <input type="number" value="{{ $detail->quantity }}" max="{{ $detail->product_quantity }}" min="1" class="form-control product_quantity" />
+                                            <input type="number" value="{{ $detail->missing_quantity }}" max="{{ $detail->quantity }}" min="0" class="form-control missing_quantity" />
+                                        </td>
+                                        <td>
+                                            <input type="number" value="{{ $detail->quantity }}" max="{{ $detail->quantity }}" min="1" class="form-control product_quantity" readonly/>
+                                            <input type="hidden" value="{{ $detail->quantity + $detail->missing_quantity }}" max="{{ $detail->quantity + $detail->missing_quantity }}" class="max-quantity"/>
                                         </td>
                                         <td class="purchase_price">{{ number_format($detail->price_per_unit, 2) }}</td>
                                         <td class="ground_cost">{{ number_format($detail->ground_cost, 2) }}</td>
@@ -154,6 +160,7 @@
 
             let idValue = $('#id').val();
             let totalQuantity = $('#totalQuantity').text();
+            let totalMissingQuantity = $('#totalMissingQuantity').text();
             let shipmentDetails = [];
             let removedShipmentDetailIds = [];
 
@@ -164,6 +171,7 @@
                 let size = $(this).find('td:nth-child(3)').text();
                 let color = $(this).find('td:nth-child(4)').text();
                 let quantity = $(this).find('.product_quantity').val();
+                let missingQuantity = $(this).find('.missing_quantity').val();
                 let pricePerUnit = $(this).find('.purchase_price').text().replace(/,/g, '');
                 let groundCost = $(this).find('.ground_cost').text().replace(/,/g, '');
                 let profitMargin = $(this).find('.profit_margin').val().replace(/,/g, '');
@@ -177,6 +185,7 @@
                         size: size,
                         color: color,
                         quantity: quantity,
+                        missing_quantity: missingQuantity,
                         price_per_unit: pricePerUnit,
                         ground_cost: groundCost,
                         profit_margin: profitMargin,
@@ -198,6 +207,7 @@
             let dataToSend = {
                 id: idValue,
                 total_quantity: totalQuantity,
+                total_missing_quantity: totalMissingQuantity,
                 total_purchase_cost: $('#direct_cost').val().replace(/,/g, ''),
                 cnf_cost: $('#cnf_cost').val().replace(/,/g, ''),
                 import_taxes: $('#import_taxes').val().replace(/,/g, ''),
@@ -210,7 +220,7 @@
 
             let _token = $('meta[name="csrf-token"]').attr('content');
 
-            console.log(dataToSend);
+            // console.log(dataToSend);
 
             $.ajax({
                 url: '/admin/shipment-update/' + idValue,
@@ -220,7 +230,7 @@
                 },
                 data: dataToSend,
                 success: function(response) {
-                    console.log(response);
+                    // console.log(response);
                     $(".ermsg").html(`
                         <div class='alert alert-success'>
                             <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
@@ -248,19 +258,37 @@
             const tableRows = $('#purchaseData tr');
             let totalPurchaseCost = 0;
             let totalQuantity = 0;
+            let totalMissingQuantity = 0;
 
-            // Calculate total purchase cost
             tableRows.each(function() {
                 const purchasePrice = parseFloat($(this).find('.purchase_price').text().replace(/,/g, ''));
+                let missingQuantity = parseInt($(this).find('.missing_quantity').val()) || 0;
+                let maxQuantity = parseInt($(this).find('.max-quantity').val()) || 0;
+
                 const quantity = parseInt($(this).find('.product_quantity').val());
+                if(missingQuantity >= quantity){
+                    missingQuantity = quantity;
+                    $(this).find('.missing_quantity').val(missingQuantity);
+                }
+
+                let updatedQuantity = maxQuantity - missingQuantity;
+
+                if (updatedQuantity < 1) {
+                    updatedQuantity = 1;
+                }
+
+                $(this).find('.product_quantity').val(updatedQuantity);
+
                 const productTotal = purchasePrice * quantity;
 
                 totalPurchaseCost += productTotal;
                 totalQuantity += quantity;
+                totalMissingQuantity += missingQuantity;
                 $(this).find('.ground_cost').text(productTotal.toFixed(2));
             });
 
             $('#totalQuantity').text(totalQuantity);
+            $('#totalMissingQuantity').text(totalMissingQuantity);
 
             // Shared costs
             const cnfCost = parseFloat($('#cnf_cost').val()) || 0;
@@ -296,7 +324,7 @@
             });
         }
 
-        $(document).on('input', '.product_quantity, .profit_margin, #cnf_cost, #import_taxes, #warehouse_cost, #other_cost', function() {
+        $(document).on('input', '.product_quantity, .missing_quantity, .profit_margin, #cnf_cost, #import_taxes, #warehouse_cost, #other_cost', function() {
             updateCalculations();
         });
 

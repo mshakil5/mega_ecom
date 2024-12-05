@@ -151,16 +151,17 @@
                         <div class="row mt-4">
                             <div class="col-md-12">
 
-                                <div class="mb-4 d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong>Shipping ID:</strong> <span id="shippingId">-</span><br>
-                                        <strong>Shipping Date:</strong> <span id="shippingDate">-</span><br>
-                                        <strong>Shipping Name:</strong> <span id="shippingName">-</span>
-                                    </div>
-                                    <div>
-                                        <strong>Total Product Quantity:</strong> <span id="totalQuantity">0</span>
-                                    </div>
+                            <div class="mb-4 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>Shipping ID:</strong> <span id="shippingId">-</span><br>
+                                    <strong>Shipping Date:</strong> <span id="shippingDate">-</span><br>
+                                    <strong>Shipping Name:</strong> <span id="shippingName">-</span>
                                 </div>
+                                <div>
+                                    <strong>Total Product Quantity:</strong> <span id="totalQuantity">0</span><br>
+                                    <strong>Total Missing Product Quantity:</strong> <span id="totalMissingQuantity">0</span>
+                                </div>
+                            </div>
 
                                 <table class="table table-bordered">
                                     <thead>
@@ -169,7 +170,8 @@
                                             <th>Product</th>
                                             <th>Size</th>
                                             <th>Color</th>
-                                            <th>Quantity</th>
+                                            <th>Missing Quantity</th>
+                                            <th>Net Quantity</th>
                                             <th>Purchase Price Per Unit</th>
                                             <th>Ground Price</th>
                                             <th>Profit Margin</th>
@@ -317,6 +319,7 @@
         $('#calculateSalesPriceBtn').on('click', function() {
             let idValue = $('#id').val();
             let totalQuantity = $('#totalQuantity').text();
+            let totalMissingQuantity = $('#totalMissingQuantity').text();
             let direct_cost = $('#direct_cost').val();
             let cnf_cost = $('#cnf_cost').val();
             let import_taxes = $('#import_taxes').val();
@@ -333,6 +336,7 @@
                 let size = $(this).find('td:nth-child(3)').text();
                 let color = $(this).find('td:nth-child(4)').text();
                 let quantity = $(this).find('.product_quantity').val();
+                let missingQuantity = $(this).find('.missing_quantity').val();
                 let pricePerUnit = $(this).find('.purchase_price').text();
                 let groundCost = $(this).find('.ground_cost').text();
                 let profitMargin = $(this).find('.profit_margin').val();
@@ -345,6 +349,7 @@
                         size: size,
                         color: color,
                         quantity: quantity,
+                        missing_quantity: missingQuantity,
                         price_per_unit: pricePerUnit,
                         ground_cost: groundCost,
                         profit_margin: profitMargin,
@@ -367,6 +372,7 @@
             let dataToSend = {
                 id: idValue,
                 total_quantity: totalQuantity,
+                total_missing_quantity: totalMissingQuantity,
                 direct_cost: direct_cost,
                 cnf_cost: cnf_cost,
                 import_taxes: import_taxes,
@@ -375,6 +381,7 @@
                 total_additional_cost: total_additional_cost,
                 shipment_details: shipmentDetails
             };
+            // console.log(dataToSend);
 
             _token = $('meta[name="csrf-token"]').attr('content');
 
@@ -386,7 +393,7 @@
                 },
                 data: dataToSend,
                 success: function(response) {
-                    console.log(response);
+                    // console.log(response);
 
                     $(".ermsg").html(`
                         <div class='alert alert-success'>
@@ -518,7 +525,7 @@
         if (shipmentId) {
 
             formData.id = shipmentId;
-            console.log(formData);
+
 
             $.ajax({
                 url: '/admin/update-shipment/' + shipmentId,
@@ -648,7 +655,7 @@
                 shipping_id: shippingId
             },
             success: function(response) {
-                console.log(response);
+                // console.log(response);
                 if (response.success) {
                     const tableBody = $('#purchaseData');
                     tableBody.empty();
@@ -676,6 +683,9 @@
                                 <td>${productName}</td>
                                 <td>${productSize}</td>
                                 <td>${productColor}</td>
+                                <td>
+                                    <input type="number" value="0" max="${productQuantity}" min="0" class="form-control missing_quantity" />
+                                </td>
                                 <td>
                                     <input type="number" value="${productQuantity}" max="${productQuantity}" min="1" class="form-control product_quantity" />
                                 </td>
@@ -711,19 +721,36 @@
         const tableRows = $('#purchaseData tr');
         let totalPurchaseCost = 0;
         let totalQuantity = 0;
+        let totalMissingQuantity = 0;
 
-        // Calculate total purchase cost
-        tableRows.each(function() {
+        tableRows.each(function () {
             const purchasePrice = parseFloat($(this).find('.purchase_price').text());
-            const quantity = parseInt($(this).find('.product_quantity').val());
-            const productTotal = purchasePrice * quantity;
+            let missingQuantity = parseInt($(this).find('.missing_quantity').val()) || 0;
+            const maxQuantity = parseInt($(this).find('.product_quantity').attr('max'));
+
+            if (missingQuantity >= maxQuantity) {
+                missingQuantity = maxQuantity - 1;
+                $(this).find('.missing_quantity').val(missingQuantity);
+            }
+
+            let updatedQuantity = maxQuantity - missingQuantity;
+
+            if (updatedQuantity < 1) {
+                updatedQuantity = 1;
+            }
+
+            $(this).find('.product_quantity').val(updatedQuantity);
+
+            const productTotal = purchasePrice * updatedQuantity;
 
             totalPurchaseCost += productTotal;
-            totalQuantity += quantity;
+            totalQuantity += updatedQuantity;
+            totalMissingQuantity += missingQuantity;
             $(this).find('.ground_cost').text(productTotal.toFixed(2));
         });
 
         $('#totalQuantity').text(totalQuantity);
+        $('#totalMissingQuantity').text(totalMissingQuantity);
 
         // Shared costs
         const cnfCost = parseFloat($('#cnf_cost').val()) || 0;
@@ -759,7 +786,7 @@
         });
     }
 
-    $(document).on('input', '.product_quantity, .profit_margin, #cnf_cost, #import_taxes, #warehouse_cost, #other_cost', function() {
+    $(document).on('input', '.product_quantity, .missing_quantity, .profit_margin, #cnf_cost, #import_taxes, #warehouse_cost, #other_cost', function() {
         updateCalculations();
     });
 
