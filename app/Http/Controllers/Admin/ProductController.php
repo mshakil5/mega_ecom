@@ -44,79 +44,6 @@ class ProductController extends Controller
         return view('admin.product.create', compact('brands', 'product_models', 'groups', 'units', 'categories', 'subCategories', 'sizes', 'colors'));
     }
 
-    public function productStore(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'short_description' => 'nullable|string',
-            'description' => 'required|string',
-            'price' => 'required|numeric',
-            'category_id' => 'required',
-            // 'sub_category_id' => 'required',
-            // 'brand_id' => 'required',
-            // 'product_model_id' => 'required',
-            // 'group_id' => 'required',
-            // 'unit_id' => 'required',
-            // 'sku' => 'required|integer',
-            'is_featured' => 'nullable',
-            'is_recent' => 'nullable',
-            'feature_image' => 'nullable|image|max:10240',
-            'images.*' => 'nullable|image|max:10240'
-        ]);
-
-         if ($validator->fails()) {
-            $errorMessage = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>" . implode(", ", $validator->errors()->all()) . "</b></div>";
-            return response()->json(['status' => 400, 'message' => $errorMessage]);
-        }
-
-        $product = new Product;
-        $product->name = $request->input('name');
-        $product->slug = Str::slug($request->input('name'));
-        $product->short_description = $request->input('short_description', null);
-        $product->description = $request->input('description');
-        $product->price = $request->input('price');
-        $product->category_id = $request->input('category_id');
-        $product->sub_category_id = $request->input('sub_category_id');
-        $product->brand_id = $request->input('brand_id');
-        $product->product_model_id = $request->input('product_model_id');
-        $product->group_id = $request->input('group_id');
-        $product->unit_id = $request->input('unit_id');
-        $product->sku = $request->input('sku');
-        $product->is_featured = $request->input('is_featured', false);
-        $product->is_recent = $request->input('is_recent', false);
-        $product->created_by = auth()->user()->id;
-
-        if ($request->hasFile('feature_image')) {
-            $uploadedFile = $request->file('feature_image');
-            $randomName = mt_rand(10000000, 99999999). '.'. $uploadedFile->getClientOriginalExtension();
-            $destinationPath = public_path('images/products/');
-            $path = $uploadedFile->move($destinationPath, $randomName); 
-            $product->feature_image = $randomName;
-        }
-
-        $product->save();
-
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                $imageName = mt_rand(10000000, 99999999).'.'.$image->getClientOriginalExtension();
-                $destinationPath = public_path('images/products/');
-                $imagePath = $destinationPath.$imageName;
-                
-                $image->move($destinationPath, $imageName);
-
-                $productImage = new ProductColor();
-                $productImage->product_id = $product->id;
-                $productImage->image = $imageName;
-                $productImage->created_by = auth()->user()->id;
-                $productImage->save();
-            }
-        }
-
-        $message ="<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Prodcut Created Successfully.</b></div>";
-
-        return response()->json(['status'=> 300,'message'=>$message]);
-    }
-
     public function productEdit($id)
     {
         $product = Product::with('colors', 'sizes')->findOrFail($id);
@@ -130,111 +57,6 @@ class ProductController extends Controller
         $colors = Color::select('id', 'color', 'color_code')->orderby('id','DESC')->get();
     
         return view('admin.product.edit', compact('product', 'brands', 'product_models', 'groups', 'units', 'categories', 'subCategories', 'sizes', 'colors'));
-    }
-
-    public function productUpdate(Request $request)
-    {
-       $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'short_description' => 'nullable|string',
-            'description' => 'required|string',
-            'price' => 'required|numeric',
-            'category_id' => 'required',
-            // 'sub_category_id' => 'required',
-            // 'brand_id' => 'required',
-            // 'product_model_id' => 'required',
-            // 'group_id' => 'required',
-            // 'unit_id' => 'required',
-            // 'sku' => 'required|integer',
-            'is_featured' => 'nullable',
-            'is_recent' => 'nullable',
-            'feature_image' => 'nullable|image|max:10240',
-            // 'images.*' => 'nullable|image|max:10240'
-        ]);
-
-         if ($validator->fails()) {
-            $errorMessage = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>" . implode(", ", $validator->errors()->all()) . "</b></div>";
-            return response()->json(['status' => 400, 'message' => $errorMessage]);
-        }
-
-        $product = Product::find($request->codeid);
-
-        $product->name = $request->input('name');
-        $product->slug = Str::slug($request->input('name'));
-        $product->short_description = $request->input('short_description', null);
-        $product->description = $request->input('description');
-        $product->price = $request->input('price');
-        $product->category_id = $request->input('category_id');
-        $product->sub_category_id = $request->input('sub_category_id');
-        $product->brand_id = $request->input('brand_id');
-        $product->product_model_id = $request->input('product_model_id');
-        $product->group_id = $request->input('group_id');
-        $product->unit_id = $request->input('unit_id');
-        $product->sku = $request->input('sku');
-        $product->is_featured = $request->input('is_featured', false);
-        $product->is_recent = $request->input('is_recent', false);
-        $product->updated_by = auth()->user()->id;
-        $product->save();
-
-        if ($request->hasFile('feature_image')) {
-            $uploadedFile = $request->file('feature_image');
-
-            if ($product->feature_image && file_exists(public_path('images/products/'. $product->feature_image))) {
-                unlink(public_path('images/products/'. $product->feature_image));
-            }
-
-            $randomName = mt_rand(10000000, 99999999). '.'. $uploadedFile->getClientOriginalExtension();
-            $destinationPath = public_path('images/products/');
-            $path = $uploadedFile->move($destinationPath, $randomName); 
-            $product->feature_image = $randomName;
-            $product->save();
-        }
-
-        $currentProductImages = ProductImage::where('product_id', $product->id)->get();
-        $existingImagesArray = [];
-
-        foreach ($currentProductImages as $existingImage) {
-            $existingImagesArray[] = $existingImage->image;
-        }
-
-        $imagesToDelete = [];
-
-        if ($request->hasFile('images')) {
-            $newImages = $request->file('images');
-
-            foreach ($newImages as $newImage) {
-                $uniqueImageName = mt_rand(10000000, 99999999). '.'. $newImage->getClientOriginalExtension();
-                $destinationPath = public_path('images/products/');
-                $newImagePath = $destinationPath. $uniqueImageName;
-                $newImage->move($destinationPath, $uniqueImageName);
-
-                $productImage = new ProductImage;
-                $productImage->product_id = $product->id;
-                $productImage->image = $uniqueImageName;
-                $productImage->created_by = auth()->user()->id;
-                $productImage->save();
-            }
-        }
-
-        foreach ($existingImagesArray as $existingImageName) {
-            if (!in_array($existingImageName, $request->input('images', []))) {
-                $imagesToDelete[] = $existingImageName;
-            }
-        }
-
-        if (!empty($imagesToDelete)) {
-            ProductImage::whereIn('image', $imagesToDelete)->delete();
-            foreach ($imagesToDelete as $fileName) {
-                $filePath = public_path('images/products/'. $fileName);
-                if (file_exists($filePath)) {
-                    unlink($filePath);
-                }
-            }
-        }
-
-        $message = "<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Product Updated Successfully.</b></div>";
-
-        return response()->json(['status' => 300, 'message' => $message]);
     }
 
     public function productDelete(Request $request)
@@ -502,51 +324,68 @@ class ProductController extends Controller
             $product->sizes()->sync($request->size_ids);
         }
 
-        if ($request->has('color_id')) {
-            //existing colors
+        if ($request->has('previous_color_ids')) {
             $existingColors = $product->colors;
-        
-            //updated colors
+            $previousColorIds = $request->input('previous_color_ids', []);
             $updatedColorIds = $request->input('color_id', []);
         
-            // Delete colors that are not in the updated list
-            foreach ($existingColors as $existingColor) {
-                if (!in_array($existingColor->color_id, $updatedColorIds)) {
-                    if ($existingColor->image && file_exists(public_path($existingColor->image))) {
-                        unlink(public_path($existingColor->image));
+            foreach ($previousColorIds as $key => $previousColorId) {
+                $productColor = $existingColors->where('id', $previousColorId)->first();
+        
+                if ($productColor) {
+                    $newColorId = $updatedColorIds[$key] ?? null;
+        
+                    if ($newColorId && $newColorId != $productColor->color_id) {
+                        $productColor->color_id = $newColorId;
                     }
-                    $existingColor->delete();
+        
+                    if ($request->hasFile('image.' . $key)) {
+                        if ($productColor->image && file_exists(public_path($productColor->image))) {
+                            unlink(public_path($productColor->image));
+                        }
+        
+                        $colorImage = $request->file('image.' . $key);
+                        $randomName = mt_rand(10000000, 99999999) . '.' . $colorImage->getClientOriginalExtension();
+                        $colorImage->move(public_path('images/products'), $randomName);
+                        $productColor->image = '/images/products/' . $randomName;
+                    }
+        
+                    $productColor->save();
                 }
             }
         
-            // Add new colors
-            foreach ($updatedColorIds as $key => $colorId) {
-                $productColor = $product->colors()->where('color_id', $colorId)->first();
+            foreach ($updatedColorIds as $key => $newColorId) {
+                if (!in_array($newColorId, $previousColorIds)) {
+                    $existingColor = $existingColors->where('color_id', $newColorId)->first();
         
-                // Check if the product already has this color
-                if (!$productColor) {
-                    $productColor = new ProductColor();
-                    $productColor->product_id = $product->id;
-                    $productColor->color_id = $colorId;
+                    if (!$existingColor) {
+                        $productColor = new ProductColor();
+                        $productColor->product_id = $product->id;
+                        $productColor->color_id = $newColorId;
+        
+                        if ($request->hasFile('image.' . $key)) {
+                            $colorImage = $request->file('image.' . $key);
+                            $randomName = mt_rand(10000000, 99999999) . '.' . $colorImage->getClientOriginalExtension();
+                            $colorImage->move(public_path('images/products'), $randomName);
+                            $productColor->image = '/images/products/' . $randomName;
+                        }
+        
+                        $productColor->created_by = auth()->user()->id;
+                        $productColor->save();
+                    }
                 }
-        
-                // Check if a new image is uploaded for this color
-                if ($request->hasFile('image.' . $key)) {
+            }
+
+            foreach ($existingColors as $productColor) {
+                if (!in_array($productColor->id, $previousColorIds)) {
                     if ($productColor->image && file_exists(public_path($productColor->image))) {
                         unlink(public_path($productColor->image));
                     }
                     
-                    // Upload the new image
-                    $colorImage = $request->file('image.' . $key);
-                    $randomName = mt_rand(10000000, 99999999) . '.' . $colorImage->getClientOriginalExtension();
-                    $colorImage->move(public_path('images/products'), $randomName);
-                    $productColor->image = '/images/products/' . $randomName;
+                    $productColor->delete();
                 }
-    
-                $productColor->created_by = auth()->user()->id;
-                $productColor->save();
             }
-        }
+        }       
 
         return response()->json(['message' => 'Product updated successfully!', 'product' => $product], 200);
     }

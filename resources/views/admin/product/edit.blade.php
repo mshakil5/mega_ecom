@@ -166,29 +166,6 @@
                                     <input type="checkbox" class="form-control" id="is_trending" name="is_trending" value="1" {{ $product->is_trending ? 'checked' : '' }}>
                                 </div>
                             </div>
-                            {{--  
-                            <div class="form-row">
-                                <div class="form-group col-md-5">
-                                    <label for="color_id">Select Color</label>
-                                    <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
-                                    <select class="form-control" name="color_id[]" id="color_id">
-                                        <option value="">Choose Color</option>
-                                        @foreach($colors as $color)
-                                            <option value="{{ $color->id }}" style="background-color: {{ $color->color_code }};">
-                                                {{ $color->color }} ({{ $color->color_code }})
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="form-group col-md-5">
-                                    <label for="image">Select Image</label>
-                                    <input type="file" class="form-control" name="image[]" accept="image/*">
-                                </div>
-                                <div class="form-group col-md-1">
-                                    <label>Action</label>
-                                    
-                                </div>
-                            </div>  --}}
 
                             <div id="dynamic-rows">
                                 @if($product->colors->isEmpty())
@@ -214,8 +191,9 @@
                                     </div>
                                 </div>
                                 @endif
-                                @foreach($product->colors as $key=> $entry )
+                                @foreach($product->colors as $key=> $entry )                             
                                     <div class="form-row dynamic-row">
+                                    <input type="hidden" name="previous_color_ids[]" value="{{ $entry->id }}" id="previous_color_id_{{ $entry->id }}">
                                         <div class="form-group col-md-5">
                                             <label for="color_id">Select Color</label>
                                             <select class="form-control" name="color_id[]">
@@ -336,6 +314,7 @@
 
         $(document).on('click', '.remove-row', function() {
             $(this).closest('.dynamic-row').remove();
+            $(this).closest('.dynamic-row').prev('input[type="hidden"]').remove();
         });
     });
 </script>
@@ -376,7 +355,7 @@
             var formData = new FormData($('#editThisForm')[0]);
 
             formData.forEach(function(value, key) {
-                console.log(key + ": " + value);
+                // console.log(key + ": " + value);
             });
 
 
@@ -391,6 +370,7 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(response) {
+                    console.log(response);
                     swal({
                         text: "Updated successfully",
                         icon: "success",
