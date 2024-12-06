@@ -66,20 +66,19 @@
                                                 </figure>
                                                 <h3 class="product-title">
                                                     <a>{{ $entity->name }}</a>
-                                                    <p style="font-size: 14px;"> <b>Size: </b>{{ $item['size'] }}</p>
-                                                    <p style="font-size: 14px;"> <b>Color: </b>{{ $item['color'] }}</p>
+                                                    @if(!empty($item['size']))
+                                                        <p style="font-size: 14px;"> <b>Size: </b>{{ $item['size'] }}</p>
+                                                    @endif
+
+                                                    @if(!empty($item['color']))
+                                                        <p style="font-size: 14px;"> <b>Color: </b>{{ $item['color'] }}</p>
+                                                    @endif
                                                 </h3>
                                             </div>
                                         </td>
                                         <td class="price-col">
                                             {{ $currency }}{{ number_format($price, 2) }}
                                         </td>
-                                        <!-- <td class="price-col">
-                                            {{ $item['size'] }}
-                                        </td>
-                                        <td class="price-col">
-                                            {{ $item['color'] }}
-                                        </td> -->
                                         <td class="quantity-col">
                                                 <div class="cart-product-quantity">
                                                 <input type="number" class="form-control" value="{{ $item['quantity'] }}" min="1" max="{{ $stock }}" step="1" data-decimals="0">

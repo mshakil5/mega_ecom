@@ -177,9 +177,15 @@
                                                             <b>{{ $entity->name }}</b>
                                                         </div>
 
-                                                        <div style="font-size: 16px; margin-top: 5px;" class="text-left">           
-                                                            <span>{{ $item['color'] }} | {{ $item['size'] }}</span>
-                                                        </div>
+                                                        @if(!empty($item['color']) || !empty($item['size']))
+                                                            <div style="font-size: 16px; margin-top: 5px;" class="text-left">           
+                                                                <span>
+                                                                    {{ $item['color'] ?? '' }} 
+                                                                    @if(!empty($item['color']) && !empty($item['size'])) | @endif 
+                                                                    {{ $item['size'] ?? '' }}
+                                                                </span>
+                                                            </div>
+                                                        @endif
 
                                                         <div style="font-size: 16px; margin-top: 5px;">           
                                                             <span>{{ $item['quantity'] }} x {{ number_format($price, 2) }}</span>

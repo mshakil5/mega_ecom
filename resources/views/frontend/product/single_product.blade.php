@@ -371,59 +371,59 @@
 </div>
 
 <style>
-.product-nav-thumbs {
-    display: flex;
-    gap: 10px;
-}
+    .product-nav-thumbs {
+        display: flex;
+        gap: 10px;
+    }
 
-.color-option {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 5px;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    transition: border-color 0.3s;
-}
+    .color-option {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 5px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        transition: border-color 0.3s;
+    }
 
-.color-option.active {
-    border-color: green;
-}
+    .color-option.active {
+        border-color: green;
+    }
 
-.color-option img {
-    width: 55px;
-    height: 45px;
-    object-fit: cover;
-    border-radius: 5px;
-}
+    .color-option img {
+        width: 55px;
+        height: 45px;
+        object-fit: cover;
+        border-radius: 5px;
+    }
 
-.color-name {
-    display: block;
-    margin-bottom: 5px;
-}
+    .color-name {
+        display: block;
+        margin-bottom: 5px;
+    }
 
-input.largerRadiobox {
-    display: none;
-}
+    input.largerRadiobox {
+        display: none;
+    }
 
-.largerRadiobox-label {
-    display: inline-block;
-    height: 45px;
-    background-color: white;
-    padding: 5px;
-    border-radius: 5%;
-    border: 1px solid #ddd;
-    vertical-align: middle;
-    cursor: pointer;
-    transition: all 0.1s ease;
-    text-align: center;
-}
+    .largerRadiobox-label {
+        display: inline-block;
+        height: 45px;
+        background-color: white;
+        padding: 5px;
+        border-radius: 5%;
+        border: 1px solid #ddd;
+        vertical-align: middle;
+        cursor: pointer;
+        transition: all 0.1s ease;
+        text-align: center;
+    }
 
-input.largerRadiobox:checked + .largerRadiobox-label {
-    background-color: #193d5b;
-    border-color: #193d5b;
-    color: white;
-}
+    input.largerRadiobox:checked + .largerRadiobox-label {
+        background-color: #193d5b;
+        border-color: #193d5b;
+        color: white;
+    }
 
 </style>
 
@@ -432,23 +432,23 @@ input.largerRadiobox:checked + .largerRadiobox-label {
 @section('script')
 
 <script>
-function selectColor(element, radioId, hasImage = true) {
-    document.querySelectorAll('.color-option').forEach(option => {
-        option.classList.remove('active');
-    });
+    function selectColor(element, radioId, hasImage = true) {
+        document.querySelectorAll('.color-option').forEach(option => {
+            option.classList.remove('active');
+        });
 
-    element.classList.add('active');
+        element.classList.add('active');
 
-    if (hasImage) {
-        const newImage = element.getAttribute('data-image');
-        document.querySelector('.product-main-image img').src = newImage;
+        if (hasImage) {
+            const newImage = element.getAttribute('data-image');
+            document.querySelector('.product-main-image img').src = newImage;
+        }
+
+        const radioButton = document.getElementById(radioId);
+        if (radioButton) {
+            radioButton.checked = true;
+        }
     }
-
-    const radioButton = document.getElementById(radioId);
-    if (radioButton) {
-        radioButton.checked = true;
-    }
-}
 </script>
 
 <script>
