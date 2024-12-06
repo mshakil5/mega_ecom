@@ -324,7 +324,7 @@ class ProductController extends Controller
             $product->sizes()->sync($request->size_ids);
         }
 
-        if ($request->has('previous_color_ids')) {
+        if ($request->has('color_id')) {
             $existingColors = $product->colors;
             $previousColorIds = $request->input('previous_color_ids', []);
             $updatedColorIds = $request->input('color_id', []);
