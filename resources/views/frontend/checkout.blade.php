@@ -554,12 +554,12 @@
             var guest_phone = $('#phone').val();
 
             if (!guest_email) {
-                toastr.error("Please enter your email before applying the coupon.", "Email Required");
+                toastr.error("Please enter your email before applying the coupon.", "");
                 return;
             }
 
             if (!guest_phone) {
-                toastr.error("Please enter your phone before applying the coupon.", "Phone Required");
+                toastr.error("Please enter your phone before applying the coupon.", "");
                 return;
             }
 
@@ -574,14 +574,14 @@
                         $('#couponValue').text(response.coupon_value);
                         $('#couponId').val(response.coupon_id);
                         updateTotal();
-                        toastr.success("Valid Coupon", "Coupon applied successfully!", "success");
+                        toastr.success("Valid Coupon", "Coupon applied successfully!", "");
                     }  else {
-                        toastr.error(response.message, "Coupon Error");
+                        toastr.error(response.message, "");
                     }
                 },
                 error: function(xhr , status, error) {
                     // console.error(xhr.responseText);
-                    toastr.error("Error", "Error applying coupon.", "error");
+                    toastr.error("Error", "Error applying coupon.", "");
                 }
             });
         });

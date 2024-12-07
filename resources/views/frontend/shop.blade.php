@@ -264,7 +264,7 @@
 
                     if (products.length === 0) {
                         $('#product-list').empty();
-                        toastr.error("No products found", "Error", {
+                        toastr.error("No products found", "", {
                             closeButton: true,
                             progressBar: true,
                             timeOut: 3000,

@@ -32,20 +32,10 @@
             var itemIndex = wishlist.findIndex(item => item.productId === productId && item.offerId === offerId && item.campaignId === campaignId);
             if (itemIndex !== -1) {
                 wishlist.splice(itemIndex, 1);
-                    toastr.success("Removed from wishlist", "Success", {
-                        closeButton: true, 
-                        progressBar: true,
-                        timeOut: 3000,
-                        positionClass: "toast-top-center",
-                    });
+                    toastr.success("Removed from wishlist", "");
             } else {
                 wishlist.push({ productId: productId, offerId: offerId, price: price, campaignId: campaignId });
-                toastr.success("Added to wishlist", "Success", {
-                    closeButton: true, 
-                    progressBar: true,
-                    timeOut: 3000,
-                    positionClass: "toast-top-center",
-                });
+                toastr.success("Added to wishlist", "");
             }
 
             localStorage.setItem('wishlist', JSON.stringify(wishlist));

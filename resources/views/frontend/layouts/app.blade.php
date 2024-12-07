@@ -69,6 +69,12 @@
 
     <link rel="stylesheet" href="{{ asset('frontend/css/toastr.min.css') }}">
 
+    <style>
+        .toast {
+            font-size: 15px !important;
+        }
+    </style>
+
     <link rel="stylesheet" href="{{ asset('frontend/css/jquery.countdown.css') }}">
 
     <link rel="stylesheet" href="{{ asset('frontend/css/style.css') }}">
@@ -184,6 +190,26 @@
     <script src="{{ asset('frontend/js/wNumb.js')}}"></script>
 
     <script src="{{ asset('frontend/js/toastr.min.js')}}"></script>
+
+    <script>
+        toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "toast-top-center",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+    </script>
 
     <!-- Data table js -->
     <script src="{{ asset('assets/admin/datatables/jquery.dataTables.min.js')}}"></script>

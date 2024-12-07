@@ -21,22 +21,12 @@
             var selectedSize = $('input[name="size"]:checked').val();
 
             if (!selectedColor) {
-                toastr.error("Please select a color.", "Error", {
-                    closeButton: true,
-                    progressBar: true,
-                    timeOut: 3000,
-                    positionClass: "toast-top-center",
-                });
+                toastr.error("Please select a color.", "");
                 return;
             }
 
             if (!selectedSize) {
-                toastr.error("Please select a size.", "Error", {
-                    closeButton: true,
-                    progressBar: true,
-                    timeOut: 3000,
-                    positionClass: "toast-top-center",
-                });
+                toastr.error("Please select a size.", "");
                 return;
             }
 
@@ -77,12 +67,7 @@
 
             // console.log(JSON.parse(localStorage.getItem('cart')));
 
-            toastr.success("Added to cart", "Success", {
-                closeButton: true, 
-                progressBar: true,
-                timeOut: 3000,
-                positionClass: "toast-top-center",
-            });
+            toastr.success("Added to cart", "");
             $('#quickAddToCartModal').modal('hide');
         });
 
@@ -113,12 +98,7 @@
                         cart: JSON.stringify(cart)
                     },
                     success: function() {
-                        toastr.success("Removed from cart", "Success", {
-                            closeButton: true, 
-                            progressBar: true,
-                            timeOut: 3000,
-                            positionClass: "toast-top-center",
-                        });
+                        toastr.success("Removed from cart", "");
                         updateCartCount();
                     }
                 });
