@@ -18,13 +18,13 @@
                                     <th>Date</th>
                                     <th>Invoice</th>
                                     <th>Supplier</th>
-                                    <th>Ref</th>
+                                    <!-- <th>Ref</th> -->
                                     <th>Net Amount</th>
                                     <th>Paid Amount</th>
                                     <th>Due Amount</th>
-                                    <th>Not Transferred Quantity</th>
-                                    <th>Missing Quantity</th>
-                                    <th>Status</th>
+                                    <!-- <th>Not Transferred Quantity</th>
+                                    <th>Missing Quantity</th> -->
+                                    <!-- <th>Status</th> -->
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -38,7 +38,7 @@
                                         <br> {{ $purchase->supplier->email }}
                                         <br> {{ $purchase->supplier->phone }}
                                     </td>
-                                    <td>{{ $purchase->ref }}</td>
+                                    <!-- <td>{{ $purchase->ref }}</td> -->
                                     <td>{{ $purchase->net_amount }}</td>
                                     <td>{{ $purchase->paid_amount }}</td>
                                     <td>
@@ -58,16 +58,16 @@
                                     $totalNotReturnedQuantity = $totalPurchasedQuantity - $totalReturnedQuantity;
                                     @endphp
 
-                                    <td>{{ $totalRemainingQuantity }}</td>
-                                    <td>{{$purchase->purchaseHistory->sum('missing_product_quantity')}}</td>
-                                    <td>
+                                    <!-- <td>{{ $totalRemainingQuantity }}</td>
+                                    <td>{{$purchase->purchaseHistory->sum('missing_product_quantity')}}</td> -->
+                                    <!-- <td>
                                         <select class="form-control purchase-status" data-purchase-id="{{ $purchase->id }}">
                                             <option value="1" {{ $purchase->status == 1 ? 'selected' : '' }}>Processing</option>
                                             <option value="2" {{ $purchase->status == 2 ? 'selected' : '' }}>On The Way</option>
                                             <option value="3" {{ $purchase->status == 3 ? 'selected' : '' }}>Customs</option>
                                             <option value="4" {{ $purchase->status == 4 ? 'selected' : '' }}>Received</option>
                                         </select>
-                                    </td>
+                                    </td> -->
                                     <td>
                                         <a class="btn btn-sm btn-info" onclick="showViewPurchaseModal({{ $purchase->id }})">
                                             <i class="fas fa-eye"></i>

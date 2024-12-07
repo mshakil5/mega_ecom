@@ -17,13 +17,13 @@
                             @csrf
                             <input type="hidden" id="deleted_purchase_histories" name="deleted_purchase_histories" value="">
                             <div class="row">
-                                <div class="col-sm-3">
+                                <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="purchase_date">Purchase Date <span class="text-danger">*</span></label>
                                         <input type="date" class="form-control" id="purchase_date" name="purchase_date" placeholder="Enter purchase date" value="{{ $purchase->purchase_date }}">
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="supplier_id">Select Supplier <span class="text-danger">*</span></label>
                                         <select class="form-control" id="supplier_id" name="supplier_id" disabled>
@@ -33,7 +33,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-sm-1">
+                                <div class="col-sm-1 d-none">
                                     <div class="form-group">
                                         <label>New</label>
                                         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#newSupplierModal">
@@ -48,7 +48,7 @@
                                         <input type="hidden" id="previous_purchase_due" value="{{ $purchase->due_amount }}">
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="invoice">Invoice <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" id="invoice" name="invoice" placeholder="Enter invoice" value="{{ $purchase->invoice }}">
@@ -71,13 +71,13 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-sm-6">
+                                <div class="col-sm-3">
                                     <div class="form-group">
                                         <label for="ref">Ref</label>
                                         <input type="text" class="form-control" id="ref" name="ref" placeholder="Enter reference" value="{{ $purchase->ref }}">
                                     </div>
                                 </div>
-                                <div class="col-sm-6">
+                                <div class="col-sm-3">
                                     <div class="form-group">
                                         <label for="remarks">Remarks</label>
                                         <textarea class="form-control" id="remarks" name="remarks" rows="1" placeholder="Enter remarks">{{ $purchase->remarks }}</textarea>

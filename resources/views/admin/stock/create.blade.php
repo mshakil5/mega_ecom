@@ -8,20 +8,20 @@
             <div class="col-md-12">
                 <div class="card card-secondary">
                     <div class="card-header">
-                        <h3 class="card-title" id="cardTitle">Add new stock</h3>
+                        <h3 class="card-title" id="cardTitle">Purchase</h3>
                     </div>
                     <div class="card-body">
                         <div class="ermsg"></div>
                         <form id="createThisForm">
                             @csrf
                             <div class="row">
-                                <div class="col-sm-3">
+                                <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="purchase_date">Purchase Date <span class="text-danger">*</span></label>
                                         <input type="date" class="form-control" id="purchase_date" name="purchase_date" placeholder="Enter purchase date">
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="supplier_id">Select Supplier <span class="text-danger">*</span></label>
                                         <select class="form-control" id="supplier_id" name="supplier_id">
@@ -52,7 +52,7 @@
                                         <input type="text" class="form-control" id="vat_reg" name="vat_reg" placeholder="Enter VAT Reg#">
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-4 d-none">
                                     <div class="form-group">
                                         <label for="warehouse_id">Warehouse</label>
                                         <select name="warehouse_id" id="warehouse_id" class="form-control">
@@ -64,7 +64,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="invoice">Invoice <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" id="invoice" name="invoice" placeholder="Enter invoice" required>
@@ -82,13 +82,13 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="ref">Ref</label>
                                         <input type="text" class="form-control" id="ref" name="ref" placeholder="Enter reference">
                                     </div>
                                 </div>
-                                <div class="col-sm-6">
+                                <div class="col-sm-3">
                                     <div class="form-group">
                                         <label for="remarks">Remarks</label>
                                         <textarea class="form-control" id="remarks" name="remarks" rows="1" placeholder="Enter remarks"></textarea>
