@@ -383,11 +383,19 @@
         display: flex;
         align-items: center;
         cursor: pointer;
-        transition: border-color 0.3s;
+        transition: border-color 0.3s, transform 0.3s;
     }
 
+    .color-option:hover {
+        transform: scale(1.10);
+    }
     .color-option.active {
         border-color: green;
+        transform: scale(1.05);
+    }
+
+    .color-option:hover img {
+        transform: scale(1.1);
     }
 
     .color-option img {
