@@ -110,9 +110,9 @@
                                         <th>Supplier</th>
                                         <th>Product</th>
                                         <th>Size</th>
-                                        <th>Color</th>
+                                        <th>Color</th>        
+                                        <th>Shipped Quantity</th>
                                         <th>Missing Quantity</th>
-                                        <th>Net Quantity</th>
                                         <th>Purchase Price Per Unit</th>
                                         <th>Ground Price</th>
                                         <th>Profit Margin</th>
@@ -166,8 +166,8 @@
                         <td>${detail.product && detail.product.product_code ? `${detail.product.product_code} - ${detail.product.name}` : (detail.product ? detail.product.name : '')}</td>
                         <td>${detail.size || '-'}</td>
                         <td>${detail.color || '-'}</td>
-                        <td>${detail.missing_quantity}</td>
                         <td>${detail.quantity}</td>
+                        <td>${detail.missing_quantity}</td>
                         <td>${detail.price_per_unit}</td>
                         <td>${detail.ground_price_per_unit}</td>
                         <td>${detail.profit_margin}%</td>

@@ -37,13 +37,13 @@
                                         <th>Product</th>
                                         <th>Size</th>
                                         <th>Color</th>
-                                        <th>Missing Quantity</th>
-                                        <th>Net Quantity</th>
+                                        <th>Shipped Quantity</th>
+                                        <th>Missing Quantity</th>    
                                         <th>Purchase Price Per Unit</th>
                                         <th>Ground Price</th>
-                                        <th>Profit Margin</th>
+                                        <th>Profit Margin(%)</th>
                                         <th>Selling Price</th>
-                                        <th>Action</th>
+                                        <!-- <th>Action</th> -->
                                     </tr>
                                 </thead>
                                 <tbody id="purchaseData">
@@ -53,6 +53,7 @@
                                             {{ $detail->supplier->name ?? '' }}
                                             <input type="hidden" value="{{ $detail->supplier_id }}" class="supplier_id">
                                             <input type="hidden" value="{{ $detail->id }}" class="id">
+                                            <input type="hidden" value="{{ $detail->purchase_history_id }}" class="purchase_history_id">
                                         </td>
                                         <td>
                                             {{ $detail->product->product_code ? $detail->product->product_code . '-' : '' }}{{ $detail->product->name ?? '' }}
@@ -60,13 +61,12 @@
                                         </td>
                                         <td>{{ $detail->size ?? '' }}</td>
                                         <td>{{ $detail->color ?? '' }}</td>
-
-                                        <td>
-                                            <input type="number" value="{{ $detail->missing_quantity }}" max="{{ $detail->quantity }}" min="0" class="form-control missing_quantity" />
-                                        </td>
                                         <td>
                                             <input type="number" value="{{ $detail->quantity }}" max="{{ $detail->quantity }}" min="1" class="form-control product_quantity" readonly/>
                                             <input type="hidden" value="{{ $detail->quantity + $detail->missing_quantity }}" max="{{ $detail->quantity + $detail->missing_quantity }}" class="max-quantity"/>
+                                        </td>
+                                        <td>
+                                            <input type="number" value="{{ $detail->missing_quantity }}" max="{{ $detail->quantity }}" min="0" class="form-control missing_quantity" readonly/>
                                         </td>
                                         <td class="purchase_price">{{ number_format($detail->price_per_unit, 2) }}</td>
                                         <td class="ground_cost">{{ number_format($detail->ground_cost, 2) }}</td>
@@ -74,9 +74,9 @@
                                             <input type="number" value="{{ $detail->profit_margin }}" min="0" class="form-control profit_margin" />
                                         </td>
                                         <td class="selling_price">{{ number_format($detail->selling_price, 2) }}</td>
-                                        <td>
+                                        <!-- <td>
                                             <button type="button" class="btn btn-danger remove-row"><i class="fas fa-trash"></i></button>
-                                        </td>
+                                        </td> -->
                                     </tr>
                                     @endforeach
                                 </tbody>
@@ -177,6 +177,7 @@
 
             $('#purchaseData tr').each(function() {
                 let id = $(this).find('.id').val();
+                let purchaseHistoryId = $(this).find('.purchase_history_id').val();
                 let supplierId = $(this).find('.supplier_id').val();
                 let productId = $(this).find('.product_id').val();
                 let size = $(this).find('td:nth-child(3)').text();
@@ -191,6 +192,7 @@
                 if (productId && quantity > 0) {
                     shipmentDetails.push({
                         id: id,
+                        purchase_history_id: purchaseHistoryId,
                         supplier_id: supplierId,
                         product_id: productId,
                         size: size,
@@ -212,6 +214,7 @@
                         <b>Please add at least one valid product to the shipment.</b>
                     </div>
                 `).show();
+                pagetop();
                 return;
             }
 
@@ -248,19 +251,21 @@
                             <b>Shipment updated successfully!</b>
                         </div>
                     `).show();
+                    pagetop();
 
                     setTimeout(function() {
                         location.reload();
                     }, 2000);
                 },
                 error: function(xhr, status, error) {
-                    console.error(xhr.responseText);
+                    // console.error(xhr.responseText);
                     $(".ermsg").html(`
                         <div class='alert alert-danger'>
                             <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
                             <b>Error updating shipment. Please try again.</b>
                         </div>
                     `).show();
+                    pagetop();
                 }
             });
         });

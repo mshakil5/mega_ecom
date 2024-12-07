@@ -31,6 +31,7 @@
                         <table id="shipmentTable" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
+                                    <th>Sl</th>
                                     <th>Shipping ID</th>
                                     <th>Shipping Name</th>
                                     <th>Shipping Date</th>
@@ -42,6 +43,7 @@
                             <tbody>
                                 @foreach($data as $shipment)
                                 <tr>
+                                    <td>{{ $loop->iteration }}</td>
                                     <td>{{ $shipment->shipping_id }}</td>
                                     <td>{{ $shipment->shipping_name }}</td>
                                     <td>{{ \Carbon\Carbon::parse($shipment->shipping_date)->format('d-m-Y') }}</td>

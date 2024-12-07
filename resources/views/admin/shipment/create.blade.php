@@ -51,7 +51,7 @@
                                         <th>Remaining Quantity</th>           
                                         <th>Purchase Price Per Unit</th>
                                         <th>Ground Price</th>
-                                        <th>Profit Margin</th>
+                                        <th>Profit Margin(%)</th>
                                         <th>Selling Price</th>
                                         <th>Action</th>
                                     </tr>
@@ -170,10 +170,6 @@
 <script>
     $(document).ready(function() {
 
-        function pageTop() {
-            $('html, body').animate({ scrollTop: 0 }, 'slow');
-        }
-
         $('#calculateSalesPriceBtn').on('click', function(event) {
             event.preventDefault();
 
@@ -187,7 +183,7 @@
                         <b>Please select a warehouse before proceeding.</b>
                     </div>
                 `).show();
-                pageTop();
+                pagetop();
                 return;
             }
 
@@ -253,7 +249,7 @@
 
             let _token = $('meta[name="csrf-token"]').attr('content');
 
-            console.log(dataToSend);
+            // console.log(dataToSend);
 
             $.ajax({
                 url: '/admin/shipment-store',
@@ -270,19 +266,21 @@
                             <b>Shipment Created successfully!</b>
                         </div>
                     `).show();
+                    pagetop();
 
                     setTimeout(function() {
                         location.reload();
                     }, 2000);
                 },
                 error: function(xhr, status, error) {
-                    console.error(xhr.responseText);
+                    // console.error(xhr.responseText);
                     $(".ermsg").html(`
                         <div class='alert alert-danger'>
                             <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
                             <b>Error creating shipment. Please try again.</b>
                         </div>
                     `).show();
+                    pagetop();
                 }
             });
         });

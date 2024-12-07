@@ -91,6 +91,7 @@ class ShipmentController extends Controller
                 'purchase_history_id' => $detail['purchase_history_id'],
                 'size' => $detail['size'],
                 'color' => $detail['color'],
+                'warehouse_id' => $request->warehouse_id,
                 'quantity' => $detail['shipped_quantity'],
                 'missing_quantity' => $detail['missing_quantity'],
                 'price_per_unit' => $detail['price_per_unit'],
@@ -223,6 +224,7 @@ class ShipmentController extends Controller
             $stock = Stock::where('product_id', $shipmentDetail->product_id)
                 ->where('size', $shipmentDetail->size)
                 ->where('color', $shipmentDetail->color)
+                ->where('warehouse_id', $shipmentDetail->warehouse_id)
                 ->first();
     
             if ($stock) {
@@ -242,6 +244,7 @@ class ShipmentController extends Controller
             $stockHistory = StockHistory::where('product_id', $shipmentDetail->product_id)
                 ->where('size', $shipmentDetail->size)
                 ->where('color', $shipmentDetail->color)
+                ->where('warehouse_id', $shipmentDetail->warehouse_id)
                 ->first();
     
             if ($stockHistory) {
@@ -281,6 +284,7 @@ class ShipmentController extends Controller
                 $stock = Stock::where('product_id', $removedDetail->product_id)
                     ->where('size', $removedDetail->size)
                     ->where('color', $removedDetail->color)
+                    ->where('warehouse_id', $removedDetail->warehouse_id)
                     ->first();
         
                 if ($stock) {
@@ -292,6 +296,7 @@ class ShipmentController extends Controller
                 $stockHistory = StockHistory::where('product_id', $removedDetail->product_id)
                     ->where('size', $removedDetail->size)
                     ->where('color', $removedDetail->color)
+                    ->where('warehouse_id', $removedDetail->warehouse_id)
                     ->first();
         
                 if ($stockHistory) {
