@@ -20,6 +20,10 @@
             color: #555;
         }
 
+        .sub-total {
+            line-height: 1.3;
+        }
+
         .invoice-box table {
             width: 100%;
             line-height: inherit;
@@ -205,21 +209,28 @@
                 </td>
             </tr>
 
+            @if($order->vat_amount > 0)
             <tr class="sub-total">
                 <td class="text-left fixed-width">Vat:</td>
                 <td class="right-align">{{ $currency }} {{ number_format($order->vat_amount ?? 0.00, 2) }}</td>
             </tr>
+            @endif
 
+            @if($order->shipping_amount > 0)
             <tr class="sub-total">
                 <td class="text-left fixed-width">Shipping:</td>
                 <td class="right-align">{{ $currency }} {{ number_format($order->shipping_amount ?? 0.00, 2) }}</td>
             </tr>
+            @endif
 
+            @if($order->discount_amount > 0)
             <tr class="sub-total">
                 <td class="text-left fixed-width">Discount Amount:</td>
                 <td class="right-align">{{ $currency }} {{ number_format($order->discount_amount ?? 0.00, 2) }}</td>
             </tr>
+            @endif
 
+            
             <tr class="sub-total">
                 <td class="text-left fixed-width">Sub Total:</td>
                 <td class="right-align">{{ $currency }} {{ number_format($order->subtotal_amount ?? 0.00, 2) }}</td>
