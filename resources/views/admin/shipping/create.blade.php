@@ -62,7 +62,8 @@
                                             data-shipping-id="{{ $shipment->shipping_id }}"
                                             data-shipping-name="{{ $shipment->shipping_name }}"
                                             data-shipping-date="{{ $shipment->shipping_date }}"
-                                            data-purchase-ids="{{ $shipment->purchase_ids }}">
+                                            data-purchase-ids="{{ $shipment->purchase_ids }}"
+                                            @if($shipment->shipment) disabled @endif>
                                             Edit
                                         </button>
                                     </td>

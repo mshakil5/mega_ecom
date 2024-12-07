@@ -8,7 +8,7 @@
             <div class="col-12">
                 <div class="card card-secondary">
                     <div class="card-header">
-                        <h3 class="card-title">All Stocks</h3>
+                        <h3 class="card-title">Purchases</h3>
                     </div>
                     <div class="card-body">
                         <table id="example1" class="table table-bordered table-striped">
@@ -72,7 +72,10 @@
                                         <a class="btn btn-sm btn-info" onclick="showViewPurchaseModal({{ $purchase->id }})">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        @if($purchase->status == 1)
+                                        @php
+                                            $totalShippedQuantity = $purchase->purchaseHistory->sum('shipped_quantity');
+                                        @endphp
+                                        @if ($totalShippedQuantity < 1)
                                         <a href="{{ route('purchase.edit', $purchase->id) }}" class="btn btn-sm btn-primary">
                                             <i class="fas fa-edit"></i>
                                         </a>
@@ -90,7 +93,7 @@
                                             <a href="{{ route('missingProduct', $purchase->id) }}" class="btn btn-sm btn-danger">
                                                 <i class="fas fa-arrow-right"></i>
                                             </a>
-                                         @endif   
+                                        @endif   
                                     </td>
                                 </tr>
                                 @endforeach
@@ -133,10 +136,10 @@
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>Product Name</th>
-                                <th>Quantity</th>
-                                <th>Price</th>
-                                <th>Total Vat</th>
+                                <th>Product Details</th>
+                                <th>Purchase Quantity</th>
+                                <th>Shipped Quantity</th>
+                                <th>Purchase Price Per Unit</th>
                                 <th>Net Total</th>
                             </tr>
                         </thead>
@@ -284,7 +287,7 @@
             url: '/admin/purchase/' + purchaseId + '/history',
             type: 'GET',
             success: function(response) {
-                console.log(response);
+                // console.log(response);
                 var formattedDate = moment(response.purchase_date).format('DD-MM-YYYY');
                 $('#purchaseDate').text(formattedDate);
                 $('#purchaseInvoice').text(response.invoice);
@@ -300,10 +303,10 @@
                     response.purchase_history.forEach(function(history) {
                         purchaseHistoryHtml += `
                             <tr>
-                                <td>${history.product.name}</td>
+                                <td>${history.product.product_code} - ${history.product.name}</td>
                                 <td>${history.quantity}</td>
+                                <td>${history.shipped_quantity}</td>
                                 <td>${history.purchase_price}</td>
-                                <td>${history.total_vat}</td>
                                 <td>${history.total_amount_with_vat}</td>
                             </tr>`;
                     });
