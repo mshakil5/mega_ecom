@@ -231,6 +231,22 @@ class InHouseSellController extends Controller
         return $pdf->stream('order_' . $order->id . '.pdf');
     }
 
+    public function generateDownloadPDF($encoded_order_id)
+    {
+        $order_id = base64_decode($encoded_order_id);
+        $order = Order::with(['orderDetails', 'user'])->findOrFail($order_id);
+
+        $data = [
+            'order' => $order,
+            'currency' => CompanyDetails::value('currency'),
+        ];
+
+        $pdf = PDF::loadView('admin.in_house_sell.quotation_pdf', $data);
+
+        return $pdf->stream('order_' . $order->id . '.pdf');
+    }
+
+
     public function makeQuotationStore(Request $request)
     {
         $validated = $request->validate([

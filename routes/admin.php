@@ -396,6 +396,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/in-house-quotation-order', [InHouseSellController::class, 'inHouseQuotationSellStore'])->name('quotationToOrder');
     Route::get('/in-house-sell/order/{encoded_order_id}', [InHouseSellController::class, 'generatePDF'])->name('in-house-sell.generate-pdf');
 
+    Route::get('order/{encoded_order_id}/download-pdf', [InHouseSellController::class, 'generateDownloadPDF'])->name('orders.download-pdf');
+
     Route::get('/order-edit/{orderId}', [InHouseSellController::class, 'editOrder'])->name('order-edit');
 
     Route::post('/order-update', [InHouseSellController::class, 'updateOrder']);
