@@ -30,6 +30,7 @@ return new class extends Migration
             $table->string('transferred_product_quantity')->nullable();
             $table->string('remaining_product_quantity')->nullable();
             $table->string('missing_product_quantity')->nullable();
+            $table->string('shipped_quantity')->default(0);
             $table->boolean('status')->default(1);
             $table->string('updated_by')->nullable();
             $table->string('created_by')->nullable();

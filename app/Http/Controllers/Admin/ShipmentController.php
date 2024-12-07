@@ -8,6 +8,10 @@ use App\Models\Shipment;
 use App\Models\ShipmentDetails;
 use App\Models\StockHistory;
 use App\Models\Stock;
+use App\Models\Shipping;
+use App\Models\PurchaseHistory;
+use App\Models\Purchase;
+use App\Models\Warehouse;
 
 class ShipmentController extends Controller
 {
@@ -20,12 +24,30 @@ class ShipmentController extends Controller
         return view('admin.shipment.history', compact('shipments'));
     }
 
+    public function createShipment($id)
+    {
+        $shipping = Shipping::with('shipment')->find($id);
+        if (!$shipping) {
+            return redirect()->back()->with('error', 'Shipping not found.');
+        }
+
+        $purchaseIds = json_decode($shipping->purchase_ids, true);
+        $purchaseHistories = PurchaseHistory::whereIn('purchase_id', $purchaseIds)
+            ->with('product', 'purchase.supplier')
+            ->orderBy('purchase_id', 'asc')
+            ->get();
+
+        $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
+        return view('admin.shipment.create', compact('shipping', 'purchaseHistories', 'warehouses'));
+    }
+
     public function storeShipment(Request $request)
     {
         $request->validate([
-            'id' => 'required|integer',
+            'shipping_id' => 'required|integer',
+            'warehouse_id' => 'required',
             'total_quantity' => 'required|integer',
-            'direct_cost' => 'required|numeric',
+            'total_purchase_cost' => 'required|numeric',
             'cnf_cost' => 'required|numeric',
             'import_taxes' => 'required|numeric',
             'warehouse_cost' => 'required|numeric',
@@ -34,78 +56,85 @@ class ShipmentController extends Controller
             'shipment_details' => 'required|array',
             'shipment_details.*.supplier_id' => 'required|integer',
             'shipment_details.*.product_id' => 'required|integer',
-            'shipment_details.*.size' => 'nullable|string',
-            'shipment_details.*.color' => 'nullable|string',
-            'shipment_details.*.quantity' => 'required|integer',
+            'shipment_details.*.purchase_history_id' => 'required|integer',
+            'shipment_details.*.size' => 'required|string',
+            'shipment_details.*.color' => 'required|string',
+            'shipment_details.*.shipped_quantity' => 'required|integer',
+            'shipment_details.*.missing_quantity' => 'nullable|integer',
             'shipment_details.*.price_per_unit' => 'required|numeric',
             'shipment_details.*.ground_cost' => 'nullable|numeric',
             'shipment_details.*.profit_margin' => 'nullable|numeric',
             'shipment_details.*.selling_price' => 'nullable|numeric',
         ]);
-
+    
+        $shipping = Shipping::where('id', $request->shipping_id)->first();
+        $purchaseIds = $shipping->purchase_ids ?? [];
         $shipment = Shipment::create([
-            'shipping_id' => $request->id,
+            'shipping_id' => $request->shipping_id,
             'total_product_quantity' => $request->total_quantity,
             'total_missing_quantity' => $request->total_missing_quantity,
-            'total_purchase_cost' => $request->direct_cost,
+            'total_purchase_cost' => $request->total_purchase_cost,
             'cnf_cost' => $request->cnf_cost,
             'import_duties_tax' => $request->import_taxes,
             'warehouse_and_handling_cost' => $request->warehouse_cost,
             'other_cost' => $request->other_cost,
             'total_additional_cost' => $request->total_additional_cost,
-            'created_by' => auth()->user()->id,
-            'updated_by' => auth()->user()->id,
+            'purchase_ids' => $purchaseIds,
+            'created_by' => auth()->id(),
         ]);
-
+    
         foreach ($request->shipment_details as $detail) {
             ShipmentDetails::create([
                 'shipment_id' => $shipment->id,
                 'product_id' => $detail['product_id'],
                 'supplier_id' => $detail['supplier_id'],
+                'purchase_history_id' => $detail['purchase_history_id'],
                 'size' => $detail['size'],
                 'color' => $detail['color'],
-                'quantity' => $detail['quantity'],
+                'quantity' => $detail['shipped_quantity'],
                 'missing_quantity' => $detail['missing_quantity'],
                 'price_per_unit' => $detail['price_per_unit'],
                 'ground_price_per_unit' => $detail['ground_cost'],
                 'profit_margin' => $detail['profit_margin'],
                 'selling_price' => $detail['selling_price'],
             ]);
-        
+
             $stock = Stock::where('product_id', $detail['product_id'])
                 ->where('size', $detail['size'])
                 ->where('color', $detail['color'])
+                ->where('warehouse_id', $request->warehouse_id)
                 ->first();
-        
+    
             if ($stock) {
-                $stock->quantity += $detail['quantity'];
+                $stock->quantity += $detail['shipped_quantity'];
                 $stock->updated_by = auth()->id();
                 $stock->save();
             } else {
                 $stock = Stock::create([
                     'product_id' => $detail['product_id'],
-                    'quantity' => $detail['quantity'],
+                    'quantity' => $detail['shipped_quantity'],
                     'size' => $detail['size'],
                     'color' => $detail['color'],
+                    'warehouse_id' => $request->warehouse_id,
                     'created_by' => auth()->id(),
                 ]);
             }
-        
+    
             $stockHistory = StockHistory::where('product_id', $detail['product_id'])
                 ->where('size', $detail['size'])
                 ->where('color', $detail['color'])
+                ->where('warehouse_id', $request->warehouse_id)
                 ->first();
-        
+    
             if ($stockHistory) {
-                $stockHistory->quantity += $detail['quantity'];
-                $stockHistory->available_qty += $detail['quantity'];
+                $stockHistory->quantity += $detail['shipped_quantity'];
+                $stockHistory->available_qty += $detail['shipped_quantity'];
                 $stockHistory->missing_product_quantity += $detail['missing_quantity'];
-                $stockHistory->quantity += $detail['quantity'];
                 $stockHistory->purchase_price = $detail['price_per_unit'];
                 $stockHistory->ground_price_per_unit = $detail['ground_cost'];
                 $stockHistory->profit_margin = $detail['profit_margin'];
                 $stockHistory->selling_price = $detail['selling_price'];
-                $stockHistory->updated_by = auth()->user()->id;
+                $stockHistory->updated_by = auth()->id();
                 $stockHistory->save();
             } else {
                 $stockid = date('mds') . str_pad($detail['product_id'], 4, '0', STR_PAD_LEFT);
@@ -113,10 +142,11 @@ class ShipmentController extends Controller
                     'stock_id' => $stock->id,
                     'date' => date('Y-m-d'),
                     'product_id' => $detail['product_id'],
-                    'quantity' => $detail['quantity'],
+                    'quantity' => $detail['shipped_quantity'],
                     'size' => $detail['size'],
                     'color' => $detail['color'],
-                    'available_qty' => $detail['quantity'],
+                    'warehouse_id' => $request->warehouse_id,
+                    'available_qty' => $detail['shipped_quantity'],
                     'ground_price_per_unit' => $detail['ground_cost'],
                     'profit_margin' => $detail['profit_margin'],
                     'purchase_price' => $detail['price_per_unit'],
@@ -125,10 +155,16 @@ class ShipmentController extends Controller
                     'stockid' => $stockid,
                 ]);
             }
-        }        
-
+    
+            $purchaseHistory = PurchaseHistory::find($detail['purchase_history_id']);
+            if ($purchaseHistory) {
+                $purchaseHistory->shipped_quantity = $detail['shipped_quantity'];
+                $purchaseHistory->save();
+            }
+        }
+    
         return response()->json(['message' => 'Shipment created successfully!', 'shipment_id' => $shipment->id], 201);
-    }
+    }    
 
     public function editShipment($id)
     {

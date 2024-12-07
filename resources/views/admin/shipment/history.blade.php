@@ -53,7 +53,7 @@
                                             <i class="fas fa-eye"></i>
                                         </button>
 
-                                        <a href="{{ route('admin.shipments.edit', $shipment->id) }}" class="btn btn-sm btn-primary">
+                                        <a href="{{ route('admin.shipment.edit', $shipment->id) }}" class="btn btn-sm btn-primary">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                     </td>

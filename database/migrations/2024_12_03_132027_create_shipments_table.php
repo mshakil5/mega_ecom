@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('shipping_id')->nullable();
             $table->foreign('shipping_id')->references('id')->on('shippings')->onDelete('cascade');
+            $table->json('purchase_ids')->nullable();
             $table->integer('total_product_quantity')->nullable();
             $table->integer('total_missing_quantity')->nullable();
             $table->decimal('total_purchase_cost',10,2)->nullable();

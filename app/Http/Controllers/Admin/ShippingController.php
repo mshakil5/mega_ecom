@@ -31,7 +31,7 @@ class ShippingController extends Controller
             }
         }
 
-        return view('admin.shipment.create', compact('data', 'purchases'));
+        return view('admin.shipping.create', compact('data', 'purchases'));
     }
 
     public function searchPurchases(Request $request)

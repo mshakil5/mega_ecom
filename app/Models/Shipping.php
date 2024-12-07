@@ -10,4 +10,10 @@ class Shipping extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    public function shipment()
+    {
+        return $this->hasOne(Shipment::class);
+    }
+
 }
