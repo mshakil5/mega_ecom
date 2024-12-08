@@ -36,12 +36,23 @@ class ShippingController extends Controller
 
     public function searchPurchases(Request $request)
     {
-        $invoice = $request->get('invoice');
-
-        // $purchase = Purchase::where('status', 4)->where('invoice', $invoice)->first(['id', 'invoice']);
+        $invoice = $request->input('invoice');
         $purchase = Purchase::where('invoice', $invoice)->first(['id', 'invoice']);
-
+    
         if ($purchase) {
+            $allShipped = Purchase::with('purchaseHistory')
+                ->where('invoice', $invoice)
+                ->whereHas('purchaseHistory', function ($query) {
+                    $query->havingRaw('SUM(quantity) = SUM(shipped_quantity)')
+                        ->where('quantity', '>', 0)
+                        ->where('shipped_quantity', '>', 0);
+                })
+                ->exists();
+    
+            if ($allShipped) {
+                return response()->json(['message' => 'This invoice has already been completed (all products shipped)'], 400);
+            }
+    
             return response()->json($purchase);
         } else {
             return response()->json(['message' => 'Purchase not found'], 404);

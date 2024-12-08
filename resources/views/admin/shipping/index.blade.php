@@ -61,7 +61,7 @@
                                     <td>
                                         @if($shipping->shipment)
                                         <span class="badge bg-success ms-2">Price Added</span>
-                                        <a href="{{ route('admin.shipment.edit', $shipping->id) }}" class="btn btn-info btn-sm"><i class="fas fa-dollar-sign"></i></a>
+                                        <a href="{{ route('admin.shipment.edit', $shipping->id) }}" class="btn btn-info btn-sm disabled"><i class="fas fa-dollar-sign"></i></a>
                                         <button class="btn btn-sm btn-primary view-details" 
                                                 data-shipping-id="{{ $shipping->shipping_id }}"
                                                 data-shipping-date="{{ \Carbon\Carbon::parse($shipping->shipping_date)->format('d-m-Y') }}"
@@ -363,12 +363,15 @@
         if (query.length > 0) {
             $.ajax({
                 url: '/admin/search-purchases',
-                method: 'GET',
+                method: 'POST', 
                 data: {
-                    invoice: query
+                    invoice: query,
+                    _token: $('meta[name="csrf-token"]').attr('content')
                 },
-                success: function(data) {
-                    if (data.id) {
+                success: function(data) {                
+                    if (data.status === '400') {
+                        $('#purchase_results').html('<div class="list-group-item">This invoice has already been completed (all products shipped).</div>').show();
+                    } else if (data.id) {
                         if (!selectedInvoices.includes(data.invoice)) {
                             $('#purchase_results').html(`
                                 <a href="#" class="list-group-item list-group-item-action" onclick="selectPurchase('${data.id}', '${data.invoice}')">${data.invoice}</a>
@@ -377,7 +380,7 @@
                             $('#purchase_results').html('<div class="list-group-item">Invoice already added.</div>').show();
                         }
                     } else {
-                        $('#purchase_results').html('<div class="list-group-item">No matching purchase found.</div>').show();
+                        $('#purchase_results').html('<div class="list-group-item">This invoice has already been completed.</div>').show();
                     }
                 },
                 error: function() {

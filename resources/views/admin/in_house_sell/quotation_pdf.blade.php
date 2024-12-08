@@ -96,7 +96,7 @@
             </div>
             <div>
                 <strong>Quotation #: </strong> {{ $order->invoice }}<br>
-                <strong>Purchase Date: </strong> {{ Carbon::parse($order->purchase_date)->format('d F Y') }}
+                <strong>Date: </strong> {{ Carbon::parse($order->purchase_date)->format('d F Y') }}
             </div>
         </div>
 

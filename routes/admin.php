@@ -268,7 +268,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::get('/shipping', [ShippingController::class, 'shipping'])->name('admin.shipping');
 
-    Route::get('/search-purchases', [ShippingController::class, 'searchPurchases']);
+    Route::post('/search-purchases', [ShippingController::class, 'searchPurchases']);
 
     Route::post('/create-shipment', [ShippingController::class, 'storeShipment']);
 

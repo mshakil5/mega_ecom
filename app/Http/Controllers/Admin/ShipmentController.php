@@ -12,6 +12,7 @@ use App\Models\Shipping;
 use App\Models\PurchaseHistory;
 use App\Models\Purchase;
 use App\Models\Warehouse;
+use App\Models\SystemLose;
 
 class ShipmentController extends Controller
 {
@@ -75,7 +76,7 @@ class ShipmentController extends Controller
         ]);
     
         foreach ($request->shipment_details as $detail) {
-            ShipmentDetails::create([
+            $detailShipment = ShipmentDetails::create([
                 'shipment_id' => $shipment->id,
                 'product_id' => $detail['product_id'],
                 'supplier_id' => $detail['supplier_id'],
@@ -150,9 +151,22 @@ class ShipmentController extends Controller
     
             $purchaseHistory = PurchaseHistory::find($detail['purchase_history_id']);
             if ($purchaseHistory) {
-                $purchaseHistory->shipped_quantity = $detail['shipped_quantity'];
+                $purchaseHistory->shipped_quantity = $detail['shipped_quantity'] +$detail['missing_quantity'] + $purchaseHistory->shipped_quantity;
+                $purchaseHistory->remaining_product_quantity = $purchaseHistory->remaining_product_quantity - $detail['shipped_quantity'] - $detail['missing_quantity'];
                 $purchaseHistory->save();
             }
+
+            if (!empty($detail['missing_quantity']) && $detail['missing_quantity'] > 0) {
+                SystemLose::create([
+                    'product_id' => $detail['product_id'],
+                    'shipment_detail_id' => $detailShipment->id,
+                    'quantity' => $detail['missing_quantity'],
+                    'size' => $detail['size'],
+                    'color' => $detail['color'],
+                    'created_by' => auth()->id()
+                ]);
+            }
+
         }
     
         return response()->json(['message' => 'Shipment created successfully!', 'shipment_id' => $shipment->id], 201);

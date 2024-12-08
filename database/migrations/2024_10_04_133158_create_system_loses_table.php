@@ -25,6 +25,10 @@ return new class extends Migration
             $table->unsignedBigInteger('purchase_id')->nullable();
             $table->foreign('purchase_id')->references('id')->on('purchases')->onDelete('cascade'); 
 
+            $table->integer('shipment_detail_id')->nullable();
+            $table->string('size')->nullable();
+            $table->string('color')->nullable();
+
             $table->string('quantity')->nullable();
             $table->longText('reason')->nullable();
             $table->string('updated_by')->nullable();

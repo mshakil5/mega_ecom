@@ -46,12 +46,15 @@
                                         <th>Product</th>
                                         <th>Size</th>
                                         <th>Color</th>
+                                        <th>Current Stock</th>
+                                        <th>Purchased Quantity</th>
                                         <th>Shipped Quantity</th>
                                         <th>Missing Quantity</th>           
                                         <th>Remaining Quantity</th>           
                                         <th>Purchase Price Per Unit</th>
                                         <th>Ground Price</th>
                                         <th>Profit Margin(%)</th>
+                                        <th>Current Selling Price</th>
                                         <th>Selling Price</th>
                                         <th>Action</th>
                                     </tr>
@@ -73,21 +76,38 @@
                                         </td>
                                         <td>{{ $detail->product_size ?? '' }}</td>
                                         <td>{{ $detail->product_color ?? '' }}</td>
+                                        @php
+                                            $currentStock = $detail->product->stockhistory
+                                                ->where('product_id', $detail->product_id)
+                                                ->where('size', $detail->product_size)
+                                                ->where('color', $detail->product_color)
+                                                ->where('available_qty', '>', 0)
+                                                ->sum('available_qty');
+                                              $currentSellingPrice = $detail->product->stockhistory
+                                                ->where('product_id', $detail->product_id)
+                                                ->where('size', $detail->product_size)
+                                                ->where('color', $detail->product_color)
+                                                ->where('available_qty', '>', 0)
+                                                ->max('selling_price');  
+                                        @endphp
+                                        <td>{{ $currentStock }}</td>
+                                        <td>{{ $detail->quantity }}</td>
                                         <td>
-                                            <input type="number" value="{{ $detail->quantity }}" max="{{ $detail->quantity }}" min="1" class="form-control shipped_quantity"/>
-                                            <input type="hidden" value="{{ $detail->quantity }}" max="{{ $detail->quantity }}" class="max-quantity"/>
+                                            <input type="number" value="{{ $detail->remaining_product_quantity }}" max="{{ $detail->remaining_product_quantity }}" min="1" class="form-control shipped_quantity"/>
+                                            <input type="hidden" value="{{ $detail->remaining_product_quantity }}" max="{{ $detail->remaining_product_quantity }}" class="max-quantity"/>
                                         </td>              
                                         <td>
-                                            <input type="number" value="0" max="{{ $detail->quantity }}" min="0" class="form-control missing_quantity"/>
+                                            <input type="number" value="0" max="{{ $detail->remaining_product_quantity }}" min="0" class="form-control missing_quantity"/>
                                         </td>
                                         <td>
-                                            <input type="number" value="0" max="{{ $detail->quantity }}" min="0" class="form-control remaining_quantity" readonly>
+                                            <input type="number" value="0" max="{{ $detail->remaining_product_quantity }}" min="0" class="form-control remaining_quantity" readonly>
                                         </td>
                                         <td>{{ number_format($detail->purchase_price, 2) }}</td>
                                         <td class="ground_cost"></td>
                                         <td>
                                             <input type="number" value="30" min="1" class="form-control profit_margin" />
                                         </td>
+                                        <td>{{ number_format($currentSellingPrice, 2) }}</td>
                                         <td class="selling_price"></td>
                                         <td>
                                             <button type="button" class="btn btn-danger remove-row"><i class="fas fa-trash"></i></button>
@@ -272,9 +292,7 @@
                     `).show();
                     pagetop();
 
-                    setTimeout(function() {
-                        location.reload();
-                    }, 2000);
+                    window.location.href = "{{ route('admin.shipping') }}";
                 },
                 error: function(xhr, status, error) {
                     // console.error(xhr.responseText);

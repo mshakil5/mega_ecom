@@ -511,7 +511,7 @@
 
             formData.push({ name: 'products', value: JSON.stringify(products) });
 
-            console.log(formData);
+            // console.log(formData);
 
             $.ajax({
                 url: '/admin/in-house-sell',
@@ -607,7 +607,7 @@
 
             formData.push({ name: 'products', value: JSON.stringify(products) });
 
-            console.log(formData);
+            // console.log(formData);
 
             $.ajax({
                 url: '/admin/make-quotation',
