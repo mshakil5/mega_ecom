@@ -46,7 +46,7 @@
                                         <a href="{{ route('admin.orders.details', ['orderId' => $order->id]) }}" class="btn btn-info btn-round btn-shadow">
                                             <i class="fas fa-info-circle"></i> Details
                                         </a>
-                                        <a href="{{ route('orders.download-pdf', ['encoded_order_id' => base64_encode($order->id)]) }}" class="btn btn-warning btn-round btn-shadow">
+                                        <a href="{{ route('orders.download-pdf', ['encoded_order_id' => base64_encode($order->id)]) }}" class="btn btn-warning btn-round btn-shadow" target="_blank">
                                             <i class="fas fa-download"></i> Download PDF
                                         </a>
                                     </td>

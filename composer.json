@@ -16,6 +16,7 @@
         "laravelcollective/html": "^6.4",
         "league/omnipay": "^3.2",
         "omnipay/paypal": "^3.0",
+        "rmunate/spell-number": "^4.2",
         "stripe/stripe-php": "^10.12",
         "yajra/laravel-datatables-oracle": "^10.11"
     },
