@@ -16,7 +16,7 @@ class ShippingController extends Controller
 
     public function shipping()
     {
-        $data = Shipping::orderBy('id', 'DESC')->get();
+        $data = Shipping::with(['shipment.shipmentDetails.supplier', 'shipment.shipmentDetails.product'])->orderBy('id', 'DESC')->get();
         $purchases = Purchase::select('id', 'invoice')->latest()->get();
         foreach ($data as $shipment) {
             $purchaseIds = json_decode($shipment->purchase_ids);
@@ -31,7 +31,7 @@ class ShippingController extends Controller
             }
         }
 
-        return view('admin.shipping.create', compact('data', 'purchases'));
+        return view('admin.shipping.index', compact('data', 'purchases'));
     }
 
     public function searchPurchases(Request $request)
@@ -105,35 +105,6 @@ class ShippingController extends Controller
         $shipment->save();
 
         return response()->json(['message' => 'Shipment updated successfully', 'shipment' => $shipment]);
-    }
-
-    public function searchShipmentById(Request $request)
-    {
-        $shippingId = $request->input('shipping_id');
-        $shipment = Shipping::where('shipping_id', $shippingId)->first();
-
-        if ($shipment) {
-            $purchaseIds = json_decode($shipment->purchase_ids, true);
-            $purchaseHistories = PurchaseHistory::whereIn('purchase_id', $purchaseIds)
-                ->with('product', 'purchase.supplier')
-                ->orderBy('purchase_id', 'asc')
-                ->get();
-        
-            $purchases = Purchase::with('supplier')->whereIn('id', $purchaseIds)->get();
-
-            return response()->json([
-                'success' => true,
-                'id' => $shipment->id,
-                'purchase_ids' => $purchaseIds,
-                'shipping_id' => $shipment->shipping_id,
-                'shipping_date' => Carbon::parse($shipment->shipping_date)->format('d-m-Y'),
-                'shipping_name' => $shipment->shipping_name,
-                'purchase_histories' => $purchaseHistories,
-                'purchases' => $purchases
-            ]);
-        }
-
-        return response()->json(['success' => false, 'message' => 'Shipping ID not found.']);
     }
 
 }

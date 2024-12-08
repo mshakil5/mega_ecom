@@ -276,8 +276,6 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::put('/update-shipment/{id}', [ShippingController::class, 'updateShipment'])->name('update.shipment');
 
-    Route::post('/search-shipment', [ShippingController::class, 'searchShipmentById']);
-
     Route::get('/shipment-history/create/{id}', [ShipmentController::class, 'createShipment'])->name('admin.shipment.create');
 
     Route::post('/shipment-store', [ShipmentController::class, 'storeShipment']);
@@ -287,8 +285,6 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::put('/shipment-update/{id}', [ShipmentController::class, 'updateShipment'])->name('admin.shipment.update');
 
     Route::post('/shipment/update-status', [ShipmentController::class, 'updateStatus'])->name('admin.shipment.updateStatus');
-
-    Route::get('/shipment-history', [ShipmentController::class, 'shipmentHistory'])->name('admin.shipment.history');
     
     Route::get('/missing-purchase-product/{id}', [StockController::class, 'missingProduct'])->name('missingProduct');
     Route::get('/transfer-to-warehouse/{id}', [WarehouseController::class, 'transfer'])->name('transferToWarehouse');

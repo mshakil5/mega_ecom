@@ -15,15 +15,6 @@ use App\Models\Warehouse;
 
 class ShipmentController extends Controller
 {
-
-    public function shipmentHistory()
-    {
-        $shipments = Shipment::with(['shipping', 'shipmentDetails.product', 'shipmentDetails.supplier'])
-                         ->latest()
-                         ->get();
-        return view('admin.shipment.history', compact('shipments'));
-    }
-
     public function createShipment($id)
     {
         $shipping = Shipping::with('shipment')->find($id);

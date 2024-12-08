@@ -149,7 +149,7 @@
 
                                         <div class="row mt-5">
                                             <div class="col-sm-12 d-flex justify-content-start">
-                                                <button id="calculateSalesPriceBtn" class="btn btn-success" style="margin-left: 10px;">Calculate</button>
+                                                <button id="calculateSalesPriceBtn" class="btn btn-success" style="margin-left: 10px;">Calculate Sales Price</button>
                                             </div>
                                         </div>
 
@@ -172,6 +172,10 @@
 
         $('#calculateSalesPriceBtn').on('click', function(event) {
             event.preventDefault();
+
+            if (!confirm("Are you sure you want to proceed with creating the shipment?")) {
+                return;
+            }
 
             let shippingId = $('#shipping_id').val();
             let warehouseId = $('#warehouse_id').val();
