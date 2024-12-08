@@ -398,6 +398,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::get('order/{encoded_order_id}/download-pdf', [InHouseSellController::class, 'generateDownloadPDF'])->name('orders.download-pdf');
 
+    Route::post('/send-email/{order}', [InHouseSellController::class, 'sendQuotationEmail'])->name('orders.send-email');
+
     Route::get('/order-edit/{orderId}', [InHouseSellController::class, 'editOrder'])->name('order-edit');
 
     Route::post('/order-update', [InHouseSellController::class, 'updateOrder']);

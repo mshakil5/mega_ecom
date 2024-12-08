@@ -19,6 +19,7 @@ use App\Models\Transaction;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\OrderConfirmation;
 use App\Models\ContactEmail;
+use App\Mail\QuotaionEmail;
 
 class InHouseSellController extends Controller
 {
@@ -243,7 +244,7 @@ class InHouseSellController extends Controller
 
         $pdf = PDF::loadView('admin.in_house_sell.quotation_pdf', $data);
 
-        return $pdf->stream('order_' . $order->id . '.pdf');
+        return $pdf->download('order_' . $order->id . '.pdf');
     }
 
 
@@ -491,6 +492,22 @@ class InHouseSellController extends Controller
             'pdf_url' => $pdfUrl,
             'message' => 'Order updated successfully'
         ], 200);
+    }
+
+    public function sendQuotationEmail($orderId)
+    {
+        $order = Order::find($orderId);
+
+        if (!$order) {
+            return response()->json(['message' => 'Order not found'], 404);
+        }
+
+        $user = $order->user;
+        $downloadLink = route('orders.download-pdf', ['encoded_order_id' => base64_encode($order->id)]);
+
+        Mail::to($user->email)->send(new QuotaionEmail($order, $downloadLink));
+
+        return redirect()->back()->with('success', 'Email sent successfully');
     }
 
 }
