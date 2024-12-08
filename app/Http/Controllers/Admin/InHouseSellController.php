@@ -192,7 +192,7 @@ class InHouseSellController extends Controller
         $encoded_order_id = base64_encode($order->id);
         $pdfUrl = route('in-house-sell.generate-pdf', ['encoded_order_id' => $encoded_order_id]);
 
-        // Mail::to($order->user->email)->send(new OrderConfirmation($order, $pdfUrl));
+        Mail::to($order->user->email)->send(new OrderConfirmation($order, $pdfUrl));
 
         // $contactEmails = ContactEmail::where('status', 1)->pluck('email');
 
@@ -244,7 +244,7 @@ class InHouseSellController extends Controller
 
         $pdf = PDF::loadView('admin.in_house_sell.quotation_pdf', $data);
 
-        return $pdf->download('order_' . $order->id . '.pdf');
+        return $pdf->stream('order_' . $order->id . '.pdf');
     }
 
 
@@ -300,15 +300,15 @@ class InHouseSellController extends Controller
         }
 
         $encoded_order_id = base64_encode($order->id);
-        $pdfUrl = route('in-house-sell.generate-pdf', ['encoded_order_id' => $encoded_order_id]);
+        $pdfUrl = route('orders.download-pdf', ['encoded_order_id' => $encoded_order_id]);
 
         Mail::to($order->user->email)->send(new OrderConfirmation($order, $pdfUrl));
 
-        $contactEmails = ContactEmail::where('status', 1)->pluck('email');
+        // $contactEmails = ContactEmail::where('status', 1)->pluck('email');
 
-        foreach ($contactEmails as $email) {
-            Mail::to($email)->send(new OrderConfirmation($order, $pdfUrl));
-        }
+        // foreach ($contactEmails as $email) {
+        //     Mail::to($email)->send(new OrderConfirmation($order, $pdfUrl));
+        // }
 
         return response()->json(['message' => 'Quotation created successfully', 'order_id' => $order->id], 201);
     }

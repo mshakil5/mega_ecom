@@ -1,11 +1,11 @@
 @component('mail::message')
-# Order Confirmation
+# {{ $order->order_type === 2 ? 'Quotation Confirmation' : 'Order Confirmation' }}
 
 Dear {{ $order->user_id ? $order->user->name : $order->name }},
 
-Thank you for your order. Below are the details of your purchase:
+Thank you for your {{ $order->order_type === 2 ? 'quotation' : 'order' }}. Below are the details of your {{ $order->order_type === 2 ? 'quotation' : 'purchase' }}:
 
-- **Invoice**#: {{ $order->invoice }}
+- **{{ $order->order_type === 2 ? 'Quotation' : 'Order' }}**#: {{ $order->invoice }}
 - **Purchase Date**: {{ \Carbon\Carbon::parse($order->purchase_date)->format('F d, Y') }}
 @if($order->order_type === 0)
 - **Payment Method**: {{ $order->payment_method === 'CashOnDelivery' ? 'Cash On Delivery' : ucfirst($order->payment_method) }}
@@ -13,7 +13,7 @@ Thank you for your order. Below are the details of your purchase:
 - **Total Amount**: {{ $order->net_amount }}
 
 @component('mail::button', ['url' => $pdfUrl])
-Download PDF Invoice
+    {{ $order->order_type === 2 ? 'Download Quotation' : 'Download Invoice' }}
 @endcomponent
 
 Thanks for choosing us!
