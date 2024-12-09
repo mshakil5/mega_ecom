@@ -25,7 +25,7 @@
 
         .table-bordered th,
         .table-bordered td {
-            border: 1px solid black !important;
+            border: 1px solid lightgray !important;
         }
 
         .table th,
@@ -104,9 +104,9 @@
 
                 <div class="col-md-6" style="margin-top: -50px; padding-bottom: 15px">
                     <div class="text-end">
-                        @if($order->user->name) <strong>Name: </strong> {{ $order->user->name }}<br> @endif
-                        @if($order->user->email) <strong>Email: </strong> {{ $order->user->email }}<br> @endif
-                        @if($order->user->phone) <strong>Phone: </strong> {{ $order->user->phone }} <br> @endif
+                        @if($order->user->name) <strong></strong> {{ $order->user->name }}<br> @endif
+                        @if($order->user->email) <strong></strong> {{ $order->user->email }}<br> @endif
+                        @if($order->user->phone) <strong></strong> {{ $order->user->phone }} <br> @endif
                     </div>
                 </div>
             </div>

@@ -518,8 +518,8 @@ class StockController extends Controller
         ->whereHas('purchaseHistory', function ($query) {
             $query->selectRaw('purchase_id, SUM(quantity) as total_quantity, SUM(shipped_quantity) as total_shipped')
                 ->groupBy('purchase_id')
-                ->where('quantity', '>', 0)
-                ->where('shipped_quantity', '=', 0);
+                ->havingRaw('SUM(shipped_quantity) = 0')
+                ->where('quantity', '>', 0);
         })
         ->orderBy('id', 'DESC')
         ->get();
