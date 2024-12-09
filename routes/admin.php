@@ -289,6 +289,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/missing-purchase-product/{id}', [StockController::class, 'missingProduct'])->name('missingProduct');
     Route::get('/transfer-to-warehouse/{id}', [WarehouseController::class, 'transfer'])->name('transferToWarehouse');
     Route::get('/purchase-history', [StockController::class, 'productPurchaseHistory'])->name('productPurchaseHistory');
+    Route::get('/new-purchase-history', [StockController::class, 'newPurchaseHistory'])->name('admin.newPurchaseHistory');
     Route::get('/live-purchase-history', [StockController::class, 'livePurchaseHistory'])->name('admin.livePurchaseHistory');
     Route::get('/completed-purchase-history', [StockController::class, 'completedPurchaseHistory'])->name('admin.completedPurchaseHistory');
     Route::get('/purchase/{purchase}/history', [StockController::class, 'getPurchaseHistory'])->name('purchase.history');

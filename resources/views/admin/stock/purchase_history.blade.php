@@ -24,7 +24,8 @@
                                     <th>Due Amount</th>
                                     <!-- <th>Not Transferred Quantity</th>
                                     <th>Missing Quantity</th> -->
-                                    <!-- <th>Status</th> -->
+                                    <th>Shipped Quantity</th>
+                                    <th>Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -60,14 +61,26 @@
 
                                     <!-- <td>{{ $totalRemainingQuantity }}</td>
                                     <td>{{$purchase->purchaseHistory->sum('missing_product_quantity')}}</td> -->
-                                    <!-- <td>
-                                        <select class="form-control purchase-status" data-purchase-id="{{ $purchase->id }}">
+                                    <td>{{$purchase->purchaseHistory->sum('shipped_quantity')}}</td>
+                                    <td>
+                                        @php
+                                            $totalRemainingQuantity = $purchase->purchaseHistory->sum('remaining_product_quantity');
+                                            $totalShippedQuantity = $purchase->purchaseHistory->sum('shipped_quantity');
+                                        @endphp
+                                        @if ($totalRemainingQuantity == 0)
+                                            <span class="btn btn-sm btn-success">Completed</span>
+                                        @elseif($totalShippedQuantity > 1)
+                                            <span class="btn btn-sm btn-success">Partially Completed</span>
+                                        @elseif($totalShippedQuantity == 0)
+                                        <span class="btn btn-sm btn-success">New</span>
+                                        <!-- <select class="form-control purchase-status" data-purchase-id="{{ $purchase->id }}">
                                             <option value="1" {{ $purchase->status == 1 ? 'selected' : '' }}>Processing</option>
                                             <option value="2" {{ $purchase->status == 2 ? 'selected' : '' }}>On The Way</option>
                                             <option value="3" {{ $purchase->status == 3 ? 'selected' : '' }}>Customs</option>
                                             <option value="4" {{ $purchase->status == 4 ? 'selected' : '' }}>Received</option>
-                                        </select>
-                                    </td> -->
+                                        </select> -->
+                                        @endif
+                                    </td>
                                     <td>
                                         <a class="btn btn-sm btn-info" onclick="showViewPurchaseModal({{ $purchase->id }})">
                                             <i class="fas fa-eye"></i>
@@ -137,8 +150,8 @@
                         <thead>
                             <tr>
                                 <th>Product Details</th>
-                                <th>Purchase Quantity</th>
-                                <th>Shipped Quantity</th>
+                                <th>Purchased Quantity</th>
+                                <th>Shipped + Missed Quantity</th>
                                 <th>Purchase Price Per Unit</th>
                                 <th>Net Total</th>
                             </tr>

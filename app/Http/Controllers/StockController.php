@@ -512,6 +512,21 @@ class StockController extends Controller
         return view('admin.stock.purchase_history', compact('purchases'));
     }
 
+    public function newPurchaseHistory()
+    {
+        $purchases = Purchase::with('purchaseHistory.product', 'supplier')
+        ->whereHas('purchaseHistory', function ($query) {
+            $query->selectRaw('purchase_id, SUM(quantity) as total_quantity, SUM(shipped_quantity) as total_shipped')
+                ->groupBy('purchase_id')
+                ->where('quantity', '>', 0)
+                ->where('shipped_quantity', '=', 0);
+        })
+        ->orderBy('id', 'DESC')
+        ->get();
+
+        return view('admin.stock.purchase_history', compact('purchases'));
+    }
+
     public function livePurchaseHistory()
     {
         $purchases = Purchase::with('purchaseHistory.product', 'supplier')
