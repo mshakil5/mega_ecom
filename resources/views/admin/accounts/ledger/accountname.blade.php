@@ -34,6 +34,10 @@
                                             @endforeach
                                         </td>
                                         <td>
+                                        <a href="{{ url('/admin/ledger/cnf-cost/details') }}" class="btn btn-block btn-default btn-xs">CNF Cost</a>
+                                        <a href="{{ url('/admin/ledger/import-duties-taxes/details') }}" class="btn btn-block btn-default btn-xs">Import Duties & Taxes</a>
+                                        <a href="{{ url('/admin/ledger/warehouse-handling-costs/details') }}" class="btn btn-block btn-default btn-xs">Warehouse & Handling Costs</a>
+                                        <a href="{{ url('/admin/ledger/other-costs/details') }}" class="btn btn-block btn-default btn-xs">Other Costs</a>
                                             @foreach($chartOfAccounts as $expense)
                                                 @if($expense->account_head == 'Expenses')   
                                                     <a href="{{ url('/admin/ledger/expense-details/' . $expense->id) }}" class="btn btn-block btn-default btn-xs">{{ $expense->account_name }}</a>

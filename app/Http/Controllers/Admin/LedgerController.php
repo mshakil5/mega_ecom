@@ -67,6 +67,39 @@ class LedgerController extends Controller
         return view('admin.accounts.ledger.equity', compact('data', 'totalBalance','accountName'));
     }
 
+    public function shipmentCostLedger($slug)
+    {
+        if ($slug == 'cnf-cost') {
+            $costColumn = 'cnf_cost';
+            $accountName = 'CNF Cost';
+        } elseif ($slug == 'import-duties-taxes') {
+            $costColumn = 'import_duties_tax';
+            $accountName = 'Import Duties & Taxes';
+        } elseif ($slug == 'warehouse-handling-costs') {
+            $costColumn = 'warehouse_and_handling_cost';
+            $accountName = 'Warehouse & Handling Costs';
+        } elseif ($slug == 'other-costs') {
+            $costColumn = 'other_cost';
+            $accountName = 'Other Costs';
+        } else {
+            abort(404, 'Invalid cost type.');
+        }
+    
+        $transactions = Transaction::with('shipment')
+        ->where('table_type', 'Shipment')
+        ->latest()
+        ->get();
+
+        $transactions->each(function ($transaction) use ($costColumn) {
+            $transaction->expense_cost = $transaction->shipment->$costColumn;
+        });
+    
+        $totalBalance = $transactions->sum('expense_cost');
+
+        return view('admin.accounts.ledger.shipment_expense', compact('transactions', 'totalBalance', 'accountName'));
+    }
+    
+
     public function purchaseLedger()
     {
         

@@ -23,4 +23,9 @@ class Transaction extends Model
     {
         return $this->belongsTo(User::class, 'customer_id');
     }
+    
+    public function shipment()
+    {
+        return $this->belongsTo(Shipment::class, 'shipment_id');
+    }
 }

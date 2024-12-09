@@ -585,6 +585,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('ledger/liability-details/{id}', [LedgerController::class, 'liability']);
     Route::get('ledger/equity-details/{id}', [LedgerController::class, 'equity']);
 
+    Route::get('/ledger/{slug}/details', [LedgerController::class, 'shipmentCostLedger'])->name('ledger.expense-details');
+
     // purchase and sales ledger
     Route::get('ledger-sales', [LedgerController::class, 'salesLedger'])->name('ledger.sales');
     Route::get('ledger-purchase', [LedgerController::class, 'purchaseLedger'])->name('ledger.purchase');
