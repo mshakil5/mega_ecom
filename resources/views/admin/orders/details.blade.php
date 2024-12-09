@@ -2,6 +2,17 @@
 
 @section('content')
 
+<style>
+  .quotation-table tr {
+    line-height: 1.5;
+  }
+  .quotation-table th, .quotation-table td {
+    padding: 5px;
+  }
+  .quotation-table td {
+    text-align: right;
+  }
+</style>
 
 <section class="content  pt-3">
     <div class="container-fluid">
@@ -220,28 +231,54 @@
 
             <div class="row">
               <!-- accepted payments column -->
-              <div class="col-6"></div>
+              <div class="col-8">
+              @if($order->order_type === 2)
+                    <a href="{{ route('order-edit', ['orderId' => $order->id]) }}" class="btn btn-success">
+                        <i class="far fa-credit-card"></i> Create Order
+                    </a>
+                @endif
+                
+                @if ($order->order_type === 0)
+                <a href="{{ route('generate-pdf', ['encoded_order_id' => base64_encode($order->id)]) }}" class="btn btn-success" target="_blank"  style="margin-right: 5px;">
+                    <i class="fas fa-receipt"></i> Download Invoice
+                </a>
+                @elseif ($order->order_type === 2)
+                <a href="{{ route('orders.download-pdf', ['encoded_order_id' => base64_encode($order->id)]) }}" class="btn btn-success" target="_blank"  style="margin-right: 5px;">
+                    <i class="fas fa-receipt"></i> Download Quotation
+                </a>
+                @else
+                <a href="{{ route('in-house-sell.generate-pdf', ['encoded_order_id' => base64_encode($order->id)]) }}" class="btn btn-success" target="_blank"  style="margin-right: 5px;">
+                    <i class="fas fa-receipt"></i> Download Invoice
+                </a>
+                @endif
+              </div>
               <!-- /.col -->
-              <div class="col-6">
+              <div class="col-4">
                 
                 <div class="table-responsive">
-                  <table class="table">
+                  <table class="table quotation-table">
                     <tr>
-                      <th style="width:50%">Subtotal:</th>
+                      <th>Subtotal:</th>
                       <td>{{ number_format($order->subtotal_amount, 2) }}</td>
                     </tr>
+                    @if($order->vat_amount > 0)
                     <tr>
                       <th>Vat Amount</th>
                       <td> {{ $order->vat_amount }}</td>
                     </tr>
+                    @endif
+                    @if($order->shipping_amount > 0)
                     <tr>
                       <th>Shipping:</th>
                       <td>{{ number_format($order->shipping_amount, 2) }}</td>
                     </tr>
+                    @endif
+                    @if($order->discount_amount > 0)
                     <tr>
                       <th>Discount:</th>
                       <td>{{ number_format($order->discount_amount, 2) }}</td>
                     </tr>
+                    @endif
                     <tr>
                       <th>Total:</th>
                       <td>{{ number_format($order->net_amount, 2) }}</td>
@@ -256,28 +293,6 @@
             <!-- /.row -->
 
             <!-- this row will not appear when printing -->
-            <div class="row no-print">
-              <div class="col-12">
-
-                @if($order->order_type === 2)
-                    <a href="{{ route('order-edit', ['orderId' => $order->id]) }}" class="btn btn-success float-right">
-                        <i class="far fa-credit-card"></i> Create Order
-                    </a>
-                @endif
-                
-                @if ($order->order_type === 0)
-                <a href="{{ route('generate-pdf', ['encoded_order_id' => base64_encode($order->id)]) }}" class="btn btn-success float-right" target="_blank"  style="margin-right: 5px;">
-                    <i class="fas fa-receipt"></i> Download
-                </a>
-                @else
-                <a href="{{ route('in-house-sell.generate-pdf', ['encoded_order_id' => base64_encode($order->id)]) }}" class="btn btn-success float-right" target="_blank"  style="margin-right: 5px;">
-                    <i class="fas fa-receipt"></i> Download
-                </a>
-                @endif
-
-
-              </div>
-            </div>
           </div>
           <!-- /.invoice -->
         </div><!-- /.col -->

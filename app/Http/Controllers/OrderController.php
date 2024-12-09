@@ -1488,7 +1488,6 @@ class OrderController extends Controller
         $order = Order::with(['user', 'orderDetails.product', 'orderDetails.buyOneGetOne', 'bundleProduct'])
             ->where('id', $orderId)
             ->firstOrFail();
-            // dd($order);
         return view('admin.orders.details', compact('order'));
     }
 
