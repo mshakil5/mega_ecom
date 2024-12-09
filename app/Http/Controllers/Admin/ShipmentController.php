@@ -13,6 +13,7 @@ use App\Models\PurchaseHistory;
 use App\Models\Purchase;
 use App\Models\Warehouse;
 use App\Models\SystemLose;
+use App\Models\Transaction;
 
 class ShipmentController extends Controller
 {
@@ -74,6 +75,20 @@ class ShipmentController extends Controller
             'purchase_ids' => $purchaseIds,
             'created_by' => auth()->id(),
         ]);
+
+        $transaction = new Transaction();
+        $transaction->date = $shipping->shipping_date;
+        $transaction->shipment_id = $shipment->id;
+        $transaction->table_type = 'Shipment';
+        $transaction->description = 'Shipment cost';
+        $transaction->amount = $request->total_additional_cost;
+        $transaction->at_amount = $request->total_additional_cost;
+        $transaction->transaction_type = 'Current';
+        $transaction->payment_type = 'Credit';
+        $transaction->created_by = auth()->id();
+        $transaction->save();
+        $transaction->tran_id = 'EX' . date('ymd') . str_pad($transaction->id, 4, '0', STR_PAD_LEFT);
+        $transaction->save();
     
         foreach ($request->shipment_details as $detail) {
             $detailShipment = ShipmentDetails::create([

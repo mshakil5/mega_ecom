@@ -61,6 +61,9 @@
                                 </thead>
                                 <tbody id="purchaseData">
                                     @foreach($purchaseHistories as $detail)
+                                        @if($detail->remaining_product_quantity == 0)
+                                            @continue
+                                        @endif
                                     <tr>
                                         <td>
                                             {{ $detail->purchase->supplier->name ?? '' }}
