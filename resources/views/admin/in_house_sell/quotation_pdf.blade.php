@@ -77,7 +77,7 @@
 
         .signature {
             margin-top: 10px;
-            text-align: center;
+            /* text-align: center; */
         }
 
         .signature-line {
@@ -94,9 +94,21 @@
             <div class="logo">
                 <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/company/'.$company->company_logo))) }}" alt="Company Logo">
             </div>
-            <div>
-                <strong>Quotation #: </strong> {{ $order->invoice }}<br>
-                <strong>Date: </strong> {{ Carbon::parse($order->purchase_date)->format('d F Y') }}
+            <div class="row">
+                <div class="col-md-6">
+                    <div>
+                        <strong>Quotation #: </strong> {{ $order->invoice }}<br>
+                        <strong>Date: </strong> {{ Carbon::parse($order->purchase_date)->format('d F Y') }}
+                    </div>
+                </div>
+
+                <div class="col-md-6" style="margin-top: -50px; padding-bottom: 15px">
+                    <div class="text-end">
+                        @if($order->user->name) <strong>Name: </strong> {{ $order->user->name }}<br> @endif
+                        @if($order->user->email) <strong>Email: </strong> {{ $order->user->email }}<br> @endif
+                        @if($order->user->phone) <strong>Phone: </strong> {{ $order->user->phone }} <br> @endif
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -189,30 +201,30 @@
         <div class="footer mt-4">
             <div class="container">
                 <div class="row">
-                    <div class="col-6">
-                        <div class="text-center">
-                            <div><strong>Payment Terms are through Bank Transfer Only:</strong></div>
-                            <div>SAPPHIRE TRADELINKS</div>
-                            <div>Acc no: 48302821</div>
-                            <div>Sort Code: 56-00-70</div>
-                            <div>IBAN: GB44NWBK56007048302821</div>
-                            <div>SWIFT: NWBKGb2L</div>
+                    <div class="col-5">
+                        <div>
+                            <strong>Payment Terms are through Bank Transfer Only:</strong><br>
+                            SAPPHIRE TRADELINKS<br>
+                            Acc no: 48302821<br>
+                            Sort Code: 56-00-70<br>
+                            IBAN: GB44NWBK56007048302821 <br>
+                            SWIFT: NWBKGB2L
                         </div>
                     </div>
-                </div>
 
-                <div class="mt-3">
-                    <div class="text-center">
-                        <div>Feel free to contact us for further queries.</div>
-                    </div>
-
-                    <div class="signature text-center mt-3">
-                        <div class="signature-line"></div>
-                        <div>ISMAIL MIAH</div>
+                    <div class="col-7 text-end" style="margin-top: -150px">
+                        <div>
+                            Feel free to contact us.
+                        </div>
+                        <div class="signature mt-3">
+                            <div style="border-top: 1px solid #000; width: 100px; margin: 10px 0; display: inline-block;"></div>
+                            <div><strong>ISMAIL MIAH</strong></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 </body>
 
