@@ -169,8 +169,8 @@
 
         
         <!-- Sales -->
-        <li class="nav-item dropdown {{ request()->is('admin/*order*') || request()->is('admin/quotation*') && !request()->is('admin/all-inhouse-orders') ? 'menu-open' : '' }}">
-            <a href="#" class="nav-link dropdown-toggle {{ request()->is('admin/*order*') || request()->is('admin/quotation*') && !request()->is('admin/all-inhouse-orders') ? 'active' : '' }}">
+        <li class="nav-item dropdown {{ request()->is('admin/*order*') || request()->is('admin/quotation*') || request()->is('admin/in-house-sell*') && !request()->is('admin/all-inhouse-orders') ? 'menu-open' : '' }}">
+            <a href="#" class="nav-link dropdown-toggle {{ request()->is('admin/*order*') || request()->is('admin/in-house-sell*') || request()->is('admin/quotation*') && !request()->is('admin/all-inhouse-orders') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-truck"></i>
                 <p>
                     Sales <i class="fas fa-angle-left right"></i>

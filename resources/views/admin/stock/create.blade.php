@@ -360,8 +360,8 @@
         updateSummary();
 
         $('#addProductBtn').click(function() {
-            var selectedSize = $('#product_size').val() || '';
-            var selectedColor = $('#product_color').val() || '';
+            var selectedSize = $('#product_size').val();
+            var selectedColor = $('#product_color').val();
             
             var selectedProduct = $('#product_id option:selected');
             var productId = selectedProduct.val();
@@ -391,7 +391,12 @@
                 }
             });
 
-            if (productId && quantity && unitPrice) {
+            if (!productId || !quantity || !unitPrice || !selectedSize || !selectedColor) {
+                alert('Please fill in all required fields: product, quantity, unit price, size, and color.');
+                return;
+            }
+
+            if (productId && quantity && unitPrice && selectedSize && selectedColor) {
                 var productRow = `<tr data-id="${productId}">
                                     <td>${productName}</td>
                                     <td><input type="number" class="form-control quantity" value="${quantity}" min="1" /></td>

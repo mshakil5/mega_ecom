@@ -131,7 +131,7 @@
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="size">Size</label>
+                                        <label for="size">Size <span class="text-danger">*</span></label>
                                         <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addSizeModal">Add New</span>
                                         <select class="form-control" id="size" name="size">
                                             <option value="">Select...</option>
@@ -143,7 +143,7 @@
                                 </div>
                                  <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="color">Color</label>
+                                        <label for="color">Color <span class="text-danger">*</span></label>
                                         <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
                                         <select class="form-control" id="color" name="color">
                                             <option value="">Select...</option>
@@ -360,8 +360,8 @@
             var groundPrice = parseFloat($('#ground_price').val()) || 0;
             var profitMargin = parseFloat($('#profit_margin').val()) || 0;
             var quantity = parseFloat($('#quantity').val()) || 1;
-            var selectedSize = $('#size').val() || '';
-            var selectedColor = $('#color').val() || '';
+            var selectedSize = $('#size').val();
+            var selectedColor = $('#color').val();
             var vatPercent = 5;
 
             if (isNaN(quantity) || quantity <= 0) {
@@ -385,7 +385,12 @@
                 }
             });
 
-            if (productId && quantity && unitPrice) {
+            if (!productId || !quantity || !unitPrice || !selectedSize || !selectedColor) {
+                alert('Please fill in all required fields: product, quantity, unit price, size, and color.');
+                return;
+            }
+
+            if (productId && quantity && unitPrice && selectedSize && selectedColor) {
                 $.ajax({
                     type: 'POST',
                     url: '/admin/check-product-stock',

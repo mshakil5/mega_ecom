@@ -539,8 +539,8 @@
         updateSummary();
 
         $('#addProductBtn').click(function() {
-            var selectedSize = $('#product_size').val() || 'M';
-            var selectedColor = $('#product_color').val() || 'Black';
+            var selectedSize = $('#product_size').val();
+            var selectedColor = $('#product_color').val();
 
             var selectedProduct = $('#product_id option:selected');
             var productId = selectedProduct.val();
@@ -575,7 +575,12 @@
                 return;
             }
 
-            if (productId && quantity && unitPrice) {
+            if (!productId || !quantity || !unitPrice || !selectedSize || !selectedColor) {
+                alert('Please fill in all required fields: product, quantity, unit price, size, and color.');
+                return;
+            }
+
+            if (productId && quantity && unitPrice && selectedSize && selectedColor) {
                 var productRow = `<tr data-id="" data-product-id="${productId}">
                                     <td>${productName}</td>
                                     <td><input type="number" class="form-control quantity" value="${quantity}" /></td>
