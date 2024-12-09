@@ -70,6 +70,7 @@
                                                 data-total-missing-quantity="{{ $shipping->shipment->total_missing_quantity }}"
                                                 data-total-purchase="{{ $shipping->shipment->total_purchase_cost }}"
                                                 data-total-additional="{{ $shipping->shipment->total_additional_cost }}"
+                                                data-warehouse-name="{{ $shipping->shipment->shipmentDetails[0]->warehouse->name }}"
                                                 data-shipment-details="{{ json_encode($shipping->shipment->shipmentDetails) }}">
                                             <i class="fas fa-eye"></i>
                                         </button>
@@ -176,6 +177,9 @@
                                     <div>
                                         <strong>Total Additional Cost:</strong> <span id="totalAdditional">0</span>
                                     </div>
+                                    <div>
+                                        <strong>Warehouse:</strong> <span id="warehouseName"></span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -217,6 +221,7 @@
                 const totalMissingQuantity = this.getAttribute('data-total-missing-quantity');
                 const totalPurchase = this.getAttribute('data-total-purchase');
                 const totalAdditional = this.getAttribute('data-total-additional');
+                const warehouseName = this.getAttribute('data-warehouse-name');
                 const shipmentDetails = JSON.parse(this.getAttribute('data-shipment-details'));
 
                 document.getElementById('shippingId').textContent = shippingId;
@@ -226,6 +231,7 @@
                 document.getElementById('totalMissingQuantity').textContent = totalMissingQuantity;
                 document.getElementById('totalPurchase').textContent = totalPurchase;
                 document.getElementById('totalAdditional').textContent = totalAdditional;
+                document.getElementById('warehouseName').textContent = warehouseName;
 
                 const purchaseDataBody = document.getElementById('purchaseData');
                 purchaseDataBody.innerHTML = '';
