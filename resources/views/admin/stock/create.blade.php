@@ -529,7 +529,7 @@
                             className: "swal-button--confirm"
                         }
                     }).then(() => {
-                        location.reload();
+                        window.location.href = "{{ route('admin.newPurchaseHistory') }}";
                     });
                 },
                 error: function(xhr) {

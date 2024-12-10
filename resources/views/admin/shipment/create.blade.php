@@ -81,10 +81,12 @@
                                         <td>{{ $detail->product_color ?? '' }}</td>
                                         @php
                                             $filteredStock = $detail->product->stock
-                                                ->where('product_id', $detail->product_id)
-                                                ->where('size', $detail->product_size)
-                                                ->where('color', $detail->product_color)
-                                                ->where('quantity', '>', 0);
+                                                ? $detail->product->stock
+                                                    ->where('product_id', $detail->product_id)
+                                                    ->where('size', $detail->product_size)
+                                                    ->where('color', $detail->product_color)
+                                                    ->where('quantity', '>', 0)
+                                                : collect();
 
                                             $currentStock = $filteredStock->sum('quantity');
                                             $currentSellingPrice = $filteredStock->sortByDesc('id')->first()->selling_price ?? 0;

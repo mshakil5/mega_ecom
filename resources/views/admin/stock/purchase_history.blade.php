@@ -150,6 +150,7 @@
                         <thead>
                             <tr>
                                 <th>Product Details</th>
+                                <th>Size-Color</th>
                                 <th>Purchased Quantity</th>
                                 <th>Shipped + Missed Quantity</th>
                                 <th>Purchase Price Per Unit</th>
@@ -317,6 +318,7 @@
                         purchaseHistoryHtml += `
                             <tr>
                                 <td>${history.product.product_code} - ${history.product.name}</td>
+                                <td>${history.product_size} - ${history.product_color} </td>
                                 <td>${history.quantity}</td>
                                 <td>${history.shipped_quantity}</td>
                                 <td>${history.purchase_price}</td>
