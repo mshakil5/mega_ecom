@@ -71,7 +71,7 @@ class InHouseSellController extends Controller
         $order->due_amount = $netAmount - $request->cash_payment - $request->bank_payment;
         $order->subtotal_amount = $itemTotalAmount;
         $order->order_type = 1;
-        $order->status = 1;
+        $order->status = 2;
         $order->save();
 
         $transaction = new Transaction();

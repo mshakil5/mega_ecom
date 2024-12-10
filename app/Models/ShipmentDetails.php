@@ -25,4 +25,9 @@ class ShipmentDetails extends Model
     {
         return $this->belongsTo(Warehouse::class);
     }
+
+    public function shipment()
+    {
+        return $this->belongsTo(Shipment::class);
+    }
 }

@@ -85,7 +85,7 @@
 
                         <div class="text-center mb-4 company-name-container">
                             <h2>{{$product->name}}</h2>
-                            <h4>Purchase history</h4>
+                            <h4>Shipment history</h4>
                         </div>
 
                         <div class="table-responsive">
@@ -99,31 +99,31 @@
                                         <th>Colour</th>
                                         <th>Quantity</th>
                                         <th>Price</th>
-                                        <th>Vat Amount</th>
+                                        <!-- <th>Vat Amount</th> -->
                                         <th>Total Price</th>
-                                        <th>Total</th>
+                                        <!-- <th>Total</th> -->
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($purchaseHistories as $key => $data)
+                                    @foreach ($shipmentDetails as $key => $data)
                                         <tr>
                                             <td>{{ $key + 1}}</td>
                                             <td>{{ date('d-m-Y', strtotime($data->created_at))}}</td>
                                             <td>
-                                                @if ($data->purchase && $data->purchase->supplier)
-                                                {{ $data->purchase->supplier->name}}
-                                                <a href="{{route('supplier.purchase', $data->purchase->supplier->id)}}" class="btn btn-sm btn-success" target="blank">
+                                                @if ($data->supplier)
+                                                {{ $data->supplier->name}}
+                                                <a href="{{route('supplier.purchase', $data->supplier->id)}}" class="btn btn-sm btn-success" target="blank">
                                                     <i class="fas fa-arrow-right"></i>
                                                 </a>
                                                 @endif
                                             </td>
-                                            <td>{{ $data->product_size}}</td>
-                                            <td>{{ $data->product_color}}</td>
+                                            <td>{{ $data->size}}</td>
+                                            <td>{{ $data->color}}</td>
                                             <td>{{ $data->quantity}}</td>
-                                            <td>{{ $data->purchase_price}}</td>
-                                            <td>{{ $data->total_vat}}</td>
-                                            <td>{{ $data->total_amount_with_vat}}</td>
-                                            <td>{{ $purchaseHistories->sum('total_amount_with_vat')}}</td>
+                                            <td>{{ $data->price_per_unit}}</td>
+                                            <!-- <td>{{ $data->total_vat}}</td> -->
+                                            <td>{{ $data->price_per_unit * $data->quantity}}</td>
+                                            <!-- <td>{{ $data->shipment->total_product_quantity}}</td> -->
                                         </tr>
                                     @endforeach
                                 </tbody>

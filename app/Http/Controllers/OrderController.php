@@ -1378,7 +1378,8 @@ class OrderController extends Controller
                 ->where('status', 2)
                 ->orderBy('id', 'desc')
                 ->get();
-        return view('admin.orders.index', compact('orders'));
+        $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
+        return view('admin.orders.index', compact('orders', 'warehouses'));
     }
     public function packedOrders()
     {
@@ -1387,7 +1388,8 @@ class OrderController extends Controller
                 ->where('status', 3)
                 ->orderBy('id', 'desc')
                 ->get();
-        return view('admin.orders.index', compact('orders'));
+        $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
+        return view('admin.orders.index', compact('orders', 'warehouses'));
     }
     public function shippedOrders()
     {
@@ -1398,7 +1400,8 @@ class OrderController extends Controller
                 ->get();
          $deliveryMen = DeliveryMan::orderBy('id', 'desc')
                 ->get(); 
-        return view('admin.orders.index', compact('orders', 'deliveryMen'));
+        $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
+        return view('admin.orders.index', compact('orders', 'deliveryMen', 'warehouses'));
     }
     public function deliveredOrders()
     {
@@ -1407,7 +1410,8 @@ class OrderController extends Controller
                 ->whereIn('order_type', [0, 1])
                 ->orderBy('id', 'desc')
                 ->get();
-        return view('admin.orders.index', compact('orders'));
+        $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
+        return view('admin.orders.index', compact('orders', 'warehouses'));
     }
     public function returnedOrders()
     {
@@ -1416,8 +1420,8 @@ class OrderController extends Controller
                     ->whereIn('order_type', [0, 1])
                     ->orderBy('id', 'desc')
                     ->get();
-
-        return view('admin.orders.returned', compact('orders'));
+        $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
+        return view('admin.orders.returned', compact('orders', 'warehouses'));
     }
     public function cancelledOrders()
     {
@@ -1426,7 +1430,8 @@ class OrderController extends Controller
                 ->where('status', 7)
                 ->orderBy('id', 'desc')
                 ->get();
-        return view('admin.orders.cancelled', compact('orders'));
+        $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
+        return view('admin.orders.cancelled', compact('orders', 'warehouses'));
     }
 
     public function updateStatus(Request $request)

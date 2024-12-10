@@ -22,6 +22,7 @@ use App\Models\SupplierTransaction;
 use App\Models\Transaction;
 use App\Models\Warehouse;
 use Carbon\Carbon;
+use App\Models\ShipmentDetails;
 
 class StockController extends Controller
 {
@@ -217,14 +218,14 @@ class StockController extends Controller
         $product = Product::select('id', 'name','product_code')->where('id', $id)->first();
         $warehouses = Warehouse::where('status', 1)->get();
 
-        $purchaseHistories = PurchaseHistory::where('product_id', $id)
-                            ->when($fromDate, function ($query) use ($fromDate, $toDate) {
-                                $query->whereBetween('created_at', [$fromDate, $toDate]);
-                            })
-                            ->where('product_size', $size)
-                            ->where('product_color', $color)
-                            ->orderby('id','DESC')
-                            ->get();
+        $shipmentDetails = ShipmentDetails::where('product_id', $id)
+                ->when($fromDate, function ($query) use ($fromDate, $toDate) {
+                    $query->whereBetween('created_at', [$fromDate, $toDate]);
+                })
+                ->where('size', $size)
+                ->where('color', $color)
+                ->orderby('id', 'DESC')
+                ->get();
 
         $salesHistories = OrderDetails::where('product_id', $id)
                             ->when($fromDate, function ($query) use ($fromDate, $toDate) {
@@ -241,7 +242,7 @@ class StockController extends Controller
                             })->get();
 
 
-        return view('admin.stock.single_product_history', compact('purchaseHistories','salesHistories','product','warehouses', 'id', 'size', 'color'));
+        return view('admin.stock.single_product_history', compact('shipmentDetails','salesHistories','product','warehouses', 'id', 'size', 'color'));
     }
 
     public function addstock()
