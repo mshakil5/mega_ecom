@@ -89,7 +89,7 @@
                                                 : collect();
 
                                             $currentStock = $filteredStock->sum('quantity');
-                                            $currentSellingPrice = $filteredStock->sortByDesc('id')->first()->selling_price ?? 0;
+                                            $currentSellingPrice = $filteredStock->latest()->first()->selling_price ?? 0;
                                         @endphp
                                         <td>{{ $currentStock }}</td>
                                         <td>{{ $detail->quantity }}</td>

@@ -814,4 +814,29 @@ class FrontendController extends Controller
         return response()->json(['success' => true]);
     }
 
+    public function getSizes(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'color' => 'required|string',
+        ]);
+
+        $productStocks = Stock::where('product_id', $request->product_id)
+            ->where('color', $request->color)
+            ->where('quantity', '>', 0)
+            ->latest()
+            ->select(['size', 'quantity', 'selling_price'])
+            ->get();
+
+        $sizes = $productStocks->pluck('size')->toArray();
+        $maxQuantity = $productStocks->sum('quantity');
+
+        $latestSellingPrice = optional($productStocks->first())->selling_price;
+
+        return response()->json([
+            'sizes' => $sizes,
+            'max_quantity' => $maxQuantity,
+            'selling_price' => $latestSellingPrice,
+        ]);
+    }
 }

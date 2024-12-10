@@ -119,6 +119,8 @@ class OrderController extends Controller
                         
                         $sellingPrice = Product::find($item['productId'])->stock()
                             ->where('quantity', '>', 0)
+                            ->where('size', $item['size'])
+                            ->where('color', $item['color'])
                             ->orderBy('id', 'desc')
                             ->value('selling_price');
 
@@ -134,15 +136,19 @@ class OrderController extends Controller
                     } else {
                         $sellingPrice = Product::find($item['productId'])->stock()
                             ->where('quantity', '>', 0)
+                            ->where('size', $item['size'])
+                            ->where('color', $item['color'])
                             ->orderBy('id', 'desc')
                             ->value('selling_price');
                         $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                     }
                 } else {
                     $sellingPrice = Product::find($item['productId'])->stock()
-                        ->where('quantity', '>', 0)
-                        ->orderBy('id', 'desc')
-                        ->value('selling_price');
+                            ->where('quantity', '>', 0)
+                            ->where('size', $item['size'])
+                            ->where('color', $item['color'])
+                            ->orderBy('id', 'desc')
+                            ->value('selling_price');
                     $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                 }
             }
@@ -241,6 +247,8 @@ class OrderController extends Controller
                                 } else {
                                     $sellingPrice = Product::find($item['productId'])->stock()
                                         ->where('quantity', '>', 0)
+                                        ->where('size', $item['size'])
+                                        ->where('color', $item['color'])
                                         ->orderBy('id', 'desc')
                                         ->value('selling_price');
                                     $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
@@ -255,6 +263,8 @@ class OrderController extends Controller
                                 } else {
                                     $sellingPrice = Product::find($item['productId'])->stock()
                                         ->where('quantity', '>', 0)
+                                        ->where('size', $item['size'])
+                                        ->where('color', $item['color'])
                                         ->orderBy('id', 'desc')
                                         ->value('selling_price');
     
@@ -263,6 +273,8 @@ class OrderController extends Controller
                             } else {
                                 $sellingPrice = Product::find($item['productId'])->stock()
                                     ->where('quantity', '>', 0)
+                                    ->where('size', $item['size'])
+                                    ->where('color', $item['color'])
                                     ->orderBy('id', 'desc')
                                     ->value('selling_price');
                                     $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
@@ -382,6 +394,8 @@ class OrderController extends Controller
                                     } else {
                                         $sellingPrice = Product::find($item['productId'])->stock()
                                             ->where('quantity', '>', 0)
+                                            ->where('size', $item['size'])
+                                            ->where('color', $item['color'])
                                             ->orderBy('id', 'desc')
                                             ->value('selling_price');
                                         $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
@@ -398,6 +412,8 @@ class OrderController extends Controller
                                     } else {
                                         $sellingPrice = Product::find($item['productId'])->stock()
                                             ->where('quantity', '>', 0)
+                                            ->where('size', $item['size'])
+                                            ->where('color', $item['color'])
                                             ->orderBy('id', 'desc')
                                             ->value('selling_price');
                                         $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
@@ -405,6 +421,8 @@ class OrderController extends Controller
                                 } else {
                                     $sellingPrice = Product::find($item['productId'])->stock()
                                         ->where('quantity', '>', 0)
+                                        ->where('size', $item['size'])
+                                        ->where('color', $item['color'])
                                         ->orderBy('id', 'desc')
                                         ->value('selling_price');
                                     $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
@@ -527,9 +545,11 @@ class OrderController extends Controller
                                 $totalPrice = (float) $item['quantity'] * (float) $specialOfferDetail->offer_price;
                             } else {
                                 $sellingPrice = Product::find($item['productId'])->stock()
-                                        ->where('quantity', '>', 0)
-                                        ->orderBy('id', 'desc')
-                                        ->value('selling_price');
+                                    ->where('quantity', '>', 0)
+                                    ->where('size', $item['size'])
+                                    ->where('color', $item['color'])
+                                    ->orderBy('id', 'desc')
+                                    ->value('selling_price');
                                 $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                             }
                         } elseif (isset($item['offerId']) && $item['offerId'] == 2) {
@@ -541,16 +561,20 @@ class OrderController extends Controller
                                 $totalPrice = (float) $item['quantity'] * (float) $flashSellDetail->flash_sell_price;
                             } else {
                                 $sellingPrice = Product::find($item['productId'])->stock()
-                                        ->where('quantity', '>', 0)
-                                        ->orderBy('id', 'desc')
-                                        ->value('selling_price');
+                                    ->where('quantity', '>', 0)
+                                    ->where('size', $item['size'])
+                                    ->where('color', $item['color'])
+                                    ->orderBy('id', 'desc')
+                                    ->value('selling_price');
                                 $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                             }
                         } else {
                             $sellingPrice = Product::find($item['productId'])->stock()
-                                    ->where('quantity', '>', 0)
-                                    ->orderBy('id', 'desc')
-                                    ->value('selling_price');
+                                ->where('quantity', '>', 0)
+                                ->where('size', $item['size'])
+                                ->where('color', $item['color'])
+                                ->orderBy('id', 'desc')
+                                ->value('selling_price');
                                 $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                         }
                     }
@@ -668,6 +692,8 @@ class OrderController extends Controller
                                 } else {
                                     $sellingPrice = Product::find($item['productId'])->stock()
                                         ->where('quantity', '>', 0)
+                                        ->where('size', $item['size'])
+                                        ->where('color', $item['color'])
                                         ->orderBy('id', 'desc')
                                         ->value('selling_price');
                                     $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
@@ -684,6 +710,8 @@ class OrderController extends Controller
                                 } else {
                                     $sellingPrice = Product::find($item['productId'])->stock()
                                         ->where('quantity', '>', 0)
+                                        ->where('size', $item['size'])
+                                        ->where('color', $item['color'])
                                         ->orderBy('id', 'desc')
                                         ->value('selling_price');
                                     $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
@@ -691,6 +719,8 @@ class OrderController extends Controller
                             } else {
                                 $sellingPrice = Product::find($item['productId'])->stock()
                                         ->where('quantity', '>', 0)
+                                        ->where('size', $item['size'])
+                                        ->where('color', $item['color'])
                                         ->orderBy('id', 'desc')
                                         ->value('selling_price');
                                     $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
@@ -836,9 +866,11 @@ class OrderController extends Controller
                                 $totalPrice = (float) $item['quantity'] * (float) $specialOfferDetail->offer_price;
                             } else {
                                 $sellingPrice = Product::find($item['productId'])->stock()
-                                        ->where('quantity', '>', 0)
-                                        ->orderBy('id', 'desc')
-                                        ->value('selling_price');
+                                    ->where('quantity', '>', 0)
+                                    ->where('size', $item['size'])
+                                    ->where('color', $item['color'])
+                                    ->orderBy('id', 'desc')
+                                    ->value('selling_price');
                                     $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                             }
                         } elseif (isset($item['offerId']) && $item['offerId'] == 2) {
@@ -851,6 +883,8 @@ class OrderController extends Controller
                             } else {
                                 $sellingPrice = Product::find($item['productId'])->stock()
                                     ->where('quantity', '>', 0)
+                                    ->where('size', $item['size'])
+                                    ->where('color', $item['color'])
                                     ->orderBy('id', 'desc')
                                     ->value('selling_price');
                                 $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
@@ -858,6 +892,8 @@ class OrderController extends Controller
                         } else {
                             $sellingPrice = Product::find($item['productId'])->stock()
                                 ->where('quantity', '>', 0)
+                                ->where('size', $item['size'])
+                                ->where('color', $item['color'])
                                 ->orderBy('id', 'desc')
                                 ->value('selling_price');
                             $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
@@ -978,6 +1014,8 @@ class OrderController extends Controller
                                 } else {
                                     $sellingPrice = Product::find($item['productId'])->stock()
                                         ->where('quantity', '>', 0)
+                                        ->where('size', $item['size'])
+                                        ->where('color', $item['color'])
                                         ->orderBy('id', 'desc')
                                         ->value('selling_price');
                                     $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
@@ -994,15 +1032,19 @@ class OrderController extends Controller
                                 } else {
                                     $sellingPrice = Product::find($item['productId'])->stock()
                                         ->where('quantity', '>', 0)
+                                        ->where('size', $item['size'])
+                                        ->where('color', $item['color'])
                                         ->orderBy('id', 'desc')
                                         ->value('selling_price');
                                     $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                                 }
                             } else {
                                 $sellingPrice = Product::find($item['productId'])->stock()
-                                        ->where('quantity', '>', 0)
-                                        ->orderBy('id', 'desc')
-                                        ->value('selling_price');
+                                    ->where('quantity', '>', 0)
+                                    ->where('size', $item['size'])
+                                    ->where('color', $item['color'])
+                                    ->orderBy('id', 'desc')
+                                    ->value('selling_price');
                                 $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                             }
                             // if ($entity->stock) {

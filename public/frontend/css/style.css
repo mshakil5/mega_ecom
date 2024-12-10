@@ -19885,6 +19885,63 @@ button:focus {
     content: '\f7e3'
 }
 
+input.largerRadiobox {
+    display: none;
+}
+
+.largerRadiobox-label {
+    display: inline-block;
+    height: 45px;
+    background-color: white;
+    padding: 5px;
+    border-radius: 5%;
+    border: 1px solid #ddd;
+    vertical-align: middle;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    text-align: center;
+}
+
+input.largerRadiobox:checked + .largerRadiobox-label {
+    background-color: #193d5b;
+    border-color: #193d5b;
+    color: white;
+}
+
+.color-option {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: border-color 0.3s, transform 0.3s;
+}
+
+.color-option:hover {
+    transform: scale(1.10);
+}
+.color-option.active {
+    border-color: green;
+    transform: scale(1.05);
+}
+
+.color-option:hover img {
+    transform: scale(1.1);
+}
+
+.color-option img {
+    width: 55px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.color-name {
+    display: block;
+    margin-bottom: 5px;
+}
+
 @media (max-width: 575.98px) {
     .mobile-margin {
         margin-bottom: 140px;
