@@ -281,7 +281,7 @@
                                                 <a href="{{ route('product.show', '') }}/${product.slug}">
                                                     <x-image-with-loader src="{{ asset('/images/products/') }}/${product.feature_image}" alt="${product.name}" class="product-image" style="height: 200px; object-fit: cover;" />
                                                 </a>
-                                                ${product.stock && product.stock.quantity > 0 ? `
+                                                ${product.total_stock > 0 ? `
                                                     <div class="product-action-vertical">
                                                         <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="${product.id}" data-offer-id="0" data-price="${product.price}">
                                                             <span>Add to wishlist</span>
@@ -296,7 +296,7 @@
                                                         data-toggle="modal" 
                                                         data-target="#quickAddToCartModal" 
                                                         data-image="{{ asset('images/products/') }}/${product.feature_image}" 
-                                                        data-stock="${product.stock.quantity}"
+                                                        data-stock="${product.total_stock}"
                                                         data-colors='${JSON.stringify(product.colors)}' 
                                                         data-sizes='${JSON.stringify(product.sizes)}'>
                                                             <span>Add to cart</span>

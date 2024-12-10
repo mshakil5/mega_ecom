@@ -31,7 +31,7 @@
                             <tbody>
                                 @foreach ($data as $key => $data)
                                 @php
-                                    $price = \App\Models\StockHistory::orderby('id','asc')->where('product_id', $data->id)->first();
+                                    $price = \App\Models\Stock::orderby('id','desc')->where('product_id', $data->id)->select('selling_price')->first();
                                 @endphp
                                 <tr>
                                     <td>{{ $key + 1 }}</td>

@@ -31,10 +31,15 @@
                         <div class="product-price">
 
                                 @php
-                                    $sellingPrice = $product->stockhistory()
-                                        ->where('available_qty', '>', 0)
-                                        ->orderBy('id', 'asc')
-                                        ->value('selling_price');
+                                    $filteredStock = $product->stock()
+                                        ->where('quantity', '>', 0)
+                                        ->latest()
+                                        ->select('id', 'selling_price', 'color', 'size', 'quantity')
+                                        ->get();
+
+                                    $sellingPrice = $filteredStock->first()->selling_price ?? 0; 
+                                    $availableColors = $filteredStock->pluck('color')->unique();
+                                    $sizes = $filteredStock->pluck('size')->unique();
                                 @endphp
 
                             @if(isset($offerPrice) && $offerPrice !== null)
@@ -83,13 +88,6 @@
                             <i class="fas fa-ruler-vertical"></i> Size Guide
                         </button>
 
-                        @php
-                            $availableColors = $product->stock()
-                                ->where('quantity', '>', 0)
-                                ->distinct('color')
-                                ->pluck('color');
-                        @endphp
-
                         <div class="details-filter-row details-row-size">
                             <label>Color:</label>
                             <div class="product-nav product-nav-thumbs">
@@ -127,13 +125,6 @@
                         <div class="details-filter-row details-row-size">
                             <label for="size">Size:</label>
                             <form id="sizeForm">
-                                @php
-                                    $sizes = $product->stock()
-                                        ->where('quantity', '>', 0)
-                                        ->distinct('size')
-                                        ->pluck('size');
-                                @endphp
-
                                 @foreach($sizes as $index => $size)
                                     <div class="custom-control custom-radio custom-control-inline">
                                         <input type="radio" class="custom-control-input largerRadiobox" id="size-{{ $index }}" name="size" value="{{ $size }}" style="display: none;">
@@ -152,18 +143,11 @@
                         <div class="details-filter-row details-row-size">
                             <label for="qty">Qty:</label>
                             <div class="product-details-quantity">
-                                <input type="number" id="qty" class="form-control quantity-input" value="1" min="1" max="{{ $product->stock && $product->stock->quantity !== null ? $product->stock->quantity : '' }}" step="1" data-decimals="0" required>
+                                <input type="number" id="qty" class="form-control quantity-input" value="1" min="1" max="{{ $product->stock && $product->stock->quantity !== null ? $product->stock->sum('quantity') : '' }}" step="1" data-decimals="0" required>
                             </div>
                         </div>
 
                         <div class="product-details-action mt-1">
-
-                                @php
-                                    $sellingPrice = $product->stockhistory()
-                                        ->where('available_qty', '>', 0)
-                                        ->orderBy('id', 'asc')
-                                        ->value('selling_price');
-                                @endphp
 
                             <a href="#" 
                             class="btn-product btn-cart add-to-cart" 
@@ -315,24 +299,20 @@
                                 </div>
 
                                 @php
-                                    $sellingPrice = $product->stockhistory()
-                                        ->where('available_qty', '>', 0)
-                                        ->orderBy('id', 'asc')
-                                        ->value('selling_price');
-                                    $colors = $product->stock()
-                                    ->where('quantity', '>', 0)
-                                    ->distinct('color')
-                                    ->pluck('color');
-
-                                    $sizes = $product->stock()
+                                    $filteredStock = $product->stock()
                                         ->where('quantity', '>', 0)
-                                        ->distinct('size')
-                                        ->pluck('size');  
+                                        ->latest()
+                                        ->select('id', 'selling_price', 'color', 'size', 'quantity')
+                                        ->get();
+
+                                    $sellingPrice = $filteredStock->first()->selling_price ?? 0; 
+                                    $colors = $filteredStock->pluck('color')->unique();
+                                    $sizes = $filteredStock->pluck('size')->unique();
                                 @endphp
 
                                 <div class="product-action">
                                     <a href="#" class="btn-product btn-cart" title="Add to cart" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}"data-toggle="modal" data-target="#quickAddToCartModal" 
-                                    data-image ="{{ asset('images/products/' . $product->feature_image) }}" data-stock="{{ $product->stock->quantity }}"
+                                    data-image ="{{ asset('images/products/' . $product->feature_image) }}" data-stock="{{ $product->stock->sum('quantity') }}"
                                     data-colors="{{ $colors->toJson() }}" data-sizes="{{ $sizes->toJson() }}"><span>add to cart</span></a>
                                 </div>
                             @else

@@ -24,7 +24,7 @@
                                     <th>Due Amount</th>
                                     <!-- <th>Not Transferred Quantity</th>
                                     <th>Missing Quantity</th> -->
-                                    <th>Shipped Quantity</th>
+                                    <th>Total Purchased Quantity/Shipped Quantity</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -61,7 +61,7 @@
 
                                     <!-- <td>{{ $totalRemainingQuantity }}</td>
                                     <td>{{$purchase->purchaseHistory->sum('missing_product_quantity')}}</td> -->
-                                    <td>{{$purchase->purchaseHistory->sum('shipped_quantity')}}</td>
+                                    <td> {{$purchase->purchaseHistory->sum('quantity')}} / {{$purchase->purchaseHistory->sum('shipped_quantity')}}</td>
                                     <td>
                                         @php
                                             $totalRemainingQuantity = $purchase->purchaseHistory->sum('remaining_product_quantity');

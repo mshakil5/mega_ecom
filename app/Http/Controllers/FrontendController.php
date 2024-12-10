@@ -365,9 +365,9 @@ class FrontendController extends Controller
                         $product->flash_sell_price = $item['price'];
                         $product->offer_id = 2;
                     } else {
-                        $product->price = $product->stockhistory()
-                          ->where('available_qty', '>', 0)
-                          ->orderBy('id', 'asc')
+                        $product->price = $product->stock()
+                          ->where('quantity', '>', 0)
+                          ->orderBy('id', 'desc')
                           ->value('selling_price') ?? $item['price'];
                         $product->offer_id = 0;
                     }
@@ -393,7 +393,6 @@ class FrontendController extends Controller
     {
         $cartJson = $request->session()->get('cart', '[]');
         $cart = json_decode($cartJson, true);
-        // dd($cart);
         return view('frontend.cart', compact('cart'));
     }
 
@@ -467,8 +466,8 @@ class FrontendController extends Controller
             ->select('size')
             ->get();
 
-        $minPrice = StockHistory::where('status', 1)->min('selling_price'); 
-        $maxPrice = StockHistory::where('status', 1)->max('selling_price');
+        $minPrice = Stock::where('status', 1)->min('selling_price'); 
+        $maxPrice = Stock::where('status', 1)->max('selling_price');
 
         return view('frontend.shop', compact('currency', 'categories', 'brands', 'colors', 'sizes', 'minPrice', 'maxPrice'));
     }
@@ -648,16 +647,32 @@ class FrontendController extends Controller
         $color = $request->input('color');
 
 
-        $productsQuery = Product::select('products.id', 'products.name', 'products.price', 'products.slug', 'products.feature_image')
-                                ->where('products.status', 1)
-                                ->leftJoin('stocks', 'products.id', '=', 'stocks.product_id')
-                                ->whereDoesntHave('specialOfferDetails')
-                                ->whereDoesntHave('flashSellDetails')
-                                ->orderByRaw('COALESCE(stocks.quantity, 0) DESC')  //treating NULL stock values as 0
-                                ->with('stock');
+        // $productsQuery = Product::select('products.id', 'products.name', 'products.price', 'products.slug', 'products.feature_image')
+        //                         ->where('products.status', 1)
+        //                         ->leftJoin('stocks', 'products.id', '=', 'stocks.product_id')
+        //                         // ->whereDoesntHave('specialOfferDetails')
+        //                         // ->whereDoesntHave('flashSellDetails')
+        //                         ->orderByRaw('COALESCE(stocks.quantity, 0) DESC')  //treating NULL stock values as 0
+        //                         ->with('stock');
+
+        $productsQuery = Product::select(
+            'products.id',
+            'products.name',
+            'products.price',
+            'products.slug',
+            'products.feature_image',
+            \DB::raw('COALESCE(SUM(stocks.quantity), 0) as total_stock')
+        )
+        ->leftJoin('stocks', 'products.id', '=', 'stocks.product_id')
+        ->where('products.status', 1)
+        ->where('stocks.quantity', '>', 0)
+        ->whereDoesntHave('specialOfferDetails')
+        ->whereDoesntHave('flashSellDetails')
+        ->groupBy('products.id', 'products.name', 'products.price', 'products.slug', 'products.feature_image')
+        ->orderByRaw('COALESCE(SUM(stocks.quantity), 0) DESC');
     
-        if ($startPrice !== null && $endPrice !== null) {
-            $productsQuery->whereBetween('products.price', [$startPrice, $endPrice]);
+        if (!empty($startPrice) && !empty($endPrice)) {
+            $productsQuery->whereBetween('stocks.selling_price', [$startPrice, $endPrice]);
         }
     
         if (!empty($categoryId)) {
@@ -677,21 +692,17 @@ class FrontendController extends Controller
         }
 
         $products = $productsQuery->get()->map(function ($product) {
-            $product->price = $product->stockhistory()
-                ->where('available_qty', '>', 0)
-                ->orderBy('id', 'asc')
-                ->value('selling_price') ?? $product->price; 
 
-            $product->colors = $product->stock()
+            $latestStock = $product->stock()
                 ->where('quantity', '>', 0)
-                ->distinct('color')
-                ->pluck('color');
+                ->orderBy('id', 'desc')
+                ->select('id', 'selling_price', 'color', 'size', 'quantity')
+                ->get();
 
-            $product->sizes = $product->stock()
-                ->where('quantity', '>', 0)
-                ->distinct('size')
-                ->pluck('size');  
-                 
+            $product->price =  $latestStock->first()->selling_price ?? $product->price;
+            $product->colors = $latestStock->pluck('color')->unique();
+            $product->sizes = $latestStock->pluck('size')->unique();
+
             return $product;
         });
 

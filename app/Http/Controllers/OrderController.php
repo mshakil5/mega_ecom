@@ -117,9 +117,9 @@ class OrderController extends Controller
                         $totalPrice = (float) $item['quantity'] * (float) $specialOfferDetail->offer_price;
                     } else {
                         
-                        $sellingPrice = Product::find($item['productId'])->stockhistory()
-                            ->where('available_qty', '>', 0)
-                            ->orderBy('id', 'asc')
+                        $sellingPrice = Product::find($item['productId'])->stock()
+                            ->where('quantity', '>', 0)
+                            ->orderBy('id', 'desc')
                             ->value('selling_price');
 
                         $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
@@ -132,16 +132,16 @@ class OrderController extends Controller
                     if ($flashSellDetail) {
                         $totalPrice = (float) $item['quantity'] * (float) $flashSellDetail->flash_sell_price;
                     } else {
-                        $sellingPrice = Product::find($item['productId'])->stockhistory()
-                            ->where('available_qty', '>', 0)
-                            ->orderBy('id', 'asc')
+                        $sellingPrice = Product::find($item['productId'])->stock()
+                            ->where('quantity', '>', 0)
+                            ->orderBy('id', 'desc')
                             ->value('selling_price');
                         $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                     }
                 } else {
-                    $sellingPrice = Product::find($item['productId'])->stockhistory()
-                        ->where('available_qty', '>', 0)
-                        ->orderBy('id', 'asc')
+                    $sellingPrice = Product::find($item['productId'])->stock()
+                        ->where('quantity', '>', 0)
+                        ->orderBy('id', 'desc')
                         ->value('selling_price');
                     $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                 }
@@ -239,9 +239,9 @@ class OrderController extends Controller
                                 if ($specialOfferDetail) {
                                     $totalPrice = (float) $item['quantity'] * (float) $specialOfferDetail->offer_price;
                                 } else {
-                                    $sellingPrice = Product::find($item['productId'])->stockhistory()
-                                        ->where('available_qty', '>', 0)
-                                        ->orderBy('id', 'asc')
+                                    $sellingPrice = Product::find($item['productId'])->stock()
+                                        ->where('quantity', '>', 0)
+                                        ->orderBy('id', 'desc')
                                         ->value('selling_price');
                                     $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                                 }
@@ -253,17 +253,17 @@ class OrderController extends Controller
                                 if ($flashSellDetail) {
                                     $totalPrice = (float) $item['quantity'] * (float) $flashSellDetail->flash_sell_price;
                                 } else {
-                                    $sellingPrice = Product::find($item['productId'])->stockhistory()
-                                        ->where('available_qty', '>', 0)
-                                        ->orderBy('id', 'asc')
+                                    $sellingPrice = Product::find($item['productId'])->stock()
+                                        ->where('quantity', '>', 0)
+                                        ->orderBy('id', 'desc')
                                         ->value('selling_price');
     
                                     $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                                 }
                             } else {
-                                $sellingPrice = Product::find($item['productId'])->stockhistory()
-                                    ->where('available_qty', '>', 0)
-                                    ->orderBy('id', 'asc')
+                                $sellingPrice = Product::find($item['productId'])->stock()
+                                    ->where('quantity', '>', 0)
+                                    ->orderBy('id', 'desc')
                                     ->value('selling_price');
                                     $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                             }
@@ -380,9 +380,9 @@ class OrderController extends Controller
                                     if ($specialOfferDetail) {
                                         $totalPrice = (float) $item['quantity'] * (float) $specialOfferDetail->offer_price;
                                     } else {
-                                        $sellingPrice = Product::find($item['productId'])->stockhistory()
-                                            ->where('available_qty', '>', 0)
-                                            ->orderBy('id', 'asc')
+                                        $sellingPrice = Product::find($item['productId'])->stock()
+                                            ->where('quantity', '>', 0)
+                                            ->orderBy('id', 'desc')
                                             ->value('selling_price');
                                         $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                                     }
@@ -396,16 +396,16 @@ class OrderController extends Controller
                                     if ($flashSellDetail) {
                                         $totalPrice = (float) $item['quantity'] * (float) $flashSellDetail->flash_sell_price;
                                     } else {
-                                        $sellingPrice = Product::find($item['productId'])->stockhistory()
-                                            ->where('available_qty', '>', 0)
-                                            ->orderBy('id', 'asc')
+                                        $sellingPrice = Product::find($item['productId'])->stock()
+                                            ->where('quantity', '>', 0)
+                                            ->orderBy('id', 'desc')
                                             ->value('selling_price');
                                         $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                                     }
                                 } else {
-                                    $sellingPrice = Product::find($item['productId'])->stockhistory()
-                                        ->where('available_qty', '>', 0)
-                                        ->orderBy('id', 'asc')
+                                    $sellingPrice = Product::find($item['productId'])->stock()
+                                        ->where('quantity', '>', 0)
+                                        ->orderBy('id', 'desc')
                                         ->value('selling_price');
                                     $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                                 }
@@ -526,9 +526,9 @@ class OrderController extends Controller
                             if ($specialOfferDetail) {
                                 $totalPrice = (float) $item['quantity'] * (float) $specialOfferDetail->offer_price;
                             } else {
-                                $sellingPrice = Product::find($item['productId'])->stockhistory()
-                                        ->where('available_qty', '>', 0)
-                                        ->orderBy('id', 'asc')
+                                $sellingPrice = Product::find($item['productId'])->stock()
+                                        ->where('quantity', '>', 0)
+                                        ->orderBy('id', 'desc')
                                         ->value('selling_price');
                                 $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                             }
@@ -540,17 +540,17 @@ class OrderController extends Controller
                             if ($flashSellDetail) {
                                 $totalPrice = (float) $item['quantity'] * (float) $flashSellDetail->flash_sell_price;
                             } else {
-                                $sellingPrice = Product::find($item['productId'])->stockhistory()
-                                        ->where('available_qty', '>', 0)
-                                        ->orderBy('id', 'asc')
+                                $sellingPrice = Product::find($item['productId'])->stock()
+                                        ->where('quantity', '>', 0)
+                                        ->orderBy('id', 'desc')
                                         ->value('selling_price');
                                 $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                             }
                         } else {
-                            $sellingPrice = Product::find($item['productId'])->stockhistory()
-                                        ->where('available_qty', '>', 0)
-                                        ->orderBy('id', 'asc')
-                                        ->value('selling_price');
+                            $sellingPrice = Product::find($item['productId'])->stock()
+                                    ->where('quantity', '>', 0)
+                                    ->orderBy('id', 'desc')
+                                    ->value('selling_price');
                                 $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                         }
                     }
@@ -666,9 +666,9 @@ class OrderController extends Controller
                                 if ($specialOfferDetail) {
                                     $totalPrice = (float) $item['quantity'] * (float) $specialOfferDetail->offer_price;
                                 } else {
-                                    $sellingPrice = Product::find($item['productId'])->stockhistory()
-                                        ->where('available_qty', '>', 0)
-                                        ->orderBy('id', 'asc')
+                                    $sellingPrice = Product::find($item['productId'])->stock()
+                                        ->where('quantity', '>', 0)
+                                        ->orderBy('id', 'desc')
                                         ->value('selling_price');
                                     $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                                 }
@@ -682,16 +682,16 @@ class OrderController extends Controller
                                 if ($flashSellDetail) {
                                     $totalPrice = (float) $item['quantity'] * (float) $flashSellDetail->flash_sell_price;
                                 } else {
-                                    $sellingPrice = Product::find($item['productId'])->stockhistory()
-                                        ->where('available_qty', '>', 0)
-                                        ->orderBy('id', 'asc')
+                                    $sellingPrice = Product::find($item['productId'])->stock()
+                                        ->where('quantity', '>', 0)
+                                        ->orderBy('id', 'desc')
                                         ->value('selling_price');
                                     $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                                 }
                             } else {
-                                $sellingPrice = Product::find($item['productId'])->stockhistory()
-                                        ->where('available_qty', '>', 0)
-                                        ->orderBy('id', 'asc')
+                                $sellingPrice = Product::find($item['productId'])->stock()
+                                        ->where('quantity', '>', 0)
+                                        ->orderBy('id', 'desc')
                                         ->value('selling_price');
                                     $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                             }
@@ -835,9 +835,9 @@ class OrderController extends Controller
                             if ($specialOfferDetail) {
                                 $totalPrice = (float) $item['quantity'] * (float) $specialOfferDetail->offer_price;
                             } else {
-                                $sellingPrice = Product::find($item['productId'])->stockhistory()
-                                        ->where('available_qty', '>', 0)
-                                        ->orderBy('id', 'asc')
+                                $sellingPrice = Product::find($item['productId'])->stock()
+                                        ->where('quantity', '>', 0)
+                                        ->orderBy('id', 'desc')
                                         ->value('selling_price');
                                     $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                             }
@@ -849,17 +849,17 @@ class OrderController extends Controller
                             if ($flashSellDetail) {
                                 $totalPrice = (float) $item['quantity'] * (float) $flashSellDetail->flash_sell_price;
                             } else {
-                                $sellingPrice = Product::find($item['productId'])->stockhistory()
-                                        ->where('available_qty', '>', 0)
-                                        ->orderBy('id', 'asc')
-                                        ->value('selling_price');
+                                $sellingPrice = Product::find($item['productId'])->stock()
+                                    ->where('quantity', '>', 0)
+                                    ->orderBy('id', 'desc')
+                                    ->value('selling_price');
                                 $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                             }
                         } else {
-                            $sellingPrice = Product::find($item['productId'])->stockhistory()
-                                        ->where('available_qty', '>', 0)
-                                        ->orderBy('id', 'asc')
-                                        ->value('selling_price');
+                            $sellingPrice = Product::find($item['productId'])->stock()
+                                ->where('quantity', '>', 0)
+                                ->orderBy('id', 'desc')
+                                ->value('selling_price');
                             $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                         }
                     }
@@ -976,9 +976,9 @@ class OrderController extends Controller
                                 if ($specialOfferDetail) {
                                     $totalPrice = (float) $item['quantity'] * (float) $specialOfferDetail->offer_price;
                                 } else {
-                                    $sellingPrice = Product::find($item['productId'])->stockhistory()
-                                        ->where('available_qty', '>', 0)
-                                        ->orderBy('id', 'asc')
+                                    $sellingPrice = Product::find($item['productId'])->stock()
+                                        ->where('quantity', '>', 0)
+                                        ->orderBy('id', 'desc')
                                         ->value('selling_price');
                                     $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                                 }
@@ -992,16 +992,16 @@ class OrderController extends Controller
                                 if ($flashSellDetail) {
                                     $totalPrice = (float) $item['quantity'] * (float) $flashSellDetail->flash_sell_price;
                                 } else {
-                                    $sellingPrice = Product::find($item['productId'])->stockhistory()
-                                        ->where('available_qty', '>', 0)
-                                        ->orderBy('id', 'asc')
+                                    $sellingPrice = Product::find($item['productId'])->stock()
+                                        ->where('quantity', '>', 0)
+                                        ->orderBy('id', 'desc')
                                         ->value('selling_price');
                                     $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                                 }
                             } else {
-                                $sellingPrice = Product::find($item['productId'])->stockhistory()
-                                        ->where('available_qty', '>', 0)
-                                        ->orderBy('id', 'asc')
+                                $sellingPrice = Product::find($item['productId'])->stock()
+                                        ->where('quantity', '>', 0)
+                                        ->orderBy('id', 'desc')
                                         ->value('selling_price');
                                 $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
                             }

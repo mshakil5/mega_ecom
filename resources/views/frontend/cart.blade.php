@@ -53,7 +53,7 @@
                                                             ->first();
                                             $stock = $supplierProduct->quantity ?? 0;
                                         } else {
-                                            $stock = $entity->stock->quantity ?? 0;
+                                            $stock = $entity->stock->sum('quantity') ?? 0;
                                         }
                                     @endphp
                                     <tr data-entity-id="{{ $isBundle ? $entity->id : $entity->id }}" data-entity-type="{{ $isBundle ? 'bundle' : 'product' }}" data-stock="{{ $stock }}">

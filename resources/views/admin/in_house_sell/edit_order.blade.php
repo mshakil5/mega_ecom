@@ -88,19 +88,14 @@
                                             @foreach($products as $product)
 
                                             @php
-                                                $sellingPrice = $product->stockhistory()
-                                                            ->where('available_qty', '>', 0)
-                                                            ->orderBy('id', 'asc')
-                                                            ->value('selling_price');
-                                                $groundPrice = $product->stockhistory()
-                                                            ->where('available_qty', '>', 0)
-                                                            ->orderBy('id', 'asc')
-                                                            ->value('ground_price_per_unit');
+                                                $latestStock = $product->stock()
+                                                    ->where('quantity', '>', 0)
+                                                    ->latest()
+                                                    ->first();
 
-                                                $profitMargin = $product->stockhistory()
-                                                            ->where('available_qty', '>', 0)
-                                                            ->orderBy('id', 'asc')
-                                                            ->value('profit_margin');
+                                                $sellingPrice = $latestStock->selling_price ?? 0;
+                                                $groundPrice = $latestStock->ground_price_per_unit ?? 0;
+                                                $profitMargin = $latestStock->profit_margin ?? 0;
                                             @endphp 
 
                                             <option value="{{ $product->id }}" 
@@ -362,7 +357,7 @@
             var quantity = parseFloat($('#quantity').val()) || 1;
             var selectedSize = $('#size').val();
             var selectedColor = $('#color').val();
-            var vatPercent = 5;
+            var vatPercent = 0;
 
             if (isNaN(quantity) || quantity <= 0) {
                 alert('Quantity must be a positive number.');

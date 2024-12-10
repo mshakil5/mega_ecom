@@ -115,6 +115,10 @@ class ShipmentController extends Controller
     
             if ($stock) {
                 $stock->quantity += $detail['shipped_quantity'];
+                $stock->purchase_price = $detail['price_per_unit'];
+                $stock->ground_price_per_unit = $detail['ground_cost'];
+                $stock->profit_margin = $detail['profit_margin'];
+                $stock->selling_price = $detail['selling_price'];
                 $stock->updated_by = auth()->id();
                 $stock->save();
             } else {
@@ -123,46 +127,32 @@ class ShipmentController extends Controller
                     'quantity' => $detail['shipped_quantity'],
                     'size' => $detail['size'],
                     'color' => $detail['color'],
-                    'warehouse_id' => $request->warehouse_id,
-                    'created_by' => auth()->id(),
-                ]);
-            }
-    
-            $stockHistory = StockHistory::where('product_id', $detail['product_id'])
-                ->where('size', $detail['size'])
-                ->where('color', $detail['color'])
-                ->where('warehouse_id', $request->warehouse_id)
-                ->first();
-    
-            if ($stockHistory) {
-                $stockHistory->quantity += $detail['shipped_quantity'];
-                $stockHistory->available_qty += $detail['shipped_quantity'];
-                $stockHistory->missing_product_quantity += $detail['missing_quantity'];
-                $stockHistory->purchase_price = $detail['price_per_unit'];
-                $stockHistory->ground_price_per_unit = $detail['ground_cost'];
-                $stockHistory->profit_margin = $detail['profit_margin'];
-                $stockHistory->selling_price = $detail['selling_price'];
-                $stockHistory->updated_by = auth()->id();
-                $stockHistory->save();
-            } else {
-                $stockid = date('mds') . str_pad($detail['product_id'], 4, '0', STR_PAD_LEFT);
-                StockHistory::create([
-                    'stock_id' => $stock->id,
-                    'date' => date('Y-m-d'),
-                    'product_id' => $detail['product_id'],
-                    'quantity' => $detail['shipped_quantity'],
-                    'size' => $detail['size'],
-                    'color' => $detail['color'],
-                    'warehouse_id' => $request->warehouse_id,
-                    'available_qty' => $detail['shipped_quantity'],
+                    'purchase_price' => $detail['price_per_unit'],
                     'ground_price_per_unit' => $detail['ground_cost'],
                     'profit_margin' => $detail['profit_margin'],
-                    'purchase_price' => $detail['price_per_unit'],
                     'selling_price' => $detail['selling_price'],
+                    'warehouse_id' => $request->warehouse_id,
                     'created_by' => auth()->id(),
-                    'stockid' => $stockid,
                 ]);
             }
+    
+            $stockid = date('mds') . str_pad($detail['product_id'], 4, '0', STR_PAD_LEFT);
+            StockHistory::create([
+                'stock_id' => $stock->id,
+                'date' => date('Y-m-d'),
+                'product_id' => $detail['product_id'],
+                'quantity' => $detail['shipped_quantity'],
+                'size' => $detail['size'],
+                'color' => $detail['color'],
+                'warehouse_id' => $request->warehouse_id,
+                'available_qty' => $detail['shipped_quantity'],
+                'ground_price_per_unit' => $detail['ground_cost'],
+                'profit_margin' => $detail['profit_margin'],
+                'purchase_price' => $detail['price_per_unit'],
+                'selling_price' => $detail['selling_price'],
+                'created_by' => auth()->id(),
+                'stockid' => $stockid,
+            ]);
     
             $purchaseHistory = PurchaseHistory::find($detail['purchase_history_id']);
             if ($purchaseHistory) {

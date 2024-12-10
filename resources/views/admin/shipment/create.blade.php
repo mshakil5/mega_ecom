@@ -55,7 +55,7 @@
                                         <th>Ground Price</th>
                                         <th>Profit Margin(%)</th>
                                         <th>Current Selling Price</th>
-                                        <th>Selling Price</th>
+                                        <th>New Selling Price</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -80,18 +80,14 @@
                                         <td>{{ $detail->product_size ?? '' }}</td>
                                         <td>{{ $detail->product_color ?? '' }}</td>
                                         @php
-                                            $currentStock = $detail->product->stockhistory
+                                            $filteredStock = $detail->product->stock
                                                 ->where('product_id', $detail->product_id)
                                                 ->where('size', $detail->product_size)
                                                 ->where('color', $detail->product_color)
-                                                ->where('available_qty', '>', 0)
-                                                ->sum('available_qty');
-                                              $currentSellingPrice = $detail->product->stockhistory
-                                                ->where('product_id', $detail->product_id)
-                                                ->where('size', $detail->product_size)
-                                                ->where('color', $detail->product_color)
-                                                ->where('available_qty', '>', 0)
-                                                ->max('selling_price');  
+                                                ->where('quantity', '>', 0);
+
+                                            $currentStock = $filteredStock->sum('quantity');
+                                            $currentSellingPrice = $filteredStock->sortByDesc('id')->first()->selling_price ?? 0;
                                         @endphp
                                         <td>{{ $currentStock }}</td>
                                         <td>{{ $detail->quantity }}</td>
