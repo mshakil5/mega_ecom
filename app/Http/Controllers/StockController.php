@@ -1025,4 +1025,78 @@ class StockController extends Controller
         return response()->json(['exists' => $exists]);
     }
 
+    public function getWarehouses(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+        ]);
+
+        $user = Auth::user();
+        $warehouseIds = json_decode($user->warehouse_ids, true);
+
+        $query = Stock::where('product_id', $request->product_id)
+            ->where('quantity', '>', 0);
+
+        if (!empty($warehouseIds)) {
+            $query->whereNotIn('warehouse_id', $warehouseIds);
+        }
+
+        $warehouses = $query->with('warehouse')
+            ->groupBy('warehouse_id')
+            ->get();
+
+        return response()->json(['warehouses' => $warehouses]);
+    }
+
+    public function getColors(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'warehouse_id' => 'required|exists :warehouses,id',
+        ]);
+
+        $colors = Stock::where('product_id', $request->product_id)
+            ->where('warehouse_id', $request->warehouse_id)
+            ->where('quantity', '>', 0)
+            ->get();
+
+        return response()->json(['colors' => $colors]);
+    }
+
+    public function getSizes(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'warehouse_id' => 'required|exists:warehouses,id',
+            'color' => 'required|string',
+        ]);
+    
+        $sizes = Stock::where('product_id', $request->product_id)
+            ->where('warehouse_id', $request->warehouse_id)
+            ->where('color', $request->color)
+            ->where('quantity', '>', 0)
+            ->get();
+    
+        return response()->json(['sizes' => $sizes]);
+    }
+
+    public function getMaxQuantity(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'warehouse_id' => 'required|exists:warehouses,id',
+            'color' => 'required|string',
+            'size' => 'required|string',
+        ]);
+
+        $max_quantity = Stock::where('product_id', $request->product_id)
+            ->where('warehouse_id', $request->warehouse_id)
+            ->where('color', $request->color)
+            ->where('size', $request->size)
+            ->where('quantity', '>', 0)
+            ->value('quantity');
+
+        return response()->json(['max_quantity' => $max_quantity]);
+    }
+
 }

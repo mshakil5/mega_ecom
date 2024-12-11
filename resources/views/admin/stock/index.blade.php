@@ -12,42 +12,51 @@
                     </div>
                     <div class="card-body">
 
-                    <!-- Filter Form Section -->
-                    <form action="#" method="GET">
-                        <div class="row mb-3">
-                            
-                            <div class="col-md-3">
-                                <label class="label label-primary">Product</label>
-                                <select class="form-control select2" id="product_id" name="product_id">
-                                    <option value="">Select...</option>
-                                    @foreach($products as $product)
-                                        <option value="{{ $product->id }}">{{ $product->name }}-{{ $product->product_code }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                        <form action="#" method="GET">
+                            <div class="row mb-3">
+                                
+                                <div class="col-md-3">
+                                    <label class="label label-primary">Product</label>
+                                    <select class="form-control select2" id="product_id" name="product_id">
+                                        <option value="">Select...</option>
+                                        @foreach($products as $product)
+                                            <option value="{{ $product->id }}">{{ $product->name }}-{{ $product->product_code }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
-                            <div class="col-md-3">
-                                <label class="label label-primary">Warehouses</label>
-                                <select class="form-control select2" id="warehouse_id" name="warehouse_id">
-                                    <option value="">Select...</option>
-                                    @foreach($warehouses as $warehouse)
-                                        <option value="{{ $warehouse->id }}">{{ $warehouse->name }}-{{ $warehouse->location }}</option>
-                                    @endforeach
-                                </select>
+                                <div class="col-md-3">
+                                    <label class="label label-primary">Warehouses</label>
+                                    <select class="form-control select2" id="warehouse_id" name="warehouse_id">
+                                        <option value="">Select...</option>
+                                        @foreach($warehouses as $warehouse)
+                                            <option value="{{ $warehouse->id }}">{{ $warehouse->name }}-{{ $warehouse->location }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label class="label label-primary" style="visibility:hidden;">Action</label>
+                                    <button type="submit" class="btn btn-secondary btn-block">Search</button>
+                                </div>
+
+                                <div class="col-md-1">
+                                    <label class="label label-primary" style="visibility:hidden;">Action</label>
+                                    <button type="button" id="reset-button" class="btn btn-secondary btn-block">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                </div>
+
                             </div>
-                            <div class="col-md-2">
-                                <label class="label label-primary" style="visibility:hidden;">Action</label>
-                                <button type="submit" class="btn btn-secondary btn-block">Search</button>
-                            </div>
-                            <div class="col-md-1">
-                                <label class="label label-primary" style="visibility:hidden;">Action</label>
-                                <button type="button" id="reset-button" class="btn btn-secondary btn-block">
-                                    <i class="fas fa-sync-alt"></i>
+                        </form>
+
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#requestStockModal">
+                                    Request Stock
                                 </button>
                             </div>
                         </div>
-                    </form>
-                    <!-- End of Filter Form Section -->
 
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped" id="stock-table">
@@ -70,6 +79,67 @@
         </div>
     </div>
 </section>
+
+<div class="modal fade" id="requestStockModal" tabindex="-1" role="dialog" aria-labelledby="requestStockModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="requestStockModalLabel">Request Stock</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="requestStockForm">
+                    <div class="form-group">
+                        <label for="productId">Product</label>
+                        <select class="form-control select2" id="productId" name="productId">
+                            <option value="">Select Product...</option>
+                            @foreach($products as $product)
+                                <option value="{{ $product->id }}">{{ $product->name }} - {{ $product->product_code }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="warehouse">Warehouse</label>
+                        <select class="form-control select2" id="warehouse" name="warehouse" disabled>
+                            <option value="">Select Warehouse...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="color">Color</label>
+                        <select class="form-control select2" id="color" name="color" disabled>
+                            <option value="">Select Color...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="size">Size</label>
+                        <select class="form-control select2" id="size" name="size" disabled>
+                            <option value="">Select Size...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="max_quantity">Max Transfer Quantity</label>
+                        <input type="text" class="form-control" id="max_quantity" name="max_quantity" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quantity">Quantity</label>
+                        <input type="number" class="form-control" id="quantity" name="quantity" min="1" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="submitRequest">Submit Request</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- System Loss Modal -->
 <div class="modal fade" id="systemLossModal" tabindex="-1" aria-labelledby="systemLossModalLabel" aria-hidden="true">
@@ -119,6 +189,137 @@
 @endsection
 
 @section('script')
+
+<script>
+    $(document).ready(function() {
+        $('#productId').change(function() {
+            var productId = $(this).val();
+            if (productId) {
+                $.ajax({
+                    url: '/admin/get-warehouses',
+                    method: 'POST',
+                    data: {
+                        product_id: productId,
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(data) {
+                        $('#warehouse').empty().append('<option value="">Select Warehouse...</option>');
+                        $.each(data.warehouses, function(index, stock) {
+                            $('#warehouse').append('<option value="' + stock.warehouse.id + '">' + stock.warehouse.name);
+                        });
+                        $('#warehouse').prop('disabled', false);
+                    },
+                    error: function(xhr) {
+                        console.log(xhr.responseText);
+                        alert('An error occurred while fetching warehouses');
+                    }
+                });
+            } else {
+                resetDropdowns();
+            }
+        });
+
+        $('#warehouse').change(function() {
+            var warehouseId = $(this).val();
+            var productId = $('#productId').val();
+            if (warehouseId && productId) {
+                $.ajax({
+                    url: '/admin/get-colors',
+                    method: 'POST',
+                    data: {
+                        product_id: productId,
+                        warehouse_id: warehouseId,
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(data) {
+                        $('#color').empty().append('<option value="">Select Color...</option>');
+                        $.each(data.colors, function(index, color) {
+                            $('#color').append('<option value="' + color.color + '">' + color.color + '</option>');
+                        });
+                        $('#color').prop('disabled', false);
+                    },
+                    error: function(xhr) {
+                        alert('An error occurred while fetching colors');
+                    }
+                });
+            } else {
+                $('#color').empty().append('<option value="">Select Color...</option>').prop('disabled', true);
+                $('#size').empty().append('<option value="">Select Size...</option>').prop('disabled', true);
+                $('#max_quantity').val('');
+            }
+        });
+
+        $('#color').change(function() {
+            var warehouseId = $('#warehouse').val();
+            var productId = $('#productId').val();
+            var selectedColor = $(this).val();
+            if (warehouseId && productId && selectedColor) {
+                $.ajax({
+                    url: '/admin/get-sizes',
+                    method: 'POST',
+                    data: {
+                        product_id: productId,
+                        warehouse_id: warehouseId,
+                        color: selectedColor,
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(data) {
+                        $('#size').empty().append('<option value="">Select Size...</option>');
+                        $.each(data.sizes, function(index, size) {
+                            $('#size').append('<option value="' + size.size + '">' + size.size + '</option>');
+                        });
+                        $('#size').prop('disabled', false);
+                    },
+                    error: function(xhr) {
+                        alert('An error occurred while fetching sizes');
+                    }
+                });
+            } else {
+                $('#size').empty().append('<option value="">Select Size...</option>').prop('disabled', true);
+            }
+        });
+
+        $('#size').change(function() {
+            var warehouseId = $('#warehouse').val();
+            var productId = $('#productId').val();
+            var selectedColor = $('#color').val();
+            var selectedSize = $(this).val();
+            if (warehouseId && productId && selectedColor && selectedSize) {
+                $.ajax({
+                    url: '/admin/get-max-quantity',
+                    method: 'POST',
+                    data: {
+                        product_id: productId,
+                        warehouse_id: warehouseId,
+                        color: selectedColor,
+                        size: selectedSize,
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(data) {
+                        $('#max_quantity').val(data.max_quantity);
+                    },
+                    error: function(xhr) {
+                        alert('An error occurred while fetching max quantity: ' + xhr.responseText);
+                    }
+                });
+            } else {
+                $('#max_quantity').val('');
+            }
+        });
+
+        function resetDropdowns() {
+            $('#warehouse').empty().append('<option value="">Select Warehouse...</option>').prop('disabled', true);
+            $('#color').empty().append('<option value="">Select Color...</option>').prop('disabled', true);
+            $('#size').empty().append('<option value="">Select Size...</option>').prop('disabled', true);
+            $('#max_quantity'). val('');
+        }
+
+        $('#requestStockModal').on('hidden.bs.modal', function () {
+            resetDropdowns();
+        });
+    });
+</script>
+
 <script>
     $(document).ready(function () {
         function openLossModal(productId, size, color) {
@@ -239,6 +440,12 @@
         });
 
         $('#product_id').select2({
+            placeholder: "Select product...",
+            allowClear: true,
+            width: '100%'
+        });
+
+        $('.select2').select2({
             placeholder: "Select product...",
             allowClear: true,
             width: '100%'
