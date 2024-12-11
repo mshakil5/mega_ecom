@@ -54,6 +54,7 @@ use App\Http\Controllers\Admin\DaybookController;
 use App\Http\Controllers\Admin\DeliveryChargeController;
 use App\Http\Controllers\Admin\ShippingController;
 use App\Http\Controllers\Admin\ShipmentController;
+use App\Http\Controllers\Admin\StockTransferRequestController;
 
 Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], function(){
   
@@ -257,6 +258,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/get-colors', [StockController::class, 'getColors']);
     Route::post('/get-sizes', [StockController::class, 'getSizes']);
     Route::post('/get-max-quantity', [StockController::class, 'getMaxQuantity']);
+
+    Route::post('/stock-transfer-requests', [StockTransferRequestController::class, 'storeTransferRequest']);
 
     // stock ledger
     Route::get('/stock-ledger', [StockController::class, 'getStockLedger'])->name('stockLedger');

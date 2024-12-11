@@ -29,7 +29,9 @@ class StockController extends Controller
     public function getStock()
     {
         $products = Product::select('id','name','product_code')->orderBy('id', 'DESC')->get();
-        $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
+        $user = Auth::user();
+        $warehouseIds = json_decode($user->warehouse_ids, true);
+        $warehouses = Warehouse::whereIn('id', $warehouseIds)->select('id', 'name','location')->where('status', 1)->get();
         return view('admin.stock.index', compact('warehouses','products'));
     }
 

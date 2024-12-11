@@ -14,13 +14,13 @@
 
                         <form action="#" method="GET">
                             <div class="row mb-3">
-                                
+
                                 <div class="col-md-3">
                                     <label class="label label-primary">Product</label>
                                     <select class="form-control select2" id="product_id" name="product_id">
                                         <option value="">Select...</option>
                                         @foreach($products as $product)
-                                            <option value="{{ $product->id }}">{{ $product->name }}-{{ $product->product_code }}</option>
+                                        <option value="{{ $product->id }}">{{ $product->name }}-{{ $product->product_code }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -30,7 +30,7 @@
                                     <select class="form-control select2" id="warehouse_id" name="warehouse_id">
                                         <option value="">Select...</option>
                                         @foreach($warehouses as $warehouse)
-                                            <option value="{{ $warehouse->id }}">{{ $warehouse->name }}-{{ $warehouse->location }}</option>
+                                        <option value="{{ $warehouse->id }}">{{ $warehouse->name }}-{{ $warehouse->location }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -96,40 +96,66 @@
                         <select class="form-control select2" id="productId" name="productId">
                             <option value="">Select Product...</option>
                             @foreach($products as $product)
-                                <option value="{{ $product->id }}">{{ $product->name }} - {{ $product->product_code }}</option>
+                            <option value="{{ $product->id }}">{{ $product->name }} - {{ $product->product_code }}</option>
                             @endforeach
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label for="warehouse">Warehouse</label>
-                        <select class="form-control select2" id="warehouse" name="warehouse" disabled>
-                            <option value="">Select Warehouse...</option>
-                        </select>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="warehouse">Source Warehouse</label>
+                                <select class="form-control select2" id="warehouse" name="warehouse" disabled>
+                                    <option value="">Select Warehouse...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="warehouse">Destination Warehouse</label>
+                                <select class="form-control select2" id="toWarehouse" name="toWarehouse">
+                                    <option value="">Select Warehouse...</option>
+                                    @foreach($warehouses as $warehouse)
+                                    <option value="{{ $warehouse->id }}">{{ $warehouse->name }} ({{ $warehouse->location }})</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="color">Color</label>
-                        <select class="form-control select2" id="color" name="color" disabled>
-                            <option value="">Select Color...</option>
-                        </select>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="color">Color</label>
+                                <select class="form-control select2" id="color" name="color" disabled>
+                                    <option value="">Select Color...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+
+                            <div class="form-group">
+                                <label for="size">Size</label>
+                                <select class="form-control select2" id="size" name="size" disabled>
+                                    <option value="">Select Size...</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="size">Size</label>
-                        <select class="form-control select2" id="size" name="size" disabled>
-                            <option value="">Select Size...</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="max_quantity">Max Transfer Quantity</label>
-                        <input type="text" class="form-control" id="max_quantity" name="max_quantity" readonly>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="quantity">Quantity</label>
-                        <input type="number" class="form-control" id="quantity" name="quantity" min="1" required>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="max_quantity">Max Transfer Quantity</label>
+                                <input type="text" class="form-control" id="max_quantity" name="max_quantity" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="quantity">Quantity</label>
+                                <input type="number" class="form-control" id="quantity" name="quantity" min="1" required>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -154,7 +180,7 @@
             <form id="systemLossForm">
                 <div class="modal-body">
                     <input type="hidden" id="lossProductId" name="productId">
-                    
+
                     <span id="allError" class="text-danger"></span>
 
                     <div class="form-group">
@@ -162,7 +188,7 @@
                         <select class="form-control" id="warehouse" name="warehouse">
                             <option value="">Select...</option>
                             @foreach($warehouses as $warehouse)
-                                <option value="{{ $warehouse->id }}">{{ $warehouse->name }}-{{ $warehouse->location }}</option>
+                            <option value="{{ $warehouse->id }}">{{ $warehouse->name }}-{{ $warehouse->location }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -311,17 +337,93 @@
             $('#warehouse').empty().append('<option value="">Select Warehouse...</option>').prop('disabled', true);
             $('#color').empty().append('<option value="">Select Color...</option>').prop('disabled', true);
             $('#size').empty().append('<option value="">Select Size...</option>').prop('disabled', true);
-            $('#max_quantity'). val('');
+            $('#max_quantity').val('');
         }
 
-        $('#requestStockModal').on('hidden.bs.modal', function () {
+        $('#requestStockModal').on('hidden.bs.modal', function() {
             resetDropdowns();
         });
+
+        $('#submitRequest').on('click', function(e) {
+            e.preventDefault();
+
+            var isValid = true;
+            var quantity = parseInt($('#quantity').val().trim());
+            var maxQuantity = parseInt($('#max_quantity').val().trim());
+
+            // Validate required fields
+            $('#requestStockForm').find('input, select, textarea').each(function() {
+                if ($(this).val().trim() === '') {
+                    isValid = false;
+                    $(this).addClass('is-invalid');
+                } else {
+                    $(this).removeClass('is-invalid');
+                }
+            });
+
+            if (isValid && (quantity > maxQuantity)) {
+                isValid = false;
+                $('#quantity').addClass('is-invalid');
+                swal({
+                    text: "Quantity must be less than or equal to Max Transfer Quantity.",
+                    icon: "error",
+                });
+                return;
+            }
+
+            if (!isValid) {
+                swal({
+                    text: "Please fill out all required fields before submitting.",
+                    icon: "error",
+                });
+                return;
+            }
+
+            swal({
+                text: "Are you sure you want to send this request?",
+                icon: "warning",
+                buttons: ["Cancel", "Yes"],
+                dangerMode: true,
+            }).then((willSend) => {
+                if (willSend) {
+                    var formData = new FormData($('#requestStockForm')[0]);
+                    var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+                    $.ajax({
+                        url: '/admin/stock-transfer-requests',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        success: function(response) {
+                            swal({
+                                text: "Request sent successfully",
+                                icon: "success"
+                            });
+                            $('#requestStockForm')[0].reset();
+                            $('#requestStockModal').modal('hide');
+                            setTimeout(function() {
+                                location.reload();
+                            }, 2000);
+                            
+                        },
+                        error: function(xhr) {
+                            console.log(xhr.responseText);
+                            alert('An error occurred');
+                        }
+                    });
+                }
+            });
+        });
+
     });
 </script>
 
 <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
         function openLossModal(productId, size, color) {
             // console.log(productId, size, color);
 
@@ -329,7 +431,7 @@
             $('#lossProductId').val(productId);
             $('#systemLossModal').modal('show');
 
-            $('#systemLossForm').submit(function (e) {
+            $('#systemLossForm').submit(function(e) {
                 e.preventDefault();
                 let lossQuantity = parseInt($('#lossQuantity').val());
 
@@ -344,7 +446,7 @@
                 let warehouse = $('#warehouse').val();
 
                 $.ajax({
-                    url: "{{ route('process.system.loss') }}", 
+                    url: "{{ route('process.system.loss') }}",
                     type: 'POST',
                     data: {
                         color: color,
@@ -355,7 +457,7 @@
                         lossReason: lossReason,
                         _token: '{{ csrf_token() }}'
                     },
-                    success: function (response) {
+                    success: function(response) {
                         swal({
                             text: "Sent to system loss",
                             icon: "success",
@@ -367,11 +469,11 @@
                         $('#systemLossModal').modal('hide');
                         $('#stock-table').DataTable().ajax.reload();
                     },
-                    error: function (xhr, status, error) {
+                    error: function(xhr, status, error) {
                         console.error(xhr.responseText);
-                        
+
                         let response = JSON.parse(xhr.responseText);
-        
+
                         // If there are validation errors, get the message
                         let errorMessage = response.message;
                         // Insert the error message into the modal
@@ -395,14 +497,38 @@
                 }
             },
             pageLength: 50,
-            columns: [
-                { data: 'sl', name: 'sl', orderable: false, searchable: false },
-                { data: 'product_name', name: 'product_name' },
-                { data: 'product_code', name: 'product_code' },
-                { data: 'quantity_formatted', name: 'quantity' },
-                { data: 'size', name: 'size' },
-                { data: 'color', name: 'color' },
-                {data: 'action', name: 'action', orderable: false, searchable: false}
+            columns: [{
+                    data: 'sl',
+                    name: 'sl',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'product_name',
+                    name: 'product_name'
+                },
+                {
+                    data: 'product_code',
+                    name: 'product_code'
+                },
+                {
+                    data: 'quantity_formatted',
+                    name: 'quantity'
+                },
+                {
+                    data: 'size',
+                    name: 'size'
+                },
+                {
+                    data: 'color',
+                    name: 'color'
+                },
+                {
+                    data: 'action',
+                    name: 'action',
+                    orderable: false,
+                    searchable: false
+                }
             ],
             // columnDefs: [
             //     {
@@ -427,14 +553,14 @@
             table.draw();
         });
 
-        $('#stock-table').on('click', '.btn-open-loss-modal', function () {
+        $('#stock-table').on('click', '.btn-open-loss-modal', function() {
             let productId = $(this).data('id');
             let size = $(this).data('size');
             let color = $(this).data('color');
             openLossModal(productId, size, color);
         });
 
-        $('#systemLossModal').on('hidden.bs.modal', function () {
+        $('#systemLossModal').on('hidden.bs.modal', function() {
             $('#systemLossForm')[0].reset();
             $('#quantityError').text('');
         });
