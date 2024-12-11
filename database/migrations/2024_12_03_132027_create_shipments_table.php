@@ -23,6 +23,10 @@ return new class extends Migration
             $table->decimal('import_duties_tax',10,2)->nullable();
             $table->decimal('warehouse_and_handling_cost',10,2)->nullable();
             $table->decimal('other_cost',10,2)->nullable();
+            $table->string('cnf_payment_type')->nullable();
+            $table->string('import_payment_type')->nullable();
+            $table->string('warehouse_payment_type')->nullable();
+            $table->string('other_payment_type')->nullable();
             $table->decimal('total_additional_cost',10,2)->nullable();
             $table->boolean('status')->default(1);
             // 1 == Processing, 2 == On The Way, 3 == Received

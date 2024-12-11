@@ -56,7 +56,7 @@
                                             <td>{{ $index + 1 }}</td>
                                             <td>{{ \Carbon\Carbon::parse($transaction->date)->format('d-m-Y') }}</td>
                                             <td>{{ $transaction->description }}</td>
-                                            <td>{{ $transaction->payment_type }}</td>
+                                            <td>{{ $transaction->paymentType }}</td>
                                             <td>{{ $transaction->transaction_type }}</td>
                                             @if(in_array($transaction->transaction_type, ['Current', 'Prepaid', 'Due Adjust']))
                                             <td>{{ $transaction->expense_cost }}</td>

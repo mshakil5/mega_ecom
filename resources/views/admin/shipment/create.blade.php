@@ -118,9 +118,9 @@
                                 </tbody>
                             </table>
 
-                            <div class="col-sm-6 mt-5 mb-5">
+                            <div class="col-sm-10 my-5">
                                 <div class="row">
-                                    <!-- Left Column -->
+
                                     <div class="col-sm-6">
 
                                         <div class="row mt-1">
@@ -132,49 +132,64 @@
 
                                         <div class="row mt-1">
                                             <div class="col-sm-12 d-flex align-items-center">
+                                                <span>Total Additional Cost:</span>
+                                                <input type="number" class="form-control" id="total_additional_cost" style="width: 100px; margin-left: auto;" min="0" readonly value="">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+
+                                        <div class="row mt-1">
+                                            <div class="col-sm-12 d-flex align-items-center">
                                                 <span>CNF Cost:</span>
-                                                <input type="number" class="form-control" id="cnf_cost" style="width: 100px; margin-left: auto;" min="0" value="">
+                                                <select class="form-control" id="cnf_payment_type" style="width: 100px; margin-left: auto;">
+                                                    <option value="Bank">Bank</option>
+                                                    <option value="Cash">Cash</option>   
+                                                </select>
+                                                <input type="number" class="form-control" id="cnf_cost" style="width: 100px; margin-left: 10px;" min="0" value="">
                                             </div>
                                         </div>
 
                                         <div class="row mt-1">
                                             <div class="col-sm-12 d-flex align-items-center">
                                                 <span>Import Duties & Taxes:</span>
-                                                <input type="number" class="form-control" id="import_taxes" style="width: 100px; margin-left: auto;" min="0" value="">
+                                                <select class="form-control" id="import_payment_type" style="width: 100px; margin-left: auto;">                        
+                                                    <option value="Bank">Bank</option>
+                                                    <option value="Cash">Cash</option>
+                                                </select>
+                                                <input type="number" class="form-control" id="import_taxes" style="width: 100px; margin-left: 10px;" min="0" value="">
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <!-- Right Column -->
-                                    <div class="col-sm-6">
                                         <div class="row mt-1">
                                             <div class="col-sm-12 d-flex align-items-center">
                                                 <span>Warehouse & Handling Costs:</span>
-                                                <input type="number" class="form-control" id="warehouse_cost" style="width: 100px; margin-left: auto;" min="0" value="">
+                                                <select class="form-control" id="warehouse_payment_type" style="width: 100px; margin-left: auto;">
+                                                    <option value="Bank">Bank</option>
+                                                    <option value="Cash">Cash</option>  
+                                                </select>
+                                                <input type="number" class="form-control" id="warehouse_cost" style="width: 100px; margin-left: 10px;" min="0" value="">
                                             </div>
                                         </div>
 
                                         <div class="row mt-1">
                                             <div class="col-sm-12 d-flex align-items-center">
                                                 <span>Other Costs:</span>
-                                                <input type="number" class="form-control" id="other_cost" style="width: 100px; margin-left: auto;" min="0" value="">
-                                            </div>
-                                        </div>
-
-                                        <div class="row mt-1">
-                                            <div class="col-sm-12 d-flex align-items-center">
-                                                <span>Total Additional Cost:</span>
-                                                <input type="number" class="form-control" id="total_additional_cost" style="width: 100px; margin-left: auto;" min="0" readonly value="">
-                                            </div>
-                                        </div>
-
-                                        <div class="row mt-5">
-                                            <div class="col-sm-12 d-flex justify-content-start">
-                                                <button id="calculateSalesPriceBtn" class="btn btn-success" style="margin-left: 10px;">Calculate Sales Price</button>
+                                                <select class="form-control" id="other_payment_type" style="width: 100px; margin-left: auto;">                                    
+                                                    <option value="Bank">Bank</option>
+                                                    <option value="Cash">Cash</option>
+                                                </select>
+                                                <input type="number" class="form-control" id="other_cost" style="width: 100px; margin-left: 10px;" min="0" value="">         
                                             </div>
                                         </div>
 
                                     </div>
+                                    
+                                    <div class="col-sm-12 d-flex justify-content-center mt-5">
+                                        <button id="calculateSalesPriceBtn" class="btn btn-success" style="margin-left: 10px;">Calculate Sales Price</button>
+                                    </div>
+                                    
                                 </div>
                             </div>
                         </form>
@@ -268,6 +283,10 @@
                 import_taxes: $('#import_taxes').val().replace(/,/g, ''),
                 warehouse_cost: $('#warehouse_cost').val().replace(/,/g, ''),
                 other_cost: $('#other_cost').val().replace(/,/g, ''),
+                cnf_payment_type: $('#cnf_payment_type').val(),
+                import_payment_type: $('#import_payment_type').val(),
+                warehouse_payment_type: $('#warehouse_payment_type').val(),
+                other_payment_type: $('#other_payment_type').val(),
                 total_additional_cost: $('#total_additional_cost').val().replace(/,/g, ''),
                 shipment_details: shipmentDetails,
             };
