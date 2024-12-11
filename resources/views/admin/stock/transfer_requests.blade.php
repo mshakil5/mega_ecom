@@ -87,7 +87,7 @@
                         <label for="quantity">Quantity</label>
                         <input type="number" class="form-control" id="quantity" name="quantity" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <button type="submit" class="btn btn-success">Save changes</button>
                 </form>
             </div>
         </div>
@@ -163,13 +163,15 @@
                         _token: '{{ csrf_token() }}'
                     },
                     success: function(response) {
+                        // console.log(response);
                         swal("Success!", "Request accepted successfully.", "success");
                         setTimeout(function() {
                             location.reload();
                         }, 2000);
                     },
                     error: function(xhr) {
-                        alert('An error occurred while accepting the request.');
+                        console.log(xhr.responseText);
+                        swal("Error!",xhr.responseText.split('\n')[0], "error");
                     }
                 });
             }

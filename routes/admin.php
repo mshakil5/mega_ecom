@@ -264,6 +264,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::put('/stock-transfer-requests/{id}', [StockTransferRequestController::class, 'update'])->name('stock-transfer-requests.update');
 
     Route::post('/stock-transfer-requests/reject/{id}', [StockTransferRequestController::class, 'reject'])->name('stock-transfer-requests.reject');
+    Route::post('/stock-transfer-requests/accept/{id}', [StockTransferRequestController::class, 'accept'])->name('stock-transfer-requests.accept');
     
     // stock ledger
     Route::get('/stock-ledger', [StockController::class, 'getStockLedger'])->name('stockLedger');

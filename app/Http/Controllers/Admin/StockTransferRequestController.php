@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\StockTransferRequest;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Stock;
+use Illuminate\Support\Facades\DB;
 
 class StockTransferRequestController extends Controller
 {
@@ -60,6 +62,61 @@ class StockTransferRequestController extends Controller
         $stockTransferRequest->save();
 
         return response()->json(['message' => 'Quantity updated successfully.']);
+    }
+
+    public function accept($id)
+    {
+        return DB::transaction(function () use ($id) {
+            $stockTransferRequest = StockTransferRequest::find($id);
+    
+            if (!$stockTransferRequest) {
+                return response()->json(['message' => 'Request not found.'], 404);
+            }
+    
+            $stockFrom = Stock::where('product_id', $stockTransferRequest->product_id)
+                ->where('warehouse_id', $stockTransferRequest->from_warehouse_id)
+                ->first();
+    
+            $stockTo = Stock::where('product_id', $stockTransferRequest->product_id)
+                ->where('warehouse_id', $stockTransferRequest->to_warehouse_id)
+                ->first();
+    
+            if (!$stockFrom) {
+                return response()->json(['message' => 'Stock not found in the from warehouse.'], 404);
+            }
+
+            if ($stockFrom->quantity < $stockTransferRequest->request_quantity) {
+                return response()->json(['message' => 'Not enough stock in the from warehouse.'], 400);
+            }
+    
+            if (!$stockTo) {
+                $stockTo = new Stock();
+                $stockTo->product_id = $stockTransferRequest->product_id;
+                $stockTo->size = $stockFrom->size;
+                $stockTo->color = $stockFrom->color;
+                $stockTo->warehouse_id = $stockTransferRequest->to_warehouse_id;
+                $stockTo->purchase_price = $stockFrom->purchase_price;
+                $stockTo->ground_price_per_unit = $stockFrom->ground_price_per_unit; 
+                $stockTo->profit_margin = $stockFrom->profit_margin;
+                $stockTo->selling_price = $stockFrom->selling_price;
+                $stockTo->quantity = $stockTransferRequest->request_quantity;
+                $stockTo->created_by = Auth::id();
+                $stockTo->save();
+            }
+    
+            $stockFrom->quantity -= $stockTransferRequest->request_quantity;
+            $stockFrom->save();
+    
+            if ($stockTo) {
+                $stockTo->quantity += $stockTransferRequest->request_quantity;
+                $stockTo->save();
+            }
+    
+            $stockTransferRequest->status = 1;
+            $stockTransferRequest->save();
+    
+            return response()->json(['message' => 'Request accepted successfully.'], 200);
+        });
     }
 
     public function reject($id)
