@@ -188,7 +188,8 @@ class ShipmentController extends Controller
     public function editShipment($id)
     {
         $shipment = Shipment::with('shipmentDetails.supplier', 'shipmentDetails.product')->findOrFail($id);
-        return view('admin.shipment.edit', compact('shipment'));
+        $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
+        return view('admin.shipment.edit', compact('shipment', 'warehouses'));
     }
 
     public function updateShipment(Request $request, $id)
@@ -335,17 +336,4 @@ class ShipmentController extends Controller
         return response()->json(['message' => 'Shipment updated successfully!']);
     }    
 
-    public function updateStatus(Request $request)
-    {
-        $request->validate([
-            'shipment_id' => 'required|exists:shipments,id',
-            'status' => 'required',
-        ]);
-
-        $shipment = Shipment::findOrFail($request->shipment_id);
-        $shipment->status = $request->status;
-        $shipment->save();
-        
-        return response()->json(['message' => 'Status updated successfully'], 200);
-    }
 }

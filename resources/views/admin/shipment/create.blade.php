@@ -3,7 +3,7 @@
 @section('content')
 
 <section class="content pt-3">
-    <div class="ermsg mt-3"></div>
+    <div class="ermsg"></div>
 </section>
 
 <section class="content">
@@ -86,10 +86,11 @@
                                                     ->where('size', $detail->product_size)
                                                     ->where('color', $detail->product_color)
                                                     ->where('quantity', '>', 0)
+                                                    ->orderBy('id', 'desc')
                                                 : collect();
 
                                             $currentStock = $filteredStock->sum('quantity');
-                                            $currentSellingPrice = $filteredStock->latest()->first()->selling_price ?? 0;
+                                            $currentSellingPrice = $filteredStock->first()->selling_price ?? 0;
                                         @endphp
                                         <td>{{ $currentStock }}</td>
                                         <td>{{ $detail->quantity }}</td>
