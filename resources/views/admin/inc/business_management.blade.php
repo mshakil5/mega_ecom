@@ -283,8 +283,8 @@
         
 
         <!-- stock -->
-        <li class="nav-item dropdown {{ (request()->is('admin/stock*') || request()->is('admin/system-losses*')) ? 'menu-open' : '' }}">
-            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/stock*') || request()->is('admin/system-losses*') || request()->routeIs('stockhistory')) ? 'active' : '' }}">
+        <li class="nav-item dropdown {{ (request()->is('admin/stock*') || request()->is('admin/system-losses*') || request()->is('admin/stock-transfer-requests*')) ? 'menu-open' : '' }}">
+            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/stock*') || request()->is('admin/system-losses*') || request()->is('admin/stock-transfer-requests*') || request()->routeIs('stockhistory')) ? 'active' : '' }}">
                 <i class="nav-icon fas fa-warehouse"></i>
                 <p>
                     Stocks <i class="fas fa-angle-left right"></i>
@@ -309,6 +309,13 @@
                     <a href="{{ route('stockhistory') }}" class="nav-link {{ (request()->is('admin/stocking-history') && !request()->is('admin/add-stock*')) ? 'active' : '' }}">
                         <i class="fas fa-list nav-icon"></i>
                         <p>Warehouse Stock</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('stock-transfer-requests.index') }}" class="nav-link {{ (request()->is('admin/stock-transfer-requests')) ? 'active' : '' }}">
+                        <i class="fas fa-box nav-icon"></i>
+                        <p>Stock Transfer Requests</p>
                     </a>
                 </li>
 

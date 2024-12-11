@@ -18,12 +18,14 @@ return new class extends Migration
             $table->string('size')->nullable();
             $table->string('color')->nullable();
             $table->integer('request_quantity')->nullable();
+            $table->integer('max_quantity')->nullable();
             $table->boolean('status')->default(0); 
             // 0 = Pending, 1 = Approved, 2 = Rejected
             $table->unsignedBigInteger('from_warehouse_id')->nullable();
             $table->foreign('from_warehouse_id')->references('id')->on('warehouses')->onDelete('cascade');
             $table->unsignedBigInteger('to_warehouse_id')->nullable();
             $table->foreign('to_warehouse_id')->references('id')->on('warehouses')->onDelete('cascade');
+            $table->longText('note')->nullable();
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->timestamps();
