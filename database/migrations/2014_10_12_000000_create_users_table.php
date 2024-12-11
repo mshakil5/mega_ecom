@@ -38,6 +38,7 @@ return new class extends Migration
             $table->string('whatsapp')->nullable();
             $table->boolean('status')->default(1);
             $table->tinyInteger('sidebar')->default(1);   
+            $table->json('warehouse_ids');
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->rememberToken();

@@ -25,7 +25,7 @@
             <!-- general form elements disabled -->
             <div class="card card-secondary">
               <div class="card-header">
-                <h3 class="card-title" id="cardTitle">Add new data</h3>
+                <h3 class="card-title" id="cardTitle">Add new admin</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
@@ -36,29 +36,14 @@
                   <div class="row">
                     <div class="col-sm-6">
                       <div class="form-group">
-                        <label>Name</label>
-                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter name">
+                        <label>Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter name" required>
                       </div>
                     </div>
                     <div class="col-sm-6">
                       <div class="form-group">
-                        <label>Surname*</label>
-                        <input type="text" id="surname" name="surname" class="form-control" placeholder="Enter surname">
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-sm-6">
-                      <div class="form-group">
-                        <label>Email*</label>
-                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
-                      </div>
-                    </div>
-                    <div class="col-sm-6">
-                      <div class="form-group">
-                        <label>Phone*</label>
-                        <input type="number" id="phone" name="phone" class="form-control" placeholder="Enter phone">
+                        <label>Surname <span class="text-danger">*</span></label>
+                        <input type="text" id="surname" name="surname" class="form-control" placeholder="Enter surname" required>
                       </div>
                     </div>
                   </div>
@@ -66,15 +51,55 @@
                   <div class="row">
                     <div class="col-sm-6">
                       <div class="form-group">
-                        <label>Password*</label>
+                        <label>Email <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <div class="form-group">
+                        <label>Phone <span class="text-danger">*</span></label>
+                        <input type="number" id="phone" name="phone" class="form-control" placeholder="Enter phone" required>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <div class="form-group">
+                        <label>Password <span class="text-danger">*</span></label>
                         <input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
                       </div>
                     </div>
                     <div class="col-sm-6">
                       <div class="form-group">
-                        <label>Confirm Password*</label>
+                        <label>Confirm Password <span class="text-danger">*</span></label>
                         <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Enter confirm password">
                       </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label>Role <span class="text-danger">*</span></label>
+                            <select name="role_id" id="role_id" class="form-control">
+                                <option value="">Select Role</option>
+                                @foreach($roles as $role)
+                                    <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label>Warehouses <span class="text-danger">*</span></label>
+                            <select name="warehouse_ids[]" id="warehouse_ids" class="form-control" multiple>
+                                @foreach($warehouses as $warehouse)
+                                    <option value="{{ $warehouse->id }}">{{ $warehouse->name }} ({{ $warehouse->location }})</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
                   </div>
                   
@@ -117,9 +142,9 @@
                 <tr>
                   <th>Sl</th>
                   <th>Name</th>
-                  <th>Surname</th>
                   <th>Email</th>
                   <th>Phone</th>
+                  <th>Role</th>
                   <th>Action</th>
                 </tr>
                 </thead>
@@ -127,10 +152,10 @@
                   @foreach ($data as $key => $data)
                   <tr>
                     <td>{{ $key + 1 }}</td>
-                    <td>{{$data->name}}</td>
-                    <td>{{$data->surname}}</td>
+                    <td>{{$data->name}} {{$data->surname}}</td>
                     <td>{{$data->email}}</td>
                     <td>{{$data->phone}}</td>
+                    <td>{{$data->role->name}}</td>
                     <td>
                       <a id="EditBtn" rid="{{$data->id}}"><i class="fa fa-edit" style="color: #2196f3;font-size:16px;"></i></a>
                       @if (Auth::user()->id != $data->id)
@@ -165,7 +190,14 @@
         "buttons": ["copy", "csv", "excel", "pdf", "print"]
       }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     });
-  </script>
+
+    $(document).ready(function() {
+        $('#warehouse_ids').select2({
+            placeholder: "Select Warehouses",
+            allowClear: true
+        });
+    });
+</script>
 
 <script>
   $(document).ready(function () {
@@ -197,6 +229,12 @@
               form_data.append("surname", $("#surname").val());
               form_data.append("password", $("#password").val());
               form_data.append("confirm_password", $("#confirm_password").val());
+              form_data.append("role_id", $("#role_id").val());
+              $("#warehouse_ids option:selected").each(function() {
+                  form_data.append("warehouse_ids[]", $(this).val());
+              });
+              
+
               $.ajax({
                 url: url,
                 method: "POST",
@@ -222,7 +260,7 @@
                 error: function (d) {
                     console.log(d);
                 }
-            });
+              });
           }
           //create  end
           //Update
@@ -234,6 +272,10 @@
               form_data.append("surname", $("#surname").val());
               form_data.append("password", $("#password").val());
               form_data.append("confirm_password", $("#confirm_password").val());
+              form_data.append("role_id", $("#role_id").val());
+              $("#warehouse_ids option:selected").each(function() {
+                  form_data.append("warehouse_ids[]", $(this).val());
+              })
               form_data.append("codeid", $("#codeid").val());
               
               $.ajax({
@@ -270,7 +312,7 @@
       });
       //Edit
       $("#contentContainer").on('click','#EditBtn', function(){
-          $("#cardTitle").text('Update this data');
+          $("#cardTitle").text('Update this admin');
           //alert("btn work");
           codeid = $(this).attr('rid');
           //console.log($codeid);
@@ -306,10 +348,14 @@
         });
       //Delete  
       function populateForm(data){
+          console.log(data);
           $("#name").val(data.name);
           $("#surname").val(data.surname);
           $("#phone").val(data.phone);
           $("#email").val(data.email);
+          $("#role_id").val(data.role_id);
+          var warehouseIds = JSON.parse(data.warehouse_ids);
+          $("#warehouse_ids").val(warehouseIds).trigger('change');
           $("#codeid").val(data.id);
           $("#addBtn").val('Update');
           $("#addBtn").html('Update');
@@ -318,9 +364,10 @@
       }
       function clearform(){
           $('#createThisForm')[0].reset();
+          $('#warehouse_ids').val(null).trigger('change');
           $("#addBtn").val('Create');
           $("#addBtn").html('Create');
-          $("#cardTitle").text('Add new data');
+          $("#cardTitle").text('Add new admin');
       }
   });
 </script>
