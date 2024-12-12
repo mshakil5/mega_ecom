@@ -6,7 +6,7 @@
     <div class="container-fluid">
         <div class="row justify-content-md-center">
             <div class="col-md-12">
-                <a href="{{ route('productPurchaseHistory') }}" class="btn btn-secondary mb-3">Back</a>
+                <a href="{{ url()->previous() }}" class="btn btn-secondary mb-3">Back</a>
                 <div class="card card-secondary">
                     <div class="card-header">
                         <h3 class="card-title" id="cardTitle">Update this purchase</h3>

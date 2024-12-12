@@ -183,7 +183,7 @@
 
             @foreach ($order->orderDetails as $detail)
             <tr class="item {{ $loop->last ? 'last' : '' }}">
-                <td>{{ $detail->product->product_code }} - {{ $detail->product->name }} ({{ $detail->quantity }} x {{ $currency }} {{ $detail->price_per_unit }})</td>
+                <td>{{ $detail->product->product_code }} - {{ $detail->product->name }} - {{ $detail->size }} - {{ $detail->color }}  ({{ $detail->quantity }} x {{ $currency }} {{ $detail->price_per_unit }})</td>
                 <td>{{ $currency }} {{ $detail->total_price }}</td>
             </tr>
             @endforeach

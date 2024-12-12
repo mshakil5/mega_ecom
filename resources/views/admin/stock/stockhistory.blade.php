@@ -55,8 +55,7 @@
                                     <tr>
                                         <th>Sl</th>
                                         <th>Date</th>
-                                        <th>Product Name</th>
-                                        <th>Product Code</th>
+                                        <th>Product</th>
                                         <th>Stock Qty</th>
                                         <th>Available Qty</th>
                                         <th>Selling Qty</th>
@@ -203,8 +202,7 @@
             columns: [
                 { data: 'sl', name: 'sl', orderable: false, searchable: false },
                 { data: 'date', name: 'date' },
-                { data: 'product_name', name: 'product_name' },
-                { data: 'product_code', name: 'product_code' },
+                { data: 'product_details', name: 'product_details' },
                 { data: 'quantity_formatted', name: 'quantity' },
                 { data: 'available_qty', name: 'available_qty' },
                 { data: 'selling_qty', name: 'selling_qty' },
@@ -234,7 +232,6 @@
 
         $('#reset-button').on('click', function() {
             $('#warehouse_id').val('');
-            location.reload();
             table.draw();
         });
 

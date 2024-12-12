@@ -63,11 +63,11 @@
                                 <thead>
                                     <tr>
                                         <th>Sl</th>
-                                        <th>Product Name</th>
-                                        <th>Product Code</th>
-                                        <th>Quantity</th>
+                                        <th>Product</th>
+                                        <th>Warehouse</th>
                                         <th>Size</th>
                                         <th>Color</th>
+                                        <th>Quantity</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -115,7 +115,7 @@
                                 <label for="warehouse">Destination Warehouse</label>
                                 <select class="form-control select2" id="toWarehouse" name="toWarehouse">
                                     <option value="">Select Warehouse...</option>
-                                    @foreach($warehouses as $warehouse)
+                                    @foreach($filteredWarehouses as $warehouse)
                                     <option value="{{ $warehouse->id }}">{{ $warehouse->name }} ({{ $warehouse->location }})</option>
                                     @endforeach
                                 </select>
@@ -512,16 +512,12 @@
                     searchable: false
                 },
                 {
-                    data: 'product_name',
-                    name: 'product_name'
+                    data: 'product_details',
+                    name: 'product_details'
                 },
                 {
-                    data: 'product_code',
-                    name: 'product_code'
-                },
-                {
-                    data: 'quantity_formatted',
-                    name: 'quantity'
+                    data: 'warehouse_name',
+                    name: 'warehouse_name'
                 },
                 {
                     data: 'size',
@@ -531,6 +527,11 @@
                     data: 'color',
                     name: 'color'
                 },
+                {
+                    data: 'quantity',
+                    name: 'quantity'
+                },
+
                 {
                     data: 'action',
                     name: 'action',
@@ -557,7 +558,6 @@
 
         $('#reset-button').on('click', function() {
             $('#warehouse_id').val('');
-            location.reload();
             table.draw();
         });
 

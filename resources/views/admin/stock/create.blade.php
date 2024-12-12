@@ -641,101 +641,118 @@
 
 <script>
 
-$(document).ready(function() {
+    $(document).ready(function() {
 
-    // new supplier add 
-    $('#saveSupplierBtn').on('click', function() {
+        // new supplier add 
+        $('#saveSupplierBtn').on('click', function() {
 
-        let password = $('#password').val();
-        let confirmPassword = $('#confirm_password').val();
+            let password = $('#password').val();
+            let confirmPassword = $('#confirm_password').val();
 
-        if (password !== confirmPassword) {
-            
-            swal({
-                text: "Passwords do not match !",
-                icon: "error",
-                button: {
-                    text: "OK",
-                    className: "swal-button--confirm"
+            if (password !== confirmPassword) {
+                
+                swal({
+                    text: "Passwords do not match !",
+                    icon: "error",
+                    button: {
+                        text: "OK",
+                        className: "swal-button--confirm"
+                    }
+                });
+
+                return false;
+            }
+
+            let formData = {
+                id_number: $('#supplier_id_number').val(),
+                name: $('#supplier_name').val(),
+                email: $('#supplier_email').val(),
+                phone: $('#supplier_phone').val(),
+                password: $('#password').val(),
+                vat_reg: $('#vat_reg1').val(),
+                contract_date: $('#contract_date').val(),
+                address: $('#address').val(),
+                company: $('#company').val(),
+                _token: '{{ csrf_token() }}'
+            };
+
+            $.ajax({
+                url: '{{ route('supplier.store') }}',
+                type: 'POST',
+                data: formData,
+                success: function(response) {
+                    if (response.success) {
+                        $('#supplier_id').append(`<option value="${response.data.id}">${response.data.name}</option>`);
+                        $('#newSupplierModal').modal('hide');
+                        $('#newSupplierForm')[0].reset();
+                        swal({
+                            text: "Created successfully",
+                            icon: "success",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--confirm"
+                            }
+                        });
+                    } else {
+                        alert('Failed to add supplier.');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // console.log(xhr.responseText);
+                    alert('Error adding supplier. Please try again.');
                 }
             });
-
-            return false;
-        }
-
-        let formData = {
-            id_number: $('#supplier_id_number').val(),
-            name: $('#supplier_name').val(),
-            email: $('#supplier_email').val(),
-            phone: $('#supplier_phone').val(),
-            password: $('#password').val(),
-            vat_reg: $('#vat_reg1').val(),
-            contract_date: $('#contract_date').val(),
-            address: $('#address').val(),
-            company: $('#company').val(),
-            _token: '{{ csrf_token() }}'
-        };
-
-        $.ajax({
-            url: '{{ route('supplier.store') }}',
-            type: 'POST',
-            data: formData,
-            success: function(response) {
-                if (response.success) {
-                    $('#supplier_id').append(`<option value="${response.data.id}">${response.data.name}</option>`);
-                    $('#newSupplierModal').modal('hide');
-                    $('#newSupplierForm')[0].reset();
-                    swal({
-                        text: "Created successfully",
-                        icon: "success",
-                        button: {
-                            text: "OK",
-                            className: "swal-button--confirm"
-                        }
-                    });
-                } else {
-                    alert('Failed to add supplier.');
-                }
-            },
-            error: function(xhr, status, error) {
-                // console.log(xhr.responseText);
-                alert('Error adding supplier. Please try again.');
-            }
         });
-    });
 
-    // new color add 
-    $('#saveColorBtn').click(function() {
-        let colorName = $('#color_name').val();
-        let color_code = $('#color_code').val();
-        let price = $('#color_price').val();
+        // new color add 
+        $('#saveColorBtn').click(function() {
+            let colorName = $('#color_name').val();
+            let color_code = $('#color_code').val();
+            let price = $('#color_price').val();
 
-        $.ajax({
-            url: '{{ route('color.store') }}',
-            type: 'POST',
-            data: {
-                color_name: colorName,
-                color_code: color_code,
-                price: price,
-                _token: '{{ csrf_token() }}'
-            },
-            success: function(response) {
-                if (response.success) {
+            $.ajax({
+                url: '{{ route('color.store') }}',
+                type: 'POST',
+                data: {
+                    color_name: colorName,
+                    color_code: color_code,
+                    price: price,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        swal({
+                            text: "Color added successfully",
+                            icon: "success",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--confirm"
+                            }
+                        }).then(() => {
+                            $('#product_color').append(`<option value="${response.data.color}">${response.data.color}</option>`);
+                            $('#addColorModal').modal('hide');
+                            $('#newColorForm')[0].reset();
+                        });
+                    } else {
+                        swal({
+                            text: "Failed to add color",
+                            icon: "error",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--error"
+                            }
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    let errorMessage = "Error adding color. Please try again.";
+                    
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        errorMessage = Object.values(xhr.responseJSON.errors).join("\n");
+                    }
+                    
                     swal({
-                        text: "Color added successfully",
-                        icon: "success",
-                        button: {
-                            text: "OK",
-                            className: "swal-button--confirm"
-                        }
-                    }).then(() => {
-                        $('#product_color').append(`<option value="${response.data.color}">${response.data.color}</option>`);
-                        $('#addColorModal').modal('hide');
-                        $('#newColorForm')[0].reset();
-                    });
-                } else {
-                    swal({
-                        text: "Failed to add color",
+                        text: errorMessage,
                         icon: "error",
                         button: {
                             text: "OK",
@@ -743,58 +760,58 @@ $(document).ready(function() {
                         }
                     });
                 }
-            },
-            error: function(xhr) {
-                let errorMessage = "Error adding color. Please try again.";
-                
-                if (xhr.responseJSON && xhr.responseJSON.errors) {
-                    errorMessage = Object.values(xhr.responseJSON.errors).join("\n");
-                }
-                
-                swal({
-                    text: errorMessage,
-                    icon: "error",
-                    button: {
-                        text: "OK",
-                        className: "swal-button--error"
-                    }
-                });
-            }
+            });
         });
-    });
 
-    // size
-    $('#saveSizeBtn').click(function() {
+        // size
+        $('#saveSizeBtn').click(function() {
 
-        let size = $('#size_name').val();
-        let price = $('#size_price').val();
+            let size = $('#size_name').val();
+            let price = $('#size_price').val();
 
-        $.ajax({
-            url: '{{ route('size.store') }}',
-            type: 'POST',
-            data: {
-                size: size,
-                price: price,
-                _token: '{{ csrf_token() }}'
-            },
-            success: function(response) {
-                if (response.success) {
+            $.ajax({
+                url: '{{ route('size.store') }}',
+                type: 'POST',
+                data: {
+                    size: size,
+                    price: price,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        swal({
+                            text: "Size added successfully",
+                            icon: "success",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--confirm"
+                            }
+                        }).then(() => {
+                            $('#product_size').append(`<option value="${response.data.size}">${response.data.size}</option>`);
+                            
+                            $('#addSizeModal').modal('hide');
+                            $('#newSizeForm')[0].reset();
+                        });
+                    } else {
+                        swal({
+                            text: "Failed to add size",
+                            icon: "error",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--error"
+                            }
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    let errorMessage = "Error adding size. Please try again.";
+                    
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        errorMessage = Object.values(xhr.responseJSON.errors).join("\n");
+                    }
+                    
                     swal({
-                        text: "Size added successfully",
-                        icon: "success",
-                        button: {
-                            text: "OK",
-                            className: "swal-button--confirm"
-                        }
-                    }).then(() => {
-                        $('#product_size').append(`<option value="${response.data.size}">${response.data.size}</option>`);
-                        
-                        $('#addSizeModal').modal('hide');
-                        $('#newSizeForm')[0].reset();
-                    });
-                } else {
-                    swal({
-                        text: "Failed to add size",
+                        text: errorMessage,
                         icon: "error",
                         button: {
                             text: "OK",
@@ -802,26 +819,9 @@ $(document).ready(function() {
                         }
                     });
                 }
-            },
-            error: function(xhr) {
-                let errorMessage = "Error adding size. Please try again.";
-                
-                if (xhr.responseJSON && xhr.responseJSON.errors) {
-                    errorMessage = Object.values(xhr.responseJSON.errors).join("\n");
-                }
-                
-                swal({
-                    text: errorMessage,
-                    icon: "error",
-                    button: {
-                        text: "OK",
-                        className: "swal-button--error"
-                    }
-                });
-            }
+            });
         });
     });
-});
 
 </script>
 

@@ -144,7 +144,7 @@
                             <tbody>
                                 @foreach ($data as $campaignRequest)
                                 <tr>
-                                    <td>{{ $campaignRequest->campaign->title }}</td>
+                                    <td>{{ $campaignRequest->campaign ? $campaignRequest->campaign->title : 'N/A' }}</td>
                                     <td>
                                         @if($campaignRequest->supplier)
                                             {{ $campaignRequest->supplier->name }}
@@ -152,8 +152,8 @@
                                             Admin
                                         @endif
                                     </td>
-                                    <td>{{ \Carbon\Carbon::parse($campaignRequest->campaign->start_date)->format('d-m-Y') }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($campaignRequest->campaign->end_date)->format('d-m-Y') }}</td>
+                                    <td>{{ $campaignRequest->campaign && $campaignRequest->campaign->start_date ? \Carbon\Carbon::parse($campaignRequest->campaign->start_date)->format('d-m-Y') : 'N/A' }}</td>
+                                    <td>{{ $campaignRequest->campaign && $campaignRequest->campaign->end_date ? \Carbon\Carbon::parse($campaignRequest->campaign->end_date)->format('d-m-Y') : 'N/A' }}</td>
                                     <td>
                                         <select class="status-select form-control" data-campaign-request-id="{{ $campaignRequest->id }}">
                                             <option value="0" {{ $campaignRequest->status == 0 ? 'selected' : '' }}>Pending</option>

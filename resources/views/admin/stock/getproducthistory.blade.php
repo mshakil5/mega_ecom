@@ -12,7 +12,7 @@
             <div class="col-12">
                 <div class="card card-secondary">
                     <div class="card-header">
-                        <h3 class="card-title">All Stocks</h3>
+                        <h3 class="card-title">Product History</h3>
                     
                     </div>
                     <div class="card-body">

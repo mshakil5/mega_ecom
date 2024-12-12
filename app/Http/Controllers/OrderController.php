@@ -1505,9 +1505,9 @@ class OrderController extends Controller
 
             $contactEmails = ContactEmail::where('status', 1)->pluck('email');
 
-            foreach ($contactEmails as $email) {
-                Mail::to($email)->send(new OrderStatusChangedMail($order));
-            }
+            // foreach ($contactEmails as $email) {
+            //     Mail::to($email)->send(new OrderStatusChangedMail($order));
+            // }
 
 
             return response()->json(['success' => true, 'message' => 'Order status updated successfully!']);

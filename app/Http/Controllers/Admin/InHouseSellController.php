@@ -25,7 +25,10 @@ class InHouseSellController extends Controller
 {
     public function inHouseSell()
     {
-        $products = Product::orderby('id','DESC')->select('id', 'name','price', 'product_code')->get();
+        $products = Product::whereHas('stock', function ($query) {
+            $query->where('quantity', '>', 0);
+        })
+        ->orderby('id','DESC')->select('id', 'name','price', 'product_code')->get();
         $colors = Color::where('status', 1)->select('id', 'color')->orderby('id','DESC')->get();
         $sizes = Size::where('status', 1)->select('id', 'size')->orderby('id','DESC')->get();
         $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
@@ -192,7 +195,7 @@ class InHouseSellController extends Controller
         $encoded_order_id = base64_encode($order->id);
         $pdfUrl = route('in-house-sell.generate-pdf', ['encoded_order_id' => $encoded_order_id]);
 
-        Mail::to($order->user->email)->send(new OrderConfirmation($order, $pdfUrl));
+        // Mail::to($order->user->email)->send(new OrderConfirmation($order, $pdfUrl));
 
         // $contactEmails = ContactEmail::where('status', 1)->pluck('email');
 
@@ -349,9 +352,12 @@ class InHouseSellController extends Controller
         if (!$stock) {
             return response()->json(['in_stock' => false]);
         }
-
-        return response()->json(['in_stock' => $stock->quantity > 0]);
-    }
+    
+        return response()->json([
+            'in_stock' => $stock->quantity > 0,
+            'stock_quantity' => $stock->quantity
+        ]);
+    }    
 
     public function editOrder($orderId)
     {
@@ -359,9 +365,11 @@ class InHouseSellController extends Controller
         $cashAmount = $order->transactions->where('payment_type', 'Cash')->first();
         $bankAmount = $order->transactions->where('payment_type', 'Bank')->first();
         $discountAmount = $order->transactions->where('transaction_type', 'Current')->where('discount', '>', 0)->first();
-
         $customers = User::where('is_type', '0')->where('status', 1)->orderby('id','asc')->get();
-        $products = Product::orderby('id','DESC')->get();
+        $products = Product::whereHas('stock', function ($query) {
+            $query->where('quantity', '>', 0);
+        })
+        ->orderby('id','DESC')->select('id', 'name','price', 'product_code')->get();
         $colors = Color::orderby('id','DESC')->where('status', 1)->get();
         $sizes = Size::orderby('id','DESC')->where('status', 1)->get();
         $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
@@ -411,7 +419,7 @@ class InHouseSellController extends Controller
         $order->paid_amount = $request->cash_payment + $request->bank_payment;
         $order->due_amount = $netAmount - $request->cash_payment - $request->bank_payment;
         $order->subtotal_amount = $itemTotalAmount;
-        $order->status = 1;
+        $order->status = 2;
         if ($order->order_type != 0) {
             $order->order_type = 1;
             $order->save();

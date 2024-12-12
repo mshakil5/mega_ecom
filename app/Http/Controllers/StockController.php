@@ -28,18 +28,22 @@ class StockController extends Controller
 {
     public function getStock()
     {
-        $products = Product::select('id','name','product_code')->orderBy('id', 'DESC')->get();
+        $products = Product::whereHas('stock', function ($query) {
+            $query->where('quantity', '>', 0);
+        })
+        ->orderby('id','DESC')->select('id', 'name','price', 'product_code')->get();
         $user = Auth::user();
         $warehouseIds = json_decode($user->warehouse_ids, true);
-        $warehouses = Warehouse::whereIn('id', $warehouseIds)->select('id', 'name','location')->where('status', 1)->get();
-        return view('admin.stock.index', compact('warehouses','products'));
+        $warehouses = Warehouse::where('status', 1)->get();
+        $filteredWarehouses = Warehouse::whereIn('id', $warehouseIds)->select('id', 'name','location')->where('status', 1)->get();
+        return view('admin.stock.index', compact('warehouses','products','filteredWarehouses'));
     }
 
     public function getStocks(Request $request)
     {
-        // $query = Stock::query();
-        $query = Stock::select('product_id', 'size','color',  \DB::raw('SUM(quantity) as total_quantity'))
-            ->groupBy('product_id', 'size','color');
+        $query = Stock::with('warehouse', 'product')
+            ->select('product_id', 'size', 'color', 'warehouse_id', 'quantity');
+
         if ($request->has('warehouse_id') && $request->warehouse_id != '') {
             $query->where('warehouse_id', $request->warehouse_id);
         }
@@ -47,31 +51,31 @@ class StockController extends Controller
         if ($request->has('product_id') && $request->product_id != '') {
             $query->where('product_id', $request->product_id);
         }
-       $data = $query->orderBy('id', 'DESC')->get();
-       
+
+        $data = $query->orderBy('id', 'DESC')->get();
+
         return DataTables::of($data)
-            ->addColumn('sl', function($row) {
+            ->addColumn('sl', function ($row) {
                 static $i = 1;
                 return $i++;
             })
-            ->addColumn('product_name', function ($row) {
-                return $row->product ? $row->product->name : 'N/A';
+            ->addColumn('product_details', function ($row) {
+                if ($row->product) {
+                    $productCode = $row->product->product_code;
+                    $productName = $row->product->name;
+                    return "$productCode - $productName";
+                }
+                return 'N/A';
             })
-            ->addColumn('product_code', function ($row) {
-                return $row->product ? $row->product->product_code : 'N/A';
+            ->addColumn('warehouse_name', function ($row) {
+                return $row->warehouse ? $row->warehouse->name : 'N/A';
             })
-            ->addColumn('quantity_formatted', function ($row) {
-                return $row->total_quantity ? number_format($row->total_quantity, 0) : 'N/A';
+            ->addColumn('quantity', function ($row) {
+                return $row->quantity ?? 'N/A';
             })
-            // ->addColumn('warehouse', function ($row) {
-            //     $warehouseDtl = '<b>'.$row->warehouse ? $row->warehouse->name .'-'. $row->warehouse->location : 'N/A'.'</b>';
-            //     return $warehouseDtl;
-            // })
-            // ->addColumn('action', function ($row) {
-            // return '<button class="btn btn-sm btn-danger" onclick="openLossModal('.$row->id.')">System Loss</button>';
-            // })
             ->addColumn('action', function ($data) {
-                $btn = '<div class="table-actions"> <button class="btn btn-sm btn-danger btn-open-loss-modal" data-size="'.$data->size.'" data-color="'.$data->color.'" data-id="'.$data->product->id.'" >System Loss</button> ';  
+                $btn = '<div class="table-actions"> 
+                            <button class="btn btn-sm btn-danger btn-open-loss-modal mr-2" data-size="'.$data->size.'" data-color="'.$data->color.'" data-id="'.$data->product->id.'" >System Loss</button>';  
                 if (Auth::user()) {
                     $url = route('admin.product.purchasehistory', ['id' => $data->product->id, 'size' => $data->size, 'color' => $data->color]);
                     $btn .= '<a href="'.$url.'" class="btn btn-sm btn-primary">History</a>';
@@ -85,16 +89,18 @@ class StockController extends Controller
 
     public function stockingHistory()
     {
-        $products = Product::select('id','name','product_code')->orderBy('id', 'DESC')->get();
+        $products = Product::whereHas('stock', function ($query) {
+            $query->where('quantity', '>', 0);
+        })
+        ->orderby('id','DESC')->select('id', 'name','price', 'product_code')->get();
+
         $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
 
         return view('admin.stock.stockhistory', compact('warehouses','products'));
     }
 
     public function getStockingHistory(Request $request)
-    {
-        
-        
+    {  
         $query = StockHistory::select('date', 'stockid', 'purchase_id', 'product_id', 'stock_id', 'warehouse_id', 'quantity', 'selling_qty','available_qty', 'size','color','systemloss_qty','purchase_price','selling_price');
         if ($request->has('warehouse_id') && $request->warehouse_id != '') {
             $query->where('warehouse_id', $request->warehouse_id);
@@ -112,22 +118,20 @@ class StockController extends Controller
             ->addColumn('date', function ($row) {
                 return $row->date ? Carbon::parse($row->date)->format('d-m-Y') : 'N/A';
             })
-            ->addColumn('product_name', function ($row) {
-                return $row->product ? $row->product->name : 'N/A';
-            })
-            ->addColumn('product_code', function ($row) {
-                return $row->product ? $row->product->product_code : 'N/A';
-            })
+            ->addColumn('product_details', function ($row) {
+                if ($row->product) {
+                    $productCode = $row->product->product_code;
+                    $productName = $row->product->name;
+                    return "$productCode - $productName";
+                }
+                return 'N/A';
+            })            
             ->addColumn('quantity_formatted', function ($row) {
                 return $row->quantity ? number_format($row->quantity, 0) : ' ';
             })
             
             ->addColumn('selling_qty', function ($row) {
                 return $row->selling_qty ? $row->selling_qty : ' ';
-            })
-
-            ->addColumn('selling_price', function ($row) {
-                return $row->selling_price ? $row->selling_price : ' ';
             })
             
             ->addColumn('available_qty', function ($row) {
@@ -138,7 +142,6 @@ class StockController extends Controller
                 return $row->purchase_price ? $row->purchase_price : 'N/A';
             })
             
-
             ->addColumn('warehouse', function ($row) {
                 return $row->warehouse ? $row->warehouse->name : 'N/A';
             })
@@ -157,13 +160,14 @@ class StockController extends Controller
 
     public function getStockLedger()
     {
-        
-
         $totalQty = Stock::sum('quantity');
         $totalProduct = Stock::count('product_id');
         $totalSupplier = Supplier::count();
 
-        $products = Product::select('id','name','product_code')->orderBy('id', 'DESC')->get();
+        $products = Product::whereHas('stock', function ($query) {
+            $query->where('quantity', '>', 0);
+        })
+        ->orderby('id','DESC')->select('id', 'name','price', 'product_code')->get();
         $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
         return view('admin.stock.stockledger', compact('warehouses','products','totalQty','totalProduct'));
     }

@@ -18,17 +18,10 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-12">
-          {{-- <div class="callout callout-info">
-            <h5><i class="fas fa-info"></i> Note:</h5>
-            This page has been enhanced for printing. Click the print button at the bottom of the invoice to test.
-          </div> --}}
 
-                  
-          @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
+        <a href="{{ url()->previous() }}" class="btn btn-secondary mb-3">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
 
           <!-- Main content -->
           <div class="invoice p-3 mb-3">

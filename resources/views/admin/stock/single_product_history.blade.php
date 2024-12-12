@@ -10,7 +10,7 @@
       </div>
     </div>
 </section>
-<section class="content pt-3" id="contentContainer">
+<section class="content" id="contentContainer">
     <div class="container-fluid">
 
         

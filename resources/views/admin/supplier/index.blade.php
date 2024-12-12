@@ -32,19 +32,19 @@
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <label>Name <span style="color: red;">*</span></label>
-                                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter name">
+                                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter name" required>
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <label>Supplier ID <span style="color: red;">*</span></label>
-                                        <input type="number" class="form-control" id="id_number" name="id_number" placeholder="Enter code">
+                                        <input type="number" class="form-control" id="id_number" name="id_number" placeholder="Enter code" required>
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-group">
-                                        <label>Email</label>
-                                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
+                                        <label>Email <span style="color: red;">*</span></label>
+                                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
