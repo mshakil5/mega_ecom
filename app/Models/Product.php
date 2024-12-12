@@ -125,5 +125,10 @@ class Product extends Model
     {
         return $this->hasMany(ProductReview::class);
     }
+
+    public function shipmentDetails()
+    {
+        return $this->hasMany(ShipmentDetails::class);
+    }
     
 }

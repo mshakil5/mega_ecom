@@ -168,40 +168,53 @@ class StockController extends Controller
         return view('admin.stock.stockledger', compact('warehouses','products','totalQty','totalProduct'));
     }
 
+    // public function getproductHistory()
+    // {
+    //     $today = Carbon::today();
+    //     $yesterday = Carbon::yesterday();
+
+    //     $products = DB::table('products')
+    //                     ->leftJoin('purchase_histories', 'products.id', '=', 'purchase_histories.product_id')
+    //                     ->leftJoin('stock_histories', 'products.id', '=', 'stock_histories.product_id')
+    //                     ->leftJoin('order_details', 'products.id', '=', 'order_details.product_id')
+    //                     ->leftJoin('order_returns', 'products.id', '=', 'order_returns.product_id')
+    //                     ->leftJoin('purchase_returns', 'products.id', '=', 'purchase_returns.product_id')
+    //                     ->select('products.id', 'products.name',
+    //                         DB::raw("SUM(CASE WHEN purchase_histories.created_at <= '{$yesterday}' THEN purchase_histories.quantity ELSE 0 END) as previous_day_purchase"),
+    //                         DB::raw("SUM(CASE WHEN purchase_histories.created_at = '{$today}' THEN purchase_histories.quantity ELSE 0 END) as today_purchase_qty"),
+    //                         DB::raw("SUM(CASE WHEN stock_histories.created_at <= '{$yesterday}' THEN stock_histories.quantity ELSE 0 END) as previous_day_stock"),
+    //                         DB::raw("SUM(CASE WHEN stock_histories.created_at = '{$today}' THEN stock_histories.quantity ELSE 0 END) as today_stock_qty"),
+    //                         DB::raw("SUM(CASE WHEN order_details.created_at = '{$today}' THEN order_details.quantity ELSE 0 END) as today_sales_qty"),
+    //                         DB::raw("SUM(CASE WHEN order_details.created_at <= '{$yesterday}' THEN order_details.quantity ELSE 0 END) as previous_sales_qty"),
+    //                         DB::raw("SUM(CASE WHEN purchase_returns.created_at = '{$today}' THEN purchase_returns.return_quantity ELSE 0 END) as today_purchase_return_qty"),
+    //                         DB::raw("SUM(CASE WHEN purchase_returns.created_at <= '{$yesterday}' THEN purchase_returns.return_quantity ELSE 0 END) as previous_purchase_return_qty"),
+    //                         DB::raw("SUM(CASE WHEN order_returns.created_at = '{$today}' THEN order_returns.quantity ELSE 0 END) as today_sales_return_qty"),
+    //                         DB::raw("SUM(CASE WHEN order_returns.created_at <= '{$yesterday}' THEN order_returns.quantity ELSE 0 END) as previous_sales_return_qty")
+    //                     )
+    //                     ->groupBy('products.id', 'products.name')
+    //                     ->get();
+                        
+                        
+
+    //     // $products = Product::select('id','name','product_code')->orderBy('id', 'DESC')->get();
+    //     $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
+    //     return view('admin.stock.getproducthistory', compact('warehouses','products'));
+    // }
+
     public function getproductHistory()
     {
-        $today = Carbon::today();
-        $yesterday = Carbon::yesterday();
-
-        $products = DB::table('products')
-                        ->leftJoin('purchase_histories', 'products.id', '=', 'purchase_histories.product_id')
-                        ->leftJoin('stock_histories', 'products.id', '=', 'stock_histories.product_id')
-                        ->leftJoin('order_details', 'products.id', '=', 'order_details.product_id')
-                        ->leftJoin('order_returns', 'products.id', '=', 'order_returns.product_id')
-                        ->leftJoin('purchase_returns', 'products.id', '=', 'purchase_returns.product_id')
-                        ->select('products.id', 'products.name',
-                            DB::raw("SUM(CASE WHEN purchase_histories.created_at <= '{$yesterday}' THEN purchase_histories.quantity ELSE 0 END) as previous_day_purchase"),
-                            DB::raw("SUM(CASE WHEN purchase_histories.created_at = '{$today}' THEN purchase_histories.quantity ELSE 0 END) as today_purchase_qty"),
-                            DB::raw("SUM(CASE WHEN stock_histories.created_at <= '{$yesterday}' THEN stock_histories.quantity ELSE 0 END) as previous_day_stock"),
-                            DB::raw("SUM(CASE WHEN stock_histories.created_at = '{$today}' THEN stock_histories.quantity ELSE 0 END) as today_stock_qty"),
-                            DB::raw("SUM(CASE WHEN order_details.created_at = '{$today}' THEN order_details.quantity ELSE 0 END) as today_sales_qty"),
-                            DB::raw("SUM(CASE WHEN order_details.created_at <= '{$yesterday}' THEN order_details.quantity ELSE 0 END) as previous_sales_qty"),
-                            DB::raw("SUM(CASE WHEN purchase_returns.created_at = '{$today}' THEN purchase_returns.return_quantity ELSE 0 END) as today_purchase_return_qty"),
-                            DB::raw("SUM(CASE WHEN purchase_returns.created_at <= '{$yesterday}' THEN purchase_returns.return_quantity ELSE 0 END) as previous_purchase_return_qty"),
-                            DB::raw("SUM(CASE WHEN order_returns.created_at = '{$today}' THEN order_returns.quantity ELSE 0 END) as today_sales_return_qty"),
-                            DB::raw("SUM(CASE WHEN order_returns.created_at <= '{$yesterday}' THEN order_returns.quantity ELSE 0 END) as previous_sales_return_qty")
-                        )
-                        ->groupBy('products.id', 'products.name')
-                        ->get();
-                        
-                        
-
-        // $products = Product::select('id','name','product_code')->orderBy('id', 'DESC')->get();
-        $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
-        return view('admin.stock.getproducthistory', compact('warehouses','products'));
+        $products = Product::with(['orderDetails' => function ($query) {
+            $query->whereHas('order', function ($query) {
+                    $query->whereIn('order_type', [0, 1]);
+                });
+            }])->with('stock', 'shipmentDetails')->get();
+            $products = $products->map(function ($product) {
+                $product->total_quantity = optional($product->stock)->sum('quantity') ?? 0;
+                return $product;
+            });
+        return view('admin.stock.getproducthistory', compact('products'));
     }
 
-    
     public function getsingleProductHistory(Request $request, $id, $size = null, $color = null)
     {
         if ($request->fromDate || $request->toDate) {
