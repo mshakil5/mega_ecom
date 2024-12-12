@@ -1071,10 +1071,10 @@ class OrderController extends Controller
     {
         Mail::to($order->email)->send(new OrderConfirmation($order, $pdfUrl));
 
-        $contactEmails = ContactEmail::where('status', 1)->pluck('email');
-        foreach ($contactEmails as $email) {
-            Mail::to($email)->send(new OrderConfirmation($order, $pdfUrl));
-        }
+        // $contactEmails = ContactEmail::where('status', 1)->pluck('email');
+        // foreach ($contactEmails as $email) {
+        //     Mail::to($email)->send(new OrderConfirmation($order, $pdfUrl));
+        // }
     }
 
     public function paymentCancel()

@@ -3,7 +3,7 @@
 
 <head>
     @php
-    $company = \App\Models\CompanyDetails::first();
+    $company = \App\Models\CompanyDetails::select('company_name','company_logo')->first();
     use Carbon\Carbon;
     @endphp
 

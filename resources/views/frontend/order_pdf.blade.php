@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 @php
-    $company = \App\Models\CompanyDetails::first();
+    $company = \App\Models\CompanyDetails::select('company_name', 'company_logo', 'address1', 'address2', 'phone1')->first();
     use Carbon\Carbon;
 @endphp 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -134,7 +134,7 @@
                                 <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/company/'.$company->company_logo))) }}" style="width: 100%; max-width: 150px" />
                             </td>
                             <td>
-                                Invoice #: {{ $order->invoice }}<br />
+                                Order #: {{ $order->invoice }}<br />
                                 Purchase Date: {{ \Carbon\Carbon::parse($order->purchase_date)->format('F d, Y') }}<br />
                             </td>
                         </tr>
@@ -196,10 +196,20 @@
                     } else {
                         $productName = $bundleProduct ? $bundleProduct->name : 'Unknown Bundle Product';
                     }
+
+                    $imagePath = public_path('images/products/' . $detail->product->feature_image);
+                    $base64Image = file_exists($imagePath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($imagePath)) : null;
                 @endphp
                 <tr class="item {{ $loop->last ? 'last' : '' }}">
-                    <td>{{ $productName }} ({{ $detail->quantity }} x {{ $currency }} {{ $detail->price_per_unit }})</td>
-                    <td>{{ $currency }} {{ $detail->total_price }}</td>
+                    <td style="padding-top: 15px;">
+                        @if($base64Image)
+                            <img src="{{ $base64Image }}" alt="{{ $productName }}" style="width: 50px; height: 50px; margin-right: 10px;">
+                        @else
+                            <span>No Image Available</span>
+                        @endif
+                        <span style="display: inline-block; vertical-align: middle;">{{ $productName }} {{ $detail->size }} - {{ $detail->color }} ({{ $detail->quantity }} x {{ $currency }} {{ $detail->price_per_unit }})</span>
+                    </td>
+                    <td style="padding-top: 15px;">{{ $currency }} {{ $detail->total_price }}</td>
                 </tr>
             @endforeach
 
