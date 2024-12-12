@@ -117,6 +117,61 @@
                 </a>
             </div>
 
+        </div>
+
+        <!-- Row for Shipments -->
+        <div class="row">
+            <!-- Daily Shipments -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <a href="{{ route('reports.dailyShipments') }}" class="small-box bg-warning d-block text-center p-3 text-white rounded">
+                    <div class="inner">
+                        <h4 class="mb-0" style="font-size: 24px;">Daily Shipments</h4>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-shipping-fast" style="font-size: 36px;"></i>
+                    </div>
+                </a>
+            </div>
+            
+            <!-- Weekly Shipments -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <a href="{{ route('reports.weeklyShipments') }}" class="small-box bg-primary d-block text-center p-3 text-white rounded">
+                    <div class="inner">
+                        <h4 class="mb-0" style="font-size: 24px;">Weekly Shipments</h4>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-box-open" style="font-size: 36px;"></i>
+                    </div>
+                </a>
+            </div>
+            
+            <!-- Monthly Shipments -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <a href="{{ route('reports.monthlyShipments') }}" class="small-box bg-info d-block text-center p-3 text-white rounded">
+                    <div class="inner">
+                        <h4 class="mb-0" style="font-size: 24px;">Monthly Shipments</h4>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-truck-loading" style="font-size: 36px;"></i>
+                    </div>
+                </a>
+            </div>
+            
+            <!-- Date-to-Date Shipments -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <a href="{{ route('reports.dateToDateShipments') }}" class="small-box bg-danger d-block text-center p-3 text-white rounded">
+                    <div class="inner">
+                        <h4 class="mb-0" style="font-size: 24px;">Date-to-Date Shipments</h4>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-ios-timer-outline" style="font-size: 36px;"></i>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+
+        <div class="row">
             <div class="col-lg-3 col-md-6 mb-4">
                 <a href="{{ route('allstock') }}" class="small-box bg-primary d-block text-center p-3 text-white rounded">
                     <div class="inner">
@@ -127,9 +182,8 @@
                     </div>
                 </a>
             </div>
-
-
         </div>
+
     </div>
 </section>
 
