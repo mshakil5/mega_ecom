@@ -29,7 +29,7 @@
   <div class="container-fluid">
     <!-- Small boxes (Stat box) -->
     <div class="row">
-      <div class="col-lg-3 col-6">
+      <div class="col-lg-2 col-6">
         <!-- small box -->
         <div class="small-box bg-warning">
           <div class="inner">
@@ -49,7 +49,7 @@
         </div>
       </div>
       <!-- ./col -->
-      <div class="col-lg-3 col-6">
+      <div class="col-lg-2 col-6">
         <div class="small-box bg-info">
           <div class="inner">
             @php
@@ -69,7 +69,48 @@
         </div>
       </div>
       <!-- ./col -->
-      <div class="col-lg-3 col-6">
+      <div class="col-lg-2 col-6">
+        <div class="small-box bg-secondary">
+          <div class="inner">
+                @php
+                  $purchasesCount = \App\Models\Purchase::with('purchaseHistory.product', 'supplier')
+                      ->whereHas('purchaseHistory', function ($query) {
+                          $query->selectRaw('purchase_id, SUM(quantity) as total_quantity, SUM(shipped_quantity) as total_shipped')
+                              ->groupBy('purchase_id')
+                              ->havingRaw('SUM(quantity) != SUM(shipped_quantity)')
+                              ->where('quantity', '>', 0)
+                              ->where('shipped_quantity', '>', 0);
+                      })
+                      ->orderBy('id', 'DESC')
+                      ->count();
+              @endphp
+            <h3>{{$purchasesCount}}</h3>
+            <p>Live Purchases</p>
+          </div>
+          <div class="icon">
+            <i class="ion ion-bag"></i>
+          </div>
+          <a class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+      </div>
+      <!-- ./col -->
+      <div class="col-lg-2 col-6">
+        <div class="small-box bg-info">
+          <div class="inner">
+              @php
+                  $liveShipmentsCount = \App\Models\Shipping::doesntHave('shipment')->count();
+              @endphp
+            <h3>{{$liveShipmentsCount}}</h3>
+            <p>Live Shipments</p>
+          </div>
+          <div class="icon">
+            <i class="ion ion-bag"></i>
+          </div>
+          <a class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+      </div>
+      <!-- ./col -->
+      <div class="col-lg-2 col-6">
         <!-- small box -->
         <div class="small-box bg-success">
           <div class="inner">
@@ -78,7 +119,7 @@
             @endphp
             
             <h3>{{ number_format($totalQty, 0) }} <sup style='font-size: 20px'></sup></h3>
-            <p>Total Stock Product</p>
+            <p>Total Stock</p>
           </div>
           <div class="icon">
             <i class="ion ion-stats-bars"></i>
@@ -87,7 +128,7 @@
         </div>
       </div>
       <!-- ./col -->
-      <div class="col-lg-3 col-6">
+      <div class="col-lg-2 col-6">
         <!-- small box -->
         <div class="small-box bg-danger">
           <div class="inner">
