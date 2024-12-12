@@ -69,13 +69,7 @@
             columns: [
                 { data: 'purchase_date', name: 'purchase_date' },
                 { data: 'invoice', name: 'invoice' },
-                { 
-                    data: null,
-                    render: function (data, type, row) {
-                        return row.name + '<br>' + row.email + '<br>' + row.phone;
-                    },
-                    name: 'name'
-                },
+                { data: 'name', name: 'name' },
                 { data: 'subtotal_amount', name: 'subtotal_amount' },
                 { data: 'shipping_amount', name: 'shipping_amount' },
                 { data: 'discount_amount', name: 'discount_amount' },
