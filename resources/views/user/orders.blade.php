@@ -14,7 +14,7 @@
                             <th>Phone</th>
                             <th>Total</th>
                             <th>Payment Method</th>
-                            <th>Invoice</th>
+                            <!-- <th>Invoice</th> -->
                             <th>Status</th>
                             <th>Details</th>
                         </tr>
@@ -37,11 +37,11 @@
                                 @endif
                             </td>
 
-                            <td>
+                            <!-- <td>
                                 <a href="{{ route('generate-pdf', ['encoded_order_id' => base64_encode($order->id)]) }}" class="btn btn-primary btn-round btn-shadow" target="_blank">
                                 <i class="fas fa-receipt"></i> Invoice
-                            </a>
-                            </td>
+                                </a>
+                            </td> -->
                             <td>
                             @if($order->status == 1)
                                 Pending

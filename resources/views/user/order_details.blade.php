@@ -11,23 +11,40 @@
             </div>
             <div class="card-body pt-0">
                 <div class="row">
-                    <!-- User Information -->
-                    <div class="col-md-12">
-                        <h4 class="mb-3">User Information</h4>
+                    <div class="col-md-6">
+                        <h4 class="mb-2">User Information</h4>
                         <p><strong>Name:</strong> {{ $order->user->name ?? $order->name }} {{ $order->user->surname ?? '' }}</p>
                         <p><strong>Email:</strong> {{ $order->user->email ?? $order->email }}</p>
                         <p><strong>Phone:</strong> {{ $order->user->phone ?? $order->phone }}</p>
-                        <p><strong>Address:</strong> 
+                        <p><strong>Address:</strong>
                             @php
-                                $addressParts = [
-                                    ($order->user->house_number ?? $order->house_number),
-                                    ($order->user->street_name ?? $order->street_name),
-                                    ($order->user->town ?? $order->town),
-                                    ($order->user->postcode ?? $order->postcode)
-                                ];
+                            $addressParts = [
+                            ($order->user->house_number ?? $order->house_number),
+                            ($order->user->street_name ?? $order->street_name),
+                            ($order->user->town ?? $order->town),
+                            ($order->user->postcode ?? $order->postcode)
+                            ];
                             @endphp
                             {{ implode(', ', array_filter($addressParts)) }}
                         </p>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h4 class="mb-2">Order Information</h4>
+                        <p><strong>Order#:</strong> {{ $order->invoice }}</p>
+                        <p><strong>Purchase Date:</strong> {{ \Carbon\Carbon::parse($order->purchase_date)->format('d-m-Y') }}</p>
+                        <p><strong>Payment Method:</strong>
+                            @if($order->payment_method === 'paypal')
+                            PayPal
+                            @elseif($order->payment_method === 'stripe')
+                            Stripe
+                            @elseif($order->payment_method === 'cashOnDelivery')
+                            Cash On Delivery
+                            @else
+                            {{ ucfirst($order->payment_method) }}
+                            @endif
+                        </p>
+                        @if($order->note) <p><strong>Note:</strong> {!! $order->note !!}</p> @endif
                     </div>
                 </div>
 
@@ -49,17 +66,17 @@
                             </thead>
                             <tbody>
                                 @foreach($order->orderDetails as $orderDetail)
-                                    <tr>
-                                        <td>
-                                            <img src="{{ asset('/images/products/' . $orderDetail->product->feature_image) }}" alt="{{ $orderDetail->product->name }}" style="width: 100px; height: auto;">
-                                        </td>
-                                        <td>{{ $orderDetail->product->name }}</td>
-                                        <td>{{ $orderDetail->quantity }}</td>
-                                        <td>{{ $orderDetail->size }}</td>
-                                        <td>{{ $orderDetail->color }}</td>
-                                        <td>{{ number_format($orderDetail->price_per_unit, 2) }}</td>
-                                        <td>{{ number_format($orderDetail->total_price, 2) }}</td>
-                                    </tr>
+                                <tr>
+                                    <td>
+                                        <img src="{{ asset('/images/products/' . $orderDetail->product->feature_image) }}" alt="{{ $orderDetail->product->name }}" style="width: 100px; height: auto;">
+                                    </td>
+                                    <td>{{ $orderDetail->product->name }}</td>
+                                    <td>{{ $orderDetail->quantity }}</td>
+                                    <td>{{ $orderDetail->size }}</td>
+                                    <td>{{ $orderDetail->color }}</td>
+                                    <td>{{ number_format($orderDetail->price_per_unit, 2) }}</td>
+                                    <td>{{ number_format($orderDetail->total_price, 2) }}</td>
+                                </tr>
                                 @endforeach
                             </tbody>
                         </table>
@@ -67,8 +84,8 @@
                 </div>
 
                 <div class="row mt-4">
-                    <div class="col-md-6">
-                        
+                    <div class="col-md-8">
+
                         <a href="{{ url()->previous() }}" class="btn btn-primary btn-rounded btn-shadow">Back</a>
 
                         <button class="btn btn-info btn-rounded btn-mail" data-toggle="modal" data-target="#mailModal">
@@ -76,70 +93,49 @@
                         </button>
 
                         @if (!in_array($order->status, [4, 5, 6, 7]))
-                            <button class="btn btn-warning btn-rounded btn-cancel d-none" data-order-id="{{ $order->id }}" data-toggle="modal" data-target="#cancelModal">
-                                <i class="fas fa-times"></i> Cancel
-                            </button>
+                        <button class="btn btn-warning btn-rounded btn-cancel d-none" data-order-id="{{ $order->id }}" data-toggle="modal" data-target="#cancelModal">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
                         @endif
 
                         @if ($order->status == 5)
-                            <button class="btn btn-success btn-rounded btn-return" data-order-id="{{ $order->id }}" data-toggle="modal" data-target="#returnModal">
-                                <i class="fas fa-undo"></i> Return
-                            </button>
+                        <button class="btn btn-success btn-rounded btn-return" data-order-id="{{ $order->id }}" data-toggle="modal" data-target="#returnModal">
+                            <i class="fas fa-undo"></i> Return
+                        </button>
                         @endif
                     </div>
 
-                    <!-- Order Information -->
-                    <div class="col-md-6">
-                        <h4 class="mb-3">Order Information</h4>
-                        <p><strong>Invoice:</strong> {{ $order->invoice }}</p>
-                        <p><strong>Purchase Date:</strong> {{ \Carbon\Carbon::parse($order->purchase_date)->format('d-m-Y') }}</p>
-                        <p><strong>VAT (%):</strong> {{ $order->vat_percent }}</p>
-                        <p><strong>VAT Amount:</strong> {{ number_format($order->vat_amount, 2) }}</p>
-                        <p><strong>Subtotal:</strong> {{ number_format($order->subtotal_amount, 2) }}</p>
-                        <p><strong>Shipping Amount:</strong> {{ number_format($order->shipping_amount, 2) }}</p>
-                        <p><strong>Discount Amount:</strong> {{ number_format($order->discount_amount, 2) }}</p>
-                        <p><strong>Total Amount:</strong> {{ number_format($order->net_amount, 2) }}</p>
-                        <p><strong>Payment Method:</strong> 
-                            @if($order->payment_method === 'paypal')
-                                PayPal
-                            @elseif($order->payment_method === 'stripe')
-                                Stripe
-                            @elseif($order->payment_method === 'cashOnDelivery')
-                                Cash On Delivery
-                            @else
-                                {{ ucfirst($order->payment_method) }}
+                    <div class="col-md-4">
+                        <div class="order-summary">
+                            <p class="d-flex justify-content-between">
+                                <span>Subtotal:</span>
+                                <span>{{ number_format($order->subtotal_amount, 2) }}</span>
+                            </p>
+                            @if($order->vat_amount > 0)
+                            <p class="d-flex justify-content-between">
+                                <span>Vat Amount:</span>
+                                <span>{{ number_format($order->vat_amount, 2) }}</span>
+                            </p>
                             @endif
-                        </p>
-                        <p><strong>Status:</strong> 
-                            @if ($order->status === 1)
-                                Pending
-                            @elseif ($order->status === 2)
-                                Processing
-                            @elseif ($order->status === 3)
-                                Packed
-                            @elseif ($order->status === 4)
-                                Shipped
-                            @elseif ($order->status === 5)
-                                Delivered
-                            @elseif ($order->status === 6)
-                                Returned
-                            @elseif ($order->status === 7)
-                                Cancelled
-                            @else
-                                Unknown
+                            @if($order->shipping_amount > 0)
+                            <p class="d-flex justify-content-between">
+                                <span>Delivery Charge:</span>
+                                <span>{{ number_format($order->shipping_amount, 2) }}</span>
+                            </p>
                             @endif
-                        </p>
-                        <p><strong>Note:</strong> {!! $order->note !!}</p>
-
-                        @if ($order->order_type === 0)
-                        <a href="{{ route('generate-pdf', ['encoded_order_id' => base64_encode($order->id)]) }}" class="btn btn-success btn-round btn-shadow" target="_blank">
-                            <i class="fas fa-receipt"></i> Invoice
-                        </a>
-                        @elseif ($order->order_type === 1)
-                        <a href="{{ route('in-house-sell.generate-pdf', ['encoded_order_id' => base64_encode($order->id)]) }}" class="btn btn-success btn-round btn-shadow" target="_blank">
-                            <i class="fas fa-receipt"></i> Invoice
-                        </a>
-                        @endif
+                            @if($order->discount_amount > 0)
+                            <p class="d-flex justify-content-between">
+                                <span>Discount Amount:</span>
+                                <span>{{ number_format($order->discount_amount, 2) }}</span>
+                            </p>
+                            @endif
+                            <div style="border-top: 1px solid #ccc; padding-top: 10px;">
+                                <p class="d-flex justify-content-between">
+                                    <span>Total:</span>
+                                    <span>{{ number_format($order->net_amount, 2) }}</span>
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -231,18 +227,18 @@
 
 <style>
     #loading {
-    position: fixed;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    opacity: 0.7;
-    background-color: #fff;
-    z-index: 99;
-}
+        position: fixed;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        opacity: 0.7;
+        background-color: #fff;
+        z-index: 99;
+    }
 
     #loading-image {
         z-index: 100;
@@ -295,7 +291,9 @@
             $.ajax({
                 url: '{{ route("orders.details.modal") }}',
                 method: 'GET',
-                data: { order_id: orderId },
+                data: {
+                    order_id: orderId
+                },
                 success: function(response) {
                     var formattedDate = moment(response.order.purchase_date).format('DD-MM-YYYY');
 
@@ -359,7 +357,7 @@
 
             console.log(finalFormData);
 
-            var returnUrl = "{{ url('/user/order-return') }}" ;
+            var returnUrl = "{{ url('/user/order-return') }}";
 
 
             $.ajax({
@@ -377,7 +375,7 @@
                     });
                 },
                 error: function(xhr, status, error) {
-                   console.error(xhr.responseText);
+                    console.error(xhr.responseText);
                 }
             });
         });
@@ -414,7 +412,7 @@
                     },
                     error: function(xhr, status, error) {
                         console.error(xhr.responseText);
-                        toastr.error("An error occurred while sending the mail. Please try again."); 
+                        toastr.error("An error occurred while sending the mail. Please try again.");
                     },
                     complete: function() {
                         $('#loading').hide();
