@@ -37,7 +37,7 @@ class ProductController extends Controller
         $groups = Group::select('id', 'name')->orderby('id','DESC')->get();
         $units = Unit::select('id', 'name')->orderby('id','DESC')->get();
         $categories = Category::select('id', 'name')->orderby('id','DESC')->get();
-        $subCategories = SubCategory::select('id', 'name')->orderby('id','DESC')->get();
+        $subCategories = SubCategory::select('id', 'name', 'category_id')->orderby('id','DESC')->get();
         $sizes = Size::select('id', 'size')->orderby('id','DESC')->get();
         $colors = Color::select('id', 'color', 'color_code')->orderby('id','DESC')->get();
 
@@ -219,7 +219,7 @@ class ProductController extends Controller
             ]);
         }
 
-        if ($request->has('color_id')) {
+        if (isset($request->color_id) && is_array($request->color_id)) {
             foreach ($request->color_id as $key => $colorId) {
                 $productColor = new ProductColor();
                 $productColor->product_id = $product->id;

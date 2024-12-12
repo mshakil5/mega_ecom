@@ -15,12 +15,13 @@
                             <thead>
                                 <tr>
                                     <th>Sl</th>
-                                    <th>Name</th>
+                                    <th>Product</th>
+                                    <th>Image</th>
                                     <th>Price</th>
                                     <th>Category</th>
-                                    <th>Sub Category</th>
+                                    <!-- <th>Sub Category</th>
                                     <th>Brand</th>
-                                    <th>Model</th>
+                                    <th>Model</th> -->
                                     <th>Featured</th>
                                     <th>Recent</th>
                                     <th>Popular</th>
@@ -35,14 +36,17 @@
                                 @endphp
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
-                                    <td>{{ $data->name }}</td>
+                                    <td>{{ $data->product_code }} - {{ $data->name }}</td>
+                                    <td>
+                                    <img src="{{ asset('images/products/' . $data->feature_image) }}" alt="Product Image" style="width: 50px; height: 50px; object-fit: cover;">
+                                </td>
                                     <td>
                                         {{ number_format($price ? $price->selling_price : 0, 2) }}
                                     </td>
                                     <td>{{ $data->category->name }}</td>
-                                    <td>@if ($data->subCategory) {{ $data->subCategory->name }} @endif</td>
+                                    <!-- <td>@if ($data->subCategory) {{ $data->subCategory->name }} @endif</td>
                                     <td>@if ($data->brand) {{ $data->brand->name }} @endif</td>
-                                    <td>@if ($data->productModel) {{ $data->productModel->name }} @endif</td>
+                                    <td>@if ($data->productModel) {{ $data->productModel->name }} @endif</td> -->
                                     <td>
                                         <div class="custom-control custom-switch">
                                             <input type="checkbox" class="custom-control-input toggle-featured" id="customSwitch{{ $data->id }}" data-id="{{ $data->id }}" {{ $data->is_featured == 1 ? 'checked' : '' }}>

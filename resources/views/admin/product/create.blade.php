@@ -174,7 +174,7 @@
                                 <div class="form-group col-md-5">
                                     <label for="color_id">Select Color</label>
                                     <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
-                                    <select class="form-control" name="color_id[]" id="color_id">
+                                    <select class="form-control" name="color_id[]" id="color_id_1">
                                         <option value="">Choose Color</option>
                                         @foreach($colors as $color)
                                         <option value="{{ $color->id }}" style="background-color: {{ $color->color_code }};">
@@ -220,11 +220,14 @@
 <!-- Category Wise Subcategory Start -->
 <script>
     $(document).ready(function() {
+        $('#subcategory').val('').find('option').hide();
         $('#category').change(function() {
             var categoryId = $(this).val();
             if (categoryId) {
                 $('#subcategory').val('').find('option').hide();
-                $('.category-' + categoryId).show();
+                $('#subcategory').find('option:first').show();
+                $('#subcategory').find('.subcategory-option').hide();
+                $('#subcategory').find('.category-' + categoryId).show();
             } else {
                 $('#subcategory').val('').find('option').hide();
                 $('#subcategory').find('.subcategory-option').show();
@@ -259,23 +262,25 @@
 <!-- Dynamic Row Script -->
 <script>
     $(document).ready(function() {
+        var rowIndex = 2;
+
         $(document).on('click', '.add-row', function() {
             let newRow = `
             <div class="form-row dynamic-row">
                 <div class="form-group col-md-5">
-                    <label for="color_id">Select Color</label>
-                    <select class="form-control" name="color_id[]" id="color_id">
+                    <label for="color_id_${rowIndex}">Select Color</label>
+                    <select class="form-control" name="color_id[]" id="color_id_${rowIndex}">
                         <option value="">Choose Color</option>
                         @foreach($colors as $color)
-                            <option value="{{ $color->id }}" style="background-color: {{ $color->color_code }};">
-                                {{ $color->color }} ({{ $color->color_code }})
-                            </option>
+                        <option value="{{ $color->id }}" style="background-color: {{ $color->color_code }};">
+                            {{ $color->color }} ({{ $color->color_code }})
+                        </option>
                         @endforeach
                     </select>
                 </div>
                 <div class="form-group col-md-5">
-                    <label for="image">Select Image</label>
-                    <input type="file" class="form-control" name="image[]" accept="image/*">
+                    <label for="image_${rowIndex}">Select Image</label>
+                    <input type="file" class="form-control" name="image[]" accept="image/*" id="image_${rowIndex}">
                 </div>
                 <div class="form-group col-md-1">
                     <label>Action</label>
@@ -284,6 +289,7 @@
             </div>`;
 
             $('#dynamic-rows').append(newRow);
+            rowIndex++;
         });
 
         $(document).on('click', '.remove-row', function() {

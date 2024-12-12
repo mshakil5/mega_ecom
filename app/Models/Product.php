@@ -114,7 +114,7 @@ class Product extends Model
     public static function productSellingPriceCal()
     {
         $allproducts = self::withCount('orderDetails','purchaseHistories')
-        ->select('id', 'name', 'category_id', 'sub_category_id', 'brand_id', 'product_model_id', 'is_featured', 'is_recent', 'is_popular', 'is_trending')
+        ->select('id', 'name', 'category_id', 'sub_category_id', 'brand_id', 'product_model_id', 'is_featured', 'is_recent', 'is_popular', 'is_trending', 'feature_image', 'product_code')
         ->orderby('id','DESC')
         ->get();
 

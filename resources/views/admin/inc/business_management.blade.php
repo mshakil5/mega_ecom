@@ -1,20 +1,11 @@
 <nav class="mt-2">
     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-           {{-- dashboard  --}}
         <li class="nav-item">
             <a href="{{ route('admin.dashboard') }}" class="nav-link {{ (request()->is('admin/dashboard*')) ? 'active' : '' }}">
                 <i class="nav-icon fas fa-tachometer-alt"></i>
                 <p>Dashboard</p>
             </a>
         </li>
-
-        {{-- <form action="{{ route('toggle.sidebar') }}" method="POST">
-            @csrf
-            <input type="hidden" name="sidebar" value="0">
-            <button type="submit" class="btn btn-info my-2">
-                Switch to Accounting <i class="fas fa-arrow-right"></i>
-            </button>
-        </form> --}}
 
         <a href="{{ route('toggle.sidebar') }}" class="btn btn-info my-2">
             Switch to Accounting <i class="fas fa-arrow-right"></i>
