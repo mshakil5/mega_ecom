@@ -379,8 +379,9 @@
                 request()->is('admin/daily-purchase') ||
                 request()->is('admin/weekly-purchase') ||
                 request()->is('admin/monthly-purchase') ||
-                request()->is('admin/date-to-date-purchase')
-                ? 'active' : '' }}">
+                request()->is('admin/date-to-date-purchase') ||
+                request()->routeIs('reports.shipments') ||
+                request()->routeIs('reports.dateToDateShipments') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-chart-bar"></i>
                 <p>Reports</p>
             </a>

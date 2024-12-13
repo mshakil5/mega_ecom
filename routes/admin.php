@@ -452,6 +452,10 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('date-to-date-purchase', [ReportController::class, 'dateToDatePurchase'])->name('reports.dateToDatePurchase');
     Route::get('date-to-date-purchases-date', [ReportController::class, 'dateToDatePurchasesDataTable'])->name('reports.dateToDatePurchasesDataTable');
 
+    Route::get('shipments/{type}', [ReportController::class, 'shipments'])->name('reports.shipments');
+    Route::get('date-to-date-shipments', [ReportController::class, 'dateToDateShipments'])->name('reports.dateToDateShipments');
+    Route::post('date-to-date-shipments', [ReportController::class, 'dateToDateShipments'])->name('reports.filterDateToDateShipments');
+
     //Related Product
     Route::get('/related-product', [RelatedProductController::class, 'getrelatedProduct'])->name('allrelatedproduct');
     Route::post('/related-product', [RelatedProductController::class, 'relatedProductStore'])->name('relatedproduct.store');

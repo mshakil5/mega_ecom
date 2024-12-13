@@ -123,7 +123,7 @@
         <div class="row">
             <!-- Daily Shipments -->
             <div class="col-lg-3 col-md-6 mb-4">
-                <a href="{{ route('reports.dailyShipments') }}" class="small-box bg-warning d-block text-center p-3 text-white rounded">
+                <a href="{{ route('reports.shipments', ['type' => 'daily']) }}" class="small-box bg-warning d-block text-center p-3 text-white rounded">
                     <div class="inner">
                         <h4 class="mb-0" style="font-size: 24px;">Daily Shipments</h4>
                     </div>
@@ -135,7 +135,7 @@
             
             <!-- Weekly Shipments -->
             <div class="col-lg-3 col-md-6 mb-4">
-                <a href="{{ route('reports.weeklyShipments') }}" class="small-box bg-primary d-block text-center p-3 text-white rounded">
+                <a href="{{ route('reports.shipments', ['type' => 'weekly']) }}" class="small-box bg-primary d-block text-center p-3 text-white rounded">
                     <div class="inner">
                         <h4 class="mb-0" style="font-size: 24px;">Weekly Shipments</h4>
                     </div>
@@ -147,7 +147,7 @@
             
             <!-- Monthly Shipments -->
             <div class="col-lg-3 col-md-6 mb-4">
-                <a href="{{ route('reports.monthlyShipments') }}" class="small-box bg-info d-block text-center p-3 text-white rounded">
+                <a href="{{ route('reports.shipments', ['type' => 'monthly']) }}" class="small-box bg-info d-block text-center p-3 text-white rounded">
                     <div class="inner">
                         <h4 class="mb-0" style="font-size: 24px;">Monthly Shipments</h4>
                     </div>
@@ -168,7 +168,6 @@
                     </div>
                 </a>
             </div>
-
         </div>
 
         <div class="row">

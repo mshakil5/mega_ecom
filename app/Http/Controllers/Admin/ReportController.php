@@ -8,6 +8,7 @@ use App\Models\Order;
 use DataTables;
 use Illuminate\Support\Carbon;
 use App\Models\Purchase;
+use App\Models\Shipment;
 
 class ReportController extends Controller
 {
@@ -23,22 +24,8 @@ class ReportController extends Controller
 
     public function dailySalesDataTable()
     {
-        $orders = Order::query()
+        $orders = Order::with('user')
             ->whereDate('created_at', today())
-            ->select([
-                'purchase_date',
-                'invoice',
-                'name',
-                'email',
-                'phone',
-                'subtotal_amount',
-                'shipping_amount',
-                'discount_amount',
-                'net_amount',
-                'payment_method',
-                'status',
-                'id'
-            ])
             ->orderBy('id', 'desc');
 
         return DataTables::of($orders)
@@ -61,7 +48,11 @@ class ReportController extends Controller
                 return '<a href="'.route('admin.orders.details', ['orderId' => $order->id]).'" class="btn btn-sm btn-info">Details</a>';
             })
             ->editColumn('name', function ($order) {
-                return "{$order->name}<br>{$order->email}<br>{$order->phone}";
+                $userName = $order->user ? "{$order->user->name} {$order->user->surname}<br>" : "{$order->name}<br>";
+                $userEmail = $order->user ? "{$order->user->email}<br>" : "{$order->email}<br>";
+                $userPhone = $order->user ? "{$order->user->phone}<br>" : "{$order->phone}<br>";
+                
+                return $userName . $userEmail . $userPhone;
             })
             ->rawColumns(['name', 'action'])
             ->make(true);
@@ -77,22 +68,8 @@ class ReportController extends Controller
         $endDate = Carbon::now()->endOfDay();
         $startDate = Carbon::now()->subDays(6)->startOfDay();
 
-        $orders = Order::query()
+        $orders = Order::with('user')
             ->whereBetween('created_at', [$startDate, $endDate])
-            ->select([
-                'purchase_date',
-                'invoice',
-                'name',
-                'email',
-                'phone',
-                'subtotal_amount',
-                'shipping_amount',
-                'discount_amount',
-                'net_amount',
-                'payment_method',
-                'status',
-                'id'
-            ])
             ->orderBy('id', 'desc');
 
         return DataTables::of($orders)
@@ -114,7 +91,14 @@ class ReportController extends Controller
             ->addColumn('action', function ($order) {
                 return '<a href="'.route('admin.orders.details', ['orderId' => $order->id]).'" class="btn btn-sm btn-info">Details</a>';
             })
-            ->rawColumns(['action'])
+            ->editColumn('name', function ($order) {
+                $userName = $order->user ? "{$order->user->name} {$order->user->surname}<br>" : "{$order->name}<br>";
+                $userEmail = $order->user ? "{$order->user->email}<br>" : "{$order->email}<br>";
+                $userPhone = $order->user ? "{$order->user->phone}<br>" : "{$order->phone}<br>";
+                
+                return $userName . $userEmail . $userPhone;
+            })
+            ->rawColumns(['name', 'action'])
             ->make(true);
     }
 
@@ -128,22 +112,8 @@ class ReportController extends Controller
         $endDate = Carbon::now()->endOfDay();
         $startDate = Carbon::now()->subDays(29)->startOfDay();
 
-        $orders = Order::query()
+        $orders = Order::with('user')
             ->whereBetween('created_at', [$startDate, $endDate])
-            ->select([
-                'purchase_date',
-                'invoice',
-                'name',
-                'email',
-                'phone',
-                'subtotal_amount',
-                'shipping_amount',
-                'discount_amount',
-                'net_amount',
-                'payment_method',
-                'status',
-                'id'
-            ])
             ->orderBy('id', 'desc');
 
         return DataTables::of($orders)
@@ -165,7 +135,14 @@ class ReportController extends Controller
             ->addColumn('action', function ($order) {
                 return '<a href="'.route('admin.orders.details', ['orderId' => $order->id]).'" class="btn btn-sm btn-info">Details</a>';
             })
-            ->rawColumns(['action'])
+            ->editColumn('name', function ($order) {
+                $userName = $order->user ? "{$order->user->name} {$order->user->surname}<br>" : "{$order->name}<br>";
+                $userEmail = $order->user ? "{$order->user->email}<br>" : "{$order->email}<br>";
+                $userPhone = $order->user ? "{$order->user->phone}<br>" : "{$order->phone}<br>";
+                
+                return $userName . $userEmail . $userPhone;
+            })
+            ->rawColumns(['name', 'action'])
             ->make(true);
     }
 
@@ -267,6 +244,38 @@ class ReportController extends Controller
             ->make(true);
     }
 
+    public function shipments(Request $request, $type)
+    {
+        $query = Shipment::with(['shipping', 'shipmentDetails.product', 'shipmentDetails.supplier']);
+    
+        switch ($type) {
+            case 'daily':
+                $query->whereHas('shipping', function ($query) {
+                    $query->whereDate('shipping_date', today());
+                });
+                break;
+    
+            case 'weekly':
+                $query->whereHas('shipping', function ($query) {
+                    $query->whereBetween('shipping_date', [now()->startOfWeek(), now()->endOfWeek()]);
+                });
+                break;
+    
+            case 'monthly':
+                $query->whereHas('shipping', function ($query) {
+                    $query->whereMonth('shipping_date', now()->month);
+                });
+                break;
+    
+            default:
+                abort(404);
+        }
+    
+        $shipments = $query->orderBy('id', 'DESC')->get();
+    
+        return view('admin.reports.shipments', compact('shipments', 'type'));
+    }
+
     public function dateToDateSale()
     {
         return view('admin.reports.date_to_date_sale');
@@ -277,27 +286,13 @@ class ReportController extends Controller
         $startDate = $request->start_date;
         $endDate = $request->end_date;
 
-        $orders = Order::query()
+        $orders = Order::with('user')
             ->when($startDate, function ($query, $startDate) {
                 return $query->whereDate('purchase_date', '>=', $startDate);
             })
             ->when($endDate, function ($query, $endDate) {
                 return $query->whereDate('purchase_date', '<=', $endDate);
             })
-            ->select([
-                'purchase_date',
-                'invoice',
-                'name',
-                'email',
-                'phone',
-                'subtotal_amount',
-                'shipping_amount',
-                'discount_amount',
-                'net_amount',
-                'payment_method',
-                'status',
-                'id'
-            ])
             ->orderBy('id', 'desc');
 
         return DataTables::of($orders)
@@ -319,7 +314,14 @@ class ReportController extends Controller
                 ];
                 return $statusLabels[$order->status] ?? 'Unknown';
             })
-            ->rawColumns(['action'])
+            ->editColumn('name', function ($order) {
+                $userName = $order->user ? "{$order->user->name} {$order->user->surname}<br>" : "{$order->name}<br>";
+                $userEmail = $order->user ? "{$order->user->email}<br>" : "{$order->email}<br>";
+                $userPhone = $order->user ? "{$order->user->phone}<br>" : "{$order->phone}<br>";
+                
+                return $userName . $userEmail . $userPhone;
+            })
+            ->rawColumns(['name', 'action'])
             ->make(true);
     }
 
@@ -359,6 +361,29 @@ class ReportController extends Controller
                 return $purchase->supplier ? $purchase->supplier->name : 'Unknown Supplier';
             })
             ->make(true);
+    }
+
+    public function dateToDateShipments(Request $request)
+    {
+        $query = Shipment::with(['shipping', 'shipmentDetails.product', 'shipmentDetails.supplier']);
+    
+        if ($request->isMethod('post')) {
+            $request->validate([
+                'start_date' => 'required|date',
+                'end_date' => 'required|date|after_or_equal:start_date',
+            ]);
+    
+            $startDate = $request->input('start_date');
+            $endDate = $request->input('end_date');
+    
+            $query->whereHas('shipping', function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('shipping_date', [$startDate, $endDate]);
+            });
+        }
+    
+        $shipments = $query->orderBy('id', 'DESC')->get();
+
+        return view('admin.reports.date_to_date_shipment', compact('shipments'));
     }
 
 }
