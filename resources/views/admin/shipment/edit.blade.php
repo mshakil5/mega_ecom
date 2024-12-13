@@ -22,11 +22,20 @@
                                 <div>
                                     <strong>Shipping ID:</strong> <span id="shippingId">{{ $shipment->shipping->shipping_id }}</span><br>
                                     <strong>Shipping Date:</strong> <span id="shippingDate">{{ \Carbon\Carbon::parse($shipment->shipping->shipping_date)->format('d-m-Y') }}</span><br>
-                                    <strong>Shipping Name:</strong> <span id="shippingName">{{ $shipment->shipping->shipping_name }}</span>
-                                </div>
-                                <div> 
+                                    <strong>Shipping Name:</strong> <span id="shippingName">{{ $shipment->shipping->shipping_name }}</span> <br>
                                     <strong>Total Product Quantity:</strong> <span id="totalQuantity">{{ $shipment->total_product_quantity }}</span> <br>
                                     <strong>Total Missing Product Quantity:</strong> <span id="totalMissingQuantity">{{ $shipment->total_missing_quantity }}</span>
+                                </div>
+                                <div>
+                                    <strong>Select Warehouse: <span class="text-danger">*</span></strong>
+                                    <select id="warehouse_id" class="form-control" disabled>
+                                        @foreach($warehouses as $warehouse)
+                                            <option value="{{ $warehouse->id }}" 
+                                                @if($shipment->shipmentDetails->first()->warehouse_id == $warehouse->id) selected @endif>
+                                                {{ $warehouse->name }} - {{ $warehouse->location }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
 
@@ -350,6 +359,10 @@
 
         updateCalculations();
 
+        $('#warehouse_id').select2({
+            placeholder: "Select a Warehouse",
+            allowClear: true
+        });
     });
 </script>
 
