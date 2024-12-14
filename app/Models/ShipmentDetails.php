@@ -30,4 +30,9 @@ class ShipmentDetails extends Model
     {
         return $this->belongsTo(Shipment::class);
     }
+
+    public function purchaseHistory()
+    {
+        return $this->belongsTo(PurchaseHistory::class, 'purchase_history_id');
+    }
 }

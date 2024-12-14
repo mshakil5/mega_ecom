@@ -61,7 +61,7 @@
                                     <td>
                                         @if($shipping->shipment)
                                         <span class="badge bg-success ms-2">Price Added</span>
-                                        <a href="{{ route('admin.shipment.edit', $shipping->id) }}" class="btn btn-info btn-sm disabled"><i class="fas fa-dollar-sign"></i></a>
+                                        <a href="{{ route('admin.shipment.edit', $shipping->id) }}" class="btn btn-info btn-sm"><i class="fas fa-dollar-sign"></i></a>
                                         <button class="btn btn-sm btn-primary view-details" 
                                                 data-shipping-id="{{ $shipping->shipping_id }}"
                                                 data-shipping-date="{{ \Carbon\Carbon::parse($shipping->shipping_date)->format('d-m-Y') }}"

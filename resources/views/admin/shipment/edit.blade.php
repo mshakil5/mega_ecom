@@ -3,14 +3,14 @@
 @section('content')
 
 <section class="content pt-3">
-
-<section class="content">
-    <div class="ermsg mt-3"></div>
+    <div class="ermsg"></div>
 </section>
 
+<section class="content">
     <div class="container-fluid">
         <div class="row justify-content-md-center">
             <div class="col-md-12">
+                <a href="{{ route('admin.shipping') }}" class="btn btn-secondary mb-3">Back</a>
                 <div class="card card-secondary">
                     <div class="card-header">
                         <h3 class="card-title">Edit Shipment</h3>
@@ -23,17 +23,17 @@
                                     <strong>Shipping ID:</strong> <span id="shippingId">{{ $shipment->shipping->shipping_id }}</span><br>
                                     <strong>Shipping Date:</strong> <span id="shippingDate">{{ \Carbon\Carbon::parse($shipment->shipping->shipping_date)->format('d-m-Y') }}</span><br>
                                     <strong>Shipping Name:</strong> <span id="shippingName">{{ $shipment->shipping->shipping_name }}</span> <br>
-                                    <strong>Total Product Quantity:</strong> <span id="totalQuantity">{{ $shipment->total_product_quantity }}</span> <br>
+                                    <strong>Total Product Quantity:</strong> <span id="totalQuantity">{{ $shipment->total_shipped_quantity }}</span> <br>
                                     <strong>Total Missing Product Quantity:</strong> <span id="totalMissingQuantity">{{ $shipment->total_missing_quantity }}</span>
                                 </div>
                                 <div>
                                     <strong>Select Warehouse: <span class="text-danger">*</span></strong>
                                     <select id="warehouse_id" class="form-control" disabled>
                                         @foreach($warehouses as $warehouse)
-                                            <option value="{{ $warehouse->id }}" 
-                                                @if($shipment->shipmentDetails->first()->warehouse_id == $warehouse->id) selected @endif>
-                                                {{ $warehouse->name }} - {{ $warehouse->location }}
-                                            </option>
+                                        <option value="{{ $warehouse->id }}"
+                                            @if($shipment->shipmentDetails->first()->warehouse_id == $warehouse->id) selected @endif>
+                                            {{ $warehouse->name }} - {{ $warehouse->location }}
+                                        </option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -46,12 +46,16 @@
                                         <th>Product</th>
                                         <th>Size</th>
                                         <th>Color</th>
+                                        <th>Current Stock</th>
+                                        <th>Purchased Quantity</th>
                                         <th>Shipped Quantity</th>
-                                        <th>Missing Quantity</th>    
+                                        <th>Missing Quantity</th>
+                                        <th>Remaining Quantity</th>
                                         <th>Purchase Price Per Unit</th>
                                         <th>Ground Price</th>
                                         <th>Profit Margin(%)</th>
-                                        <th>Selling Price</th>
+                                        <th>Current Selling Price</th>
+                                        <th>New Selling Price</th>
                                         <!-- <th>Action</th> -->
                                     </tr>
                                 </thead>
@@ -63,6 +67,8 @@
                                             <input type="hidden" value="{{ $detail->supplier_id }}" class="supplier_id">
                                             <input type="hidden" value="{{ $detail->id }}" class="id">
                                             <input type="hidden" value="{{ $detail->purchase_history_id }}" class="purchase_history_id">
+                                            <input type="hidden" value="{{ $detail->size }}" class="product_size">
+                                            <input type="hidden" value="{{ $detail->color }}" class="product_color">
                                         </td>
                                         <td>
                                             {{ $detail->product->product_code ? $detail->product->product_code . '-' : '' }}{{ $detail->product->name ?? '' }}
@@ -70,18 +76,36 @@
                                         </td>
                                         <td>{{ $detail->size ?? '' }}</td>
                                         <td>{{ $detail->color ?? '' }}</td>
+                                        @php
+                                        $filteredStock = $detail->purchaseHistory->product->stock ? $detail->purchaseHistory->product->stock
+                                        ->where('product_id', $detail->purchaseHistory->product_id)
+                                        ->where('size', $detail->purchaseHistory->product_size)
+                                        ->where('color', $detail->purchaseHistory->product_color)
+                                        ->where('quantity', '>', 0)
+                                        ->orderBy('id', 'desc')
+                                        : collect();
+
+                                        $currentStock = $filteredStock->sum('quantity');
+                                        $currentSellingPrice = $filteredStock->first()->selling_price ?? 0;
+                                        @endphp
+                                        <td>{{ $currentStock }}</td>
+                                        <td>{{ $detail->quantity }}</td>
                                         <td>
-                                            <input type="number" value="{{ $detail->quantity }}" max="{{ $detail->quantity }}" min="1" class="form-control product_quantity" readonly/>
-                                            <input type="hidden" value="{{ $detail->quantity + $detail->missing_quantity }}" max="{{ $detail->quantity + $detail->missing_quantity }}" class="max-quantity"/>
+                                            <input type="number" value="{{ $detail->quantity }}" max="{{ $detail->quantity }}" min="1" class="form-control shipped_quantity" readonly />
+                                            <input type="hidden" value="{{ $detail->quantity + $detail->missing_quantity }}" max="{{ $detail->quantity + $detail->missing_quantity }}" class="max-quantity" />
                                         </td>
                                         <td>
-                                            <input type="number" value="{{ $detail->missing_quantity }}" max="{{ $detail->quantity }}" min="0" class="form-control missing_quantity" readonly/>
+                                            <input type="number" value="{{ $detail->missing_quantity }}" max="{{ $detail->quantity }}" min="0" class="form-control missing_quantity" readonly />
+                                        </td>
+                                        <td>
+                                            <input type="number" value="0" max="" min="0" class="form-control remaining_quantity" readonly>
                                         </td>
                                         <td class="purchase_price">{{ number_format($detail->price_per_unit, 2) }}</td>
                                         <td class="ground_cost">{{ number_format($detail->ground_cost, 2) }}</td>
                                         <td>
                                             <input type="number" value="{{ $detail->profit_margin }}" min="0" class="form-control profit_margin" />
                                         </td>
+                                        <td>{{ number_format($currentSellingPrice, 2) }}</td>
                                         <td class="selling_price">{{ number_format($detail->selling_price, 2) }}</td>
                                         <!-- <td>
                                             <button type="button" class="btn btn-danger remove-row"><i class="fas fa-trash"></i></button>
@@ -91,7 +115,7 @@
                                 </tbody>
                             </table>
 
-                            <div class="col-sm-6 mt-5 mb-5">
+                            <div class="col-sm-10 mt-5 mb-5">
                                 <div class="row">
                                     <!-- Left Column -->
                                     <div class="col-sm-6">
@@ -105,48 +129,64 @@
 
                                         <div class="row mt-1">
                                             <div class="col-sm-12 d-flex align-items-center">
+                                                <span>Total Additional Cost:</span>
+                                                <input type="number" class="form-control" id="total_additional_cost" style="width: 100px; margin-left: auto;" min="0" readonly value="{{ $shipment->total_additional_cost }}">
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Right Column -->
+                                    <div class="col-sm-6">
+
+                                        <div class="row mt-1">
+                                            <div class="col-sm-12 d-flex align-items-center">
                                                 <span>CNF Cost:</span>
-                                                <input type="number" class="form-control" id="cnf_cost" style="width: 100px; margin-left: auto;" min="0" value="{{ $shipment->cnf_cost }}">
+                                                <select class="form-control" id="cnf_payment_type" style="width: 100px; margin-left: auto;">
+                                                    <option value="Bank" {{ $shipment->cnf_payment_type === 'Bank' ? 'selected' : '' }}>Bank</option>
+                                                    <option value="Cash" {{ $shipment->cnf_payment_type === 'Cash' ? 'selected' : '' }}>Cash</option>
+                                                </select>
+                                                <input type="number" class="form-control" id="cnf_cost" style="width: 100px; margin-left: 10px;" min="0" value="{{ $shipment->cnf_cost }}">
                                             </div>
                                         </div>
 
                                         <div class="row mt-1">
                                             <div class="col-sm-12 d-flex align-items-center">
                                                 <span>Import Duties & Taxes:</span>
-                                                <input type="number" class="form-control" id="import_taxes" style="width: 100px; margin-left: auto;" min="0" value="{{ $shipment->import_duties_tax }}">
+                                                <select class="form-control" id="import_payment_type" style="width: 100px; margin-left: auto;">
+                                                    <option value="Bank" {{ $shipment->import_payment_type === 'Bank' ? 'selected' : '' }}>Bank</option>
+                                                    <option value="Cash" {{ $shipment->import_payment_type === 'Cash' ? 'selected' : '' }}>Cash</option>
+                                                </select>
+                                                <input type="number" class="form-control" id="import_taxes" style="width: 100px; margin-left: 10px;" min="0" value="{{ $shipment->import_duties_tax }}">
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <!-- Right Column -->
-                                    <div class="col-sm-6">
                                         <div class="row mt-1">
                                             <div class="col-sm-12 d-flex align-items-center">
                                                 <span>Warehouse & Handling Costs:</span>
-                                                <input type="number" class="form-control" id="warehouse_cost" style="width: 100px; margin-left: auto;" min="0" value="{{ $shipment->warehouse_and_handling_cost }}">
+                                                <select class="form-control" id="warehouse_payment_type" style="width: 100px; margin-left: auto;">
+                                                    <option value="Bank" {{ $shipment->warehouse_payment_type === 'Bank' ? 'selected' : '' }}>Bank</option>
+                                                    <option value="Cash" {{ $shipment->warehouse_payment_type === 'Cash' ? 'selected' : '' }}>Cash</option>
+                                                </select>
+                                                <input type="number" class="form-control" id="warehouse_cost" style="width: 100px; margin-left: 10px;" min="0" value="{{ $shipment->warehouse_and_handling_cost }}">
                                             </div>
                                         </div>
 
                                         <div class="row mt-1">
                                             <div class="col-sm-12 d-flex align-items-center">
                                                 <span>Other Costs:</span>
-                                                <input type="number" class="form-control" id="other_cost" style="width: 100px; margin-left: auto;" min="0" value="{{ $shipment->other_cost }}">
+                                                <select class="form-control" id="other_payment_type" style="width: 100px; margin-left: auto;">
+                                                    <option value="Bank" {{ $shipment->other_payment_type === 'Bank' ? 'selected' : '' }}>Bank</option>
+                                                    <option value="Cash" {{ $shipment->other_payment_type === 'Cash' ? 'selected' : '' }}>Cash</option>
+                                                </select>
+                                                <input type="number" class="form-control" id="other_cost" style="width: 100px; margin-left: 10px;" min="0" value="{{ $shipment->other_cost }}">
                                             </div>
                                         </div>
 
-                                        <div class="row mt-1">
-                                            <div class="col-sm-12 d-flex align-items-center">
-                                                <span>Total Additional Cost:</span>
-                                                <input type="number" class="form-control" id="total_additional_cost" style="width: 100px; margin-left: auto;" min="0" readonly value="{{ $shipment->total_additional_cost }}">
-                                            </div>
-                                        </div>
+                                    </div>
 
-                                        <div class="row mt-5">
-                                            <div class="col-sm-12 d-flex justify-content-start">
-                                                <button id="calculateSalesPriceBtn" class="btn btn-success" style="margin-left: 10px;">Update Sales Price</button>
-                                            </div>
-                                        </div>
-
+                                    <div class="col-sm-12 d-flex justify-content-center mt-5">
+                                        <button id="calculateSalesPriceBtn" class="btn btn-success" style="margin-left: 10px;">Update Sales Price</button>
                                     </div>
                                 </div>
                             </div>
@@ -157,7 +197,6 @@
         </div>
     </div>
 </section>
-
 
 @endsection
 
@@ -183,26 +222,28 @@
                 return;
             }
 
-            let idValue = $('#id').val();
+            let warehouseId = $('#warehouse_id').val();
+            let shipmentId = $('#id').val();
             let totalQuantity = $('#totalQuantity').text();
             let totalMissingQuantity = $('#totalMissingQuantity').text();
             let shipmentDetails = [];
 
             $('#purchaseData tr').each(function() {
                 let id = $(this).find('.id').val();
-                let purchaseHistoryId = $(this).find('.purchase_history_id').val();
                 let supplierId = $(this).find('.supplier_id').val();
+                let purchaseHistoryId = $(this).find('.purchase_history_id').val();
                 let productId = $(this).find('.product_id').val();
-                let size = $(this).find('td:nth-child(3)').text();
-                let color = $(this).find('td:nth-child(4)').text();
-                let quantity = $(this).find('.product_quantity').val();
+                let size = $(this).find('.product_size').val();
+                let color = $(this).find('.product_color').val();
+                let shippedQuantity = $(this).find('.shipped_quantity').val();
                 let missingQuantity = $(this).find('.missing_quantity').val();
+                let remainingQuantity = $(this).find('.remaining_quantity').val();
                 let pricePerUnit = $(this).find('.purchase_price').text().replace(/,/g, '');
                 let groundCost = $(this).find('.ground_cost').text().replace(/,/g, '');
                 let profitMargin = $(this).find('.profit_margin').val().replace(/,/g, '');
                 let sellingPrice = $(this).find('.selling_price').text().replace(/,/g, '');
 
-                if (productId && quantity > 0) {
+                if (productId && shippedQuantity > 0) {
                     shipmentDetails.push({
                         id: id,
                         purchase_history_id: purchaseHistoryId,
@@ -210,8 +251,9 @@
                         product_id: productId,
                         size: size,
                         color: color,
-                        quantity: quantity,
+                        shipped_quantity: shippedQuantity,
                         missing_quantity: missingQuantity,
+                        remaining_quantity: remainingQuantity,
                         price_per_unit: pricePerUnit,
                         ground_cost: groundCost,
                         profit_margin: profitMargin,
@@ -232,7 +274,8 @@
             }
 
             let dataToSend = {
-                id: idValue,
+                id: shipmentId,
+                warehouse_id: warehouseId,
                 total_quantity: totalQuantity,
                 total_missing_quantity: totalMissingQuantity,
                 total_purchase_cost: $('#direct_cost').val().replace(/,/g, ''),
@@ -240,6 +283,10 @@
                 import_taxes: $('#import_taxes').val().replace(/,/g, ''),
                 warehouse_cost: $('#warehouse_cost').val().replace(/,/g, ''),
                 other_cost: $('#other_cost').val().replace(/,/g, ''),
+                cnf_payment_type: $('#cnf_payment_type').val(),
+                import_payment_type: $('#import_payment_type').val(),
+                warehouse_payment_type: $('#warehouse_payment_type').val(),
+                other_payment_type: $('#other_payment_type').val(),
                 total_additional_cost: $('#total_additional_cost').val().replace(/,/g, ''),
                 shipment_details: shipmentDetails,
                 removed_ids: removedShipmentDetailIds
@@ -247,10 +294,11 @@
 
             let _token = $('meta[name="csrf-token"]').attr('content');
 
-            // console.log(dataToSend);
+            console.log(dataToSend);
+
 
             $.ajax({
-                url: '/admin/shipment-update/' + idValue,
+                url: '/admin/shipment-update/' + shipmentId,
                 method: 'PUT',
                 headers: {
                     'X-CSRF-TOKEN': _token
@@ -267,7 +315,7 @@
                     pagetop();
 
                     setTimeout(function() {
-                        location.reload();
+                        // location.reload();
                     }, 2000);
                 },
                 error: function(xhr, status, error) {
@@ -294,8 +342,8 @@
                 let missingQuantity = parseInt($(this).find('.missing_quantity').val()) || 0;
                 let maxQuantity = parseInt($(this).find('.max-quantity').val()) || 0;
 
-                const quantity = parseInt($(this).find('.product_quantity').val());
-                if(missingQuantity >= quantity){
+                const quantity = parseInt($(this).find('.shipped_quantity').val());
+                if (missingQuantity >= quantity) {
                     missingQuantity = quantity;
                     $(this).find('.missing_quantity').val(missingQuantity);
                 }
@@ -306,7 +354,7 @@
                     updatedQuantity = 1;
                 }
 
-                $(this).find('.product_quantity').val(updatedQuantity);
+                $(this).find('.shipped_quantity').val(updatedQuantity);
 
                 const productTotal = purchasePrice * quantity;
 
@@ -335,7 +383,7 @@
             // Update ground cost per unit
             tableRows.each(function() {
                 const productTotal = parseFloat($(this).find('.ground_cost').text());
-                const quantity = parseInt($(this).find('.product_quantity').val());
+                const quantity = parseInt($(this).find('.shipped_quantity').val());
 
                 const sharedCostForProduct = (productTotal / totalPurchaseCost) * totalSharedCosts;
                 const groundCostPerUnit = (productTotal + sharedCostForProduct) / quantity;
@@ -353,7 +401,7 @@
             });
         }
 
-        $(document).on('input', '.product_quantity, .missing_quantity, .profit_margin, #cnf_cost, #import_taxes, #warehouse_cost, #other_cost', function() {
+        $(document).on('input', '.shipped_quantity, .missing_quantity, .profit_margin, #cnf_cost, #import_taxes, #warehouse_cost, #other_cost', function() {
             updateCalculations();
         });
 

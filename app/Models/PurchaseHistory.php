@@ -18,4 +18,9 @@ class PurchaseHistory extends Model
     {
         return $this->belongsTo(Purchase::class);
     }
+
+    public function shipmentDetails()
+    {
+        return $this->hasMany(ShipmentDetail::class, 'purchase_history_id');
+    }
 }

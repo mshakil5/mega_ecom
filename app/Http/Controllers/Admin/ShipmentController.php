@@ -187,7 +187,7 @@ class ShipmentController extends Controller
 
     public function editShipment($id)
     {
-        $shipment = Shipment::with('shipmentDetails.supplier', 'shipmentDetails.product')->findOrFail($id);
+        $shipment = Shipment::with('shipmentDetails.supplier', 'shipmentDetails.product', 'shipmentDetails.purchaseHistory')->findOrFail($id);
         $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
         return view('admin.shipment.edit', compact('shipment', 'warehouses'));
     }
@@ -204,7 +204,7 @@ class ShipmentController extends Controller
             'total_additional_cost' => 'required',
             'shipment_details' => 'required|array',
             'shipment_details.*.id' => 'required',
-            'shipment_details.*.quantity' => 'required',
+            'shipment_details.*.shipped_quantity' => 'required',
             'shipment_details.*.price_per_unit' => 'required',
             'shipment_details.*.ground_cost' => 'required',
             'shipment_details.*.profit_margin' => 'required',
@@ -221,7 +221,16 @@ class ShipmentController extends Controller
         $shipment->warehouse_and_handling_cost = $request->warehouse_cost;
         $shipment->other_cost = $request->other_cost;
         $shipment->total_additional_cost = $request->total_additional_cost;
+        $shipment->cnf_payment_type = $request->cnf_payment_type;
+        $shipment->import_payment_type = $request->import_payment_type;
+        $shipment->warehouse_payment_type = $request->warehouse_payment_type;
+        $shipment->other_payment_type = $request->other_payment_type;
         $shipment->save();
+
+        $transaction = Transaction::where('shipment_id', $shipment->id)->first();
+        $transaction->amount = $request->total_additional_cost;
+        $transaction->at_amount = $request->total_additional_cost;
+        $transaction->save();
 
         foreach ($request->shipment_details as $detail) {
             $shipmentDetail = ShipmentDetails::findOrFail($detail['id']);
@@ -229,7 +238,7 @@ class ShipmentController extends Controller
             $oldQuantity = $shipmentDetail->quantity;
             $oldMissingQuantity = $shipmentDetail->missing_quantity;
 
-            $shipmentDetail->quantity = $detail['quantity'];
+            $shipmentDetail->quantity = $detail['shipped_quantity'];
             $shipmentDetail->missing_quantity = $detail['missing_quantity'];
             $shipmentDetail->price_per_unit = $detail['price_per_unit'];
             $shipmentDetail->ground_price_per_unit = $detail['ground_cost'];
@@ -237,7 +246,7 @@ class ShipmentController extends Controller
             $shipmentDetail->selling_price = $detail['selling_price'];
             $shipmentDetail->save();
     
-            $quantityDifference = $detail['quantity'] - $oldQuantity;
+            $quantityDifference = $detail['shipped_quantity'] - $oldQuantity;
             $missingDifference = $detail['missing_quantity'] - $oldMissingQuantity;
     
             $stock = Stock::where('product_id', $shipmentDetail->product_id)
@@ -248,21 +257,18 @@ class ShipmentController extends Controller
     
             if ($stock) {
                 $stock->quantity += $quantityDifference;
+                $stock->purchase_price = $detail['price_per_unit'];
+                $stock->ground_price_per_unit = $detail['ground_cost'];
+                $stock->profit_margin = $detail['profit_margin'];
+                $stock->selling_price = $detail['selling_price'];
                 $stock->updated_by = auth()->id();
                 $stock->save();
-            } else {
-                $stock = Stock::create([
-                    'product_id' => $shipmentDetail->product_id,
-                    'quantity' => $detail['quantity'],
-                    'size' => $shipmentDetail->size,
-                    'color' => $shipmentDetail->color,
-                    'created_by' => auth()->id(),
-                ]);
             }
     
             $stockHistory = StockHistory::where('product_id', $shipmentDetail->product_id)
                 ->where('size', $shipmentDetail->size)
                 ->where('color', $shipmentDetail->color)
+                ->where('stock_id', $stock->id)
                 ->where('warehouse_id', $shipmentDetail->warehouse_id)
                 ->first();
     
@@ -276,62 +282,45 @@ class ShipmentController extends Controller
                 $stockHistory->selling_price = $detail['selling_price'];
                 $stockHistory->updated_by = auth()->user()->id;
                 $stockHistory->save();
-            } else {
-                $stockHistoryId = date('mds') . str_pad($shipmentDetail->product_id, 4, '0', STR_PAD_LEFT);
-    
-                StockHistory::create([
-                    'stock_id' => $stock->id,
-                    'date' => date('Y-m-d'),
-                    'product_id' => $shipmentDetail->product_id,
-                    'quantity' => $detail['quantity'],
-                    'size' => $shipmentDetail->size,
-                    'color' => $shipmentDetail->color,
-                    'available_qty' => $detail['quantity'],
-                    'ground_price_per_unit' => $detail['ground_cost'],
-                    'profit_margin' => $detail['profit_margin'],
-                    'purchase_price' => $detail['price_per_unit'],
-                    'selling_price' => $detail['selling_price'],
-                    'created_by' => auth()->id(),
-                    'stockid' => $stockHistoryId,
-                ]);
             }
         }
     
-        if (!empty($request->removed_ids)) {
-            $removedDetails = ShipmentDetails::whereIn('id', $request->removed_ids)->get();
-            foreach ($removedDetails as $removedDetail) {
-                $stock = Stock::where('product_id', $removedDetail->product_id)
-                    ->where('size', $removedDetail->size)
-                    ->where('color', $removedDetail->color)
-                    ->where('warehouse_id', $removedDetail->warehouse_id)
-                    ->first();
+        // if (!empty($request->removed_ids)) {
+        //     $removedDetails = ShipmentDetails::whereIn('id', $request->removed_ids)->get();
+        //     foreach ($removedDetails as $removedDetail) {
+        //         $stock = Stock::where('product_id', $removedDetail->product_id)
+        //             ->where('size', $removedDetail->size)
+        //             ->where('color', $removedDetail->color)
+        //             ->where('warehouse_id', $removedDetail->warehouse_id)
+        //             ->first();
         
-                if ($stock) {
-                    $stock->quantity -= $removedDetail->quantity;
-                    $stock->updated_by = auth()->id();
-                    $stock->save();
-                }
+        //         if ($stock) {
+        //             $stock->quantity -= $removedDetail->quantity;
+        //             $stock->updated_by = auth()->id();
+        //             $stock->save();
+        //         }
         
-                $stockHistory = StockHistory::where('product_id', $removedDetail->product_id)
-                    ->where('size', $removedDetail->size)
-                    ->where('color', $removedDetail->color)
-                    ->where('warehouse_id', $removedDetail->warehouse_id)
-                    ->first();
+        //         $stockHistory = StockHistory::where('product_id', $removedDetail->product_id)
+        //             ->where('size', $removedDetail->size)
+        //             ->where('color', $removedDetail->color)
+        //             ->where('warehouse_id', $removedDetail->warehouse_id)
+        //             ->where('stock_id', $stock->id)
+        //             ->first();
         
-                if ($stockHistory) {
-                    $stockHistory->quantity -= $removedDetail->quantity;
-                    $stockHistory->available_qty -= $removedDetail->quantity;
+        //         if ($stockHistory) {
+        //             $stockHistory->quantity -= $removedDetail->quantity;
+        //             $stockHistory->available_qty -= $removedDetail->quantity;
         
-                    $stockHistory->quantity = max($stockHistory->quantity, 0);
-                    $stockHistory->available_qty = max($stockHistory->available_qty, 0);
+        //             $stockHistory->quantity = max($stockHistory->quantity, 0);
+        //             $stockHistory->available_qty = max($stockHistory->available_qty, 0);
         
-                    $stockHistory->updated_by = auth()->id();
-                    $stockHistory->save();
-                }
+        //             $stockHistory->updated_by = auth()->id();
+        //             $stockHistory->save();
+        //         }
         
-                $removedDetail->delete();
-            }
-        }        
+        //         $removedDetail->delete();
+        //     }
+        // }        
     
         return response()->json(['message' => 'Shipment updated successfully!']);
     }    
