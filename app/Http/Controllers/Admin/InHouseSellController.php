@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\OrderConfirmation;
 use App\Models\ContactEmail;
 use App\Mail\QuotaionEmail;
+use Illuminate\Support\Facades\Auth;
 
 class InHouseSellController extends Controller
 {
@@ -318,10 +319,15 @@ class InHouseSellController extends Controller
 
     public function allquotations()
     {
+        $warehouseIds = json_decode(Auth::user()->warehouse_ids, true);
+
         $inHouseOrders = Order::with('user')
-        ->where('order_type', 2) 
-        ->orderBy('id', 'desc') 
-        ->get();
+            ->where('order_type', 2)
+            ->when(!empty($warehouseIds), function ($query) use ($warehouseIds) {
+                return $query->whereIn('warehouse_id', $warehouseIds);
+            })
+            ->orderBy('id', 'desc')
+            ->get();
 
         return view('admin.in_house_sell.quotations', compact('inHouseOrders'));
     }

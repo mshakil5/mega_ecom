@@ -1241,6 +1241,7 @@ class OrderController extends Controller
         if ($request->ajax()) {
             $userId = $request->get('userId') ?? $userId;
 
+            $warehouseIds = json_decode(Auth::user()->warehouse_ids, true);
             if ($userId) {
                 $ordersQuery = Order::with('user')->where('user_id', $userId)
                     ->whereIn('order_type', [1]);
@@ -1249,6 +1250,10 @@ class OrderController extends Controller
             }
             
             $ordersQuery->where('status', '!=', 7);
+
+            if (!empty($warehouseIds)) {
+                $ordersQuery->whereIn('warehouse_id', $warehouseIds);
+            }
 
             return DataTables::of($ordersQuery->orderBy('id', 'desc'))
                 ->addColumn('action', function($order) {
