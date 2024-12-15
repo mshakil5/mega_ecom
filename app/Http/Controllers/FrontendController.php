@@ -824,6 +824,14 @@ class FrontendController extends Controller
         $productStocks = Stock::where('product_id', $request->product_id)
             ->where('color', $request->color)
             ->where('quantity', '>', 0)
+            ->where('warehouse_id', function ($query) use ($request) {
+                $query->select('warehouse_id')
+                    ->from('stocks')
+                    ->where('product_id', $request->product_id)
+                    ->where('color', $request->color)
+                    ->where('quantity', '>', 0)
+                    ->limit(1);
+            })
             ->latest()
             ->select(['size', 'quantity', 'selling_price'])
             ->get();

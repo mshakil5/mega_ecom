@@ -41,6 +41,7 @@
                                     <th>Purchase Cost</th>
                                     <th>Additional Cost</th>
                                     <th>Total Cost</th>
+                                    <th>Status</th>
                                     <th>Details</th>
                                     <th>Action</th>
                                 </tr>
@@ -58,24 +59,36 @@
                                     <td>{{ $shipping->shipment ? $shipping->shipment->total_purchase_cost : '' }}</td>
                                     <td>{{ $shipping->shipment ? $shipping->shipment->total_additional_cost : '' }}</td>
                                     <td>{{ $shipping->shipment ? $shipping->shipment->total_purchase_cost + $shipping->shipment->total_additional_cost : '' }}</td>
+                                    <td style="width: 100%;">
+                                        @if($shipping)
+                                            <select class="form-control shipping-status" data-shipping-id="{{ $shipping->id }}">
+                                                <option value="1" {{ $shipping->status == 1 ? 'selected' : '' }}>Processing</option>
+                                                <option value="2" {{ $shipping->status == 2 ? 'selected' : '' }}>On The Way</option>
+                                                <option value="3" {{ $shipping->status == 3 ? 'selected' : '' }}>Received</option>
+                                            </select>
+                                        @endif
+                                    </td>
+
                                     <td>
                                         @if($shipping->shipment)
-                                        <span class="badge bg-success ms-2">Price Added</span>
-                                        <a href="{{ route('admin.shipment.edit', $shipping->id) }}" class="btn btn-info btn-sm"><i class="fas fa-dollar-sign"></i></a>
-                                        <button class="btn btn-sm btn-primary view-details" 
-                                                data-shipping-id="{{ $shipping->shipping_id }}"
-                                                data-shipping-date="{{ \Carbon\Carbon::parse($shipping->shipping_date)->format('d-m-Y') }}"
-                                                data-shipping-name="{{ $shipping->shipping_name }}"
-                                                data-total-quantity="{{ $shipping->shipment->total_product_quantity }}"
-                                                data-total-missing-quantity="{{ $shipping->shipment->total_missing_quantity }}"
-                                                data-total-purchase="{{ $shipping->shipment->total_purchase_cost }}"
-                                                data-total-additional="{{ $shipping->shipment->total_additional_cost }}"
-                                                data-warehouse-name="{{ $shipping->shipment->shipmentDetails[0]->warehouse->name }}"
-                                                data-shipment-details="{{ json_encode($shipping->shipment->shipmentDetails) }}">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        @else
-                                        <a href="{{ route('admin.shipment.create', $shipping->id) }}" class="btn btn-info btn-sm">Set Price</a>
+                                            <span class="badge bg-success ms-2">Price Added</span>
+                                            <a href="{{ route('admin.shipment.edit', $shipping->id) }}" class="btn btn-info btn-sm"><i class="fas fa-dollar-sign"></i></a>
+                                            <button class="btn btn-sm btn-primary view-details" 
+                                                    data-shipping-id="{{ $shipping->shipping_id }}"
+                                                    data-shipping-date="{{ \Carbon\Carbon::parse($shipping->shipping_date)->format('d-m-Y') }}"
+                                                    data-shipping-name="{{ $shipping->shipping_name }}"
+                                                    data-total-quantity="{{ $shipping->shipment->total_product_quantity }}"
+                                                    data-total-missing-quantity="{{ $shipping->shipment->total_missing_quantity }}"
+                                                    data-total-purchase="{{ $shipping->shipment->total_purchase_cost }}"
+                                                    data-total-additional="{{ $shipping->shipment->total_additional_cost }}"
+                                                    data-warehouse-name="{{ $shipping->shipment->shipmentDetails[0]->warehouse->name }}"
+                                                    data-shipment-details="{{ json_encode($shipping->shipment->shipmentDetails) }}">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        @elseif($shipping->status == 3)
+                                            <a href="{{ route('admin.shipment.create', $shipping->id) }}" class="btn btn-info btn-sm">Set Price</a>
+                                        @elseif($shipping->status != 3)
+                                        <span class="badge bg-info ms-2">Change to Recived</span>
                                         @endif
                                     </td>
                                     <td>
@@ -354,6 +367,44 @@
                 'pdf',  
                 'print'
             ]
+        });
+
+        $(document).on('change', '.shipping-status', function() {
+            const shippingId = $(this).data('shipping-id');
+            const status = $(this).val();
+
+            $.ajax({
+                url: '/admin/shipping/update-status',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    shipping_id: shippingId,
+                    status: status
+                },
+                success: function(response) {
+                    swal({
+                        text: "Shipment Status Updated",
+                        icon: "success",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    }).then(() => {
+                        location.reload();
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr.responseText);
+                    swal({
+                        text: "An error occurred while updating the shipment status.",
+                        icon: "error",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    });
+                }
+            });
         });
 
     });

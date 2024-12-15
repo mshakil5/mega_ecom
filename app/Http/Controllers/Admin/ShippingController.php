@@ -118,4 +118,18 @@ class ShippingController extends Controller
         return response()->json(['message' => 'Shipment updated successfully', 'shipment' => $shipment]);
     }
 
+    public function updateStatus(Request $request)
+    {
+        $shipping = Shipping::find($request->shipping_id);
+
+        if ($shipping) {
+            $shipping->status = $request->status;
+            $shipping->save();
+
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['error' => 'Shipping not found'], 404);
+    }
+
 }

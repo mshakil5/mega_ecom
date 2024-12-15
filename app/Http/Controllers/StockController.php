@@ -226,7 +226,7 @@ class StockController extends Controller
     public function getproductHistory()
     {
         $warehouseIds = json_decode(Auth::user()->warehouse_ids, true);
-    
+
         $products = Product::with(['orderDetails' => function ($query) {
             $query->whereHas('order', function ($query) {
                 $query->whereIn('order_type', [0, 1]);
@@ -238,9 +238,9 @@ class StockController extends Controller
             }
         }, 'shipmentDetails'])
         ->get();
-    
+
         $products = $products->map(function ($product) {
-            $product->total_quantity = optional($product->stock)->sum('quantity') ?? 0;
+            $product->total_quantity = $product->stock ? $product->stock->quantity : 0; 
             return $product;
         });
     
