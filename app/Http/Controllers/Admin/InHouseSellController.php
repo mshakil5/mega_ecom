@@ -43,6 +43,7 @@ class InHouseSellController extends Controller
             'purchase_date' => 'required|date',
             'user_id' => 'required|exists:users,id',
             'payment_method' => 'required|string',
+            'warehouse_id' => 'required',
             'ref' => 'nullable|string',
             'remarks' => 'nullable|string',
             'discount' => 'nullable',
@@ -262,6 +263,7 @@ class InHouseSellController extends Controller
             'remarks' => 'nullable|string',
             'discount' => 'nullable',
             'products' => 'required|json',
+            'warehouse_id' => 'required',
         ]);
 
         $products = json_decode($validated['products'], true);
@@ -283,6 +285,7 @@ class InHouseSellController extends Controller
         $order->net_amount = $netAmount;
         $order->vat_amount = $request->vat;
         $order->subtotal_amount = $itemTotalAmount;
+        $order->warehouse_id = $validated['warehouse_id'];
         $order->order_type = 2;
         $order->status = 1;
         $order->save();

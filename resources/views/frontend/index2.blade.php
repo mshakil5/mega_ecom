@@ -379,7 +379,7 @@
     <!-- Supplier advertisements end-->
 
     <!-- Trending Products Start -->
-    @if($section_status->trending_products == 1)
+    @if($section_status->trending_products == 1 && $trendingProducts->count() > 0)
     <div class="pt-5">
         <div class="container trending-products">
             <div class="heading heading-flex mb-3">

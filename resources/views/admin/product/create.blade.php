@@ -15,20 +15,20 @@
                         <form id="createThisForm">
                             @csrf
                             <div class="form-row">
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-6">
                                     <label for="name">Product Name <span style="color: red;">*</span></label>
                                     <input type="text" class="form-control" id="name" name="name" placeholder="Ex. Stylish Running Shoes">
                                 </div>
-                                <div class="form-group col-md-2">
+                                <div class="form-group col-md-6">
                                     <label for="price">Product Code <span style="color: red;">*</span></label>
                                     <input type="text" class="form-control" id="product_code" name="product_code" placeholder="Ex. PRD-12345">
                                     <span id="productCodeError" class="text-danger"></span>
                                 </div>
-                                <div class="form-group col-md-2">
+                                <div class="form-group col-md-2 d-none">
                                     <label for="price">Price</label>
                                     <input type="number" class="form-control" id="price" name="price" placeholder="Ex. 1000">
                                 </div>
-                                <div class="form-group col-md-2">
+                                <div class="form-group col-md-2 d-none">
                                     <label for="size_ids">Sizes</label>
                                     <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addSizeModal">Add New</span>
                                     <select class="form-control select2" id="size_ids" name="size_ids[]" multiple="multiple" data-placeholder="Select sizes">
@@ -37,7 +37,7 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group col-md-2">
+                                <div class="form-group col-md-2 d-none">
                                     <label for="sku">Sku</label>
                                     <input type="number" class="form-control" id="sku" name="sku" placeholder="Ex. 123">
                                 </div>
@@ -45,17 +45,17 @@
 
                             <div class="form-row">
                                 <div class="form-group col-md-6">
-                                    <label for="short_description">Short Description <span style="color: red;">*</span></label>
+                                    <label for="short_description">Short Description</label>
                                     <textarea class="form-control" id="short_description" name="short_description"></textarea>
                                 </div>
                                 <div class="form-group col-md-6">
-                                    <label for="description">Long Description <span style="color: red;">*</span></label>
+                                    <label for="description">Long Description</label>
                                     <textarea class="form-control" id="long_description" name="long_description"></textarea>
                                 </div>
                             </div>
 
                             <div class="form-row">
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-6">
                                     <label for="category">Category
                                         <span style="color: red;">*</span>
                                         <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addCategoryModal">Add New</span>
@@ -68,7 +68,7 @@
                                     </select>
                                 </div>
 
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-6">
                                     <label for="subcategory">
                                         Sub Category
                                         <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addSubCategoryModal">Add New</span>
@@ -81,7 +81,7 @@
                                     </select>
                                 </div>
 
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-4 d-none">
                                     <label for="brand">
                                         Brand
                                         <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addBrandModal">Add New</span>
@@ -94,7 +94,7 @@
                                     </select>
                                 </div>
 
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-4 d-none">
                                     <label for="model">Model
                                         <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addModelModal">Add New</span>
                                     </label>
@@ -106,7 +106,7 @@
                                     </select>
                                 </div>
 
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-4 d-none">
                                     <label for="unit">
                                         Unit <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addUnitModal">Add New</span>
                                     </label>
@@ -118,7 +118,7 @@
                                     </select>
                                 </div>
 
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-4 d-none">
                                     <label for="group">
                                         Group <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addGroupModal">Add New</span>
                                     </label>

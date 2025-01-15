@@ -96,6 +96,8 @@
                                                     data-price="{{ $sellingPrice }}" 
                                                     data-ground-price="{{ $groundPrice }}" 
                                                     data-profit-margin="{{ $profitMargin }}"
+                                                    data-sizes="{{ json_encode($product->stock->pluck('size')->unique()) }}" 
+                                                    data-colors="{{ json_encode($product->stock->pluck('color')->unique()) }}"
                                                     >
                                                     {{ $product->name }} - {{ $product->product_code }}
                                                 </option>
@@ -120,24 +122,28 @@
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="size">Size <span class="text-danger">*</span></label>
-                                        <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addSizeModal">Add New</span>
+                                        <span class="badge badge-success d-none" style="cursor: pointer;" data-toggle="modal" data-target="#addSizeModal">Add New</span>
                                         <select class="form-control" id="size" name="size">
                                             <option value="">Select...</option>
+                                            {{-- 
                                             @foreach ($sizes as $size)
                                                 <option value="{{ $size->size }}">{{ $size->size }}</option>
                                             @endforeach
+                                            --}}
                                         </select>
                                     </div>
                                 </div>
                                  <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="color">Color <span class="text-danger">*</span></label>
-                                        <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
+                                        <span class="badge badge-success d-none" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
                                         <select class="form-control" id="color" name="color">
                                             <option value="">Select...</option>
+                                            {{-- 
                                             @foreach ($colors as $color)
                                                 <option value="{{ $color->color }}">{{ $color->color }}</option>
-                                            @endforeach                                     
+                                            @endforeach   
+                                            --}}                                  
                                         </select>
                                     </div>
                                 </div>
@@ -625,6 +631,7 @@
             formData.push({ name: 'vat', value: $('#vat').val() });
             formData.push({ name: 'discount', value: $('#discount').val() });
             formData.push({ name: 'net_amount', value: $('#net_amount').val() });
+            formData.push({ name: 'warehouse_id', value: $('#warehouse_id').val() });
 
             $('#productTable tbody tr').each(function() {
                 var productId = $(this).find('input[name="product_id[]"]').val();
@@ -751,6 +758,20 @@
                 $('#ground_price').val('');
                 $('#profit_margin').val('');
             }
+
+            var sizes = selectedProduct.data('sizes') || [];
+            var colors = selectedProduct.data('colors') || [];
+            var sizeSelect = $('#size');
+            sizeSelect.html('<option value="">Select...</option>');
+            sizes.forEach(function(size) {
+                sizeSelect.append(`<option value="${size}">${size}</option>`);
+            });
+
+            var colorSelect = $('#color');
+            colorSelect.html('<option value="">Select...</option>');
+            colors.forEach(function(color) {
+                colorSelect.append(`<option value="${color}">${color}</option>`);
+            });
         });
     });
 </script>

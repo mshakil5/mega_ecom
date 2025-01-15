@@ -164,8 +164,8 @@ class ProductController extends Controller
             'size_ids' => 'nullable|array',
             'size_ids.*' => 'exists:sizes,id',
             'sku' => 'nullable|string|max:255',
-            'short_description' => 'required|string',
-            'long_description' => 'required|string',
+            'short_description' => 'nullable|string',
+            'long_description' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
             'subcategory_id' => 'nullable|exists:subcategories,id',
             'brand_id' => 'nullable|exists:brands,id',
@@ -211,12 +211,14 @@ class ProductController extends Controller
             'is_trending' => $request->is_trending ? 1 : 0,
         ]);
 
-        foreach ($request->size_ids as $sizeId) {
-            ProductSize::create([
-                'product_id' => $product->id,
-                'size_id' => $sizeId,
-                'created_by' => auth()->user()->id,
-            ]);
+        if($request->size_ids){
+            foreach ($request->size_ids as $sizeId) {
+                ProductSize::create([
+                    'product_id' => $product->id,
+                    'size_id' => $sizeId,
+                    'created_by' => auth()->user()->id,
+                ]);
+            }
         }
 
         if (isset($request->color_id) && is_array($request->color_id)) {
@@ -266,8 +268,8 @@ class ProductController extends Controller
             'size_ids' => 'nullable|array',
             'size_ids.*' => 'exists:sizes,id',
             'sku' => 'nullable|string|max:255',
-            'short_description' => 'required|string',
-            'long_description' => 'required|string',
+            'short_description' => 'nullable|string',
+            'long_description' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
             'subcategory_id' => 'nullable|exists:subcategories,id',
             'brand_id' => 'nullable|exists:brands,id',
