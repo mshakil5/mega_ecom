@@ -21,4 +21,9 @@ class Shipment extends Model
         return $this->belongsTo(Shipping::class);
     }
 
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
 }

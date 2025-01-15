@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ChartOfAccount;
 use Illuminate\Http\Request;
 use App\Models\Shipment;
 use App\Models\ShipmentDetails;
@@ -31,7 +32,9 @@ class ShipmentController extends Controller
             ->get();
 
         $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
-        return view('admin.shipment.create', compact('shipping', 'purchaseHistories', 'warehouses'));
+
+        $expenses = ChartOfAccount::where('account_head', 'Expenses')->where('sub_account_head', 'Cost Of Good Sold')->select('id', 'account_name')->get();
+        return view('admin.shipment.create', compact('shipping', 'purchaseHistories', 'warehouses', 'expenses'));
     }
 
     public function storeShipment(Request $request)
@@ -41,14 +44,6 @@ class ShipmentController extends Controller
             'warehouse_id' => 'required',
             'total_quantity' => 'required|integer',
             'total_purchase_cost' => 'required|numeric',
-            'cnf_cost' => 'required|numeric',
-            'import_taxes' => 'required|numeric',
-            'warehouse_cost' => 'required|numeric',
-            'other_cost' => 'required|numeric',
-            'cnf_payment_type' => 'required',
-            'import_payment_type' => 'required',
-            'warehouse_payment_type' => 'required',
-            'other_payment_type' => 'required',
             'total_additional_cost' => 'required|numeric',
             'shipment_details' => 'required|array',
             'shipment_details.*.supplier_id' => 'required|integer',
@@ -84,20 +79,24 @@ class ShipmentController extends Controller
             'created_by' => auth()->id(),
         ]);
 
-        $transaction = new Transaction();
-        $transaction->date = $shipping->shipping_date;
-        $transaction->shipment_id = $shipment->id;
-        $transaction->table_type = 'Shipment';
-        $transaction->description = 'Shipment cost';
-        $transaction->amount = $request->total_additional_cost;
-        $transaction->at_amount = $request->total_additional_cost;
-        $transaction->transaction_type = 'Current';
-        $transaction->payment_type = 'Credit';
-        $transaction->created_by = auth()->id();
-        $transaction->save();
-        $transaction->tran_id = 'EX' . date('ymd') . str_pad($transaction->id, 4, '0', STR_PAD_LEFT);
-        $transaction->save();
-    
+        $expenses = $request->input('expenses');
+
+        foreach ($expenses as $expense) {
+            $transaction = new Transaction();
+            $transaction->date = $shipping->shipping_date;
+            $transaction->table_type = 'Expenses';
+            $transaction->shipment_id = $shipment->id;
+            $transaction->amount = $expense['amount'];
+            $transaction->at_amount = $expense['amount'];
+            $transaction->payment_type = $expense['payment_type'];
+            $transaction->chart_of_account_id = $expense['chart_of_account_id'];
+            $transaction->transaction_type = 'Current';
+            $transaction->created_by = auth()->id();
+            $transaction->save();
+            $transaction->tran_id = 'EX' . date('ymd') . str_pad($transaction->id, 4, '0', STR_PAD_LEFT);
+            $transaction->save();
+        }
+
         foreach ($request->shipment_details as $detail) {
             $detailShipment = ShipmentDetails::create([
                 'shipment_id' => $shipment->id,
@@ -187,9 +186,10 @@ class ShipmentController extends Controller
 
     public function editShipment($id)
     {
-        $shipment = Shipment::with('shipmentDetails.supplier', 'shipmentDetails.product', 'shipmentDetails.purchaseHistory')->findOrFail($id);
+        $shipment = Shipment::with('shipmentDetails.supplier', 'shipmentDetails.product', 'shipmentDetails.purchaseHistory', 'transactions')->findOrFail($id);
         $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
-        return view('admin.shipment.edit', compact('shipment', 'warehouses'));
+        $expenses = ChartOfAccount::where('account_head', 'Expenses')->where('sub_account_head', 'Cost Of Good Sold')->select('id', 'account_name')->get();
+        return view('admin.shipment.edit', compact('shipment', 'warehouses', 'expenses'));
     }
 
     public function updateShipment(Request $request, $id)
@@ -197,10 +197,6 @@ class ShipmentController extends Controller
         $validated = $request->validate([
             'total_quantity' => 'required',
             'total_purchase_cost' => 'required',
-            'cnf_cost' => 'required',
-            'import_taxes' => 'required',
-            'warehouse_cost' => 'required',
-            'other_cost' => 'required',
             'total_additional_cost' => 'required',
             'shipment_details' => 'required|array',
             'shipment_details.*.id' => 'required',
@@ -227,10 +223,19 @@ class ShipmentController extends Controller
         $shipment->other_payment_type = $request->other_payment_type;
         $shipment->save();
 
-        $transaction = Transaction::where('shipment_id', $shipment->id)->first();
-        $transaction->amount = $request->total_additional_cost;
-        $transaction->at_amount = $request->total_additional_cost;
-        $transaction->save();
+        $expenses = $request->input('expenses');
+
+        foreach ($expenses as $expense) {
+            $transaction = Transaction::where('id', $expense['transaction_id'])->first();
+
+            if ($transaction) {
+                $transaction->amount = $expense['amount'];
+                $transaction->at_amount = $expense['amount'];
+                $transaction->payment_type = $expense['payment_type'];
+                $transaction->updated_by = auth()->id();
+                $transaction->save();
+            }
+        }
 
         foreach ($request->shipment_details as $detail) {
             $shipmentDetail = ShipmentDetails::findOrFail($detail['id']);

@@ -18,7 +18,6 @@ class ExpenseController extends Controller
         if($request->ajax()){
             $transactions = Transaction::with('chartOfAccount')
                 ->whereIn('table_type', ['Expenses', 'Cogs'])
-                ->where('branch_id', auth()->user()->branch_id)
                 ->where('status', 0);
 
         if ($request->filled('start_date')) {

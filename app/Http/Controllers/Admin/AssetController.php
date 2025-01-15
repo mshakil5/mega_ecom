@@ -17,8 +17,7 @@ class AssetController extends Controller
     {
         if($request->ajax()){
             $transactions = Transaction::with('chartOfAccount')
-                ->where('table_type', 'Assets')
-                ->where('branch_id', auth()->user()->branch_id);
+                ->where('table_type', 'Assets');
 
             if ($request->filled('start_date')) {
                 $endDate = $request->filled('end_date') ? $request->input('end_date') : now()->endOfDay();
