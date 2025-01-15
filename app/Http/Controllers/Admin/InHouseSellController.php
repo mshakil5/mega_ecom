@@ -323,9 +323,9 @@ class InHouseSellController extends Controller
 
         $inHouseOrders = Order::with('user')
             ->where('order_type', 2)
-            ->when(!empty($warehouseIds), function ($query) use ($warehouseIds) {
-                return $query->whereIn('warehouse_id', $warehouseIds);
-            })
+            // ->when(!empty($warehouseIds), function ($query) use ($warehouseIds) {
+            //     return $query->whereIn('warehouse_id', $warehouseIds);
+            // })
             ->orderBy('id', 'desc')
             ->get();
 
