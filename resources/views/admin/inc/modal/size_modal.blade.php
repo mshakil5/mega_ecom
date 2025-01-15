@@ -16,7 +16,7 @@
                             <input type="text" class="form-control" id="size_name" name="size_name" placeholder="Enter size">
                         </div>
                     </div>
-                    <div class="col-sm-12">
+                    <div class="col-sm-12 d-none">
                         <div class="form-group">
                             <label for="size_price">Price</label>
                             <input type="number" class="form-control" id="size_price" name="size_price" placeholder="Enter price">

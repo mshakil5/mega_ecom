@@ -40,11 +40,11 @@
                                 <input type="text" class="form-control" id="product_code" name="product_code" placeholder="Ex. PRD-12345">
                                 <span id="productCodeError" class="text-danger"></span>
                             </div>
-                            <div class="form-group col-md-2">
+                            <div class="form-group col-md-2 d-none">
                                 <label for="price">Price</label>
                                 <input type="number" class="form-control" id="price" name="price" placeholder="Ex. 1000">
                             </div>
-                            <div class="form-group col-md-2">
+                            <div class="form-group col-md-2 d-none">
                                 <label for="size_ids">Sizes</label>
                                 <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addSizeModal">Add New</span>
                                 <select class="form-control select2" id="size_ids" name="size_ids[]" multiple="multiple" data-placeholder="Select sizes">
@@ -53,7 +53,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="form-group col-md-2">
+                            <div class="form-group col-md-2 d-none">
                                 <label for="sku">Sku</label>
                                 <input type="number" class="form-control" id="sku" name="sku" placeholder="Ex. 123">
                             </div>
@@ -74,7 +74,6 @@
                             <div class="form-group col-md-4">
                                 <label for="category">Category
                                     <span style="color: red;">*</span>
-                                    <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addCategoryModal">Add New</span>
                                 </label>
                                 <select class="form-control" id="category" name="category_id">
                                     <option value="">Select Category</option>
@@ -87,7 +86,6 @@
                             <div class="form-group col-md-4">
                                 <label for="subcategory">
                                     Sub Category
-                                    <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addSubCategoryModal">Add New</span>
                                 </label>
                                 <select class="form-control" id="subcategory" name="sub_category_id">
                                     <option value="">Select Sub Category</option>
@@ -97,10 +95,9 @@
                                 </select>
                             </div>
 
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-4 d-none">
                                 <label for="brand">
                                     Brand
-                                    <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addBrandModal">Add New</span>
                                 </label>
                                 <select class="form-control" id="brand" name="brand_id">
                                     <option value="">Select Brand</option>
@@ -110,9 +107,8 @@
                                 </select>
                             </div>
 
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-4 d-none">
                                 <label for="model">Model
-                                    <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addModelModal">Add New</span>
                                 </label>
                                 <select class="form-control" id="model" name="product_model_id">
                                     <option value="">Select Model</option>
@@ -122,9 +118,9 @@
                                 </select>
                             </div>
 
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-4 d-none">
                                 <label for="unit">
-                                    Unit <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addUnitModal">Add New</span>
+                                    Unit 
                                 </label>
                                 <select class="form-control" id="unit" name="unit_id">
                                     <option value="">Select Unit</option>
@@ -134,9 +130,9 @@
                                 </select>
                             </div>
 
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-4 d-none">
                                 <label for="group">
-                                    Group <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addGroupModal">Add New</span>
+                                    Group
                                 </label>
                                 <select class="form-control" id="group" name="group_id">
                                     <option value="">Select Group</option>
