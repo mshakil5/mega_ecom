@@ -100,30 +100,42 @@
 
                                         <div class="row mt-2">
                                             <div class="col-sm-12 d-flex align-items-center">
-                                                <strong>Target Budget:</strong> <span style="width: 100px; margin-left: auto;">{{ $shipment->target_budget ?? '0.00' }}</span>  
+                                                <strong>Target Budget:</strong> <span id="targetBudget" style="width: 100px; margin-left: auto;">{{ $shipment->target_budget ?? '0.00' }}</span>  
                                             </div>
                                         </div>
 
                                         <div class="row mt-1">
                                             <div class="col-sm-12 d-flex align-items-center">
-                                                <strong>Target Budget:</strong> <span style="width: 100px; margin-left: auto;">{{ $shipment->total_purchase_cost ?? '0.00' }}</span>
+                                                <strong>Total Purchase Cost:</strong> <span style="width: 100px; margin-left: auto;">{{ $shipment->total_purchase_cost ?? '0.00' }}</span>
                                             </div>
                                         </div>
 
                                         <div class="row mt-1">
                                             <div class="col-sm-12 d-flex align-items-center">
-                                                <strong>Target Budget:</strong> <span style="width: 100px; margin-left: auto;">{{ $shipment->total_additional_cost ?? '0.00' }}</span>
+                                                <strong>Target Additional Cost:</strong> <span style="width: 100px; margin-left: auto;">{{ $shipment->total_additional_cost ?? '0.00' }}</span>
                                             </div>
                                         </div>
 
                                         <div class="row mt-2">
                                             <div class="col-sm-12 d-flex align-items-center">
-                                                <strong>Total Cost Of This Shipment:</strong> <span style="width: 100px; margin-left: auto;">{{ $shipment->total_cost_of_shipment ?? '0.00' }}</span>
+                                                <strong>Total Cost Of This Shipment:</strong> <span id="totalCostOfShipment" style="width: 100px; margin-left: auto;">{{ $shipment->total_cost_of_shipment ?? '0.00' }}</span>
                                             </div>
                                         </div>
 
                                         <div class="row mt-2">
-                                            <div class="col-sm-12 mt-1 d-none" id="budget-message">
+                                            <div class="col-sm-12 d-flex align-items-center">
+                                                <strong>Total Quantiy In PCS:</strong> <span id="totalQuantityInPcs" style="width: 100px; margin-left: auto;">{{ $shipment->total_product_quantity ?? '0.00' }}</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-2">
+                                            <div class="col-sm-12 d-flex align-items-center">
+                                                <strong>Cost Per Piece:</strong> <span id="costPerPiece" style="width: 100px; margin-left: auto;"></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-2">
+                                            <div class="col-sm-12 mt-1" id="messageText">
                                                 <span></span>
                                             </div>
                                         </div>
@@ -173,4 +185,36 @@
         }, 2000);
     });
 </script>
+
+<script>
+    $(document).ready(function () {
+        const totalCostOfShipment = parseFloat($('#totalCostOfShipment').text()) || 0;
+        const totalQuantityInPcs = parseFloat($('#totalQuantityInPcs').text()) || 0;
+
+        let costPerPiece = 0;
+        if (totalQuantityInPcs > 0) {
+            costPerPiece = totalCostOfShipment / totalQuantityInPcs;
+        }
+        $('#costPerPiece').text(costPerPiece.toFixed(2));
+
+        const targetBudget = parseFloat($('#targetBudget').text()) || 0;
+        let difference = 0;
+        const $budgetDifference = $('#budgetDifference');
+        const $messageContainer = $('#messageContainer');
+        const $messageText = $('#messageText');
+
+        if (targetBudget > 0) {
+            difference = targetBudget - totalCostOfShipment;
+            $budgetDifference.val(difference.toFixed(2));
+            $messageContainer.removeClass('d-none');
+
+            if (difference < 0) {
+                $messageText.html(`<span style="color: red;">You're over budget by ${difference.toFixed(2)}</span>`);
+            } else {
+                $messageText.html(`<span style="color: green;">You're under budget by ${difference.toFixed(2)}</span>`);
+            }
+        }
+    });
+</script>
+
 @endsection

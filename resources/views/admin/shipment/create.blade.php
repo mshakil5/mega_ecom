@@ -161,6 +161,20 @@
                                         </div>
 
                                         <div class="row mt-2">
+                                            <div class="col-sm-12 d-flex align-items-center">
+                                                <span>Total Quantiy In PCS:</span>
+                                                <input type="number" class="form-control" id="totalQuantityInPcs" style="width: 100px; margin-left: auto;"  value="{{ $shipping->total_product_quantity }}" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-2">
+                                            <div class="col-sm-12 d-flex align-items-center">
+                                                <span>Cost Per Piece:</span>
+                                                <input type="number" class="form-control" id="costPerPieces" style="width: 100px; margin-left: auto;" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-2">
                                             <div class="col-sm-12 mt-1 d-none" id="budget-message">
                                                 <span></span>
                                             </div>
@@ -360,7 +374,17 @@
         });
 
         $('#totalQuantity').text(totalQuantity);
+        $('#totalQuantityInPcs').val(totalQuantity);
         $('#totalMissingQuantity').text(totalMissingQuantity);
+
+        const totalCostOfShipment = parseFloat($('#total_cost_of_the_shipment').val()) || 0;
+
+        if (totalQuantity > 0) {
+            const costPerPiece = totalCostOfShipment / totalQuantity;
+            $('#costPerPieces').val(costPerPiece.toFixed(2));
+        } else {
+            $('#costPerPieces').val('0.00');
+        }
 
         const totalSharedCosts = parseFloat($('#total_additional_cost').val()) || 0;
 
@@ -382,9 +406,11 @@
         tableRows.each(function() {
             const groundCostPerUnit = parseFloat($(this).find('.ground_cost').text());
             const profitMargin = parseFloat($(this).find('.profit_margin').val()) || 0;
+            const shippedQuantity = parseFloat($(this).find('.shipped_quantity').val()) || 0;
 
             const sellingPrice = groundCostPerUnit * (1 + profitMargin / 100);
-            const profitAmount = sellingPrice - groundCostPerUnit;
+            const profitAmount = (sellingPrice - groundCostPerUnit) * shippedQuantity;
+
             $(this).find('.selling_price').text(sellingPrice.toFixed(2));
             totalProfit += profitAmount;
         });
@@ -580,16 +606,23 @@
             });
 
             $('#totalQuantity').text(totalQuantity);
+            $('#totalQuantityInPcs').val(totalQuantity);
             $('#totalMissingQuantity').text(totalMissingQuantity);
+
+            const totalCostOfShipment = parseFloat($('#total_cost_of_the_shipment').val()) || 0;
+
+            if (totalQuantity > 0) {
+                const costPerPiece = totalCostOfShipment / totalQuantity;
+                $('#costPerPieces').val(costPerPiece.toFixed(2));
+            } else {
+                $('#costPerPieces').val('0.00');
+            }
 
             const totalSharedCosts = parseFloat($('#total_additional_cost').val()) || 0;
 
-            // Update shipment costs
             const totalShipmentCost = totalPurchaseCost + totalSharedCosts;
-            // $('#total_additional_cost').val(totalSharedCosts.toFixed(2));
             $('#direct_cost').val(totalPurchaseCost.toFixed(2));
 
-            // Update ground cost per unit
             tableRows.each(function() {
                 const productTotal = parseFloat($(this).find('.ground_cost').text());
                 const quantity = parseInt($(this).find('.shipped_quantity').val());
@@ -605,12 +638,13 @@
             tableRows.each(function() {
                 const groundCostPerUnit = parseFloat($(this).find('.ground_cost').text());
                 const profitMargin = parseFloat($(this).find('.profit_margin').val()) || 0;
+                const shippedQuantity = parseFloat($(this).find('.shipped_quantity').val()) || 0;
 
                 const sellingPrice = groundCostPerUnit * (1 + profitMargin / 100);
+                const profitAmount = (sellingPrice - groundCostPerUnit) * shippedQuantity;
 
-                const profitAmount = sellingPrice - groundCostPerUnit;
-                totalProfit += profitAmount;
                 $(this).find('.selling_price').text(sellingPrice.toFixed(2));
+                totalProfit += profitAmount;
             });
 
             $('#total_profit').val(totalProfit.toFixed(2));
