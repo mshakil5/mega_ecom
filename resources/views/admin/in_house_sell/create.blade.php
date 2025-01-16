@@ -96,8 +96,8 @@
                                                     data-price="{{ $sellingPrice }}" 
                                                     data-ground-price="{{ $groundPrice }}" 
                                                     data-profit-margin="{{ $profitMargin }}"
-                                                    data-sizes="{{ json_encode($product->stock->pluck('size')->unique()) }}" 
-                                                    data-colors="{{ json_encode($product->stock->pluck('color')->unique()) }}"
+                                                    data-sizes="{{ json_encode($product->stockhistory->pluck('size')->unique()->values()) }}" 
+                                                    data-colors="{{ json_encode($product->stockhistory->pluck('color')->unique()->values()) }}"
                                                     >
                                                     {{ $product->name }} - {{ $product->product_code }}
                                                 </option>
@@ -759,17 +759,18 @@
                 $('#profit_margin').val('');
             }
 
-            var sizes = selectedProduct.data('sizes') || [];
-            var colors = selectedProduct.data('colors') || [];
+            var sizes = selectedProduct.data('sizes') || {};
+            var colors = selectedProduct.data('colors') || {}
+
             var sizeSelect = $('#size');
             sizeSelect.html('<option value="">Select...</option>');
-            sizes.forEach(function(size) {
+            Object.values(sizes).forEach(function(size) {
                 sizeSelect.append(`<option value="${size}">${size}</option>`);
             });
 
             var colorSelect = $('#color');
             colorSelect.html('<option value="">Select...</option>');
-            colors.forEach(function(color) {
+            Object.values(colors).forEach(function(color) {
                 colorSelect.append(`<option value="${color}">${color}</option>`);
             });
         });

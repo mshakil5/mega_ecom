@@ -110,7 +110,7 @@
                         </div>
                     </div>
 
-                    <div class="row">
+                    <div class="row d-none">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="contingent" class="col-form-label">Contingent</label>
@@ -132,13 +132,13 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="account_name" class="col-form-label">Account Name</label>
-                                <input type="text" name="account_name" class="form-control" id="account_name" placeholder="John Doe">
+                                <input type="text" name="account_name" class="form-control" id="account_name" >
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="description" class="col-form-label">Description</label>
-                                <textarea class="form-control" id="description" rows="3" placeholder="Description" name="description"></textarea>
+                                <textarea class="form-control" id="description" rows="3" name="description"></textarea>
                             </div>
                         </div>
                     </div>

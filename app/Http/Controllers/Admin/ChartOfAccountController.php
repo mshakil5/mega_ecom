@@ -54,12 +54,12 @@ class ChartOfAccountController extends Controller
         if (empty($request->sub_account_head)) {
             return response()->json(['status' => 303, 'message' => 'Sub Account Field Is Required..!']);
         }
-        if (empty($request->contingent)) {
-            return response()->json(['status' => 303, 'message' => 'Contigent Field Is Required..!']);
-        }
-        if (empty($request->serial)) {
-            return response()->json(['status' => 303, 'message' => 'Serial Field Is Required..!']);
-        }
+        // if (empty($request->contingent)) {
+        //     return response()->json(['status' => 303, 'message' => 'Contigent Field Is Required..!']);
+        // }
+        // if (empty($request->serial)) {
+        //     return response()->json(['status' => 303, 'message' => 'Serial Field Is Required..!']);
+        // }
 
         $existingAccount = ChartOfAccount::where('account_name', $request->account_name)
                                      ->where('branch_id', Auth::user()->branch_id)
@@ -122,12 +122,12 @@ class ChartOfAccountController extends Controller
         if (empty($request->sub_account_head)) {
             return response()->json(['status' => 303, 'message' => 'Sub Account Field Is Required..!']);
         }
-        if (empty($request->contingent)) {
-            return response()->json(['status' => 303, 'message' => 'Contigent Field Is Required..!']);
-        }
-        if (empty($request->serial)) {
-            return response()->json(['status' => 303, 'message' => 'Serial Field Is Required..!']);
-        }
+        // if (empty($request->contingent)) {
+        //     return response()->json(['status' => 303, 'message' => 'Contigent Field Is Required..!']);
+        // }
+        // if (empty($request->serial)) {
+        //     return response()->json(['status' => 303, 'message' => 'Serial Field Is Required..!']);
+        // }
 
         $chartOfAccount = ChartOfAccount::find($id);
 
