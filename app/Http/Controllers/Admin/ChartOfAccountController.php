@@ -69,14 +69,14 @@ class ChartOfAccountController extends Controller
             return response()->json(['status' => 303, 'message' => 'Account Name already exists for this branch..!']);
         }
 
-        $existingSerial = ChartOfAccount::where('account_head', $request->account_head)
-                                    ->where('sub_account_head', $request->sub_account_head)
-                                    ->where('serial', $request->serial)
-                                    ->first();
+        // $existingSerial = ChartOfAccount::where('account_head', $request->account_head)
+        //                             ->where('sub_account_head', $request->sub_account_head)
+        //                             ->where('serial', $request->serial)
+        //                             ->first();
 
-        if ($existingSerial) {
-            return response()->json(['status' => 303, 'message' => 'This serial number already exists for this account head and sub account head..!']);
-        }
+        // if ($existingSerial) {
+        //     return response()->json(['status' => 303, 'message' => 'This serial number already exists for this account head and sub account head..!']);
+        // }
 
         $chartOfAccount = new ChartOfAccount();
         $chartOfAccount->account_head = $request->account_head;
