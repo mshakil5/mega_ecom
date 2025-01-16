@@ -32,6 +32,12 @@
                                                     <a href="{{ url('/admin/ledger/asset-details/' . $asset->id) }}" class="btn btn-block btn-default btn-xs">{{ $asset->account_name }}</a>
                                                 @endif  
                                             @endforeach
+                                            <hr>
+                                            @foreach (\App\Models\User::where('is_type', '0')->get() as $wholesaler)
+
+                                            <a href="{{ route('customer.transactions', ['wholeSalerId' => $wholesaler->id]) }}" class="btn btn-block btn-default btn-xs">{{ $wholesaler->name }} (Wholesaler)</a>
+                                                
+                                            @endforeach
                                         </td>
                                         <td>
                                             @foreach($chartOfAccounts as $expense)
