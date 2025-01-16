@@ -200,6 +200,12 @@ class ShipmentController extends Controller
         return view('admin.shipment.edit', compact('shipment', 'warehouses', 'expenses'));
     }
 
+    public function printShipment($id)
+    {
+        $shipment = Shipment::with('shipmentDetails.supplier', 'shipmentDetails.product', 'shipmentDetails.purchaseHistory', 'transactions')->findOrFail($id);
+        return view('admin.shipment.print', compact('shipment'));
+    }
+
     public function updateShipment(Request $request, $id)
     {
         $validated = $request->validate([

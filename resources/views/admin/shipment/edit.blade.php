@@ -101,7 +101,7 @@
                                             <input type="number" value="0" max="" min="0" class="form-control remaining_quantity" readonly>
                                         </td>
                                         <td class="purchase_price">{{ number_format($detail->price_per_unit, 2) }}</td>
-                                        <td class="ground_cost">{{ number_format($detail->ground_cost, 2) }}</td>
+                                        <td class="ground_cost">{{ number_format($detail->ground_price_per_unit, 2) }}</td>
                                         <td>
                                             <input type="number" value="{{ $detail->profit_margin }}" min="0" class="form-control profit_margin" />
                                         </td>
