@@ -122,7 +122,7 @@
                 <tr>
                     <td colspan="6"></td>
                 </tr>
-                <tr style="background-color: skyblue; color: black;">
+                <tr style="background-color: rgb(228, 235, 253); color: black;">
                     <th class="text-center">Style Name</th>
                     <th class="text-center">Item Description</th>
                     <th class="text-center">Size / Color</th>
@@ -176,8 +176,8 @@
                     <td class="text-center font-weight-bold">{{ $order->orderDetails->sum('quantity') }}</td>
                 </tr>
                 <tr>
-                    <td class="font-weight-bold" colspan="3">Grand Total</td>
-                    <td class="text-center font-weight-bold">{{ $currency }} {{ number_format($order->net_amount, 2) }}</td>
+                    <td class="font-weight-bold" colspan="3" style="background-color: rgb(228, 235, 253); color: black;">Grand Total</td>
+                    <td class="text-center font-weight-bold" style="background-color: rgb(228, 235, 253); color: black;">{{ $currency }} {{ number_format($order->net_amount, 2) }}</td>
                 </tr>
 
                 <tr>
