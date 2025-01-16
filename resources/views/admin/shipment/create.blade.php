@@ -126,17 +126,46 @@
 
                                         <div class="row mt-1">
                                             <div class="col-sm-12 d-flex align-items-center">
+                                                <span>Total Profit:</span>
+                                                <input type="number" class="form-control" id="total_profit" style="width: 100px; margin-left: auto;" min="0" readonly>
+                                                <input id="budgetDifference" type="hidden">
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-2">
+                                            <div class="col-sm-12 d-flex align-items-center">
+                                                <span>Target Budget:</span>
+                                                <input type="number" class="form-control" id="target_budget" style="width: 100px; margin-left: auto;" min="0">
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-2">
+                                            <div class="col-sm-12 d-flex align-items-center">
                                                 <span>Total Purchase Cost:</span>
                                                 <input type="text" class="form-control" id="direct_cost" style="width: 100px; margin-left: auto;" readonly value="">
                                             </div>
                                         </div>
 
-                                        <div class="row mt-3">
+                                        <div class="row mt-2">
                                             <div class="col-sm-12 d-flex align-items-center">
                                                 <span>Total Additional Cost:</span>
                                                 <input type="number" class="form-control" id="total_additional_cost" style="width: 100px; margin-left: auto;" min="0" readonly value="">
                                             </div>
                                         </div>
+
+                                        <div class="row mt-2">
+                                            <div class="col-sm-12 d-flex align-items-center">
+                                                <span>Total Cost Of This Shipment:</span>
+                                                <input type="number" class="form-control" id="total_cost_of_the_shipment" style="width: 100px; margin-left: auto;" min="0" readonly value="">
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-2">
+                                            <div class="col-sm-12 mt-1 d-none" id="budget-message">
+                                                <span></span>
+                                            </div>
+                                        </div>
+
                                     </div>
 
                                     <div class="col-sm-2">
@@ -253,6 +282,8 @@
 
         rowElement.remove();
         calculateTotalAdditionalCost();
+        updateCosts();
+        updateCalculations();
     });
 
     $(document).on('click', '.add-expense', function () {
@@ -261,7 +292,106 @@
 
     $(document).on('input', '.expense-amount', function() {
         calculateTotalAdditionalCost();
+        updateCosts();
+        updateCalculations();
     });
+
+    const $targetBudget = $('#target_budget');
+    const $directCost = $('#direct_cost');
+    const $additionalCost = $('#total_additional_cost');
+    const $totalCost = $('#total_cost_of_the_shipment');
+    const $messageContainer = $('#budget-message');
+    const $messageText = $messageContainer.find('span');
+
+    function updateCosts() {
+        const targetBudget = parseFloat($targetBudget.val()) || 0;
+        const directCost = parseFloat($directCost.val()) || 0;
+        const additionalCost = parseFloat($additionalCost.val()) || 0;
+
+        const totalCost = directCost + additionalCost;
+        $totalCost.val(totalCost.toFixed(2));
+
+        if (targetBudget > 0) {
+            const difference = targetBudget - totalCost;
+            $('#budgetDifference').val(difference.toFixed(2));
+            $messageContainer.removeClass('d-none');
+
+            if (difference < 0) {
+                $messageText.html(`<span style="color: red;">You're over budget by ${difference.toFixed(2)}</span>`);
+            } else {
+                $messageText.html(`<span style="color: green;">You're under budget by ${difference.toFixed(2)}</span>`);
+            }
+        } else {
+            $messageContainer.addClass('d-none');
+        }
+    }
+
+    $targetBudget.on('input', updateCosts);
+    $directCost.on('input', updateCosts);
+    $additionalCost.on('input', updateCosts);
+
+    function updateCalculations() {
+        const tableRows = $('#purchaseData tr');
+        let totalPurchaseCost = 0;
+        let totalQuantity = 0;
+        let totalMissingQuantity = 0;
+
+        tableRows.each(function () {
+            const purchasePrice = parseFloat($(this).find('.purchase_price').val());
+            let maxQuantity = parseInt($(this).find('.max-quantity').val()) || 0;
+
+            let shippedQuantity = parseInt($(this).find('.shipped_quantity').val()) || 0;
+            let missingQuantity = parseInt($(this).find('.missing_quantity').val()) || 0;
+
+            if (shippedQuantity + missingQuantity > maxQuantity) {
+                missingQuantity = maxQuantity - shippedQuantity;
+                $(this).find('.missing_quantity').val(missingQuantity);
+            }
+
+            const remainingQuantity = maxQuantity - (shippedQuantity + missingQuantity);
+            $(this).find('.remaining_quantity').val(remainingQuantity < 0 ? 0 : remainingQuantity);
+
+            const productTotal = purchasePrice * shippedQuantity;
+            $(this).find('.ground_cost').text(productTotal.toFixed(2));
+
+            totalPurchaseCost += productTotal;
+            totalQuantity += shippedQuantity;
+            totalMissingQuantity += missingQuantity;
+        });
+
+        $('#totalQuantity').text(totalQuantity);
+        $('#totalMissingQuantity').text(totalMissingQuantity);
+
+        const totalSharedCosts = parseFloat($('#total_additional_cost').val()) || 0;
+
+        const totalShipmentCost = totalPurchaseCost + totalSharedCosts;
+        $('#direct_cost').val(totalPurchaseCost.toFixed(2));
+
+        tableRows.each(function() {
+            const productTotal = parseFloat($(this).find('.ground_cost').text());
+            const quantity = parseInt($(this).find('.shipped_quantity').val());
+
+            const sharedCostForProduct = (productTotal / totalPurchaseCost) * totalSharedCosts;
+            const groundCostPerUnit = (productTotal + sharedCostForProduct) / quantity;
+
+            $(this).find('.ground_cost').text(groundCostPerUnit.toFixed(2));
+        });
+
+        let totalProfit = 0;
+
+        tableRows.each(function() {
+            const groundCostPerUnit = parseFloat($(this).find('.ground_cost').text());
+            const profitMargin = parseFloat($(this).find('.profit_margin').val()) || 0;
+
+            const sellingPrice = groundCostPerUnit * (1 + profitMargin / 100);
+            const profitAmount = sellingPrice - groundCostPerUnit;
+            $(this).find('.selling_price').text(sellingPrice.toFixed(2));
+            totalProfit += profitAmount;
+        });
+
+        $('#total_profit').val(totalProfit.toFixed(2));
+    }
+
 </script>
 
 <script>
@@ -276,6 +406,10 @@
 
             let shippingId = $('#shipping_id').val();
             let warehouseId = $('#warehouse_id').val();
+            let target_budget = $('#target_budget').val();
+            let totalProfit = $('#total_profit').val();
+            let budget_over = $('#budgetDifference').val();
+            let total_cost_of_the_shipment = $('#total_cost_of_the_shipment').val();
 
             if (!warehouseId) {
                 $(".ermsg").html(`
@@ -339,6 +473,17 @@
                 }
             });
 
+            if (!expenses || expenses.length === 0) {
+                $(".ermsg").html(`
+                    <div class='alert alert-danger'>
+                        <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
+                        <b>Please add at least one expense before proceeding.</b>
+                    </div>
+                `).show();
+                pagetop();
+                return;
+            }
+
             if (shipmentDetails.length === 0) {
                 $(".ermsg").html(`
                     <div class='alert alert-danger'>
@@ -356,6 +501,10 @@
                 total_missing_quantity: totalMissingQuantity,
                 total_purchase_cost: $('#direct_cost').val().replace(/,/g, ''),
                 total_additional_cost: $('#total_additional_cost').val().replace(/,/g, ''),
+                total_profit: totalProfit,
+                target_budget: target_budget,
+                budget_over: budget_over,
+                total_cost_of_shipment: total_cost_of_the_shipment,
                 shipment_details: shipmentDetails,
                 expenses: expenses
             };
@@ -433,13 +582,7 @@
             $('#totalQuantity').text(totalQuantity);
             $('#totalMissingQuantity').text(totalMissingQuantity);
 
-            // Shared costs
-            const cnfCost = parseFloat($('#cnf_cost').val()) || 0;
-            const importTaxes = parseFloat($('#import_taxes').val()) || 0;
-            const warehouseCost = parseFloat($('#warehouse_cost').val()) || 0;
-            const otherCost = parseFloat($('#other_cost').val()) || 0;
-
-            const totalSharedCosts = cnfCost + importTaxes + warehouseCost + otherCost;
+            const totalSharedCosts = parseFloat($('#total_additional_cost').val()) || 0;
 
             // Update shipment costs
             const totalShipmentCost = totalPurchaseCost + totalSharedCosts;
@@ -457,18 +600,25 @@
                 $(this).find('.ground_cost').text(groundCostPerUnit.toFixed(2));
             });
 
-            // Update selling price
+            let totalProfit = 0;
+
             tableRows.each(function() {
                 const groundCostPerUnit = parseFloat($(this).find('.ground_cost').text());
                 const profitMargin = parseFloat($(this).find('.profit_margin').val()) || 0;
 
                 const sellingPrice = groundCostPerUnit * (1 + profitMargin / 100);
+
+                const profitAmount = sellingPrice - groundCostPerUnit;
+                totalProfit += profitAmount;
                 $(this).find('.selling_price').text(sellingPrice.toFixed(2));
             });
+
+            $('#total_profit').val(totalProfit.toFixed(2));
         }
 
-        $(document).on('input', '.shipped_quantity, .missing_quantity, .profit_margin, #cnf_cost, #import_taxes, #warehouse_cost, #other_cost', function() {
+        $(document).on('input', '.shipped_quantity, .missing_quantity, .profit_margin', function() {
             updateCalculations();
+            updateCosts();
         });
 
         updateCalculations();
@@ -477,6 +627,35 @@
             placeholder: "Select a Warehouse",
             allowClear: true
         });
+
+        const $targetBudget = $('#target_budget');
+        const $directCost = $('#direct_cost');
+        const $additionalCost = $('#total_additional_cost');
+        const $totalCost = $('#total_cost_of_the_shipment');
+        const $messageContainer = $('#budget-message');
+        const $messageText = $messageContainer.find('span');
+
+        function updateCosts() {
+            const targetBudget = parseFloat($targetBudget.val()) || 0;
+            const directCost = parseFloat($directCost.val()) || 0;
+            const additionalCost = parseFloat($additionalCost.val()) || 0;
+
+            const totalCost = directCost + additionalCost;
+            const $totalCost = $('#total_cost_of_the_shipment');
+
+            if (targetBudget > 0) {
+                const difference = targetBudget - totalCost;
+                $('#budgetDifference').val(difference.toFixed(2));
+                $messageContainer.removeClass('d-none');
+                if (difference < 0) {
+                    $messageText.html(`<span style="color: red;">You're over budget by ${difference.toFixed(2)}</span>`);
+                } else {
+                    $messageText.html(`<span style="color: green;">You're under budget by ${difference.toFixed(2)}</span>`);
+                }
+            } else {
+                $messageContainer.addClass('d-none');
+            }
+        }
     });
 </script>
 

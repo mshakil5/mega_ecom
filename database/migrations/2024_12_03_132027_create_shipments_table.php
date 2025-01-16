@@ -28,6 +28,10 @@ return new class extends Migration
             $table->string('warehouse_payment_type')->nullable();
             $table->string('other_payment_type')->nullable();
             $table->decimal('total_additional_cost',10,2)->nullable();
+            $table->decimal('target_budget',10,2)->nullable();
+            $table->decimal('total_profit',10,2)->nullable();
+            $table->decimal('total_cost_of_shipment',10,2)->nullable();
+            $table->decimal('budget_over',10,2)->nullable();
             $table->boolean('status')->default(1);
             // 1 == Processing, 2 == On The Way, 3 == Received
             $table->string('created_by')->nullable();

@@ -57,6 +57,10 @@ class ShipmentController extends Controller
             'shipment_details.*.ground_cost' => 'nullable|numeric',
             'shipment_details.*.profit_margin' => 'nullable|numeric',
             'shipment_details.*.selling_price' => 'nullable|numeric',
+            'expenses' => 'required|array|min:1',
+            'expenses.*.amount' => 'required|numeric',
+            'expenses.*.payment_type' => 'required|string',
+            'expenses.*.chart_of_account_id' => 'required|integer',
         ]);
     
         $shipping = Shipping::where('id', $request->shipping_id)->first();
@@ -75,6 +79,10 @@ class ShipmentController extends Controller
             'warehouse_payment_type' => $request->warehouse_payment_type,
             'other_payment_type' => $request->other_payment_type,
             'total_additional_cost' => $request->total_additional_cost,
+            'total_profit' => $request->total_profit,
+            'target_budget' => $request->target_budget,
+            'budget_over' => $request->budget_over,
+            'total_cost_of_shipment' => $request->total_cost_of_shipment,
             'purchase_ids' => $purchaseIds,
             'created_by' => auth()->id(),
         ]);
