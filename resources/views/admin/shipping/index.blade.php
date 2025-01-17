@@ -72,8 +72,8 @@
                                     <td>
                                         @if($shipping->shipment)
                                             <span class="badge bg-success ms-2">Price Added</span>
-                                            <a href="{{ route('admin.shipment.edit', $shipping->id) }}" class="btn btn-info btn-sm"><i class="fas fa-dollar-sign"></i></a>
-                                            <a href="{{ route('admin.shipment.print', ['id' => $shipping->id]) }}" class="btn btn-info btn-sm">
+                                            <a href="{{ route('admin.shipment.edit', $shipping->shipment->id) }}" class="btn btn-info btn-sm"><i class="fas fa-dollar-sign"></i></a>
+                                            <a href="{{ route('admin.shipment.print', $shipping->shipment->id) }}" class="btn btn-info btn-sm">
                                                 <i class="fas fa-print"></i>
                                             </a>
                                             <button class="btn btn-sm btn-primary view-details" 

@@ -40,7 +40,6 @@
                   <th>Dr Amount</th>
                   <th>Cr Amount</th>
                   <th>Balance</th>
-                  <th>Note</th>
                   <th>Action</th>
                 </tr>
                 </thead>
@@ -53,7 +52,7 @@
                   <tr>
                     <td>{{ $key + 1 }}</td>
                    <td>{{ \Carbon\Carbon::parse($data->date)->format('d-m-Y') }}</td>
-                    <td>{{ $data->table_type }}</td>
+                    <td>{{ $data->table_type }} <br> {!! $data->note !!}</td>
                     <td>{{ $data->payment_type }}</td>
                     <td>
                         @if($data->document)
@@ -80,7 +79,6 @@
                           $balance = $balance + $data->at_amount;
                       @endphp
                     @endif
-                    <td>{!! $data->note !!}</td>
                     <td>
                       @if($data->payment_type !== 'Credit')
                       <i class="fas fa-edit edit-btn" 

@@ -197,9 +197,7 @@ class SupplierController extends Controller
                                 ->orderBy('id', 'desc')
                                 ->select('id', 'date', 'note', 'payment_type', 'table_type', 'at_amount', 'document')
                                 ->get();
-
-    
-                                
+                        
         $totalDrAmount = Transaction::where('supplier_id', $supplierId)->whereIn('table_type', ['Purchase'])->whereIn('payment_type', ['Credit'])->sum('at_amount');
 
         $totalCrAmount = Transaction::where('supplier_id', $supplierId)->whereIn('table_type', ['Purchase'])->whereIn('payment_type', ['Cash','Bank','Return'])->sum('at_amount');

@@ -40,7 +40,6 @@
                   <th>Dr Amount</th>
                   <th>Cr Amount</th>
                   <th>Balance</th>
-                  <th>Note</th>
                   <th>Action</th>
                 </tr>
                 </thead>
@@ -63,6 +62,8 @@
                     @else
                       Sales
                     @endif
+                    <br>
+                    {!! $data->note !!}
                     </td>
                     <td>{{ $data->payment_type }}</td>
                     <td>
@@ -90,7 +91,6 @@
                           $balance = $balance + $data->at_amount;
                       @endphp
                     @endif
-                    <td>{!! $data->note !!}</td>
                     <td>
                       @if($data->payment_type !== 'Credit')
                       <i class="fas fa-edit edit-btn" 
