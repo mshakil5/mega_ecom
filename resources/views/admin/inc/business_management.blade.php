@@ -102,8 +102,8 @@
         </li>
 
         <!-- purchase -->
-        <li class="nav-item dropdown {{( request()->is('admin/purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/purchase-return-history*') || request()->routeIs('purchase.edit') || request()->routeIs('stockReturnHistory') || request()->routeIs('admin.shipping') || request()->routeIs('admin.shipment.edit') || request()->routeIs('admin.shipment.create') || request()->routeIs('returnProduct') || request()->routeIs('admin.newPurchaseHistory') || request()->routeIs('admin.livePurchaseHistory') || request()->routeIs('allsupplier') || request()->routeIs('admin.completedPurchaseHistory')) ? 'menu-open' : '' }}">
-            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/purchase-return-history*') || request()->routeIs('purchase.edit') || request()->routeIs('stockReturnHistory') || request()->routeIs('admin.shipping') || request()->routeIs('admin.shipment.create') || request()->routeIs('returnProduct') || request()->routeIs('admin.livePurchaseHistory') || request()->routeIs('admin.newPurchaseHistory') || request()->routeIs('allsupplier') || request()->routeIs('admin.shipment.edit') || request()->routeIs('admin.completedPurchaseHistory')) ? 'active' : '' }}">
+        <li class="nav-item dropdown {{( request()->is('admin/purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/purchase-return-history*') || request()->routeIs('purchase.edit') || request()->routeIs('stockReturnHistory') || request()->routeIs('admin.shipping') || request()->routeIs('admin.shipment.edit') || request()->routeIs('admin.shipment.create') || request()->routeIs('returnProduct') || request()->routeIs('admin.newPurchaseHistory') || request()->routeIs('admin.livePurchaseHistory') || request()->routeIs('allsupplier') || request()->routeIs('admin.completedPurchaseHistory') || request()->routeIs('admin.shipment.print')) ? 'menu-open' : '' }}">
+            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/purchase-return-history*') || request()->routeIs('purchase.edit') || request()->routeIs('stockReturnHistory') || request()->routeIs('admin.shipping') || request()->routeIs('admin.shipment.create') || request()->routeIs('returnProduct') || request()->routeIs('admin.livePurchaseHistory') || request()->routeIs('admin.newPurchaseHistory') || request()->routeIs('allsupplier') || request()->routeIs('admin.shipment.edit') || request()->routeIs('admin.completedPurchaseHistory') || request()->routeIs('admin.shipment.print')) ? 'active' : '' }}">
                 <i class="nav-icon fas fa-warehouse"></i>
                 <p>
                     Purchase <i class="fas fa-angle-left right"></i>
@@ -117,7 +117,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('admin.shipping') }}" class="nav-link {{ (request()->is('admin/shipping*') || request()->routeIs('admin.shipment.create') || request()->routeIs('admin.shipment.edit')) ? 'active' : '' }}">
+                    <a href="{{ route('admin.shipping') }}" class="nav-link {{ (request()->is('admin/shipping*') || request()->routeIs('admin.shipment.create') || request()->routeIs('admin.shipment.edit') || request()->routeIs('admin.shipment.print')) ? 'active' : '' }}">
                         <i class="fas fa-box nav-icon"></i>
                         <p>Shipping List</p>
                     </a>
