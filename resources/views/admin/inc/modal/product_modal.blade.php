@@ -223,7 +223,7 @@
                         <label for="color_code">Color Code <span style="color: red;">*</span></label>
                         <input type="color" class="form-control" id="color_code" name="color_code" placeholder="Enter color code">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group d-none">
                         <label for="color_price">Price</label>
                         <input type="number" class="form-control" id="color_price" name="color_price" placeholder="Enter price">
                     </div>

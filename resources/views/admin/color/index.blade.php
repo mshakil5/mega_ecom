@@ -29,7 +29,7 @@
                             @csrf
                             <input type="hidden" class="form-control" id="codeid" name="codeid">
                             <div class="row">
-                                <div class="col-sm-12">
+                                <div class="col-sm-6">
                                     <div class="form-group">
                                         <label>Color <span style="color: red;">*</span></label>
                                         <input type="text" class="form-control" id="color" name="color" placeholder="Enter color">
@@ -42,13 +42,13 @@
                                         <small class="form-text text-muted">Select a color for the color code.</small>
                                     </div>
                                 </div>
-                                <div class="col-sm-6">
+                                <div class="col-sm-6 d-none">
                                     <div class="form-group">
                                         <label>Price</label>
                                         <input type="number" class="form-control" id="price" name="price" placeholder="Enter price">
                                     </div>
                                 </div>
-                                <div class="col-12">
+                                <div class="col-12 d-none">
                                     <div class="form-group">
                                         <label for="feature-img">Color Image</label>
                                         <input type="file" class="form-control-file" id="image" accept="image/*">
@@ -83,8 +83,8 @@
                                     <th>Sl</th>
                                     <th>Color</th>
                                     <th>Color Code</th>
-                                    <th>Price</th>
-                                    <th>Image</th>
+                                    <!-- <th>Price</th>
+                                    <th>Image</th> -->
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -98,8 +98,8 @@
                                         <div style="width: 20px; height: 20px; background-color: {{ $data->color_code }}; display: inline-block; margin-right: 5px; border: 1px solid #000;"></div>
                                         {{ $data->color }} ({{ $data->color_code }})
                                     </td>
-                                    <td>{{ $data->price }}</td>
-                                    <td><img src="{{ asset($data->image) }}" alt="" style="max-width: 100px; width: 100%; height: auto;"></td>
+                                    <!-- <td>{{ $data->price }}</td>
+                                    <td><img src="{{ asset($data->image) }}" alt="" style="max-width: 100px; width: 100%; height: auto;"></td> -->
                                     
                                     <td>
                                         <div class="custom-control custom-switch">

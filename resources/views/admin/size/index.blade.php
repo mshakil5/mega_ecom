@@ -35,13 +35,13 @@
                                         <input type="text" class="form-control" id="size" name="size" placeholder="Enter size">
                                     </div>
                                 </div>
-                                <div class="col-sm-12">
+                                <div class="col-sm-12 d-none">
                                     <div class="form-group">
                                         <label>Price</label>
                                         <input type="number" class="form-control" id="price" name="price" placeholder="Enter price">
                                     </div>
                                 </div>
-                                <div class="col-12">
+                                <div class="col-12 d-none">
                                     <div class="form-group">
                                         <label for="feature-img">Size Image</label>
                                         <input type="file" class="form-control-file" id="image" accept="image/*">
@@ -75,8 +75,8 @@
                                 <tr>
                                     <th>Sl</th>
                                     <th>Size</th>
-                                    <th>Price</th>
-                                    <th>Image</th>
+                                    <!-- <th>Price</th>
+                                    <th>Image</th> -->
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -86,8 +86,8 @@
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
                                     <td>{{ $data->size }}</td>
-                                    <td>{{ $data->price }}</td>
-                                    <td><img src="{{ asset($data->image) }}" alt="" style="max-width: 100px; width: 100%; height: auto;"></td>
+                                    <!-- <td>{{ $data->price }}</td>
+                                    <td><img src="{{ asset($data->image) }}" alt="" style="max-width: 100px; width: 100%; height: auto;"></td> -->
                                     <td>
                                         <div class="custom-control custom-switch">
                                             <input type="checkbox" class="custom-control-input toggle-status" id="customSwitchStatus{{ $data->id }}" data-id="{{ $data->id }}" {{ $data->status == 1 ? 'checked' : '' }}>
