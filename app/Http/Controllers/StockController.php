@@ -331,9 +331,11 @@ class StockController extends Controller
             'products.*.total_price_with_vat' => 'required|numeric',
         ]);
 
+        $invoice = date('y') .  '_' . date('m') .  '_' . $request->invoice;
+
         $data = $request->all();
         $purchase = new Purchase();
-        $purchase->invoice = $request->invoice;
+        $purchase->invoice = $invoice;
         $purchase->supplier_id = $request->supplier_id;
         $purchase->purchase_date = $request->purchase_date;
         $purchase->purchase_type = $request->purchase_type;
