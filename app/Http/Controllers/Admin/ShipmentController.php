@@ -70,14 +70,6 @@ class ShipmentController extends Controller
             'total_product_quantity' => $request->total_quantity,
             'total_missing_quantity' => $request->total_missing_quantity,
             'total_purchase_cost' => $request->total_purchase_cost,
-            'cnf_cost' => $request->cnf_cost,
-            'import_duties_tax' => $request->import_taxes,
-            'warehouse_and_handling_cost' => $request->warehouse_cost,
-            'other_cost' => $request->other_cost,
-            'cnf_payment_type' => $request->cnf_payment_type,
-            'import_payment_type' => $request->import_payment_type,
-            'warehouse_payment_type' => $request->warehouse_payment_type,
-            'other_payment_type' => $request->other_payment_type,
             'total_additional_cost' => $request->total_additional_cost,
             'total_profit' => $request->total_profit,
             'target_budget' => $request->target_budget,
@@ -228,30 +220,70 @@ class ShipmentController extends Controller
         $shipment->total_product_quantity = $request->total_quantity;
         $shipment->total_missing_quantity = $request->total_missing_quantity;
         $shipment->total_purchase_cost = $request->total_purchase_cost;
-        $shipment->cnf_cost = $request->cnf_cost;
-        $shipment->import_duties_tax = $request->import_taxes;
-        $shipment->warehouse_and_handling_cost = $request->warehouse_cost;
-        $shipment->other_cost = $request->other_cost;
         $shipment->total_additional_cost = $request->total_additional_cost;
-        $shipment->cnf_payment_type = $request->cnf_payment_type;
-        $shipment->import_payment_type = $request->import_payment_type;
-        $shipment->warehouse_payment_type = $request->warehouse_payment_type;
-        $shipment->other_payment_type = $request->other_payment_type;
+        $shipment->total_profit = $request->total_profit;
+        $shipment->target_budget = $request->target_budget;
+        $shipment->budget_over = $request->budget_over;
+        $shipment->total_cost_of_shipment = $request->total_cost_of_the_shipment;
+        $shipment->updated_by = auth()->id();
         $shipment->save();
 
         $expenses = $request->input('expenses');
 
-        foreach ($expenses as $expense) {
-            $transaction = Transaction::where('id', $expense['transaction_id'])->first();
+        $existingTransactions = $shipment->transactions;
 
-            if ($transaction) {
+        $incomingTransactionIds = collect($expenses)->pluck('transaction_id')->filter();
+
+        $existingTransactions->whereNotIn('id', $incomingTransactionIds)->each(function ($transaction) {
+            $transaction->delete();
+        });
+
+        foreach ($expenses as $expense) {
+            if (isset($expense['transaction_id']) && $expense['transaction_id']) {
+                $transaction = Transaction::find($expense['transaction_id']);
+                if ($transaction) {
+                    $transaction->amount = $expense['amount'];
+                    $transaction->at_amount = $expense['amount'];
+                    $transaction->payment_type = $expense['payment_type'];
+                    $transaction->updated_by = auth()->id();
+                    $transaction->description = $expense['description'] ?? null;
+                    $transaction->note = $expense['note'] ?? null;
+                    $transaction->updated_by = auth()->id();
+                    $transaction->save();
+                }
+            } else {
+                $transaction = new Transaction();
+                $transaction->date = $shipment->shipping->shipping_date;
+                $transaction->table_type = 'Expenses';
+                $transaction->shipment_id = $shipment->id;
                 $transaction->amount = $expense['amount'];
                 $transaction->at_amount = $expense['amount'];
                 $transaction->payment_type = $expense['payment_type'];
-                $transaction->updated_by = auth()->id();
+                $transaction->chart_of_account_id = $expense['chart_of_account_id'];
+                $transaction->description = $expense['description'];
+                $transaction->note = $expense['note'];
+                $transaction->transaction_type = 'Current';
+                $transaction->created_by = auth()->id();
                 $transaction->save();
+
+                $transaction->tran_id = 'EX' . date('ymd') . str_pad($transaction->id, 4, '0', STR_PAD_LEFT);
+                $transaction->save();
+
             }
         }
+
+
+        // foreach ($expenses as $expense) {
+        //     $transaction = Transaction::where('id', $expense['transaction_id'])->first();
+
+        //     if ($transaction) {
+        //         $transaction->amount = $expense['amount'];
+        //         $transaction->at_amount = $expense['amount'];
+        //         $transaction->payment_type = $expense['payment_type'];
+        //         $transaction->updated_by = auth()->id();
+        //         $transaction->save();
+        //     }
+        // }
 
         foreach ($request->shipment_details as $detail) {
             $shipmentDetail = ShipmentDetails::findOrFail($detail['id']);

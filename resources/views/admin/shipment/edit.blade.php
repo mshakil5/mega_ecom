@@ -69,6 +69,7 @@
                                             <input type="hidden" value="{{ $detail->purchase_history_id }}" class="purchase_history_id">
                                             <input type="hidden" value="{{ $detail->size }}" class="product_size">
                                             <input type="hidden" value="{{ $detail->color }}" class="product_color">
+                                            <input type="hidden" value="{{ $detail->ground_price_per_unit }}" class="ground_price_per_unit">
                                         </td>
                                         <td>
                                             {{ $detail->product->product_code ? $detail->product->product_code . '-' : '' }}{{ $detail->product->name ?? '' }}
@@ -122,6 +123,21 @@
 
                                         <div class="row mt-1">
                                             <div class="col-sm-12 d-flex align-items-center">
+                                                <span>Total Profit:</span>
+                                                <input type="number" class="form-control" id="total_profit" style="width: 100px; margin-left: auto;" min="0" readonly value="{{ $shipment->total_profit }}">
+                                                <input id="budgetDifference" type="hidden" value="{{ $shipment->budget_over }}">
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-2">
+                                            <div class="col-sm-12 d-flex align-items-center">
+                                                <span>Target Budget:</span>
+                                                <input type="number" class="form-control" id="target_budget" style="width: 100px; margin-left: auto;" min="0" value="{{ $shipment->target_budget }}">
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-1">
+                                            <div class="col-sm-12 d-flex align-items-center">
                                                 <span>Total Purchase Cost:</span>
                                                 <input type="text" class="form-control" id="direct_cost" style="width: 100px; margin-left: auto;" readonly value="{{ $shipment->total_purchase_cost }}">
                                             </div>
@@ -134,19 +150,46 @@
                                             </div>
                                         </div>
 
+                                        <div class="row mt-2">
+                                            <div class="col-sm-12 d-flex align-items-center">
+                                                <span>Total Cost Of This Shipment:</span>
+                                                <input type="number" class="form-control" id="total_cost_of_the_shipment" style="width: 100px; margin-left: auto;" min="0" readonly value="{{ $shipment->total_cost_of_shipment }}">
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-2">
+                                            <div class="col-sm-12 d-flex align-items-center">
+                                                <span>Total Quantiy In PCS:</span>
+                                                <input type="number" class="form-control" id="totalQuantityInPcs" style="width: 100px; margin-left: auto;"  value="{{ $shipment->total_product_quantity }}" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-2">
+                                            <div class="col-sm-12 d-flex align-items-center">
+                                                <span>Cost Per Piece:</span>
+                                                <input type="number" class="form-control" id="costPerPieces" style="width: 100px; margin-left: auto;" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-2">
+                                            <div class="col-sm-12 mt-1 d-none" id="budget-message">
+                                                <span></span>
+                                            </div>
+                                        </div>
+
                                     </div>
 
-                                    <div class="col-sm-2">
+                                    <div class="col-sm-1">
                                     </div>
 
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-7">
                                         <div id="expense-container">
                                             @foreach($shipment->transactions as $index => $transaction)
                                                 <div class="row mt-1 expense-row" id="expense-row-{{ $transaction->id }}" data-expense-id="{{ $transaction->chart_of_account_id }}">
                                                     <div class="col-sm-12 d-flex align-items-center">
                                                         <input type="hidden" class="id" value="{{ $transaction->id }}">
-                                                        <select class="form-control expense-type" style="width: 200px;" onchange="checkDuplicateExpense(this)">
-                                                            <option value="" disabled>Select Expense</option>
+                                                        <select class="form-control expense-type" style="width: 200px;">
+                                                            <option value="">Select Expense</option>
                                                             @foreach($expenses as $expense)
                                                                 <option value="{{ $expense->id }}" {{ $expense->id == $transaction->chart_of_account_id ? 'selected' : '' }}>
                                                                     {{ $expense->account_name }}
@@ -158,13 +201,15 @@
                                                             <option value="Cash" {{ $transaction->payment_type == 'Cash' ? 'selected' : '' }}>Cash</option>
                                                         </select>
                                                         <input type="number" class="form-control expense-amount" style="width: 100px; margin-left: 10px;" min="0" value="{{ $transaction->amount }}" placeholder="Amount">
+                                                        <input type="text" class="form-control expense-description" style="width: 150px; margin-left: 10px;" min="0" placeholder="Description" value="{{ $transaction->description }}">
+                                                        <input type="text" class="form-control expense-note" style="width: 150px; margin-left: 10px;" min="0" placeholder="Note" value="{{ $transaction->note }}">
                                                         
                                                         @if($index == 0)
-                                                            <button type="button" class="btn btn-success add-expense btn-sm d-none" style="margin-left: 10px;">
+                                                            <button type="button" class="btn btn-success add-expense btn-sm" style="margin-left: 10px;">
                                                                 <i class="fas fa-plus"></i>
                                                             </button>
                                                         @else
-                                                            <button type="button" class="btn btn-danger remove-expense btn-sm d-none" style="margin-left: 10px;">
+                                                            <button type="button" class="btn btn-danger remove-expense btn-sm" style="margin-left: 10px;">
                                                                 <i class="fas fa-trash"></i>
                                                             </button>
                                                         @endif
@@ -193,89 +238,6 @@
 @section('script')
 
 <script>
-    const addedExpenses = new Set();
-
-    function calculateTotalAdditionalCost() {
-        let total = 0;
-
-        $('.expense-amount').each(function() {
-            const value = parseFloat($(this).val()) || 0;
-            total += value;
-        });
-
-        $('#total_additional_cost').val(total.toFixed(2));
-    }
-
-    function addExpenseRow() {
-        const expenseDropdown = generateDropdownOptions();
-        const uniqueId = Date.now();
-
-        const row = `
-            <div class="row mt-1 expense-row" id="row-${uniqueId}">
-                <div class="col-sm-12 d-flex align-items-center">
-                    <select class="form-control expense-type" style="width: 200px;" onchange="checkDuplicateExpense(this)">
-                        <option value="" selected>Select Expense</option>
-                        ${expenseDropdown}
-                    </select>
-                    <select class="form-control payment-type" style="width: 100px; margin-left: 10px;">
-                        <option value="Bank">Bank</option>
-                        <option value="Cash">Cash</option>
-                    </select>
-                    <input type="number" class="form-control expense-amount" style="width: 100px; margin-left: 10px;" min="0" placeholder="Amount">
-                    <button type="button" class="btn btn-danger remove-expense btn-sm" style="margin-left: 10px;"><i class="fas fa-trash"></i></button>
-                </div>
-            </div>
-        `;
-        $('#expense-container').append(row);
-    }
-
-    function generateDropdownOptions() {
-        return `
-            @foreach($expenses as $expense)
-                <option value="{{ $expense->id }}">{{ $expense->account_name }}</option>
-            @endforeach
-        `;
-    }
-
-    function checkDuplicateExpense(selectElement) {
-        const selectedValue = $(selectElement).val();
-        const rowElement = $(selectElement).closest('.expense-row');
-
-        if (addedExpenses.has(selectedValue)) {
-            swal({
-                title: "Duplicate Expense",
-                text: "This expense is already added!",
-                icon: "warning",
-            })
-            $(selectElement).val("");
-        } else {
-            addedExpenses.add(selectedValue);
-            rowElement.attr('data-expense-id', selectedValue);
-        }
-    }
-
-    $(document).on('click', '.remove-expense', function () {
-        const rowElement = $(this).closest('.expense-row');
-        const expenseId = rowElement.attr('data-expense-id');
-
-        if (expenseId) {
-            addedExpenses.delete(expenseId);
-        }
-
-        rowElement.remove();
-        calculateTotalAdditionalCost();
-    });
-
-    $(document).on('click', '.add-expense', function () {
-        addExpenseRow();
-    });
-
-    $(document).on('input', '.expense-amount', function() {
-        calculateTotalAdditionalCost();
-    });
-</script>
-
-<script>
     $(document).ready(function() {
 
         let removedShipmentDetailIds = [];
@@ -300,6 +262,10 @@
             let shipmentId = $('#id').val();
             let totalQuantity = $('#totalQuantity').text();
             let totalMissingQuantity = $('#totalMissingQuantity').text();
+            let target_budget = $('#target_budget').val();
+            let totalProfit = $('#total_profit').val();
+            let budget_over = $('#budgetDifference').val();
+            let total_cost_of_the_shipment = $('#total_cost_of_the_shipment').val();
             let shipmentDetails = [];
             let expenses = [];
 
@@ -342,16 +308,31 @@
                 let expenseId = $(this).find('.expense-type').val();
                 let paymentType = $(this).find('.payment-type').val();
                 let amount = $(this).find('.expense-amount').val();
+                let description = $(this).find('.expense-description').val();
+                let note = $(this).find('.expense-note').val();
 
                 if (expenseId && amount > 0) {
                     expenses.push({
                         chart_of_account_id: expenseId,
                         transaction_id: transactionId,
                         payment_type: paymentType,
-                        amount: parseFloat(amount)
+                        amount: parseFloat(amount),
+                        description: description,
+                        note: note
                     });
                 }
             });
+
+            if (!expenses || expenses.length === 0) {
+                $(".ermsg").html(`
+                    <div class='alert alert-danger'>
+                        <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
+                        <b>Please add at least one expense before proceeding.</b>
+                    </div>
+                `).show();
+                pagetop();
+                return;
+            }
 
             if (shipmentDetails.length === 0) {
                 $(".ermsg").html(`
@@ -367,6 +348,10 @@
             let dataToSend = {
                 id: shipmentId,
                 warehouse_id: warehouseId,
+                target_budget: target_budget,
+                total_profit: totalProfit,
+                budget_over: budget_over,
+                total_cost_of_the_shipment: total_cost_of_the_shipment,
                 total_quantity: totalQuantity,
                 total_missing_quantity: totalMissingQuantity,
                 total_purchase_cost: $('#direct_cost').val().replace(/,/g, ''),
@@ -399,7 +384,7 @@
                     pagetop();
 
                     setTimeout(function() {
-                        // location.reload();
+                        window.location.href = "{{ route('admin.shipping') }}";
                     }, 2000);
                 },
                 error: function(xhr, status, error) {
@@ -451,13 +436,7 @@
             $('#totalQuantity').text(totalQuantity);
             $('#totalMissingQuantity').text(totalMissingQuantity);
 
-            // Shared costs
-            const cnfCost = parseFloat($('#cnf_cost').val()) || 0;
-            const importTaxes = parseFloat($('#import_taxes').val()) || 0;
-            const warehouseCost = parseFloat($('#warehouse_cost').val()) || 0;
-            const otherCost = parseFloat($('#other_cost').val()) || 0;
-
-            const totalSharedCosts = cnfCost + importTaxes + warehouseCost + otherCost;
+            const totalSharedCosts = parseFloat($('#total_additional_cost').val()) || 0;
 
             // Update shipment costs
             const totalShipmentCost = totalPurchaseCost + totalSharedCosts;
@@ -483,13 +462,130 @@
                 const sellingPrice = groundCostPerUnit * (1 + profitMargin / 100);
                 $(this).find('.selling_price').text(sellingPrice.toFixed(2));
             });
+
+            let total = 0;
+
+            $('.expense-amount').each(function() {
+                const value = parseFloat($(this).val()) || 0;
+                total += value;
+            });
+
+            $('#total_additional_cost').val(total.toFixed(2));
+
+            let purchaseCost = 0;
+            purchaseCost = parseFloat($('#direct_cost').val()) || 0;
+            totalCost = purchaseCost + total;
+            costPerPiece = totalCost / totalQuantity;
+            $('#total_cost_of_the_shipment').val(totalCost.toFixed(2));
+            $('#costPerPieces').val(costPerPiece.toFixed(2));
+
+            let totalProfit = 0;
+
+            tableRows.each(function() {
+                const groundCostPerUnit = parseFloat($(this).find('.ground_cost').text());
+                const profitMargin = parseFloat($(this).find('.profit_margin').val()) || 0;
+                const shippedQuantity = parseFloat($(this).find('.shipped_quantity').val()) || 0;
+
+                const sellingPrice = groundCostPerUnit * (1 + profitMargin / 100);
+                const profitAmount = (sellingPrice - groundCostPerUnit) * shippedQuantity;
+
+                totalProfit += profitAmount;
+            });
+
+            $('#total_profit').val(totalProfit.toFixed(2));
+
+            const targetBudget = parseFloat($('#target_budget').val()) || 0;
+
+            const $messageContainer = $('#budget-message');
+            const $messageText = $messageContainer.find('span');
+
+            if (targetBudget > 0) {
+                const difference = targetBudget - totalCost;
+                $('#budgetDifference').val(difference.toFixed(2));
+                $messageContainer.removeClass('d-none');
+
+                if (difference < 0) {
+                    $messageText.html(`<span style="color: red;">You're over budget by ${Math.abs(difference).toFixed(2)}</span>`);
+                } else {
+                    $messageText.html(`<span style="color: green;">You're under budget by ${difference.toFixed(2)}</span>`);
+                }
+            } else {
+                $('#budgetDifference').val('');
+                $messageContainer.addClass('d-none');
+            }
+
         }
 
-        $(document).on('input', '.shipped_quantity, .missing_quantity, .profit_margin, #cnf_cost, #import_taxes, #warehouse_cost, #other_cost', function() {
+        $(document).on('input', '.shipped_quantity, .missing_quantity, .expense-amount, .profit_margin, #target_budget', function() {
             updateCalculations();
         });
 
         updateCalculations();
+
+        $(document).on('click', '.add-expense', function () {
+            const selectedIds = [];
+            let hasDuplicate = false;
+
+            $('.expense-row').each(function () {
+                const expenseId = $(this).find('.expense-type').val();
+                if (expenseId) {
+                    if (selectedIds.includes(expenseId)) {
+                        hasDuplicate = true;
+                        return false;
+                    }
+                    selectedIds.push(expenseId);
+                }
+            });
+
+            if (hasDuplicate) {
+                swal({
+                    title: "Duplicate Expense",
+                    text: "This expense is already added!",
+                    icon: "warning",
+                })
+                return;
+            }
+
+            const newRow = $('.expense-row:first').clone();
+
+            newRow.find('.id').val('');
+            newRow.find('.expense-type').val('');
+            newRow.find('.payment-type').val('Bank');
+            newRow.find('.expense-amount').val('');
+            newRow.find('.expense-description').val('');
+            newRow.find('.expense-note').val('');
+
+            newRow.find('.add-expense')
+                .removeClass('btn-success add-expense')
+                .addClass('btn-danger remove-expense')
+                .html('<i class="fas fa-trash"></i>');
+
+            $('#expense-container').append(newRow);
+        });
+
+        $(document).on('change', '.expense-type', function () {
+            const selectedId = $(this).val();
+            const selectedIds = [];
+
+            let isDuplicate = false;
+
+            $('.expense-row').each(function () {
+                const expenseId = $(this).find('.expense-type').val();
+                if (expenseId) {
+                    selectedIds.push(expenseId);
+                }
+            });
+
+            if (selectedIds.filter(id => id === selectedId).length > 1) {
+                alert('Duplicate expense type detected! Please select a unique expense.');
+                $(this).val('');
+            }
+        });
+
+        $(document).on('click', '.remove-expense', function () {
+            $(this).closest('.expense-row').remove();
+            updateCalculations();
+        });
 
         $('#warehouse_id').select2({
             placeholder: "Select a Warehouse",
