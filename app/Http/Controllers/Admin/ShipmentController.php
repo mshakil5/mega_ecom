@@ -98,6 +98,8 @@ class ShipmentController extends Controller
             $transaction->at_amount = $expense['amount'];
             $transaction->payment_type = $expense['payment_type'];
             $transaction->chart_of_account_id = $expense['chart_of_account_id'];
+            $transaction->description = $expense['description'];
+            $transaction->note = $expense['note'];
             $transaction->transaction_type = 'Current';
             $transaction->created_by = auth()->id();
             $transaction->save();

@@ -182,10 +182,10 @@
 
                                     </div>
 
-                                    <div class="col-sm-2">
+                                    <div class="col-sm-1">
                                     </div>
 
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-7">
                                         <div id="expense-container">
                                             <div class="row mt-1 expense-row" id="row-default">
                                                 <div class="col-sm-12 d-flex align-items-center">
@@ -199,7 +199,9 @@
                                                         <option value="Bank">Bank</option>
                                                         <option value="Cash">Cash</option>
                                                     </select>
-                                                    <input type="number" class="form-control expense-amount" style="width: 100px; margin-left: 10px;" min="0" placeholder="Amount">
+                                                    <input type="number" class="form-control expense-amount" style="width: 100px; margin-left: 10px;" min="0" placeholder="Amount">                              
+                                                    <input type="text" class="form-control expense-description" style="width: 150px; margin-left: 10px;" min="0" placeholder="Description">
+                                                    <input type="text" class="form-control expense-note" style="width: 150px; margin-left: 10px;" min="0" placeholder="Note">
                                                     <button type="button" class="btn btn-success add-expense btn-sm" style="margin-left: 10px;"><i class="fas fa-plus"></i></button>
                                                 </div>
                                             </div>
@@ -254,6 +256,8 @@
                         <option value="Cash">Cash</option>
                     </select>
                     <input type="number" class="form-control expense-amount" style="width: 100px; margin-left: 10px;" min="0" placeholder="Amount">
+                    <input type="text" class="form-control expense-description" style="width: 150px; margin-left: 10px;" min="0" placeholder="Description">
+                    <input type="text" class="form-control expense-note" style="width: 150px; margin-left: 10px;" min="0" placeholder="Note">
                     <button type="button" class="btn btn-danger remove-expense btn-sm" style="margin-left: 10px;"><i class="fas fa-trash"></i></button>
                 </div>
             </div>
@@ -489,12 +493,17 @@
                 let expenseId = $(this).find('.expense-type').val();
                 let paymentType = $(this).find('.payment-type').val();
                 let amount = $(this).find('.expense-amount').val();
+                let description = $(this).find('.expense-description').val();
+                let note = $(this).find('.expense-note').val();
+
 
                 if (expenseId && amount > 0) {
                     expenses.push({
                         chart_of_account_id: expenseId,
                         payment_type: paymentType,
-                        amount: parseFloat(amount)
+                        amount: parseFloat(amount),
+                        description: description,
+                        note: note
                     });
                 }
             });
