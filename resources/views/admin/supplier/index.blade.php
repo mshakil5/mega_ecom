@@ -124,7 +124,7 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="paymentAmount">Payment Amount <span style="color: red;">*</span></label>
-                        <input type="number" class="form-control" id="paymentAmount" name="paymentAmount" placeholder="Enter payment amount">
+                        <input type="number" class="form-control" id="paymentAmount" name="paymentAmount" placeholder="Enter payment amount" step="0.01">
                     </div>
                     
                     <div class="form-group">
@@ -513,9 +513,10 @@
                 var form_data = new FormData();
                 form_data.append("id", id);
                 form_data.append("supplierId", supplierId);
-                form_data.append("paymentAmount", $("#paymentAmount").val());
+                form_data.append("paymentAmount", parseFloat($("#paymentAmount").val()));
                 form_data.append("payment_type", $("#payment_type").val());
                 form_data.append("paymentNote", $("#paymentNote").val());
+                console.log(form_data);
 
                 if (!$("#paymentAmount").val()) {
                     alert('Please enter a payment amount.');

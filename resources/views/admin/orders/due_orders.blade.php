@@ -100,8 +100,8 @@
             <form id="payForm">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="paymentAmount">Payment Amount</label>
-                        <input type="number" class="form-control" id="paymentAmount" name="paymentAmount" placeholder="Enter payment amount">
+                        <label for="paymentAmount">Payment Amount <span style="color: red;">*</span></label>
+                        <input type="number" class="form-control" id="paymentAmount" name="paymentAmount" placeholder="Enter payment amount" step="0.01">
                     </div>
                     
                     <div class="form-group">
