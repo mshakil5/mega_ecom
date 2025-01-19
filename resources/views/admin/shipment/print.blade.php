@@ -229,11 +229,11 @@
 @endsection
 
 @section('script')
-<!-- <script>
+<script>
     $(window).on('load', function() {
         setTimeout(function() {
             window.print();
         }, 2000);
     });
-</script> -->
+</script>
 @endsection
