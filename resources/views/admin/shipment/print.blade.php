@@ -2,7 +2,7 @@
 
 @section('content')
 
-<section class="content pt-3">
+<section class="content pt-3 bg-white">
     <div class="container-fluid">
         <div class="row justify-content-center">
             <div class="col-md-12">
@@ -15,7 +15,7 @@
                     </button>
                 </div>
 
-                <div class="card shadow-lg">
+                <div class="">
                     <div class="card-header bg-info text-white text-center">
                         <h1 class="mb-0">Left Over Garments Costing Sheet SapphireTradeLinks</h1>
                     </div>
@@ -35,7 +35,7 @@
                                     <h6 class="mb-0">£ {{ number_format($shipment->budget_over, 2) }}</h6>
                                 </div>
 
-                                <div class="card bg-light shadow mt-4">
+                                <div class="card bg-light mt-4">
                                     <div class="card-header bg-success text-white">
                                         <h5 class="mb-0">Shipment Summary</h5>
                                     </div>
@@ -114,7 +114,7 @@
                                 </div>
                             </div>
                             <div class="col-8">
-                                <div class="card bg-light shadow">
+                                <div class="card bg-light">
                                     <div class="card-header bg-success text-white">
                                         <h5 class="mb-0">Cost Details</h5>
                                     </div>
@@ -165,7 +165,7 @@
                         </div>
 
                         <div class="col-md-12">
-                            <div class="card bg-light shadow">
+                            <div class="card bg-light">
                                 <div class="card-header bg-success text-white">
                                     <h5 class="mb-0">Product Description Including Price</h5>
                                 </div>
