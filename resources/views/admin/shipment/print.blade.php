@@ -7,7 +7,7 @@
         <div class="row justify-content-center">
             <div class="col-md-12">
                 <div class="d-flex justify-content-between no-print mb-3">
-                    <a href="{{ route('admin.shipping') }}" class="btn btn-secondary">
+                    <a href="{{ route('admin.shipping') }}" class="btn btn-info">
                         <i class="fas fa-arrow-left"></i> Back
                     </a>
                     <button onclick="window.print()" class="btn btn-info">
@@ -21,14 +21,14 @@
                     </div>
                     <div class="card-body">
                         <div class="mb-4 d-flex">
-                            <div class="col-5">
+                            <div class="col-4">
                                 <div class="alert alert-primary d-flex justify-content-between align-items-center">
-                                    <h4 class="mb-0">Target Budget:</h4>
-                                    <h4 class="mb-0">£ {{ number_format($shipment->target_budget, 2) }}</h4>
+                                    <h6 class="mb-0">Target Budget:</h6>
+                                    <h6 class="mb-0">£ {{ number_format($shipment->target_budget, 2) }}</h6>
                                 </div>
                                 <div class="alert alert-warning d-flex justify-content-between align-items-center">
-                                    <h5 class="mb-0">Total Cost of Shipment:</h5>
-                                    <h5 class="mb-0">£ {{ number_format($shipment->total_cost_of_shipment, 2) }}</h5>
+                                    <h6 class="mb-0">Total Cost Shipment:</h6>
+                                    <h6 class="mb-0">£ {{ number_format($shipment->total_cost_of_shipment, 2) }}</h6>
                                 </div>
                                 <div class="alert {{ $shipment->budget_over < 0 ? 'alert-danger' : 'alert-success' }} d-flex justify-content-between align-items-center">
                                     <h6 class="mb-0">{{ $shipment->budget_over < 0 ? 'Over Budget By:' : 'Under Budget By:' }}</h6>
@@ -68,6 +68,15 @@
                                             <span class="font-weight-bold fs-5">Total Quantity (PCS):</span>
                                             <span class="fs-5">{{ $shipment->total_product_quantity ?? '0' }}</span>
                                         </div>
+
+                                        @php
+                                            $totalSellingPrice = $shipment->shipmentDetails->sum(function($detail) {
+                                                return $detail->selling_price * $detail->quantity;
+                                            });
+                                            $totalQuantity = $shipment->shipmentDetails->sum('quantity');
+                                            $sellingPricePerPiece = $totalQuantity > 0 ? $totalSellingPrice / $totalQuantity : 0;
+                                        @endphp
+                                        {{-- 
                                         <div class="d-flex justify-content-between mb-3">
                                             <span class="font-weight-bold fs-5">Cost Per Piece:</span>
                                             <span class="fs-5">£ {{ $shipment->total_product_quantity > 0 ? number_format($shipment->total_cost_of_shipment / $shipment->total_product_quantity, 2) : '0.00' }}</span>
@@ -75,19 +84,27 @@
                                         <div class="d-flex justify-content-between mb-3">
                                             <span class="font-weight-bold fs-5">Selling Price With Markup Per Piece:</span>
                                             <span class="fs-5">
-                                                @php
-                                                    $totalSellingPrice = $shipment->shipmentDetails->sum(function($detail) {
-                                                        return $detail->selling_price * $detail->quantity;
-                                                    });
-                                                    $totalQuantity = $shipment->shipmentDetails->sum('quantity');
-                                                    $sellingPricePerPiece = $totalQuantity > 0 ? $totalSellingPrice / $totalQuantity : 0;
-                                                @endphp
-                                                £ {{ number_format($sellingPricePerPiece, 2) }}
                                             </span>
                                         </div>
+                                        --}}
                                         <div class="d-flex justify-content-between mb-3">
                                             <span class="font-weight-bold fs-5">Total Selling Price:</span>
                                             <span class="fs-5">£ {{ number_format($totalSellingPrice, 2) }}</span>
+                                        </div>
+
+                                        @php
+                                            $totalProfitMargin = 0;
+                                            $totalDetails = count($shipment->shipmentDetails);
+
+                                            foreach ($shipment->shipmentDetails as $detail) {
+                                                $totalProfitMargin += $detail->profit_margin;
+                                            }
+
+                                            $averageMarkupPercentage = $totalDetails > 0 ? $totalProfitMargin / $totalDetails : 0;
+                                        @endphp
+                                        <div class="d-flex justify-content-between mb-3">
+                                            <span class="font-weight-bold fs-5">Markup Percentange:</span>
+                                            <span class="fs-5"> {{ $averageMarkupPercentage }}%</span>
                                         </div>
                                         <div class="d-flex justify-content-between mb-3">
                                             <span class="font-weight-bold fs-5 bg-success text-white rounded px-2 py-1">Profit On The Full Shipment:</span>
@@ -96,7 +113,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-7">
+                            <div class="col-8">
                                 <div class="card bg-light shadow">
                                     <div class="card-header bg-success text-white">
                                         <h5 class="mb-0">Cost Details</h5>
@@ -114,9 +131,10 @@
                                         <hr>
                                         <div class="row text-center">
                                             <div class="col-3">Product Cost</div>
-                                            <div class="col-2">{{ $shipment->total_product_quantity ?? '0' }}</div>
+                                            <div class="col-2">{{ $shipment->shipping->shipping_name }} (Dated {{ \Carbon\Carbon::parse($shipment->shipping->shipping_date)->format('d/M/Y') }})
+                                            </div>
                                             <div class="col-2">£ {{ number_format($shipment->total_purchase_cost, 2) }}</div>
-                                            <div class="col-1">1</div>
+                                            <div class="col-1">{{ $shipment->total_product_quantity ?? '0' }}</div>
                                             <div class="col-2">£ {{ number_format($shipment->total_purchase_cost, 2) }}</div>
                                             <div class="col-2"></div>
                                         </div>
@@ -144,37 +162,51 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="col-md-7 d-none">
-                                <table class="table table-hover table-striped text-center">
-                                    <thead class="bg-primary text-white">
-                                        <tr>
-                                            <th>Sl</th>
-                                            <th>Item Description</th>
-                                            <th>Profit Margin (Percentange)</th>
-                                            <th>Quantity</th>
-                                            <th>Unit Price</th>
-                                            <th>Total Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
+                        <div class="col-md-12">
+                            <div class="card bg-light shadow">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="mb-0">Product Description Including Price</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="col-12">
+                                        <div class="row font-weight-bold text-center">
+                                            <div class="col-1">Sl</div>
+                                            <div class="col-1">PO Number</div>
+                                            <div class="col-2">Item Description With Fabrication & HS Code</div>
+                                            <div class="col-2">Quantity(Set) 1 Set = 2 Pcs</div>
+                                            <div class="col-2">Unit Price</div>
+                                            <div class="col-1">Ground Price</div>
+                                            <div class="col-1">Selling Price</div>
+                                            <div class="col-2">Total Amount</div>
+                                        </div>
+                                        <hr>
                                         @foreach($shipment->shipmentDetails as $detail)
-                                        <tr>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $detail->product->product_code ? $detail->product->product_code . '-' : '' }}{{ $detail->product->name ?? '' }} ({{ $detail->size ?? '' }} {{ $detail->color ?? '' }})</td>
-                                            <td>{{ number_format($detail->profit_margin, 0) }}%</td>
-                                            <td>{{ $detail->quantity }}</td>
-                                            <td>€ {{ number_format($detail->price_per_unit, 2) }}</td>
-                                            <td>€ {{ number_format($detail->price_per_unit * $detail->quantity, 2) }}</td>
-                                        </tr>
+                                        <div class="row text-center">
+                                            <div class="col-1">{{ $loop->iteration }}</div>
+                                            <div class="col-1"></div>
+                                            <div class="col-2">
+                                                {{ $detail->product->name ?? '' }} 
+                                                ({{ $detail->size ?? '' }} {{ $detail->color ?? '' }})
+                                            </div>
+                                            <div class="col-2">{{ $detail->quantity / 2 }} ({{ $detail->quantity }} Pcs)</div>
+                                            <div class="col-2">£ {{ number_format($detail->price_per_unit, 2) }}</div>
+                                            <div class="col-1">£ {{ number_format($detail->ground_price_per_unit, 2) }}</div>
+                                            <div class="col-1">£ {{ number_format($detail->selling_price, 2) }}</div>
+                                            <div class="col-2">£ {{ number_format($detail->price_per_unit * $detail->quantity, 2) }}</div>
+                                        </div>
+                                        <hr>
                                         @endforeach
-                                        <tr>
-                                            <td colspan="3" class="text-center"><strong>Total</strong></td>
-                                            <td colspan="1" class="text-center"><strong>{{ $shipment->shipmentDetails->sum('quantity') }}</strong></td>
-                                            <td colspan="2" class="text-right"><strong>€ {{ number_format($shipment->shipmentDetails->sum(function($detail) { return $detail->price_per_unit * $detail->quantity; }), 2) }}</strong></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                        <div class="row font-weight-bold text-center">
+                                            <div class="col-1">Total</div>
+                                            <div class="col-3"></div>
+                                            <div class="col-2">{{ $shipment->shipmentDetails->sum('quantity') / 2 }}Set ({{ $shipment->shipmentDetails->sum('quantity') }} Pcs)</div>
+                                            <div class="col-4"></div>
+                                            <div class="col-2">£ {{ number_format($shipment->shipmentDetails->sum(function($detail) { return $detail->price_per_unit * $detail->quantity; }), 2) }}</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -197,11 +229,11 @@
 @endsection
 
 @section('script')
-<script>
+<!-- <script>
     $(window).on('load', function() {
         setTimeout(function() {
             window.print();
         }, 2000);
     });
-</script>
+</script> -->
 @endsection

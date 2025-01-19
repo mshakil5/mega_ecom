@@ -167,7 +167,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="row mt-2">
+                                        <div class="row mt-2 d-none">
                                             <div class="col-sm-12 d-flex align-items-center">
                                                 <span>Cost Per Piece:</span>
                                                 <input type="number" class="form-control" id="costPerPieces" style="width: 100px; margin-left: auto;" readonly>
