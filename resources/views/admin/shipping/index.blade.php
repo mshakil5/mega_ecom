@@ -88,10 +88,8 @@
                                                     data-shipment-details="{{ json_encode($shipping->shipment->shipmentDetails) }}">
                                                 <i class="fas fa-eye"></i>
                                             </button>
-                                        @elseif($shipping->status == 3)
+                                        @else
                                             <a href="{{ route('admin.shipment.create', $shipping->id) }}" class="btn btn-info btn-sm">Set Price</a>
-                                        @elseif($shipping->status != 3)
-                                        <span class="badge bg-info ms-2">Change to Recived</span>
                                         @endif
                                     </td>
                                     <td>

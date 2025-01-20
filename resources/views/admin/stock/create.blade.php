@@ -522,7 +522,7 @@
                 },
                 success: function(response) {
                     swal({
-                        text: "Created successfully",
+                        text: "Purchased successfully",
                         icon: "success",
                         button: {
                             text: "OK",
