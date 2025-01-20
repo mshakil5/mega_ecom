@@ -186,7 +186,8 @@
 
                     $inWords = SpellNumber::value($order->net_amount)
                     ->locale('en')
-                    ->currency('euros')
+                    ->currency('Pounds')
+                    ->fraction('Pence')
                     ->toMoney();
                     @endphp
 
