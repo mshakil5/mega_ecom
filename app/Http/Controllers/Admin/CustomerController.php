@@ -76,6 +76,7 @@ class CustomerController extends Controller
         $data->surname = $request->surname;
         $data->phone = $request->phone;
         $data->email = $request->email;
+        $data->address = $request->address;
         $data->house_number = $request->house_number;
         $data->street_name = $request->street_name;
         $data->town = $request->town;
@@ -132,6 +133,7 @@ class CustomerController extends Controller
         $data->surname = $request->surname;
         $data->phone = $request->phone;
         $data->email = $request->email;
+        $data->address = $request->address;
         $data->house_number = $request->house_number;
         $data->street_name = $request->street_name;
         $data->town = $request->town;

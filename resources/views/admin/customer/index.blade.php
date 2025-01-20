@@ -64,6 +64,13 @@
                     </div>
                   </div>
 
+                  <div class="col-sm-12">
+                    <div class="form-group">
+                      <label>Address</label>
+                      <textarea class="form-control" id="address" name="address" rows="4" placeholder="Enter address"></textarea>
+                    </div>
+                  </div>
+
                   <div class="row d-none">
                     <div class="col-sm-6">
                       <div class="form-group">
@@ -389,6 +396,7 @@
               form_data.append("surname", $("#surname").val());
               form_data.append("password", $("#password").val());
               form_data.append("confirm_password", $("#confirm_password").val());
+              form_data.append("address", $("#address").val());
               $.ajax({
                 url: url,
                 method: "POST",
@@ -426,6 +434,7 @@
               form_data.append("surname", $("#surname").val());
               form_data.append("password", $("#password").val());
               form_data.append("confirm_password", $("#confirm_password").val());
+              form_data.append("address", $("#address").val());
               form_data.append("codeid", $("#codeid").val());
               
               $.ajax({
@@ -502,6 +511,7 @@
           $("#surname").val(data.surname);
           $("#phone").val(data.phone);
           $("#email").val(data.email);
+          $("#address").val(data.address);
           $("#codeid").val(data.id);
           $("#addBtn").val('Update');
           $("#addBtn").html('Update');
