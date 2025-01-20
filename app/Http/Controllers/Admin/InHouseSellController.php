@@ -527,4 +527,19 @@ class InHouseSellController extends Controller
         return redirect()->back()->with('success', 'Email sent successfully');
     }
 
+    public function generateDeliveryNote($encoded_order_id)
+    {
+        $order_id = base64_decode($encoded_order_id);
+        $order = Order::with(['orderDetails', 'user'])->findOrFail($order_id);
+
+        $data = [
+            'order' => $order,
+            'currency' => CompanyDetails::value('currency'),
+        ];
+
+        $pdf = PDF::loadView('admin.in_house_sell.in_house_sell_delivery_note', $data);
+
+        return $pdf->stream('order_' . $order->id . '.pdf');
+    }
+
 }

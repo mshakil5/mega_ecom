@@ -96,6 +96,9 @@
                                         <a href="{{ route('in-house-sell.generate-pdf', ['encoded_order_id' => base64_encode($order->id)]) }}" class="btn btn-success btn-round btn-shadow" target="_blank">
                                             <i class="fas fa-receipt"></i> Invoice
                                         </a>
+                                        <a href="{{ route('in-house-sell.generate-delivery-note', ['encoded_order_id' => base64_encode($order->id)]) }}" class="btn btn-primary btn-round btn-shadow" target="_blank">
+                                            <i class="fas fa-truck"></i> Delivery Note
+                                        </a>
                                         <a href="{{ route('admin.orders.details', ['orderId' => $order->id]) }}" class="btn btn-info btn-round btn-shadow">
                                             <i class="fas fa-info-circle"></i> Details
                                         </a>

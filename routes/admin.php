@@ -408,6 +408,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/in-house-quotation-order', [InHouseSellController::class, 'inHouseQuotationSellStore'])->name('quotationToOrder');
     Route::get('/in-house-sell/order/{encoded_order_id}', [InHouseSellController::class, 'generatePDF'])->name('in-house-sell.generate-pdf');
 
+    Route::get('/in-house-sell/delivery-note/{encoded_order_id}', [InHouseSellController::class, 'generateDeliveryNote'])->name('in-house-sell.generate-delivery-note');
+
     Route::get('order/{encoded_order_id}/download-pdf', [InHouseSellController::class, 'generateDownloadPDF'])->name('orders.download-pdf');
 
     Route::post('/send-email/{order}', [InHouseSellController::class, 'sendQuotationEmail'])->name('orders.send-email');
