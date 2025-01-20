@@ -275,18 +275,23 @@
 
     function checkDuplicateExpense(selectElement) {
         const selectedValue = $(selectElement).val();
-        const rowElement = $(selectElement).closest('.expense-row');
+        let hasDuplicate = false;
 
-        if (addedExpenses.has(selectedValue)) {
+        $('.expense-row').each(function () {
+            const expenseId = $(this).find('.expense-type').val();
+            if (expenseId && expenseId === selectedValue && $(selectElement).closest('.expense-row')[0] !== this) {
+                hasDuplicate = true;
+                return false;
+            }
+        });
+
+        if (hasDuplicate) {
             swal({
                 title: "Duplicate Expense",
                 text: "This expense is already added!",
                 icon: "warning",
-            })
-            $(selectElement).val("");
-        } else {
-            addedExpenses.add(selectedValue);
-            rowElement.attr('data-expense-id', selectedValue);
+            });
+            $(selectElement).val('');
         }
     }
 
