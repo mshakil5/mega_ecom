@@ -104,7 +104,7 @@
                                         @endphp
                                         <div class="d-flex justify-content-between mb-3">
                                             <span class="font-weight-bold fs-5">Markup Percentange:</span>
-                                            <span class="fs-5"> {{ $averageMarkupPercentage }}%</span>
+                                            <span class="fs-5">{{ number_format($averageMarkupPercentage, 2) }}%</span>
                                         </div>
                                         <div class="d-flex justify-content-between mb-3">
                                             <span class="font-weight-bold fs-5 bg-success text-white rounded px-2 py-1">Profit On The Full Shipment:</span>

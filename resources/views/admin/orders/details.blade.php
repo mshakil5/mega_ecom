@@ -26,7 +26,7 @@
           <!-- Main content -->
           <div class="invoice p-3 mb-3">
             <!-- title row -->
-            <div class="row">
+            <div class="row d-none">
               <div class="col-12">
                 <h4>
                   <i class="fas fa-globe"></i> Whole Saler Information
@@ -38,21 +38,11 @@
             <!-- info row -->
             <div class="row invoice-info">
               <div class="col-sm-4 invoice-col">
-                Wholesaler
                 <address>
                     <strong>Name:</strong> {{ $order->user->name ?? $order->name }} {{ $order->user->surname ?? '' }}<br>
                     <strong>Email:</strong> {{ $order->user->email ?? $order->email }}<br>
                     <strong>Phone:</strong> {{ $order->user->phone ?? $order->phone }}<br>
-                    <strong>Address:</strong>
-                        @php
-                            $addressParts = [
-                                ($order->user->house_number ?? $order->house_number),
-                                ($order->user->street_name ?? $order->street_name),
-                                ($order->user->town ?? $order->town),
-                                ($order->user->postcode ?? $order->postcode)
-                            ];
-                        @endphp
-                        {{ implode(', ', array_filter($addressParts)) }}
+                    <strong>Address:</strong> {!! $order->user?->address ?? '' !!}
                 </address>
                 
                 

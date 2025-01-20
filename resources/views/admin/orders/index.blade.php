@@ -89,7 +89,7 @@
                                                 @endforeach
                                             </select>
                                         @else
-                                            <span>{{ $order->warehouse->name }}</span>
+                                            <span>{{ $order->warehouse->name }} {{ $order->warehouse->location }}</span>
                                         @endif
                                     </td>
                                     <td>
