@@ -1504,9 +1504,9 @@ class OrderController extends Controller
 
             $emailToSend = $order->email ?? $order->user->email;
 
-            if ($emailToSend) {
-                Mail::to($emailToSend)->send(new OrderStatusChangedMail($order));
-            }
+            // if ($emailToSend) {
+            //     Mail::to($emailToSend)->send(new OrderStatusChangedMail($order));
+            // }
 
             $contactEmails = ContactEmail::where('status', 1)->pluck('email');
 
