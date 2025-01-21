@@ -53,6 +53,7 @@ class ShipmentController extends Controller
             'shipment_details.*.size' => 'required|string',
             'shipment_details.*.color' => 'required|string',
             'shipment_details.*.shipped_quantity' => 'required|integer',
+            'shipment_details.*.quantity' => 'required|integer',
             'shipment_details.*.missing_quantity' => 'nullable|integer',
             'shipment_details.*.price_per_unit' => 'required|numeric',
             'shipment_details.*.ground_cost' => 'nullable|numeric',
@@ -109,7 +110,8 @@ class ShipmentController extends Controller
                 'size' => $detail['size'],
                 'color' => $detail['color'],
                 'warehouse_id' => $request->warehouse_id,
-                'quantity' => $detail['shipped_quantity'],
+                'quantity' => $detail['quantity'],
+                'shipped_quantity' => $detail['shipped_quantity'],
                 'missing_quantity' => $detail['missing_quantity'],
                 'price_per_unit' => $detail['price_per_unit'],
                 'ground_price_per_unit' => $detail['ground_cost'],
@@ -127,7 +129,7 @@ class ShipmentController extends Controller
                 ->first();
     
             if ($stock) {
-                $stock->quantity += $detail['shipped_quantity'];
+                $stock->quantity += $detail['quantity'];
                 $stock->purchase_price = $detail['price_per_unit'];
                 $stock->ground_price_per_unit = $detail['ground_cost'];
                 $stock->profit_margin = $detail['profit_margin'];
@@ -139,7 +141,7 @@ class ShipmentController extends Controller
             } else {
                 $stock = Stock::create([
                     'product_id' => $detail['product_id'],
-                    'quantity' => $detail['shipped_quantity'],
+                    'quantity' => $detail['quantity'],
                     'size' => $detail['size'],
                     'color' => $detail['color'],
                     'purchase_price' => $detail['price_per_unit'],
@@ -158,11 +160,11 @@ class ShipmentController extends Controller
                 'stock_id' => $stock->id,
                 'date' => date('Y-m-d'),
                 'product_id' => $detail['product_id'],
-                'quantity' => $detail['shipped_quantity'],
+                'quantity' => $detail['quantity'],
                 'size' => $detail['size'],
                 'color' => $detail['color'],
                 'warehouse_id' => $request->warehouse_id,
-                'available_qty' => $detail['shipped_quantity'],
+                'available_qty' => $detail['quantity'],
                 'ground_price_per_unit' => $detail['ground_cost'],
                 'profit_margin' => $detail['profit_margin'],
                 'purchase_price' => $detail['price_per_unit'],
@@ -176,8 +178,8 @@ class ShipmentController extends Controller
     
             $purchaseHistory = PurchaseHistory::find($detail['purchase_history_id']);
             if ($purchaseHistory) {
-                $purchaseHistory->shipped_quantity = $detail['shipped_quantity'] +$detail['missing_quantity'] + $purchaseHistory->shipped_quantity;
-                $purchaseHistory->remaining_product_quantity = $purchaseHistory->remaining_product_quantity - $detail['shipped_quantity'] - $detail['missing_quantity'];
+                $purchaseHistory->shipped_quantity = $detail['shipped_quantity'] + $purchaseHistory->shipped_quantity; 
+                $purchaseHistory->remaining_product_quantity -= $detail['shipped_quantity']; 
                 $purchaseHistory->save();
             }
 

@@ -65,7 +65,19 @@
                                             <span class="fs-5">£ {{ number_format($shipment->total_cost_of_shipment ?? 0, 2) }}</span>
                                         </div>
                                         <div class="d-flex justify-content-between mb-3">
-                                            <span class="font-weight-bold fs-5">Total Quantity (PCS):</span>
+                                            <span class="font-weight-bold fs-5">Shipped Qty (PCS):</span>
+                                            <span class="fs-5">{{ $shipment->shipmentDetails->sum('shipped_quantity') ?? '0' }}</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-3">
+                                            <span class="font-weight-bold fs-5">Missing/Damaged Qty (PCS):</span>
+                                            <span class="fs-5">{{ $shipment->total_missing_quantity ?? '0' }}</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-3">
+                                            <span class="font-weight-bold fs-5">Total Sample Qty (PCS):</span>
+                                            <span class="fs-5">{{ $shipment->shipmentDetails->sum('sample_quantity') ?? '0' }}</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-3">
+                                            <span class="font-weight-bold fs-5">Total Saleable Qty (PCS):</span>
                                             <span class="fs-5">{{ $shipment->total_product_quantity ?? '0' }}</span>
                                         </div>
 
@@ -134,7 +146,7 @@
                                             <div class="col-2">{{ $shipment->shipping->shipping_name }} (Dated {{ \Carbon\Carbon::parse($shipment->shipping->shipping_date)->format('d/M/Y') }})
                                             </div>
                                             <div class="col-2">£ {{ number_format($shipment->total_purchase_cost, 2) }}</div>
-                                            <div class="col-1">{{ $shipment->total_product_quantity ?? '0' }}</div>
+                                            <div class="col-1">{{ $shipment->shipmentDetails->sum('shipped_quantity') ?? '0' }}</div>
                                             <div class="col-2">£ {{ number_format($shipment->total_purchase_cost, 2) }}</div>
                                             <div class="col-2"></div>
                                         </div>

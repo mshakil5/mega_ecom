@@ -30,6 +30,7 @@ return new class extends Migration
             $table->double('considerable_margin',10,2)->nullable();
             $table->double('considerable_price',10,2)->nullable();
             $table->integer('sample_quantity')->default(0);
+            $table->integer('shipped_quantity')->default(0);
             $table->timestamps();
         });
     }
