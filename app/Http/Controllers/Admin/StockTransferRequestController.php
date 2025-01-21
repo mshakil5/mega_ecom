@@ -23,11 +23,13 @@ class StockTransferRequestController extends Controller
         $validator = Validator::make($request->all(), [
             'productId' => 'required|exists:products,id',
             'warehouse' => 'required|exists:warehouses,id',
-            'toWarehouse' => 'required|exists:warehouses,id',
+            'toWarehouse' => 'required|exists:warehouses,id|different:warehouse',
             'color' => 'nullable|string',
             'size' => 'nullable|string',
             'quantity' => 'required|integer|min:1',
             'max_quantity' => 'required|numeric|min:0',
+        ], [
+            'toWarehouse.different' => 'The destination warehouse must be different from the source warehouse.',
         ]);
 
         if ($validator->fails()) {

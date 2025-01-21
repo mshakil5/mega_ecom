@@ -239,7 +239,7 @@
                     success: function(data) {
                         $('#warehouse').empty().append('<option value="">Select Warehouse...</option>');
                         $.each(data.warehouses, function(index, stock) {
-                            $('#warehouse').append('<option value="' + stock.warehouse.id + '">' + stock.warehouse.name);
+                            $('#warehouse').append('<option value="' + stock.warehouse.id + '">' + stock.warehouse.name + ' (' + stock.warehouse.location + ')</option>');
                         });
                         $('#warehouse').prop('disabled', false);
                     },

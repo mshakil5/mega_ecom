@@ -1087,7 +1087,7 @@ class StockController extends Controller
             ->where('quantity', '>', 0);
 
         if (!empty($warehouseIds)) {
-            $query->whereNotIn('warehouse_id', $warehouseIds);
+            $query->whereIn('warehouse_id', $warehouseIds);
         }
 
         $warehouses = $query->with('warehouse')
