@@ -1151,7 +1151,7 @@ class OrderController extends Controller
                 $ordersQuery = Order::with('user')->whereIn('order_type', [0, 1]);
             }
             
-            $ordersQuery->where('status', '!=', 7);
+            $ordersQuery->whereNotIn('status', [6, 7]);
 
             return DataTables::of($ordersQuery->orderBy('id', 'desc'))
                 ->addColumn('action', function($order) {

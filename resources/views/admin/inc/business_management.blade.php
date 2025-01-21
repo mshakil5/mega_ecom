@@ -242,15 +242,15 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('cancelledorders') }}" class="nav-link {{ request()->is('admin/cancelled-orders*') ? 'active' : '' }}">
-                        <i class="fas fa-ban nav-icon"></i>
-                        <p>Cancelled Orders</p>
-                    </a>
-                </li>
-                <li class="nav-item">
                     <a href="{{ route('returnedorders') }}" class="nav-link {{ request()->is('admin/returned-orders*') ? 'active' : '' }}">
                         <i class="fas fa-undo nav-icon"></i>
                         <p>Returned Orders</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('cancelledorders') }}" class="nav-link {{ request()->is('admin/cancelled-orders*') ? 'active' : '' }}">
+                        <i class="fas fa-ban nav-icon"></i>
+                        <p>Cancelled Orders</p>
                     </a>
                 </li>
             </ul>
