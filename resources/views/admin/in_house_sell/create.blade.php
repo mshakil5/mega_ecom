@@ -427,7 +427,9 @@
                         var productRow = `<tr data-product-id="${productId}">
                             <td>
                                 ${productName} <br>
-                                <span>Profit Margin: <strong>${profitMargin.toFixed(2)}%</strong></span> <br>
+                                <span>
+                                    Profit Margin: <strong>${Math.round(profitMargin)}%</strong>
+                                </span> <br>
                                 <span>Ground Price: <strong>${groundPrice.toFixed(2)}</strong></span> <br>
                                 <span>
                                     Considerable Price: <strong>${considerablePrice.toFixed(2)}</strong> 
