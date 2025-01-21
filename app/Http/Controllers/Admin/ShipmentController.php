@@ -114,6 +114,9 @@ class ShipmentController extends Controller
                 'ground_price_per_unit' => $detail['ground_cost'],
                 'profit_margin' => $detail['profit_margin'],
                 'selling_price' => $detail['selling_price'],
+                'considerable_margin' => $detail['considerable_margin'],
+                'considerable_price' => $detail['considerable_price'],
+                'sample_quantity' => $detail['sample_quantity'],
             ]);
 
             $stock = Stock::where('product_id', $detail['product_id'])
@@ -159,6 +162,9 @@ class ShipmentController extends Controller
                 'profit_margin' => $detail['profit_margin'],
                 'purchase_price' => $detail['price_per_unit'],
                 'selling_price' => $detail['selling_price'],
+                'considerable_margin' => $detail['considerable_margin'],
+                'considerable_price' => $detail['considerable_price'],
+                'sample_quantity' => $detail['sample_quantity'],
                 'created_by' => auth()->id(),
                 'stockid' => $stockid,
             ]);

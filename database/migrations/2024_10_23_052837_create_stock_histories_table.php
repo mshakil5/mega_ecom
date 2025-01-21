@@ -33,6 +33,9 @@ return new class extends Migration
             $table->double('ground_price_per_unit',10,2)->nullable();
             $table->double('profit_margin',10,2)->nullable();
             $table->double('selling_price',10,2)->nullable();
+            $table->double('considerable_margin',10,2)->nullable();
+            $table->double('considerable_price',10,2)->nullable();
+            $table->integer('sample_quantity')->default(0);
             $table->string('sl_start')->nullable();
             $table->string('sl_end')->nullable();
             $table->string('exp_date')->nullable();

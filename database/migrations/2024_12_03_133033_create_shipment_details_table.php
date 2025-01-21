@@ -27,6 +27,9 @@ return new class extends Migration
             $table->decimal('ground_price_per_unit',10,2)->nullable();
             $table->decimal('profit_margin',10,2)->nullable();
             $table->decimal('selling_price',10,2)->nullable();
+            $table->double('considerable_margin',10,2)->nullable();
+            $table->double('considerable_price',10,2)->nullable();
+            $table->integer('sample_quantity')->default(0);
             $table->timestamps();
         });
     }

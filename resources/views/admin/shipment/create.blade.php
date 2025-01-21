@@ -50,12 +50,15 @@
                                         <th>Purchased Quantity</th>
                                         <th>Shipped Quantity</th>
                                         <th>Missing Quantity</th>           
+                                        <th>Sample Quantity</th>           
                                         <th>Remaining Quantity</th>           
                                         <th>Purchase Price Per Unit</th>
                                         <th>Ground Price</th>
                                         <th>Profit Margin(%)</th>
                                         <th>Current Selling Price</th>
                                         <th>New Selling Price</th>
+                                        <th>Considerable Margin</th>
+                                        <th>Considerable Price</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -102,6 +105,9 @@
                                             <input type="number" value="0" max="{{ $detail->remaining_product_quantity }}" min="0" class="form-control missing_quantity"/>
                                         </td>
                                         <td>
+                                            <input type="number" value="0" max="{{ $detail->remaining_product_quantity }}" min="0" class="form-control sample_quantity"/>
+                                        </td>
+                                        <td>
                                             <input type="number" value="0" max="{{ $detail->remaining_product_quantity }}" min="0" class="form-control remaining_quantity" readonly>
                                         </td>
                                         <td>{{ number_format($detail->purchase_price, 2) }}</td>
@@ -111,6 +117,10 @@
                                         </td>
                                         <td>{{ number_format($currentSellingPrice, 2) }}</td>
                                         <td class="selling_price"></td>
+                                        <td>
+                                            <input type="number" value="10" min="1" class="form-control considerable_margin" />
+                                        </td>
+                                        <td class="considerable_price"></td>
                                         <td>
                                             <button type="button" class="btn btn-danger remove-row"><i class="fas fa-trash"></i></button>
                                         </td>
@@ -365,13 +375,21 @@
 
             let shippedQuantity = parseInt($(this).find('.shipped_quantity').val()) || 0;
             let missingQuantity = parseInt($(this).find('.missing_quantity').val()) || 0;
+            let sampleQuantity = parseInt($(this).find('.sample_quantity').val()) || 0;
 
-            if (shippedQuantity + missingQuantity > maxQuantity) {
-                missingQuantity = maxQuantity - shippedQuantity;
+            if (shippedQuantity + missingQuantity + sampleQuantity > maxQuantity) {
+                const availableQuantity = maxQuantity - (shippedQuantity + missingQuantity);
+                sampleQuantity = availableQuantity < 0 ? 0 : availableQuantity;
+                $(this).find('.sample_quantity').val(sampleQuantity);
+            }
+
+            if (shippedQuantity + missingQuantity + sampleQuantity > maxQuantity) {
+                const availableQuantity = maxQuantity - (shippedQuantity + sampleQuantity);
+                missingQuantity = availableQuantity < 0 ? 0 : availableQuantity;
                 $(this).find('.missing_quantity').val(missingQuantity);
             }
 
-            const remainingQuantity = maxQuantity - (shippedQuantity + missingQuantity);
+            const remainingQuantity = maxQuantity - (shippedQuantity + missingQuantity + sampleQuantity);
             $(this).find('.remaining_quantity').val(remainingQuantity < 0 ? 0 : remainingQuantity);
 
             const productTotal = purchasePrice * shippedQuantity;
@@ -416,11 +434,15 @@
             const groundCostPerUnit = parseFloat($(this).find('.ground_cost').text());
             const profitMargin = parseFloat($(this).find('.profit_margin').val()) || 0;
             const shippedQuantity = parseFloat($(this).find('.shipped_quantity').val()) || 0;
+            const considerableMargin = parseFloat($(this).find('.considerable_margin').val()) || 0;
 
             const sellingPrice = groundCostPerUnit * (1 + profitMargin / 100);
             const profitAmount = (sellingPrice - groundCostPerUnit) * shippedQuantity;
 
+            const considerablePrice = groundCostPerUnit * (1 + considerableMargin / 100);
+
             $(this).find('.selling_price').text(sellingPrice.toFixed(2));
+            $(this).find('.considerable_price').text(considerablePrice.toFixed(2));
             totalProfit += profitAmount;
         });
 
@@ -475,6 +497,9 @@
                 let groundCost = $(this).find('.ground_cost').text().replace(/,/g, '');
                 let profitMargin = $(this).find('.profit_margin').val().replace(/,/g, '');
                 let sellingPrice = $(this).find('.selling_price').text().replace(/,/g, '');
+                let considerableMargin = $(this).find('.considerable_margin').val();
+                let considerablePrice = $(this).find('.considerable_price').text().replace(/,/g, '');
+                let sampleQuantity = $(this).find('.sample_quantity').val();
 
                 if (productId && shippedQuantity > 0) {
                     shipmentDetails.push({
@@ -489,7 +514,10 @@
                         price_per_unit: pricePerUnit,
                         ground_cost: groundCost,
                         profit_margin: profitMargin,
-                        selling_price: sellingPrice
+                        selling_price: sellingPrice,
+                        considerable_margin: considerableMargin,
+                        considerable_price: considerablePrice,
+                        sample_quantity: sampleQuantity
                     });
                 }
             });
@@ -602,13 +630,21 @@
 
                 let shippedQuantity = parseInt($(this).find('.shipped_quantity').val()) || 0;
                 let missingQuantity = parseInt($(this).find('.missing_quantity').val()) || 0;
+                let sampleQuantity = parseInt($(this).find('.sample_quantity').val()) || 0;
 
-                if (shippedQuantity + missingQuantity > maxQuantity) {
-                    missingQuantity = maxQuantity - shippedQuantity;
+                if (shippedQuantity + missingQuantity + sampleQuantity > maxQuantity) {
+                    const availableQuantity = maxQuantity - (shippedQuantity + missingQuantity);
+                    sampleQuantity = availableQuantity < 0 ? 0 : availableQuantity;
+                    $(this).find('.sample_quantity').val(sampleQuantity);
+                }
+
+                if (shippedQuantity + missingQuantity + sampleQuantity > maxQuantity) {
+                    const availableQuantity = maxQuantity - (shippedQuantity + sampleQuantity);
+                    missingQuantity = availableQuantity < 0 ? 0 : availableQuantity;
                     $(this).find('.missing_quantity').val(missingQuantity);
                 }
 
-                const remainingQuantity = maxQuantity - (shippedQuantity + missingQuantity);
+                const remainingQuantity = maxQuantity - (shippedQuantity + missingQuantity + sampleQuantity);
                 $(this).find('.remaining_quantity').val(remainingQuantity < 0 ? 0 : remainingQuantity);
 
                 const productTotal = purchasePrice * shippedQuantity;
@@ -654,17 +690,22 @@
                 const profitMargin = parseFloat($(this).find('.profit_margin').val()) || 0;
                 const shippedQuantity = parseFloat($(this).find('.shipped_quantity').val()) || 0;
 
+                const considerableMargin = parseFloat($(this).find('.considerable_margin').val()) || 0;
+
                 const sellingPrice = groundCostPerUnit * (1 + profitMargin / 100);
                 const profitAmount = (sellingPrice - groundCostPerUnit) * shippedQuantity;
 
+                const considerablePrice = groundCostPerUnit * (1 + considerableMargin / 100);
+
                 $(this).find('.selling_price').text(sellingPrice.toFixed(2));
+                $(this).find('.considerable_price').text(considerablePrice.toFixed(2));
                 totalProfit += profitAmount;
             });
 
             $('#total_profit').val(totalProfit.toFixed(2));
         }
 
-        $(document).on('input', '.shipped_quantity, .missing_quantity, .profit_margin', function() {
+        $(document).on('input', '.shipped_quantity, .missing_quantity, .profit_margin, .considerable_margin, .sample_quantity', function() {
             updateCalculations();
             updateCosts();
         });
