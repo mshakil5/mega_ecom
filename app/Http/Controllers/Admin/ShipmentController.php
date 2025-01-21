@@ -45,6 +45,7 @@ class ShipmentController extends Controller
             'total_quantity' => 'required|integer',
             'total_purchase_cost' => 'required|numeric',
             'total_additional_cost' => 'required|numeric',
+            'target_budget' => 'required',
             'shipment_details' => 'required|array',
             'shipment_details.*.supplier_id' => 'required|integer',
             'shipment_details.*.product_id' => 'required|integer',
@@ -131,6 +132,8 @@ class ShipmentController extends Controller
                 $stock->ground_price_per_unit = $detail['ground_cost'];
                 $stock->profit_margin = $detail['profit_margin'];
                 $stock->selling_price = $detail['selling_price'];
+                $stock->considerable_margin = $detail['considerable_margin'];
+                $stock->considerable_price = $detail['considerable_price'];
                 $stock->updated_by = auth()->id();
                 $stock->save();
             } else {
@@ -143,6 +146,8 @@ class ShipmentController extends Controller
                     'ground_price_per_unit' => $detail['ground_cost'],
                     'profit_margin' => $detail['profit_margin'],
                     'selling_price' => $detail['selling_price'],
+                    'considerable_margin' => $detail['considerable_margin'],
+                    'considerable_price' => $detail['considerable_price'],
                     'warehouse_id' => $request->warehouse_id,
                     'created_by' => auth()->id(),
                 ]);

@@ -96,6 +96,8 @@
                                                 $sellingPrice = $latestStock->selling_price ?? 0;
                                                 $groundPrice = $latestStock->ground_price_per_unit ?? 0;
                                                 $profitMargin = $latestStock->profit_margin ?? 0;
+                                                $considerableMargin = $latestStock->considerable_margin ?? 0;
+                                                $considerablePrice = $latestStock->considerable_price ?? 0;
                                             @endphp 
 
                                             <option value="{{ $product->id }}" 
@@ -103,6 +105,8 @@
                                                     data-price="{{ $sellingPrice }}" 
                                                     data-ground-price="{{ $groundPrice }}" 
                                                     data-profit-margin="{{ $profitMargin }}"
+                                                    data-considerable-margin="{{ $considerableMargin }}"
+                                                    data-considerable-price="{{ $considerablePrice }}"
                                                     data-sizes="{{ json_encode($product->stock->pluck('size')->unique()) }}" 
                                                     data-colors="{{ json_encode($product->stock->pluck('color')->unique()) }}"
                                                     >
@@ -360,6 +364,8 @@
             var unitPrice = parseFloat($('#price_per_unit').val()) || 0;
             var groundPrice = parseFloat($('#ground_price').val()) || 0;
             var profitMargin = parseFloat($('#profit_margin').val()) || 0;
+            var considerableMargin = parseFloat($('#considerable_margin').val()) || 0;
+            var considerablePrice = parseFloat($('#considerable_price').val()) || 0;
             var quantity = parseFloat($('#quantity').val()) || 1;
             var selectedSize = $('#size').val();
             var selectedColor = $('#color').val();
@@ -450,8 +456,12 @@
                         var productRow = `<tr data-product-id="${productId}">
                             <td>
                                 ${productName} <br>
-                                <span>Ground Price: <strong>${groundPrice.toFixed(2)}</strong></span> <br>
                                 <span>Profit Margin: <strong>${profitMargin.toFixed(2)}%</strong></span>
+                                <span>Ground Price: <strong>${groundPrice.toFixed(2)}</strong></span> <br>
+                                <span>
+                                    Considerable Price: <strong>${considerablePrice.toFixed(2)}</strong> 
+                                    (<strong>${Math.round(considerableMargin)}%</strong>)
+                                </span>
                                 <input type="hidden" name="product_id[]" value="${productId}">
                             </td> 
                             <td>
@@ -781,16 +791,22 @@
             var pricePerUnit = selectedProduct.data('price');
             var groundPrice = selectedProduct.data('ground-price');
             var profitMargin = selectedProduct.data('profit-margin');
+            var considerableMargin = selectedProduct.data('considerable-margin');
+            var considerablePrice = selectedProduct.data('considerable-price');
             $('#quantity').val(1);
             
             if(pricePerUnit) {
                 $('#price_per_unit').val(pricePerUnit);
                 $('#ground_price').val(groundPrice);
                 $('#profit_margin').val(profitMargin);
+                $('#considerable_margin').val(considerableMargin);
+                $('#considerable_price').val(considerablePrice);
             } else {
                 $('#price_per_unit').val('');
                 $('#ground_price').val('');
                 $('#profit_margin').val('');
+                $('#considerable_margin').val('');
+                $('#considerable_price').val('');
             }
 
             var sizes = selectedProduct.data('sizes') || [];
