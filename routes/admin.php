@@ -300,6 +300,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/shipment/print/{id}', [ShipmentController::class, 'printShipment'])->name('admin.shipment.print');
 
     Route::put('/shipment-update/{id}', [ShipmentController::class, 'updateShipment'])->name('admin.shipment.update');
+
+    Route::get('/shipment/sample-products', [ShipmentController::class, 'showSampleProducts'])->name('shipment.sample_products');
     
     Route::get('/missing-purchase-product/{id}', [StockController::class, 'missingProduct'])->name('missingProduct');
     Route::get('/transfer-to-warehouse/{id}', [WarehouseController::class, 'transfer'])->name('transferToWarehouse');

@@ -386,4 +386,10 @@ class ShipmentController extends Controller
         return response()->json(['message' => 'Shipment updated successfully!']);
     }    
 
+    public function showSampleProducts()
+    {
+        $sampleProducts = ShipmentDetails::with(['product', 'shipment.shipping'])->where('sample_quantity', '>', 0)->latest()->get();
+        return view('admin.shipment.sample_products', compact('sampleProducts'));
+    }
+
 }
