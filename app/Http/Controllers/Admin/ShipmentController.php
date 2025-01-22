@@ -285,34 +285,25 @@ class ShipmentController extends Controller
             }
         }
 
-
-        // foreach ($expenses as $expense) {
-        //     $transaction = Transaction::where('id', $expense['transaction_id'])->first();
-
-        //     if ($transaction) {
-        //         $transaction->amount = $expense['amount'];
-        //         $transaction->at_amount = $expense['amount'];
-        //         $transaction->payment_type = $expense['payment_type'];
-        //         $transaction->updated_by = auth()->id();
-        //         $transaction->save();
-        //     }
-        // }
-
         foreach ($request->shipment_details as $detail) {
             $shipmentDetail = ShipmentDetails::findOrFail($detail['id']);
             
             $oldQuantity = $shipmentDetail->quantity;
             $oldMissingQuantity = $shipmentDetail->missing_quantity;
 
-            $shipmentDetail->quantity = $detail['shipped_quantity'];
+            $shipmentDetail->quantity = $detail['quantity'];
             $shipmentDetail->missing_quantity = $detail['missing_quantity'];
             $shipmentDetail->price_per_unit = $detail['price_per_unit'];
             $shipmentDetail->ground_price_per_unit = $detail['ground_cost'];
             $shipmentDetail->profit_margin = $detail['profit_margin'];
             $shipmentDetail->selling_price = $detail['selling_price'];
+            $shipmentDetail->shipped_quantity = $detail['shipped_quantity']; 
+            $shipmentDetail->sample_quantity = $detail['sample_quantity']; 
+            $shipmentDetail->considerable_margin = $detail['considerable_margin']; 
+            $shipmentDetail->considerable_price = $detail['considerable_price']; 
             $shipmentDetail->save();
     
-            $quantityDifference = $detail['shipped_quantity'] - $oldQuantity;
+            $quantityDifference = $detail['quantity'] - $oldQuantity;
             $missingDifference = $detail['missing_quantity'] - $oldMissingQuantity;
     
             $stock = Stock::where('product_id', $shipmentDetail->product_id)
@@ -327,6 +318,8 @@ class ShipmentController extends Controller
                 $stock->ground_price_per_unit = $detail['ground_cost'];
                 $stock->profit_margin = $detail['profit_margin'];
                 $stock->selling_price = $detail['selling_price'];
+                $stock->considerable_margin = $detail['considerable_margin'];
+                $stock->considerable_price = $detail['considerable_price'];
                 $stock->updated_by = auth()->id();
                 $stock->save();
             }
@@ -346,6 +339,8 @@ class ShipmentController extends Controller
                 $stockHistory->ground_price_per_unit = $detail['ground_cost'];
                 $stockHistory->profit_margin = $detail['profit_margin'];
                 $stockHistory->selling_price = $detail['selling_price'];
+                $stockHistory->considerable_margin = $detail['considerable_margin'];
+                $stockHistory->considerable_price = $detail['considerable_price'];
                 $stockHistory->updated_by = auth()->user()->id;
                 $stockHistory->save();
             }
