@@ -159,7 +159,8 @@
                             <td>
                                 {{ $order->user->name }}<br />
                                 {{ $order->user->email }}<br />
-                                {{ $order->user->phone }}
+                                {{ $order->user->phone }} <br />
+                                {{ $order->user->address ?? '' }}
                             </td>
                         </tr>
                     </table>
@@ -167,14 +168,14 @@
             </tr>
 
             <tr class="heading">
-                <td>Item</td>
-                <td>Description</td>
+                <td>Item Description</td>
+                <td>Quantity</td>
             </tr>
 
             @foreach ($order->orderDetails as $detail)
             <tr class="item {{ $loop->last ? 'last' : '' }}">
-                <td>{{ $detail->product->name }}</td>
                 <td>{{ $detail->product->product_code }} - {{ $detail->product->name }} - {{ $detail->size }} - {{ $detail->color }}</td>
+                <td>{{ $detail->quantity }}</td>
             </tr>
             @endforeach
 
