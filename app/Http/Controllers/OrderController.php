@@ -1463,7 +1463,7 @@ class OrderController extends Controller
     }
     public function returnedOrders()
     {
-        $orders = Order::with(['user', 'orderReturns.product'])
+        $orders = Order::with(['user', 'orderReturns.product', 'orderReturns.orderDetails'])
                     ->where('status', 6)
                     ->whereIn('order_type', [0, 1])
                     ->orderBy('id', 'desc')
@@ -1501,18 +1501,48 @@ class OrderController extends Controller
                 $transaction->created_by = auth()->user()->id;
                 $transaction->created_ip = request()->ip();
                 $transaction->save();
-
+            
                 $orderDetails = $order->orderDetails;
-                    foreach ($orderDetails as $detail) {
+                foreach ($orderDetails as $detail) {
                     $orderReturn = new OrderReturn();
                     $orderReturn->product_id = $detail->product_id;
-                    // $orderReturn->order_id = $order->id;
+                    $orderReturn->order_details_id = $detail->id;
+                    $orderReturn->order_id = $order->id;
                     $orderReturn->quantity = $detail->quantity ?? 0;
                     $orderReturn->new_quantity = $detail->quantity ?? 0;
                     $orderReturn->returned_by = auth()->user()->id;
                     $orderReturn->save();
+            
+                    $stock = Stock::where('product_id', $detail->product_id)
+                        ->where('size', $detail->size)
+                        ->where('color', $detail->color)
+                        ->where('warehouse_id', $detail->warehouse_id)
+                        ->first();
+            
+                    if ($stock) {
+                        $remainingQty = $detail->quantity;
+                        $stockHistories = StockHistory::where('stock_id', $stock->id)
+                            ->orderBy('created_at', 'desc') // Start from the most recent history
+                            ->get();
+            
+                        foreach ($stockHistories as $history) {
+                            if ($remainingQty > 0) {
+                                if ($history->selling_qty >= $remainingQty) {
+                                    $history->selling_qty -= $remainingQty;
+                                    $history->save();
+                                    $remainingQty = 0;
+                                } else {
+                                    $remainingQty -= $history->selling_qty;
+                                    $history->selling_qty = 0;
+                                    $history->save();
+                                }
+                            } else {
+                                break;
+                            }
+                        }
+                    }
                 }
-            }
+            }            
 
             if ($request->status == 7) {
                 $orderDetails = OrderDetails::where('order_id', $order->id)->get();

@@ -138,23 +138,23 @@ class StockController extends Controller
                 return 'N/A';
             })            
             ->addColumn('quantity_formatted', function ($row) {
-                return $row->quantity ? number_format($row->quantity, 0) : ' ';
+                return $row->quantity ? number_format($row->quantity, 0) : '0';
             })
             
             ->addColumn('selling_qty', function ($row) {
-                return $row->selling_qty ? $row->selling_qty : ' ';
+                return $row->selling_qty ? $row->selling_qty : '0';
             })
             
             ->addColumn('available_qty', function ($row) {
-                return $row->available_qty ? $row->available_qty : 'N/A';
+                return $row->available_qty ? $row->available_qty : '0';
             })
             
             ->addColumn('purchase_price', function ($row) {
-                return $row->purchase_price ? $row->purchase_price : 'N/A';
+                return $row->purchase_price ? $row->purchase_price : '';
             })
             
             ->addColumn('warehouse', function ($row) {
-                return $row->warehouse ? $row->warehouse->name : 'N/A';
+                return $row->warehouse ? $row->warehouse->name : '';
             })
             ->addColumn('action', function ($data) {
                 $btn = '<div class="table-actions"> ';  
@@ -937,27 +937,52 @@ class StockController extends Controller
         $request->validate([
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|numeric|min:1',
+            'order_details_id' => 'required|exists:order_details,id',
         ]);
 
+        $order_details_id = $request->input('order_details_id');
         $product_id = $request->input('product_id');
         $quantity = $request->input('quantity');
 
-        $stock = Stock::where('product_id', $product_id)->first();
+        $orderDetails = OrderDetails::find($order_details_id);
+
+        if (!$orderDetails) {
+            return redirect()->back()->with('error', 'Order details not found.');
+        }
+
+        $size = $orderDetails->size;
+        $color = $orderDetails->color;
+        $warehouseId = $orderDetails->warehouse_id;
+
+        $stock = Stock::where('product_id', $product_id)
+            ->where('size', $size)
+            ->where('color', $color)
+            ->where('warehouse_id', $warehouseId)
+            ->first();
 
         if ($stock) {
             $stock->quantity += $quantity;
             $stock->updated_by = auth()->user()->id;
             $stock->save();
-        } else {
-            $newStock = new Stock();
-            $newStock->product_id = $product_id;
-            $newStock->quantity = $quantity;
-            $newStock->created_by = auth()->user()->id;
-            $newStock->save();
+        }
+
+        $remainingQty = $quantity; // Quantity to reverse
+        $stockHistories = StockHistory::where('stock_id', $stock->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        foreach ($stockHistories as $history) {
+            if ($remainingQty > 0) {
+                $history->available_qty += $remainingQty;
+                $history->save();
+                $remainingQty = 0;
+            } else {
+                break;
+            }
         }
 
         $orderReturn = OrderReturn::where('product_id', $product_id)
-            ->where('order_id', $request->order_id)
+            ->where('order_details_id', $request->order_details_id)
             ->first();
 
         if ($orderReturn) {
@@ -972,15 +997,25 @@ class StockController extends Controller
 
     public function sendToSystemLose(Request $request)
     {
-        // dd($request->all());
         $request->validate([
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|numeric|min:1',
+            'order_details_id' => 'required|exists:order_details,id',
         ]);
 
         $product_id = $request->input('product_id');
         $quantity = $request->input('quantity');
+        $order_details_id = $request->input('order_details_id');
 
+        $orderDetails = OrderDetails::find($order_details_id);
+
+        if (!$orderDetails) {
+            return redirect()->back()->with('error', 'Order details not found.');
+        }
+
+        $size = $orderDetails->size;
+        $color = $orderDetails->color;
+        $warehouseId = $orderDetails->warehouse_id;
 
         $systemLoss = new SystemLose();
         $systemLoss->product_id = $product_id;
@@ -990,16 +1025,32 @@ class StockController extends Controller
         $systemLoss->created_by = auth()->user()->id;
         $systemLoss->save();
 
-
         $orderReturn = OrderReturn::where('product_id', $product_id)
-            ->where('order_id', $request->order_id)
+            ->where('order_details_id', $request->order_details_id)
             ->first();
-            
 
         if ($orderReturn) {
             $orderReturn->new_quantity -= $quantity;
             $orderReturn->system_lose = $quantity;
             $orderReturn->save();
+        }
+
+        $stock = Stock::where('product_id', $product_id)
+            ->where('size', $size)
+            ->where('color', $color)
+            ->where('warehouse_id', $warehouseId)
+            ->first();
+
+        if ($stock) {
+            $history = StockHistory::where('stock_id', $stock->id)
+                ->where('available_qty', '!=', $quantity)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            if ($history) {
+                $history->systemloss_qty = ($history->systemloss_qty ?? 0) + $quantity;
+                $history->save();
+            }
         }
 
         return redirect()->back()->with('success', 'Sent to system lose successfully.');

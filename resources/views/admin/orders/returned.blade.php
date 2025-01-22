@@ -38,7 +38,7 @@
                                         <td>
                                             @foreach ($order->orderReturns as $return)
                                                 <p>
-                                                    <strong>Product:</strong> {{ $return->product->name }}<br>
+                                                    <strong>Product:</strong> {{ $return->product->name }}( {{ $return->orderDetails->size }} - {{ $return->orderDetails->color }} )<br>
                                                     <strong>Quantity:</strong> {{ $return->quantity }}<br>
                                                     <strong>Reason:</strong> {{ $return->reason }}<br>
                                                     <strong>Returned By:</strong> {{ optional($return->returnedBy)->name }}
@@ -86,6 +86,7 @@
                 </div>
                 <div class="modal-body">
                     <input type="hidden" name="order_id" id="stockOrderId">
+                    <input type="hidden" name="order_details_id" id="orderDetailsId">
                     <div class="mb-3">
                         <label for="product" class="form-label">Product</label>
                         <select class="form-control" id="stockProductSelect" name="product_id" required>
@@ -116,6 +117,7 @@
                 </div>
                 <div class="modal-body">
                     <input type="hidden" name="order_id" id="systemLossOrderId">
+                    <input type="hidden" name="order_details_id" id="systemLossOrderDetailsId">
                     <div class="mb-3">
                         <label for="product" class="form-label">Product</label>
                         <select class="form-control" id="systemLossProductSelect" name="product_id" required>
@@ -174,13 +176,17 @@
             $select.empty();
             items.forEach(function(item) {
                 if (item.new_quantity > 0) {
-                    $select.append('<option value="' + item.product.id + '" data-max-quantity="' + item.new_quantity + '">' + item.product.name + '</option>');
+                    $select.append('<option value="' + item.product.id + '" data-max-quantity="' + item.new_quantity + '" data-order-details-id="' + item.order_details.id + '">' + item.product.name + ' (' + item.order_details.size + ', ' + item.order_details.color + ')</option>');
                 }
             });
 
             $select.on('change', function() {
                 var maxQuantity = $(this).find('option:selected').data('max-quantity');
+                var selectedOption = $(this).find('option:selected');
+                var orderDetailsId = selectedOption.data('order-details-id');
                 $(this).closest('.modal').find('input[type="number"]').attr('max', maxQuantity);
+                $('#orderDetailsId').val(orderDetailsId);
+                $('#systemLossOrderDetailsId').val(orderDetailsId);
             }).trigger('change');
         }
     });

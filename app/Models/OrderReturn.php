@@ -21,6 +21,11 @@ class OrderReturn extends Model
         return $this->belongsTo(Order::class);
     }
 
+    public function orderDetails()
+    {
+        return $this->belongsTo(OrderDetails::class);
+    }
+
     public function returnedBy()
     {
         return $this->belongsTo(User::class, 'returned_by');
