@@ -286,7 +286,8 @@ class StockController extends Controller
                             ->orderby('id','DESC')
                             ->whereHas('order', function ($query) {
                                 $query->whereIn('order_type', ['0','1'])
-                                ->whereNotNull('warehouse_id');
+                                ->whereNotNull('warehouse_id')
+                                ->whereNotIn('status', [6, 7]);
                             })->get();
 
 
