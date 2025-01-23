@@ -987,7 +987,7 @@ class StockController extends Controller
 
         if ($orderReturn) {
             $orderReturn->new_quantity -= $quantity;
-            $orderReturn->return_stock = $quantity;
+            $orderReturn->return_stock += $quantity;
             $orderReturn->save();
         }
 
@@ -1031,7 +1031,7 @@ class StockController extends Controller
 
         if ($orderReturn) {
             $orderReturn->new_quantity -= $quantity;
-            $orderReturn->system_lose = $quantity;
+            $orderReturn->system_lose += $quantity;
             $orderReturn->save();
         }
 

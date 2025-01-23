@@ -40,7 +40,7 @@
                                                 <p>
                                                     <strong>Product:</strong> {{ $return->product->name }}( {{ $return->orderDetails->size }} - {{ $return->orderDetails->color }} )<br>
                                                     <strong>Quantity:</strong> {{ $return->quantity }}<br>
-                                                    <strong>Reason:</strong> {{ $return->reason }}<br>
+                                                    <strong class="d-none">Reason:</strong> {{ $return->reason }}<br>
                                                     <strong>Returned By:</strong> {{ optional($return->returnedBy)->name }}
                                                 </p>
                                             @endforeach
@@ -48,8 +48,8 @@
                                         <td>      
                                             @foreach ($order->orderReturns as $return)
                                                 <p>
-                                                    <strong>Product:</strong> {{ $return->product->name }}<br>
-                                                    <strong>Stock:</strong> {{ $return->return_stock }}<br>
+                                                    <strong>Product:</strong> {{ $return->product->name }}( {{ $return->orderDetails->size }} - {{ $return->orderDetails->color }} )<br>
+                                                    <strong>Returned to Stock:</strong> {{ $return->return_stock }}<br>
                                                     <strong>System Loss:</strong> {{ $return->system_lose }}<br>
                                                 </p>
                                             @endforeach
@@ -129,7 +129,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="reason" class="form-label">Reason</label>
-                        <textarea class="form-control" id="systemLossReason" name="reason" rows="3" required></textarea>
+                        <textarea class="form-control" id="systemLossReason" name="reason" rows="3"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
