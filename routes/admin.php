@@ -259,8 +259,10 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/get-sizes', [StockController::class, 'getSizes']);
     Route::post('/get-max-quantity', [StockController::class, 'getMaxQuantity']);
 
-    Route::post('/stock-transfer-requests', [StockTransferRequestController::class, 'storeTransferRequest']);
     Route::get('/stock-transfer-requests', [StockTransferRequestController::class, 'index'])->name('stock-transfer-requests.index');
+    
+    Route::post('/stock-transfer-requests', [StockTransferRequestController::class, 'storeTransferRequest']);
+
     Route::put('/stock-transfer-requests/{id}', [StockTransferRequestController::class, 'update'])->name('stock-transfer-requests.update');
 
     Route::post('/stock-transfer-requests/reject/{id}', [StockTransferRequestController::class, 'reject'])->name('stock-transfer-requests.reject');

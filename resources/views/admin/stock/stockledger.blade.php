@@ -71,7 +71,7 @@
                         <table class="table table-bordered table-striped" id="stock-table">
                             <thead>
                                 <tr>
-                                    <th>Total Product Item</th>
+                                    <th>Total Stocking Item</th>
                                     <th>Total Stock</th>
                                     <th>Total Supplier</th>
                                     <th>Total Whole Saler</th>
