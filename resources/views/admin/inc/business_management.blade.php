@@ -289,7 +289,7 @@
                 <li class="nav-item">
                     <a href="{{ route('stockhistory') }}" class="nav-link {{ (request()->is('admin/stocking-history') && !request()->is('admin/add-stock*')) ? 'active' : '' }}">
                         <i class="fas fa-list nav-icon"></i>
-                        <p>Warehouse Stock</p>
+                        <p>Stocking History</p>
                     </a>
                 </li>
 

@@ -360,7 +360,7 @@
             var maxQuantity = parseInt($('#max_quantity').val().trim());
 
             // Validate required fields
-            $('#requestStockForm').find('input, select, textarea').each(function() {
+            $('#requestStockForm').find('input, select').each(function() {
                 if ($(this).val().trim() === '') {
                     isValid = false;
                     $(this).addClass('is-invalid');
@@ -557,7 +557,8 @@
         });
 
         $('#reset-button').on('click', function() {
-            $('#warehouse_id').val('');
+            $('#warehouse_id').val(null).trigger('change');
+            $('#product_id').val(null).trigger('change');
             table.draw();
         });
 

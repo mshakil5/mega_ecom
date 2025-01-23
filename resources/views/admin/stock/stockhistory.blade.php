@@ -231,7 +231,8 @@
         });
 
         $('#reset-button').on('click', function() {
-            $('#warehouse_id').val('');
+            $('#warehouse_id').val(null).trigger('change');
+            $('#product_id').val(null).trigger('change');
             table.draw();
         });
 
@@ -247,7 +248,7 @@
             $('#quantityError').text('');
         });
 
-        $('#product_id').select2({
+        $('#product_id, #warehouse_id').select2({
             placeholder: "Select product...",
             allowClear: true,
             width: '100%'
