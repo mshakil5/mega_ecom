@@ -108,7 +108,7 @@ class StockController extends Controller
     {  
         $warehouseIds = json_decode(Auth::user()->warehouse_ids, true);
 
-        $query = StockHistory::select('date', 'stockid', 'purchase_id', 'product_id', 'stock_id', 'warehouse_id', 'quantity', 'selling_qty', 'available_qty', 'size', 'color', 'systemloss_qty', 'purchase_price', 'selling_price')
+        $query = StockHistory::select('date', 'stockid', 'purchase_id', 'product_id', 'stock_id', 'warehouse_id', 'quantity', 'selling_qty', 'available_qty', 'size', 'color', 'systemloss_qty', 'purchase_price', 'selling_price', 'received_quantity')
         ->when(!empty($warehouseIds), function ($query) use ($warehouseIds) {
             return $query->whereIn('warehouse_id', $warehouseIds);
         });
@@ -138,7 +138,8 @@ class StockController extends Controller
                 return 'N/A';
             })            
             ->addColumn('quantity_formatted', function ($row) {
-                return $row->quantity ? number_format($row->quantity, 0) : '0';
+                $totalQuantity = ($row->quantity ?? 0) + ($row->received_quantity ?? 0);
+                return number_format($totalQuantity, 0);
             })
             
             ->addColumn('selling_qty', function ($row) {
@@ -1159,6 +1160,8 @@ class StockController extends Controller
         $colors = Stock::where('product_id', $request->product_id)
             ->where('warehouse_id', $request->warehouse_id)
             ->where('quantity', '>', 0)
+            ->select('color')
+            ->distinct()
             ->get();
 
         return response()->json(['colors' => $colors]);
@@ -1176,6 +1179,8 @@ class StockController extends Controller
             ->where('warehouse_id', $request->warehouse_id)
             ->where('color', $request->color)
             ->where('quantity', '>', 0)
+            ->select('size')
+            ->distinct()
             ->get();
     
         return response()->json(['sizes' => $sizes]);

@@ -29,6 +29,7 @@ return new class extends Migration
             $table->string('selling_qty')->nullable();
             $table->string('available_qty')->nullable();
             $table->string('systemloss_qty')->nullable();
+            $table->string('received_quantity')->nullable();
             $table->double('purchase_price',10,2)->nullable();
             $table->double('ground_price_per_unit',10,2)->nullable();
             $table->double('profit_margin',10,2)->nullable();

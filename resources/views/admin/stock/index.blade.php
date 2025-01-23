@@ -348,8 +348,15 @@
             $('#max_quantity').val('');
         }
 
-        $('#requestStockModal').on('hidden.bs.modal', function() {
-            resetDropdowns();
+        $('#requestStockModal').on('hidden.bs.modal', function () {
+            $('#requestStockForm')[0].reset();
+
+            $('#productId').val('').trigger('change');
+            $('#warehouse').val('').trigger('change');
+            $('#toWarehouse').val('').trigger('change');
+            $('#color').val('').trigger('change');
+            $('#size').val('').trigger('change');
+            $('#max_quantity').val('');
         });
 
         $('#submitRequest').on('click', function(e) {
@@ -419,8 +426,10 @@
                             
                         },
                         error: function(xhr) {
-                            console.log(xhr.responseText);
-                            alert('An error occurred');
+                            swal({
+                                text: JSON.parse(xhr.responseText).errors.toWarehouse[0] || "An error occurred while sending the request.",
+                                icon: "error"
+                            });
                         }
                     });
                 }
