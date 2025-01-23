@@ -152,7 +152,7 @@
                                 <th>Product Details</th>
                                 <th>Size-Color</th>
                                 <th>Purchased Quantity</th>
-                                <th>Shipped + Missed Quantity</th>
+                                <th>Shipped Quantity</th>
                                 <th>Purchase Price Per Unit</th>
                                 <th>Net Total</th>
                             </tr>

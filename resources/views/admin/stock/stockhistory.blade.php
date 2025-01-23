@@ -56,14 +56,14 @@
                                         <th>Sl</th>
                                         <th>Date</th>
                                         <th>Product</th>
+                                        <th>Size</th>
+                                        <th>Color</th>
                                         <th>Stock Qty</th>
                                         <th>Available Qty</th>
                                         <th>Selling Qty</th>
                                         <th>Selling Price</th>
                                         <th>Purchase Price</th>
                                         <th>Warehouse</th>
-                                        <th>Size</th>
-                                        <th>Color</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -203,14 +203,14 @@
                 { data: 'sl', name: 'sl', orderable: false, searchable: false },
                 { data: 'date', name: 'date' },
                 { data: 'product_details', name: 'product_details' },
+                { data: 'size', name: 'size' },
+                { data: 'color', name: 'color' },
                 { data: 'quantity_formatted', name: 'quantity' },
                 { data: 'available_qty', name: 'available_qty' },
                 { data: 'selling_qty', name: 'selling_qty' },
                 { data: 'selling_price', name: 'selling_price' },
                 { data: 'purchase_price', name: 'purchase_price' },
                 { data: 'warehouse', name: 'warehouse' },
-                { data: 'size', name: 'size' },
-                { data: 'color', name: 'color' },
                 {data: 'action', name: 'action', orderable: false, searchable: false}
             ],
             // columnDefs: [
