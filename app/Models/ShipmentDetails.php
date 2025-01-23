@@ -35,4 +35,9 @@ class ShipmentDetails extends Model
     {
         return $this->belongsTo(PurchaseHistory::class, 'purchase_history_id');
     }
+
+    public function systemLose()
+    {
+        return $this->hasOne(SystemLose::class, 'shipment_detail_id');
+    }
 }

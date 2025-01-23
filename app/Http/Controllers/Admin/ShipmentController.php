@@ -201,7 +201,7 @@ class ShipmentController extends Controller
 
     public function editShipment($id)
     {
-        $shipment = Shipment::with('shipmentDetails.supplier', 'shipmentDetails.product', 'shipmentDetails.purchaseHistory', 'transactions')->findOrFail($id);
+        $shipment = Shipment::with('shipmentDetails.supplier', 'shipmentDetails.product', 'shipmentDetails.purchaseHistory', 'transactions', 'shipmentDetails.systemLose')->findOrFail($id);
         $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
         $expenses = ChartOfAccount::where('account_head', 'Expenses')->where('sub_account_head', 'Cost Of Good Sold')->select('id', 'account_name')->get();
         return view('admin.shipment.edit', compact('shipment', 'warehouses', 'expenses'));
@@ -290,6 +290,7 @@ class ShipmentController extends Controller
             
             $oldQuantity = $shipmentDetail->quantity;
             $oldMissingQuantity = $shipmentDetail->missing_quantity;
+            $oldShippedQuantity = $shipmentDetail->shipped_quantity;
 
             $shipmentDetail->quantity = $detail['quantity'];
             $shipmentDetail->missing_quantity = $detail['missing_quantity'];
@@ -305,6 +306,7 @@ class ShipmentController extends Controller
     
             $quantityDifference = $detail['quantity'] - $oldQuantity;
             $missingDifference = $detail['missing_quantity'] - $oldMissingQuantity;
+            $shippedDifference = $detail['shipped_quantity'] - $oldShippedQuantity;
     
             $stock = Stock::where('product_id', $shipmentDetail->product_id)
                 ->where('size', $shipmentDetail->size)
@@ -343,6 +345,36 @@ class ShipmentController extends Controller
                 $stockHistory->considerable_price = $detail['considerable_price'];
                 $stockHistory->updated_by = auth()->user()->id;
                 $stockHistory->save();
+            }
+
+            $purchaseHistory = PurchaseHistory::find($shipmentDetail->purchase_history_id);
+            if ($purchaseHistory) {
+                $purchaseHistory->shipped_quantity += $shippedDifference;
+                $purchaseHistory->remaining_product_quantity -= $shippedDifference;
+                $purchaseHistory->save();
+            }
+
+            $systemLose = SystemLose::where('shipment_detail_id', $shipmentDetail->id)->first();
+
+            if (!empty($detail['missing_quantity']) && $detail['missing_quantity'] > 0) {
+                if ($systemLose) {
+                    $systemLose->quantity = $detail['missing_quantity'];
+                    $systemLose->size = $detail['size'];
+                    $systemLose->color = $detail['color'];
+                    $systemLose->updated_by = auth()->id();
+                    $systemLose->save();
+                } else {
+                    SystemLose::create([
+                        'product_id' => $detail['product_id'],
+                        'shipment_detail_id' => $shipmentDetail->id,
+                        'quantity' => $detail['missing_quantity'],
+                        'size' => $detail['size'],
+                        'color' => $detail['color'],
+                        'created_by' => auth()->id()
+                    ]);
+                }
+            } elseif ($systemLose) {
+                $systemLose->delete();
             }
         }
     

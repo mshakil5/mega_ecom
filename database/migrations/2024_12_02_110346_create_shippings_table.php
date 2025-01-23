@@ -19,7 +19,7 @@ return new class extends Migration
             $table->json('purchase_ids')->nullable();
             $table->json('purchase_history_ids')->nullable();
             $table->boolean('status')->default(1);
-            // 1 == Processing, 2 == On The Way, 3 == Received
+            // 1 == Processing, 2 == On The Way, 3 == Received 4== stocking completed
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->timestamps();

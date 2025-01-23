@@ -75,6 +75,7 @@
                                             <input type="hidden" value="{{ $detail->size }}" class="product_size">
                                             <input type="hidden" value="{{ $detail->color }}" class="product_color">
                                             <input type="hidden" value="{{ $detail->ground_price_per_unit }}" class="ground_price_per_unit">
+                                            <input type="hidden" value="{{ $detail->systemLose->id }}" class="system_lose_id">
                                             <input type="hidden" value="{{ $detail->price_per_unit }}" class="purchase_price">
                                         </td>
                                         <td>
@@ -97,14 +98,19 @@
                                         <td>{{ $currentStock }}</td>
                                         <td>{{ $detail->purchaseHistory->quantity }}</td>
                                         <td>
-                                            <input type="number" value="{{ $detail->shipped_quantity }}" max="{{ $detail->shipped_quantity }}" min="1" class="form-control shipped_quantity" readonly />
-                                            <input type="hidden" value="{{ $detail->quantity + $detail->missing_quantity }}" max="{{ $detail->quantity + $detail->missing_quantity }}" class="max-quantity" />
+                                            <input type="number" value="{{ $detail->shipped_quantity }}" max="{{ $detail->shipped_quantity }}" min="1" class="form-control shipped_quantity" @if($detail->shipment->shipping->status == 4) readonly @endif />
+                                            <input 
+                                                type="hidden" 
+                                                value="{{ $detail->purchaseHistory->remaining_product_quantity + $detail->shipped_quantity }}"
+                                                max="{{ $detail->purchaseHistory->remaining_product_quantity + $detail->shipped_quantity }}" 
+                                                class="max-quantity"
+                                            />
                                         </td>
                                         <td>
-                                            <input type="number" value="{{ $detail->missing_quantity }}" max="{{ $detail->quantity }}" min="0" class="form-control missing_quantity" readonly />
+                                            <input type="number" value="{{ $detail->missing_quantity }}" max="{{ $detail->quantity }}" min="0" class="form-control missing_quantity" @if($detail->shipment->shipping->status == 4) readonly @endif/>
                                         </td>
                                         <td>
-                                            <input type="number" value="{{ $detail->sample_quantity }}" min="0" class="form-control sample_quantity" readonly />
+                                            <input type="number" value="{{ $detail->sample_quantity }}" min="0" class="form-control sample_quantity" @if($detail->shipment->shipping->status == 4) readonly @endif/>
                                         </td>
                                         <td>
                                             <input type="number" value="{{ $detail->quantity }}" max="{{ $detail->quantity }}" min="0" class="form-control saleable_quantity" readonly />
@@ -288,6 +294,7 @@
                 let id = $(this).find('.id').val();
                 let supplierId = $(this).find('.supplier_id').val();
                 let purchaseHistoryId = $(this).find('.purchase_history_id').val();
+                let systemLoseId = $(this).find('.system_lose_id').val();
                 let productId = $(this).find('.product_id').val();
                 let size = $(this).find('.product_size').val();
                 let color = $(this).find('.product_color').val();
@@ -307,6 +314,7 @@
                     shipmentDetails.push({
                         id: id,
                         purchase_history_id: purchaseHistoryId,
+                        system_lose_id: systemLoseId,
                         supplier_id: supplierId,
                         product_id: productId,
                         size: size,
@@ -451,7 +459,7 @@
                 const saleableQuantity = shippedQuantity - missingQuantity - sampleQuantity;
                 $(this).find('.saleable_quantity').val(saleableQuantity);
 
-                const remainingQuantity = maxQuantity - (shippedQuantity + missingQuantity + sampleQuantity);
+                const remainingQuantity = maxQuantity - shippedQuantity;
                 $(this).find('.remaining_quantity').val(remainingQuantity < 0 ? 0 : remainingQuantity);
 
                 const productTotal = purchasePrice * shippedQuantity;
@@ -539,7 +547,7 @@
                 $messageContainer.removeClass('d-none');
 
                 if (difference < 0) {
-                    $messageText.html(`<span style="color: red;">You're over budget by ${Math.abs(difference).toFixed(2)}</span>`);
+                    $messageText.html(`<span style="color: red;">You're over budget by ${difference.toFixed(2)}</span>`);
                 } else {
                     $messageText.html(`<span style="color: green;">You're under budget by ${difference.toFixed(2)}</span>`);
                 }

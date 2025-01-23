@@ -395,7 +395,7 @@
             const saleableQuantity = shippedQuantity - missingQuantity - sampleQuantity;
             $(this).find('.saleable_quantity').val(saleableQuantity);
 
-            const remainingQuantity = maxQuantity - (shippedQuantity + missingQuantity + sampleQuantity);
+            const remainingQuantity = maxQuantity - shippedQuantity;
             $(this).find('.remaining_quantity').val(remainingQuantity < 0 ? 0 : remainingQuantity);
 
             const productTotal = purchasePrice * shippedQuantity;
@@ -656,7 +656,7 @@
                 const saleableQuantity = shippedQuantity - missingQuantity - sampleQuantity;
                 $(this).find('.saleable_quantity').val(saleableQuantity);
 
-                const remainingQuantity = maxQuantity - (shippedQuantity + missingQuantity + sampleQuantity);
+                const remainingQuantity = maxQuantity - shippedQuantity;
                 $(this).find('.remaining_quantity').val(remainingQuantity < 0 ? 0 : remainingQuantity);
 
                 const productTotal = purchasePrice * shippedQuantity;

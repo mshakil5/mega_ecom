@@ -65,6 +65,7 @@
                                                 <option value="1" {{ $shipping->status == 1 ? 'selected' : '' }}>Processing</option>
                                                 <option value="2" {{ $shipping->status == 2 ? 'selected' : '' }}>On The Way</option>
                                                 <option value="3" {{ $shipping->status == 3 ? 'selected' : '' }}>Received</option>
+                                                <option value="4" {{ $shipping->status == 4 ? 'selected' : '' }}>Stocking Completed</option>
                                             </select>
                                         @endif
                                     </td>
