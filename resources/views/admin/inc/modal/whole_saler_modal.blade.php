@@ -48,6 +48,12 @@
                                 <input type="password" class="form-control" id="confirm_password" name="confirm_password" value="123456" placeholder="Enter password">
                             </div>
                         </div>
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                            <label>Address</label>
+                            <textarea class="form-control" id="address" name="address" rows="4" placeholder="Enter address"></textarea>
+                            </div>
+                        </div>
                     </div>
                     <!-- Submit Button -->
                     <button type="button" class="btn btn-success" id="saveWholeSalerBtn">Save WholeSaler</button>

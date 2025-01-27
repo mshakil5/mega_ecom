@@ -175,6 +175,7 @@ class CustomerController extends Controller
             'surname' => $request->surname,
             'email' => $request->email,
             'phone' => $request->phone,
+            'address' => $request->address,
             'password' => Hash::make($request->password),
             'is_type' => 0,
         ]);
