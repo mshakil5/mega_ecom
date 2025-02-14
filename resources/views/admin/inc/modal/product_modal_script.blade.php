@@ -29,6 +29,7 @@
                     $('#addCategoryModal').modal('hide');
                     $('#category_name').val('');
                     $('#category').append(`<option value="${response.id}" selected>${response.name}</option>`);
+                    $('.NewCategory').append(`<option value="${response.id}">${response.name}</option>`);
                     swal({
                         text: "Category added successfully",
                         icon: "success",

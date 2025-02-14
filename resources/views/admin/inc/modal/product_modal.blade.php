@@ -41,7 +41,7 @@
                     <div class="col-sm-12">
                         <div class="form-group">
                             <label for="category_id">Category <span style="color: red;">*</span></label>
-                            <select class="form-control" id="category_id">
+                            <select class="form-control NewCategory" id="category_id">
                                 <option value="">Select Category</option>
                                 @foreach($categories as $category)
                                 <option value="{{ $category->id }}">{{ $category->name }}</option>
