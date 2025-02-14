@@ -159,7 +159,7 @@ class ProductController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'product_code' => 'required|string|max:255|unique:products,product_code',
+            'product_code' => 'required|string',
             'price' => 'nullable|numeric',
             'size_ids' => 'nullable|array',
             'size_ids.*' => 'exists:sizes,id',
@@ -186,10 +186,21 @@ class ProductController extends Controller
             $imagePath = $randomName;
         }
 
+        $slug = Str::slug($request->name);
+        $count = Product::where('slug', 'like', "$slug%")->count();
+        $uniqueSlug = $count ? "{$slug}-" . ($count + 1) : $slug;
+
+        $latestProduct = Product::where('product_code', 'like', "STL-{$request->product_code}-" . date('Y') . '-%')
+            ->orderBy('product_code', 'desc')
+            ->first();
+
+        $nextNumber = $latestProduct ? (intval(substr($latestProduct->product_code, -5)) + 1) : 1;
+        $productCode = "STL-{$request->product_code}-" . date('Y') . '-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+
         $product = Product::create([
             'name' => $request->name,
-            'slug' => Str::slug($request->name),
-            'product_code' => $request->product_code,
+            'slug' => $uniqueSlug,
+            'product_code' => $productCode,
             'price' => $request->price,
             'sku' => $request->sku,
             'short_description' => $request->short_description,
