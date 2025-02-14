@@ -88,6 +88,10 @@ Route::get('/shop', [FrontendController::class, 'shop'])->name('frontend.shop');
 
 Route::get('/about-us', [FrontendController::class, 'aboutUs'])->name('frontend.about');
 
+Route::get('/privacy-policy', [FrontendController::class, 'privacyPolicy'])->name('frontend.privacy-policy');
+Route::get('/terms-and-conditions', [FrontendController::class, 'termsAndConditions'])->name('frontend.terms-and-conditions');
+Route::get('/faq', [FrontendController::class, 'faq'])->name('frontend.faq');
+
 Route::get('/contact', [FrontendController::class, 'contact'])->name('frontend.contact');
 Route::post('/contact-us', [FrontendController::class, 'storeContact'])->name('contact.store');
 

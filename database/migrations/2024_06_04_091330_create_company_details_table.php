@@ -28,6 +28,8 @@ return new class extends Migration
             $table->string('website',191)->nullable();
             $table->string('footer_content',191)->nullable();
             $table->string('footer_link',191)->nullable();
+            $table->longText('privacy_policy')->nullable();
+            $table->longText('terms_and_conditions')->nullable();
             $table->string('opening_time')->nullable();
             $table->string('header_content',191)->nullable();
             $table->string('google_play_link',191)->nullable();

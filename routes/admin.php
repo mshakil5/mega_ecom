@@ -55,6 +55,7 @@ use App\Http\Controllers\Admin\DeliveryChargeController;
 use App\Http\Controllers\Admin\ShippingController;
 use App\Http\Controllers\Admin\ShipmentController;
 use App\Http\Controllers\Admin\StockTransferRequestController;
+use App\Http\Controllers\Admin\FAQController;
 
 Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], function(){
   
@@ -622,5 +623,14 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     // daybook
     Route::get('cash-book', [DaybookController::class, 'cashbook'])->name('cashbook');
     Route::get('bank-book', [DaybookController::class, 'bankbook'])->name('bankbook');
+
+    //Faq Question crud
+    Route::get('/faq-questions', [FAQController::class, 'index'])->name('allFaq');    
+    Route::post('/faq-questions', [FAQController::class, 'store']);
+    Route::get('/faq-questions/{id}/edit', [FAQController::class, 'edit']);
+    Route::post('/faq-questions-update', [FAQController::class, 'update']);
+    Route::get('/faq-questions/{id}', [FAQController::class, 'delete']);    
+
+
 });
   

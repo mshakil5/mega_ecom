@@ -216,6 +216,20 @@
 
                 <div class="col-sm-12">
                     <div class="form-group">
+                    <label>Privacy Policy</label>
+                        <textarea name="privacy_policy" id="privacy_policy" class="form-control @error('privacy_policy') is-invalid @enderror summernote" cols="30" rows="3">{{$data->privacy_policy}}</textarea>
+                    </div>
+                </div>
+
+                <div class="col-sm-12">
+                    <div class="form-group">
+                    <label>Terms & Conditions</label>
+                        <textarea name="terms_and_conditions" id="terms_and_conditions" class="form-control @error('terms_and_conditions') is-invalid @enderror summernote" cols="30" rows="3">{{$data->terms_and_conditions}}</textarea>
+                    </div>
+                </div>
+
+                <div class="col-sm-12">
+                    <div class="form-group">
                     <label>Size Guide</label>
                         <textarea name="size_guide" id="size_guide" class="form-control @error('size_guide') is-invalid @enderror summernote" cols="30" rows="3">{{$data->size_guide}}</textarea>
                     </div>

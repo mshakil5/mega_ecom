@@ -33,6 +33,7 @@ use App\Models\CouponUsage;
 use App\Models\StockHistory;
 use App\Models\Size;
 use App\Models\ProductReview;
+use App\Models\FaqQuestion;
 
 class FrontendController extends Controller
 {
@@ -562,6 +563,24 @@ class FrontendController extends Controller
     {
         $companyDetails = CompanyDetails::select('about_us')->first();
         return view('frontend.about', compact('companyDetails'));
+    }
+
+    public function privacyPolicy()
+    {
+        $companyDetails = CompanyDetails::select('privacy_policy')->first();
+        return view('frontend.privacy', compact('companyDetails'));
+    }
+
+    public function termsAndConditions()
+    {
+        $companyDetails = CompanyDetails::select('terms_and_conditions')->first();
+        return view('frontend.terms', compact('companyDetails'));
+    }
+
+    public function faq()
+    {
+        $faqQuestions = FaqQuestion::orderBy('id', 'asc')->get();
+        return view('frontend.faq', compact('faqQuestions'));
     }
 
     public function checkCoupon(Request $request)

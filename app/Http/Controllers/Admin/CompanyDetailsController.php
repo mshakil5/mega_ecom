@@ -93,6 +93,8 @@ class CompanyDetailsController extends Controller
         $data->linkedin = $request->linkedin;
         $data->youtube = $request->youtube;
         $data->tawkto = $request->tawkto;
+        $data->privacy_policy = $request->privacy_policy;
+        $data->terms_and_conditions = $request->terms_and_conditions;
         $data->google_appstore_link = $request->google_appstore_link;
         $data->google_play_link = $request->google_play_link;
         $data->opening_time = $request->opening_time;
