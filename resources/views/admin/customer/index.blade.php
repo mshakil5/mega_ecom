@@ -37,14 +37,14 @@
                   <div class="row">
                     <div class="col-sm-6">
                       <div class="form-group">
-                        <label>Name <span style="color: red;">*</span></label>
-                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter name">
+                        <label>Full Name <span style="color: red;">*</span></label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter full name">
                       </div>
                     </div>
                     <div class="col-sm-6">
                       <div class="form-group">
-                        <label>Surname <span style="color: red;">*</span></label>
-                        <input type="text" id="surname" name="surname" class="form-control" placeholder="Enter surname">
+                        <label>Business Name <span style="color: red;">*</span></label>
+                        <input type="text" id="surname" name="surname" class="form-control" placeholder="Enter Business Name">
                       </div>
                     </div>
                   </div>
@@ -66,8 +66,8 @@
 
                   <div class="col-sm-12">
                     <div class="form-group">
-                      <label>Address</label>
-                      <textarea class="form-control" id="address" name="address" rows="4" placeholder="Enter address"></textarea>
+                      <label>Business Address<span style="color: red;">*</span></label>
+                      <textarea class="form-control" id="address" name="address" rows="4" placeholder="Enter business address"></textarea>
                     </div>
                   </div>
 

@@ -50,10 +50,17 @@ class CustomerController extends Controller
     public function customerStore(Request $request)
     {
         if(empty($request->name)){
-            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Username \" field..!</b></div>";
+            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Full Name \" field..!</b></div>";
             return response()->json(['status'=> 303,'message'=>$message]);
             exit();
         }
+
+        if(empty($request->surname)){
+            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Business Name \" field..!</b></div>";
+            return response()->json(['status'=> 303,'message'=>$message]);
+            exit();
+        }
+
         if(empty($request->email)){
             $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Email \" field..!</b></div>";
             return response()->json(['status'=> 303,'message'=>$message]);
@@ -61,6 +68,12 @@ class CustomerController extends Controller
         }
         if(empty($request->phone)){
             $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Phone \" field..!</b></div>";
+            return response()->json(['status'=> 303,'message'=>$message]);
+            exit();
+        }
+
+        if(empty($request->address)){
+            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Business address \" field..!</b></div>";
             return response()->json(['status'=> 303,'message'=>$message]);
             exit();
         }
@@ -73,7 +86,7 @@ class CustomerController extends Controller
         }
         $data = new User;
         $data->name = $request->name;
-        $data->surname = $request->surname;
+        $data->surname = $request->surname; // surname is business name
         $data->phone = $request->phone;
         $data->email = $request->email;
         $data->address = $request->address;
@@ -105,7 +118,12 @@ class CustomerController extends Controller
     public function customerUpdate(Request $request)
     {
         if(empty($request->name)){
-            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Username \" field..!</b></div>";
+            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Full Name \" field..!</b></div>";
+            return response()->json(['status'=> 303,'message'=>$message]);
+            exit();
+        }
+        if(empty($request->surname)){
+            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Business Name \" field..!</b></div>";
             return response()->json(['status'=> 303,'message'=>$message]);
             exit();
         }
@@ -116,6 +134,12 @@ class CustomerController extends Controller
         }
         if(empty($request->phone)){
             $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Phone \" field..!</b></div>";
+            return response()->json(['status'=> 303,'message'=>$message]);
+            exit();
+        }
+
+        if(empty($request->address)){
+            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Business address \" field..!</b></div>";
             return response()->json(['status'=> 303,'message'=>$message]);
             exit();
         }
@@ -130,7 +154,7 @@ class CustomerController extends Controller
 
         $data = User::find($request->codeid);
         $data->name = $request->name;
-        $data->surname = $request->surname;
+        $data->surname = $request->surname; // surname is business name
         $data->phone = $request->phone;
         $data->email = $request->email;
         $data->address = $request->address;
@@ -164,15 +188,16 @@ class CustomerController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'surname' => 'nullable|string|max:255',
+            'business_name' => 'nullable|string|max:255',
             'email' => 'required|email|unique:users,email',
             'phone' => 'nullable|string|max:15',
+            'address' => 'required',
             'password' => 'required|string|min:6',
         ]);
 
         $user = User::create([
             'name' => $request->name,
-            'surname' => $request->surname,
+            'surname' => $request->business_name, // surname is business name
             'email' => $request->email,
             'phone' => $request->phone,
             'address' => $request->address,
