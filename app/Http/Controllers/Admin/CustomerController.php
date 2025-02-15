@@ -311,15 +311,19 @@ class CustomerController extends Controller
                                 ->select('id', 'date', 'note','payment_type','table_type', 'discount','at_amount','document','transaction_type')
                                 ->get();
 
+                                // dd($transactions);
+
         $totalDrAmount = Transaction::where('customer_id', $wholeSalerId)->whereIn('table_type', ['Sales'])
                                         ->whereIn('payment_type', ['Credit'])
                                         ->where('transaction_type', 'Current')
                                         ->sum('at_amount');
 
+                                // dd($totalDrAmount);
         $totalCrAmount = Transaction::where('customer_id', $wholeSalerId)->whereIn('table_type', ['Sales'])
                                         ->whereIn('payment_type', ['Cash','Bank','Return'])
                                         ->whereIn('transaction_type', ['Return', 'Received'])
                                         ->sum('at_amount');
+                                        // dd($totalCrAmount);
         $totalBalance = $totalDrAmount - $totalCrAmount;
         return view('admin.customer.transactions', compact('transactions','customer','totalBalance'));
     }

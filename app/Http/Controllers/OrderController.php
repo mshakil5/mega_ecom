@@ -1498,6 +1498,7 @@ class OrderController extends Controller
                 $transaction->amount = $order->net_amount;
                 $transaction->at_amount = $order->net_amount;
                 $transaction->transaction_type = 'Return';
+                $transaction->payment_type = 'Return';
                 $transaction->created_by = auth()->user()->id;
                 $transaction->created_ip = request()->ip();
                 $transaction->save();

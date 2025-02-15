@@ -53,17 +53,17 @@
                   @foreach ($transactions as $key => $data)
                   <tr>
                     <td>{{ $key + 1 }}</td>
-                   <td>{{ \Carbon\Carbon::parse($data->date)->format('d-m-Y') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($data->date)->format('d-m-Y') }}</td>
                     <td>
-                    @if(in_array($data->payment_type, ['Cash', 'Bank']))
-                      Received
-                    @elseif (in_array($data->payment_type, ['Return']))
-                      Return
-                    @else
-                      Sales
-                    @endif
-                    <br>
-                    {!! $data->note !!}
+                      @if(in_array($data->payment_type, ['Cash', 'Bank']))
+                        {{$data->payment_type}} Received
+                        @elseif (in_array($data->payment_type, ['Return']))
+                        Return
+                      @else
+                        Sales
+                      @endif
+                      <br>
+                      {!! $data->note !!}
                     </td>
                     <td>{{ $data->payment_type }}</td>
                     <td>
@@ -76,23 +76,23 @@
                         @endif
                     </td>
 
-                    @if(in_array($data->payment_type, ['Credit']))
+                    @if(in_array($data->payment_type, ['Cash', 'Bank','Return']))
                       <td style="text-align: right">{{ number_format($data->at_amount, 2) }}</td>
                       <td></td>
-                      <td style="text-align: right">{{ number_format($balance, 2) }}</td>
-                      @php
-                          $balance = $balance - $data->at_amount;
-                      @endphp
-                    @elseif(in_array($data->payment_type, ['Cash', 'Bank', 'Return']))
-                      <td></td>
-                      <td style="text-align: right">{{ number_format($data->at_amount, 2) }}</td>
                       <td style="text-align: right">{{ number_format($balance, 2) }}</td>
                       @php
                           $balance = $balance + $data->at_amount;
                       @endphp
+                    @elseif(in_array($data->payment_type, ['Credit']))
+                      <td></td>
+                      <td style="text-align: right">{{ number_format($data->at_amount, 2) }}</td>
+                      <td style="text-align: right">{{ number_format($balance, 2) }}</td>
+                      @php
+                          $balance = $balance - $data->at_amount;
+                      @endphp
                     @endif
                     <td>
-                      @if($data->payment_type !== 'Credit')
+                      @if($data->payment_type !== 'Credit' && $data->payment_type !== 'Return')
                       <i class="fas fa-edit edit-btn" 
                         data-id="{{ $data->id }}" 
                         data-at-amount="{{ $data->at_amount }}" 
