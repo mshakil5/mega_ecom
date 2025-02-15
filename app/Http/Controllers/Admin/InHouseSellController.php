@@ -552,18 +552,33 @@ class InHouseSellController extends Controller
         ], 200);
     }
 
-    public function sendQuotationEmail($orderId)
+    public function quotationEmailForm($orderId)
     {
         $order = Order::find($orderId);
+
+        return view('admin.in_house_sell.quotation_mail', compact('order'));
+    }
+
+    public function sendQuotationEmail(Request $request, $orderId)
+    {
+        $order = Order::find($orderId);
+
+        $suject = $request->subject ?? "Quotation";
+        $body = $request->body ?? "Thank you for requesting a quotation from us. Please find the details of your quotation below.";
+
+        $admin_mail = ContactEmail::orderby('id', 'DESC')->first();
 
         if (!$order) {
             return response()->json(['message' => 'Order not found'], 404);
         }
 
+
         $user = $order->user;
         $downloadLink = route('orders.download-pdf', ['encoded_order_id' => base64_encode($order->id)]);
 
-        Mail::to($user->email)->send(new QuotaionEmail($order, $downloadLink));
+        Mail::to($user->email)
+            ->cc($admin_mail->email)
+            ->send(new QuotaionEmail($order, $downloadLink, $suject, $body));
 
         return redirect()->back()->with('success', 'Email sent successfully');
     }

@@ -48,6 +48,11 @@
                                                 <i class="fas fa-envelope"></i> Email
                                             </button>
                                         </form>
+
+                                        <a href="{{route('quotation.emailform', $order->id)}}" class="btn btn-success btn-round btn-shadow"><i class="fas fa-envelope"></i> Email</a>
+
+
+
                                         <!-- <a href="{{ route('in-house-sell.generate-pdf', ['encoded_order_id' => base64_encode($order->id)]) }}" class="btn btn-success btn-round btn-shadow" target="_blank">
                                             <i class="fas fa-receipt"></i> Invoice
                                         </a> -->
