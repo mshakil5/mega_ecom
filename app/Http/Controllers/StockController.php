@@ -76,11 +76,11 @@ class StockController extends Controller
                 return $row->warehouse ? $row->warehouse->name : 'N/A';
             })
             ->addColumn('quantity', function ($row) {
-                return $row->quantity ?? 'N/A';
+                return $row->quantity ? number_format($row->quantity, 0) : 'N/A';
             })
             ->addColumn('action', function ($data) {
                 $btn = '<div class="table-actions"> 
-                            <button class="btn btn-sm btn-danger btn-open-loss-modal mr-2" data-size="'.$data->size.'" data-color="'.$data->color.'" data-id="'.$data->product->id.'" >System Loss</button>';  
+                            <button class="btn btn-sm btn-danger btn-open-loss-modal mr-2" data-size="'.$data->size.'" data-color="'.$data->color.'" data-warehouse="'.$data->warehouse_id.'" data-id="'.$data->product->id.'" >System Loss</button>';  
                 if (Auth::user()) {
                     $url = route('admin.product.purchasehistory', ['id' => $data->product->id, 'size' => $data->size, 'color' => $data->color]);
                     $btn .= '<a href="'.$url.'" class="btn btn-sm btn-primary">History</a>';

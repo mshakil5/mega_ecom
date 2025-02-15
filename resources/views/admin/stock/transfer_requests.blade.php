@@ -132,6 +132,8 @@
                 return;
             }
 
+            $('#editQuantityForm button[type="submit"]').prop('disabled', true);
+
             $.ajax({
                 url: '/admin/stock-transfer-requests/' + id,
                 type: 'PUT',
@@ -148,12 +150,16 @@
                 },
                 error: function(xhr) {
                     alert('An error occurred while updating the quantity.');
+                    $('#editQuantityForm button[type="submit"]').prop('disabled', false);
                 }
             });
         });
 
         $('.accept-btn').on('click', function() {
             var id = $(this).data('id');
+
+            $(this).prop('disabled', true);
+            $(this).html('<i class="fas fa-spinner fa-spin"></i> Submitting...');
 
             if (confirm('Are you sure you want to accept this request?')) {
                 $.ajax({
@@ -163,7 +169,6 @@
                         _token: '{{ csrf_token() }}'
                     },
                     success: function(response) {
-                        // console.log(response);
                         swal("Success!", "Request accepted successfully.", "success");
                         setTimeout(function() {
                             location.reload();
@@ -172,13 +177,19 @@
                     error: function(xhr) {
                         console.log(xhr.responseText);
                         swal("Error!",xhr.responseText.split('\n')[0], "error");
+                        $('.accept-btn').prop('disabled', false).html('<i class="fas fa-check"></i> Accept');
                     }
                 });
+            } else {
+                $(this).prop('disabled', false).html('<i class="fas fa-check"></i> Accept');
             }
         });
 
         $('.reject-btn').on('click', function() {
             var id = $(this).data('id');
+
+            $(this).prop('disabled', true);
+            $(this).html('<i class="fas fa-spinner fa-spin"></i> Submitting...');
 
             if (confirm('Are you sure you want to reject this request?')) {
                 $.ajax({
@@ -195,8 +206,11 @@
                     },
                     error: function(xhr) {
                         alert('An error occurred while rejecting the request.');
+                        $('.reject-btn').prop('disabled', false).html('<i class="fas fa-times"></i> Reject');
                     }
                 });
+            } else {
+                $(this).prop('disabled', false).html('<i class="fas fa-times"></i> Reject');
             }
         });
     });

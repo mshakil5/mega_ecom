@@ -35,6 +35,7 @@
   <link rel="stylesheet" href="{{ asset('assets/admin/css/customize.css')}}">
   
 
+
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">

@@ -1,7 +1,11 @@
 @extends('admin.layouts.admin')
 
 @section('content')
-
+<style>
+    .select2-selection{
+      height: 35px !important;
+    }
+  </style>
 <section class="content pt-3" id="contentContainer">
     <div class="container-fluid">
         <div class="row">
@@ -20,7 +24,7 @@
                                     <select class="form-control select2" id="product_id" name="product_id">
                                         <option value="">Select...</option>
                                         @foreach($products as $product)
-                                        <option value="{{ $product->id }}">{{ $product->name }}-{{ $product->product_code }}</option>
+                                        <option value="{{ $product->id }}">{{ $product->product_code }}-{{ $product->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -193,7 +197,7 @@
 
                     <div class="form-group">
                         <label class="label label-primary">Warehouses</label>
-                        <select class="form-control" id="warehouse" name="warehouse">
+                        <select class="form-control" id="warehouses" name="warehouses">
                             <option value="">Select...</option>
                             @foreach($warehouses as $warehouse)
                             <option value="{{ $warehouse->id }}">{{ $warehouse->name }}-{{ $warehouse->location }}</option>
@@ -362,77 +366,92 @@
         $('#submitRequest').on('click', function(e) {
             e.preventDefault();
 
+            $('#submitRequest').prop('disabled', true);
+            $('#submitRequest').html('<i class="fas fa-spinner fa-spin"></i> Submitting...');
+
             var isValid = true;
             var quantity = parseInt($('#quantity').val().trim());
             var maxQuantity = parseInt($('#max_quantity').val().trim());
 
             // Validate required fields
             $('#requestStockForm').find('input, select').each(function() {
-                if ($(this).val().trim() === '') {
-                    isValid = false;
-                    $(this).addClass('is-invalid');
-                } else {
-                    $(this).removeClass('is-invalid');
-                }
+            if ($(this).val().trim() === '') {
+                isValid = false;
+                $(this).addClass('is-invalid');
+            } else {
+                $(this).removeClass('is-invalid');
+            }
             });
 
             if (isValid && (quantity > maxQuantity)) {
-                isValid = false;
-                $('#quantity').addClass('is-invalid');
-                swal({
-                    text: "Quantity must be less than or equal to Max Transfer Quantity.",
-                    icon: "error",
-                });
-                return;
+            isValid = false;
+            $('#quantity').addClass('is-invalid');
+            swal({
+                text: "Quantity must be less than or equal to Max Transfer Quantity.",
+                icon: "error",
+            });
+            $('#submitRequest').prop('disabled', false);
+            $('#submitRequest').html('Submit Request');
+            return;
             }
 
             if (!isValid) {
-                swal({
-                    text: "Please fill out all required fields before submitting.",
-                    icon: "error",
-                });
-                return;
+            swal({
+                text: "Please fill out all required fields before submitting.",
+                icon: "error",
+            });
+            $('#submitRequest').prop('disabled', false);
+            $('#submitRequest').html('Submit Request');
+            return;
             }
 
             swal({
-                text: "Are you sure you want to send this request?",
-                icon: "warning",
-                buttons: ["Cancel", "Yes"],
-                dangerMode: true,
+            text: "Are you sure you want to send this request?",
+            icon: "warning",
+            buttons: ["Cancel", "Yes"],
+            dangerMode: true,
             }).then((willSend) => {
-                if (willSend) {
-                    var formData = new FormData($('#requestStockForm')[0]);
-                    var csrfToken = $('meta[name="csrf-token"]').attr('content');
+            if (willSend) {
+                var formData = new FormData($('#requestStockForm')[0]);
+                var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
-                    $.ajax({
-                        url: '/admin/stock-transfer-requests',
-                        type: 'POST',
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        headers: {
-                            'X-CSRF-TOKEN': csrfToken
-                        },
-                        success: function(response) {
-                            swal({
-                                text: "Request sent successfully",
-                                icon: "success"
-                            });
-                            $('#requestStockForm')[0].reset();
-                            $('#requestStockModal').modal('hide');
-                            setTimeout(function() {
-                                location.reload();
-                            }, 2000);
-                            
-                        },
-                        error: function(xhr) {
-                            swal({
-                                text: JSON.parse(xhr.responseText).errors.toWarehouse[0] || "An error occurred while sending the request.",
-                                icon: "error"
-                            });
-                        }
+                $.ajax({
+                url: '/admin/stock-transfer-requests',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                success: function(response) {
+                    $('#submitRequest').prop('disabled', false);
+                    $('#submitRequest').html('Submit Request');
+                    swal({
+                    text: "Request sent successfully",
+                    icon: "success"
+                    });
+                    $('#requestStockForm')[0].reset();
+                    $('#requestStockModal').modal('hide');
+                    setTimeout(function() {
+                    location.reload();
+                    }, 2000);
+                },
+                error: function(xhr) {
+                    swal({
+                    text: JSON.parse(xhr.responseText).errors.toWarehouse[0] || "An error occurred while sending the request.",
+                    icon: "error"
                     });
                 }
+                });
+            } else {
+                swal({
+                text: "Request cancelled.",
+                icon: "info",
+                });
+                $('#submitRequest').prop('disabled', false);
+                $('#submitRequest').html('Submit Request');
+            }
             });
         });
 
@@ -441,11 +460,12 @@
 
 <script>
     $(document).ready(function() {
-        function openLossModal(productId, size, color) {
-            // console.log(productId, size, color);
+        function openLossModal(productId, size, color, warehouse) {
+            console.log(productId, size, warehouse);
 
             $('#systemLossForm')[0].reset();
             $('#lossProductId').val(productId);
+            $('#warehouses').val(warehouse);
             $('#systemLossModal').modal('show');
 
             $('#systemLossForm').submit(function(e) {
@@ -460,7 +480,7 @@
                 // }
 
                 let lossReason = $('#lossReason').val();
-                let warehouse = $('#warehouse').val();
+                let warehouse = $('#warehouses').val();
 
                 $.ajax({
                     url: "{{ route('process.system.loss') }}",
@@ -575,7 +595,8 @@
             let productId = $(this).data('id');
             let size = $(this).data('size');
             let color = $(this).data('color');
-            openLossModal(productId, size, color);
+            let warehouse = $(this).data('warehouse');
+            openLossModal(productId, size, color, warehouse);
         });
 
         $('#systemLossModal').on('hidden.bs.modal', function() {
