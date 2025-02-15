@@ -26,10 +26,13 @@ class InHouseSellController extends Controller
 {
     public function inHouseSell()
     {
-        $products = Product::whereHas('stock', function ($query) {
-            $query->where('quantity', '>', 0);
-        })
-        ->orderby('id','DESC')->select('id', 'name','price', 'product_code')->get();
+        // $products = Product::whereHas('stock', function ($query) {
+        //     $query->where('quantity', '>', 0);
+        // })
+        // ->orderby('id','DESC')->select('id', 'name','price', 'product_code')->get();
+
+        $products = Product::with('stock')->orderby('id','DESC')->select('id', 'name','price', 'product_code')->get();
+
         $colors = Color::where('status', 1)->select('id', 'color')->orderby('id','DESC')->get();
         $sizes = Size::where('status', 1)->select('id', 'size')->orderby('id','DESC')->get();
         $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
@@ -361,12 +364,50 @@ class InHouseSellController extends Controller
         if (!$stock) {
             return response()->json(['in_stock' => false]);
         }
-    
+
+        
         return response()->json([
             'in_stock' => $stock->quantity > 0,
             'stock_quantity' => $stock->quantity
         ]);
-    }    
+    }  
+    
+    
+    public function getStock(Request $request)
+    {
+        $productId = $request->input('product_id');
+        $getStock = Stock::with(['warehouse', 'product'])->where('product_id', $productId)->get();
+        $getStockcount = Stock::with(['warehouse', 'product'])->where('product_id', $productId)->count();
+
+        $prop = '';
+        
+            foreach ($getStock as $item){
+
+                // <!-- Single Property Start -->
+                $prop.= '<tr>
+                            <td>
+                                '.$item->product->name.'
+                            </td>
+                            <td>
+                                '.$item->warehouse->name.'
+                            </td>
+                            <td>
+                                '.$item->size.'
+                            </td>
+                            <td>
+                                '.$item->color.'
+                            </td>
+                            <td>
+                                '.intval($item->quantity).'
+                            </td>';
+                $prop.= '</tr>';
+            }
+    
+        return response()->json([
+            'stock' => $prop,
+            'getStockcount' => $getStockcount,
+        ]);
+    } 
 
     public function editOrder($orderId)
     {

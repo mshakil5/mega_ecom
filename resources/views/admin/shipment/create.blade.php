@@ -58,8 +58,8 @@
                                         <th>Profit Margin(%)</th>
                                         <th>Current Selling Price</th>
                                         <th>New Selling Price</th>
-                                        <th>Considerable Margin(%)</th>
-                                        <th>Considerable Price</th>
+                                        <th>Minimum Margin(%)</th>
+                                        <th>Minimum Price</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>

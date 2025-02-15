@@ -424,6 +424,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/order-update', [InHouseSellController::class, 'updateOrder']);
 
     Route::post('/check-product-stock', [InHouseSellController::class, 'checkStock']);
+    Route::post('/get-product-stock', [InHouseSellController::class, 'getStock']);
 
     //Quotation
     Route::post('/make-quotation', [InHouseSellController::class, 'makeQuotationStore'])->name('make.quotation.store');

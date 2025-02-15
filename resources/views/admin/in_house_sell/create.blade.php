@@ -109,6 +109,37 @@
                                         </select>
                                     </div>
                                 </div>
+
+
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <label for="size">Size <span class="text-danger">*</span></label>
+                                        <span class="badge badge-success d-none" style="cursor: pointer;" data-toggle="modal" data-target="#addSizeModal">Add New</span>
+                                        <select class="form-control" id="size" name="size">
+                                            <option value="">Select...</option>
+                                            {{-- 
+                                            @foreach ($sizes as $size)
+                                                <option value="{{ $size->size }}">{{ $size->size }}</option>
+                                            @endforeach
+                                            --}}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <label for="color">Color <span class="text-danger">*</span></label>
+                                        <span class="badge badge-success d-none" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
+                                        <select class="form-control" id="color" name="color">
+                                            <option value="">Select...</option>
+                                            {{-- 
+                                            @foreach ($colors as $color)
+                                                <option value="{{ $color->color }}">{{ $color->color }}</option>
+                                            @endforeach   
+                                            --}}                                  
+                                        </select>
+                                    </div>
+                                </div>
+
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="quantity">Quantity <span class="text-danger">*</span></label>
@@ -125,42 +156,38 @@
                                         <input type="hidden" step="0.01" class="form-control" id="considerable_price">
                                     </div>
                                 </div>
-                                <div class="col-sm-2">
-                                    <div class="form-group">
-                                        <label for="size">Size <span class="text-danger">*</span></label>
-                                        <span class="badge badge-success d-none" style="cursor: pointer;" data-toggle="modal" data-target="#addSizeModal">Add New</span>
-                                        <select class="form-control" id="size" name="size">
-                                            <option value="">Select...</option>
-                                            {{-- 
-                                            @foreach ($sizes as $size)
-                                                <option value="{{ $size->size }}">{{ $size->size }}</option>
-                                            @endforeach
-                                            --}}
-                                        </select>
-                                    </div>
-                                </div>
-                                 <div class="col-sm-2">
-                                    <div class="form-group">
-                                        <label for="color">Color <span class="text-danger">*</span></label>
-                                        <span class="badge badge-success d-none" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
-                                        <select class="form-control" id="color" name="color">
-                                            <option value="">Select...</option>
-                                            {{-- 
-                                            @foreach ($colors as $color)
-                                                <option value="{{ $color->color }}">{{ $color->color }}</option>
-                                            @endforeach   
-                                            --}}                                  
-                                        </select>
-                                    </div>
-                                </div>
+
                                 <div class="col-sm-1">
                                     <label for="addProductBtn">Action</label>
                                     <div class="col-auto d-flex align-items-end">
                                         <button type="button" id="addProductBtn" class="btn btn-secondary">Add</button>
                                      </div>
                                 </div>
-                                <div class="col-sm-12 mt-3">
-                                    <h2>Product List:</h2>
+
+                                
+                                <div class="col-sm-12 mt-1">
+                                    <h5>Stock List:</h5>
+                                    <table class="table table-bordered text-center" id="stockTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Product</th>
+                                                <th>Warehouse</th>
+                                                <th>Size</th>
+                                                <th>Color</th>
+                                                <th>Quantity</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            
+                                            
+                                        </tbody>
+                                    </table>
+                                </div>
+
+
+                                
+                                <div class="col-sm-12 mt-1">
+                                    <h5>Product List:</h5>
                                     <table class="table table-bordered" id="productTable">
                                         <thead>
                                             <tr>
@@ -792,6 +819,37 @@
             colorSelect.html('<option value="">Select...</option>');
             Object.values(colors).forEach(function(color) {
                 colorSelect.append(`<option value="${color}">${color}</option>`);
+            });
+
+            $.ajax({
+                url: '/admin/get-product-stock',
+                type: 'POST',
+                data: {
+                    product_id: selectedProduct.val(),
+                    size: $('#size').val(),
+                    color: $('#color').val(),
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.getStockcount > 0) {
+                        $('#stockTable tbody').html(response.stock);
+                    } else {
+                        $('#stockTable tbody').html(
+                            '<tr><td colspan="5"> <span class="text-danger">No stock available</span>  </td></tr>'
+                        );
+                        
+                    }
+                },
+                error: function(xhr) {
+                    swal({
+                        text: "Error fetching stock quantity.",
+                        icon: "error",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--error"
+                        }
+                    });
+                }
             });
         });
     });
