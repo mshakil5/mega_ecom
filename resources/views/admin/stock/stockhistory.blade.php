@@ -64,7 +64,7 @@
                                         <th>Selling Price</th>
                                         <th>Purchase Price</th>
                                         <th>Warehouse</th>
-                                        <th>Action</th>
+                                        <!-- <th>Action</th> -->
                                     </tr>
                                 </thead>
                             </table>
@@ -209,9 +209,8 @@
                 { data: 'available_qty', name: 'available_qty' },
                 { data: 'selling_qty', name: 'selling_qty' },
                 { data: 'selling_price', name: 'selling_price' },
-                { data: 'purchase_price', name: 'purchase_price' },
+                { data: 'ground_price_per_unit', name: 'ground_price_per_unit' },
                 { data: 'warehouse', name: 'warehouse' },
-                {data: 'action', name: 'action', orderable: false, searchable: false}
             ],
             // columnDefs: [
             //     {

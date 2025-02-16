@@ -1,11 +1,12 @@
 @extends('admin.layouts.admin')
 
 @section('content')
+
 <section class="content" id="newBtnSection">
     <div class="container-fluid">
       <div class="row">
         <div class="col-2">
-            <a href="{{ url()->previous() }}" class="btn btn-secondary my-3">Back</a>
+            <a href="{{ route('allstock') }}" class="btn btn-secondary my-3">Back</a>
         </div>
       </div>
     </div>
@@ -22,12 +23,13 @@
                     </div>
                     <div class="card-body">
                         <!-- Filter Form Section -->
-                        <form action="{{route('admin.product.purchasehistorysearch',['id' => $id, 'size' => $size, 'color' => $color])}}" method="POST">
+                        <form action="{{route('admin.product.purchasehistorysearch',['id' => $id, 'size' => $size, 'color' => $color, 'warehouse_id' => $warehouse_id])}}" method="POST">
                             @csrf
                             <div class="row mb-3 ">
                                 <input type="hidden" id="product_id" name="product_id" value="{{$id}}">
                                 <input type="hidden" id="size" name="size" value="{{$size}}">
                                 <input type="hidden" id="color" name="color" value="{{$color}}">
+                                <input type="hidden" id="warehouse_id" name="warehouse_id" value="{{$warehouse_id}}">
                                 <div class="col-md-3 d-none">
                                     <label class="label label-primary">Filter By</label>
                                     <select class="form-control" id="filterBy" name="filterBy">
@@ -39,18 +41,23 @@
                                 </div>
                                 <div class="col-md-2">
                                     <label class="label label-primary">From Date</label>
-                                    <input type="date" class="form-control" id="fromDate" name="fromDate">
+                                    <input type="date" class="form-control" id="fromDate" name="fromDate" 
+                                        value="{{ request('fromDate') ?? '' }}">
                                 </div>
                                 <div class="col-md-2">
                                     <label class="label label-primary">To Date</label>
-                                    <input type="date" class="form-control" id="toDate" name="toDate" value="{{old('toDate')}}">
+                                    <input type="date" class="form-control" id="toDate" name="toDate" 
+                                        value="{{ request('toDate') ?? '' }}">
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-3 d-none">
                                     <label class="label label-primary">Warehouses</label>
                                     <select class="form-control select2" id="warehouse_id" name="warehouse_id">
                                         <option value="">Select...</option>
                                         @foreach($warehouses as $warehouse)
-                                            <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
+                                            <option value="{{ $warehouse->id }}" 
+                                                {{ request('warehouse_id') == $warehouse->id ? 'selected' : '' }}>
+                                                {{ $warehouse->name }}
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -89,10 +96,9 @@
                         </div>
 
                         <div class="table-responsive">
-                            <table class="table table-bordered table-striped" id="p-table">
+                            <table class="table table-bordered table-striped p-table">
                                 <thead>
                                     <tr>
-                                        <th>Sl</th>
                                         <th>Date</th>
                                         <th>Supplier</th>
                                         <th>Size</th>
@@ -107,7 +113,6 @@
                                 <tbody>
                                     @foreach ($shipmentDetails as $key => $data)
                                         <tr>
-                                            <td>{{ $key + 1}}</td>
                                             <td>{{ date('d-m-Y', strtotime($data->created_at))}}</td>
                                             <td>
                                                 @if ($data->supplier)
@@ -149,10 +154,9 @@
                         </div>
 
                         <div class="table-responsive">
-                            <table class="table table-bordered table-striped" id="p-table">
+                            <table class="table table-bordered table-striped p-table">
                                 <thead>
                                     <tr>
-                                        <th>Sl</th>
                                         <th>Date</th>
                                         <th>Whole Saler</th>
                                         <th>Warehouse</th>
@@ -168,7 +172,6 @@
                                 <tbody>
                                     @foreach ($salesHistories as $key => $data)
                                         <tr>
-                                            <td>{{ $key + 1}}</td>
                                             <td>{{ date('d-m-Y', strtotime($data->created_at))}}</td>
                                             <td>{{ $data->order->user->name}} 
                                                 <a href="{{route('getallorder', $data->order->user->id )}}" class="btn btn-sm btn-success">
@@ -193,28 +196,63 @@
             </div>
         </div>
 
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-secondary">
+                    <div class="card-body">
+
+                        <div class="text-center mb-4 company-name-container">
+                            <h2>{{ $product->name }} - {{ $size }} - {{ $color }}</h2>
+                            <h4>Transfer History</h4>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped p-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Transfer Direction</th>
+                                        <th>Source Warehouse</th>
+                                        <th>Destination Warehouse</th>
+                                        <th>Quantity</th>
+                                        <th>Note</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($stockTransferRequests as $request)
+                                        <tr>
+                                            <td>{{ date('d-m-Y', strtotime($request->created_at)) }}</td>
+                                            <td>
+                                                @if ($request->from_warehouse_id == $warehouse_id)
+                                                    Transferred Out
+                                                @elseif ($request->to_warehouse_id == $warehouse_id)
+                                                    Received
+                                                @endif
+                                            </td>
+                                            <td>{{ $request->fromWarehouse->name ?? '' }}</td>
+                                            <td>{{ $request->toWarehouse->name ?? '' }}</td>
+                                            <td>{{ $request->request_quantity }}</td>
+                                            <td>{{ $request->note }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </section>
-
-
 
 @endsection
 
 @section('script')
 <script>
-    $(document).ready(function () {
-        
-
-        $('#p-table').DataTable();
-
-
-
-
-        // $('.select2').select2({
-        //     placeholder: 'Select a warehouse',
-        //     allowClear: true
-        // });
-        // $('.select2').css('width', '100%');
+    $(document).ready(function () {   
+        $('.p-table').DataTable();
     });
 </script>
 

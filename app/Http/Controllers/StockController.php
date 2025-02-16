@@ -23,6 +23,7 @@ use App\Models\Transaction;
 use App\Models\Warehouse;
 use Carbon\Carbon;
 use App\Models\ShipmentDetails;
+use App\Models\StockTransferRequest;
 
 class StockController extends Controller
 {
@@ -82,7 +83,7 @@ class StockController extends Controller
                 $btn = '<div class="table-actions"> 
                             <button class="btn btn-sm btn-danger btn-open-loss-modal mr-2" data-size="'.$data->size.'" data-color="'.$data->color.'" data-warehouse="'.$data->warehouse_id.'" data-id="'.$data->product->id.'" >System Loss</button>';  
                 if (Auth::user()) {
-                    $url = route('admin.product.purchasehistory', ['id' => $data->product->id, 'size' => $data->size, 'color' => $data->color]);
+                    $url = route('admin.product.purchasehistory', ['id' => $data->product->id, 'size' => $data->size, 'color' => $data->color, 'warehouse_id' => $data->warehouse_id]);
                     $btn .= '<a href="'.$url.'" class="btn btn-sm btn-primary">History</a>';
                 }
                 $btn .= '</div>';
@@ -108,7 +109,7 @@ class StockController extends Controller
     {  
         $warehouseIds = json_decode(Auth::user()->warehouse_ids, true);
 
-        $query = StockHistory::select('date', 'stockid', 'purchase_id', 'product_id', 'stock_id', 'warehouse_id', 'quantity', 'selling_qty', 'available_qty', 'size', 'color', 'systemloss_qty', 'purchase_price', 'selling_price', 'received_quantity')
+        $query = StockHistory::select('date', 'stockid', 'purchase_id', 'product_id', 'stock_id', 'warehouse_id', 'quantity', 'selling_qty', 'available_qty', 'size', 'color', 'systemloss_qty', 'purchase_price', 'selling_price', 'received_quantity', 'ground_price_per_unit')
         ->when(!empty($warehouseIds), function ($query) use ($warehouseIds) {
             return $query->whereIn('warehouse_id', $warehouseIds);
         });
@@ -138,7 +139,7 @@ class StockController extends Controller
                 return 'N/A';
             })            
             ->addColumn('quantity_formatted', function ($row) {
-                $totalQuantity = ($row->quantity ?? 0) + ($row->received_quantity ?? 0);
+                $totalQuantity = ($row->quantity ?? 0);
                 return number_format($totalQuantity, 0);
             })
             ->addColumn('selling_price', function ($row) {
@@ -154,8 +155,8 @@ class StockController extends Controller
                 return $row->available_qty ? $row->available_qty : '0';
             })
             
-            ->addColumn('purchase_price', function ($row) {
-                return $row->purchase_price ? $row->purchase_price : '';
+            ->addColumn('ground_price_per_unit', function ($row) {
+                return $row->ground_price_per_unit ? $row->ground_price_per_unit : '';
             })
             
             ->addColumn('warehouse', function ($row) {
@@ -252,7 +253,7 @@ class StockController extends Controller
         return view('admin.stock.getproducthistory', compact('products'));
     }
 
-    public function getsingleProductHistory(Request $request, $id, $size = null, $color = null)
+    public function getsingleProductHistory(Request $request, $id, $size = null, $color = null, $warehouse_id = null)
     {
         if ($request->fromDate || $request->toDate) {
             $request->validate([
@@ -276,6 +277,7 @@ class StockController extends Controller
                 })
                 ->where('size', $size)
                 ->where('color', $color)
+                ->where('warehouse_id', $warehouse_id)
                 ->orderby('id', 'DESC')
                 ->get();
 
@@ -288,6 +290,7 @@ class StockController extends Controller
                             })
                             ->where('size', $size)
                             ->where('color', $color)
+                            ->where('warehouse_id', $warehouse_id)
                             ->orderby('id','DESC')
                             ->whereHas('order', function ($query) {
                                 $query->whereIn('order_type', ['0','1'])
@@ -296,7 +299,21 @@ class StockController extends Controller
                             })->get();
 
 
-        return view('admin.stock.single_product_history', compact('shipmentDetails','salesHistories','product','warehouses', 'id', 'size', 'color'));
+                    $stockTransferRequests = StockTransferRequest::where('product_id', $id)
+                        ->when($size, function ($query) use ($size) {
+                            $query->where('size', $size);
+                        })
+                        ->when($color, function ($query) use ($color) {
+                            $query->where('color', $color);
+                        })
+                        ->when($fromDate, function ($query) use ($fromDate, $toDate) {
+                            $query->whereBetween('created_at', [$fromDate, $toDate]);
+                        })
+                        ->where('status', 1)
+                        ->orderBy('id', 'DESC')
+                        ->get();                        
+
+        return view('admin.stock.single_product_history', compact('shipmentDetails','salesHistories', 'stockTransferRequests','product','warehouses', 'id', 'size', 'color', 'warehouse_id'));
     }
 
     public function addstock()

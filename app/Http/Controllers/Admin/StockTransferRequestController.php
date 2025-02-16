@@ -161,6 +161,8 @@ class StockTransferRequestController extends Controller
                 $stockTo->ground_price_per_unit = $stockFrom->ground_price_per_unit; 
                 $stockTo->profit_margin = $stockFrom->profit_margin;
                 $stockTo->selling_price = $stockFrom->selling_price;
+                $stockTo->considerable_margin = $stockFrom->considerable_margin;
+                $stockTo->considerable_price = $stockFrom->considerable_price;
                 $stockTo->quantity = $stockTransferRequest->request_quantity;
                 $stockTo->created_by = Auth::id();
                 $stockTo->save();
@@ -168,9 +170,11 @@ class StockTransferRequestController extends Controller
                 // Create a new stock history for the 'to' stock
                 if ($latestUsedHistory) {
                     $newStockHistory = new StockHistory();
+                    $newStockHistory->date = now()->format('Y-m-d');
                     $newStockHistory->product_id = $stockTransferRequest->product_id;
                     $newStockHistory->stock_id = $stockTo->id;
                     $newStockHistory->warehouse_id = $stockTransferRequest->to_warehouse_id;
+                    $newStockHistory->quantity = $stockTransferRequest->request_quantity; 
                     $newStockHistory->color = $stockTo->color;
                     $newStockHistory->size = $stockTo->size;
                     $newStockHistory->available_qty = $stockTransferRequest->request_quantity; 
@@ -178,39 +182,36 @@ class StockTransferRequestController extends Controller
                     $newStockHistory->purchase_price = $latestUsedHistory->purchase_price;
                     $newStockHistory->ground_price_per_unit = $latestUsedHistory->ground_price_per_unit;
                     $newStockHistory->profit_margin = $latestUsedHistory->profit_margin;
+                    $newStockHistory->selling_price = $latestUsedHistory->selling_price;
                     $newStockHistory->considerable_margin = $latestUsedHistory->considerable_margin;
                     $newStockHistory->considerable_price = $latestUsedHistory->considerable_price;
-                    $newStockHistory->selling_price = $latestUsedHistory->selling_price;
                     $newStockHistory->created_by = Auth::id();
                     $newStockHistory->save();
-                }
-            }
-        
-            // Update existing stock history for the 'to' stock
-            if ($stockTo) {
+                }    
+            } else {
                 $stockTo->quantity += $stockTransferRequest->request_quantity;
                 $stockTo->save();
-        
+            
                 $toStockHistories = StockHistory::where('stock_id', $stockTo->id)
                     ->where('size', $stockTo->size)
                     ->where('color', $stockTo->color)
                     ->where('warehouse_id', $stockTransferRequest->to_warehouse_id)
                     ->orderBy('id', 'desc')
                     ->first();
-        
+            
                 if ($toStockHistories) {
                     $toStockHistories->available_qty += $stockTransferRequest->request_quantity;
                     $toStockHistories->received_quantity += $stockTransferRequest->request_quantity;
                     $toStockHistories->save();
-                } else {
-                    // Optionally create a new stock history if none exists
+                } elseif ($latestUsedHistory) {
                     $newStockHistory = new StockHistory();
+                    $newStockHistory->date = now()->format('Y-m-d');
                     $newStockHistory->product_id = $stockTransferRequest->product_id;
                     $newStockHistory->stock_id = $stockTo->id;
                     $newStockHistory->warehouse_id = $stockTransferRequest->to_warehouse_id;
                     $newStockHistory->color = $stockTo->color;
                     $newStockHistory->size = $stockTo->size;
-                    $newStockHistory->available_qty = $stockTransferRequest->request_quantity; 
+                    $newStockHistory->available_qty = $stockTransferRequest->request_quantity;
                     $newStockHistory->received_quantity = $stockTransferRequest->request_quantity;
                     $newStockHistory->purchase_price = $latestUsedHistory->purchase_price;
                     $newStockHistory->ground_price_per_unit = $latestUsedHistory->ground_price_per_unit;
@@ -221,7 +222,7 @@ class StockTransferRequestController extends Controller
                     $newStockHistory->created_by = Auth::id();
                     $newStockHistory->save();
                 }
-            }
+            }            
         
             // Update the status of the stock transfer request
             $stockTransferRequest->status = 1;
