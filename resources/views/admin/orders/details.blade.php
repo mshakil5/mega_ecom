@@ -39,7 +39,8 @@
             <div class="row invoice-info">
               <div class="col-sm-4 invoice-col">
                 <address>
-                    <strong>Name:</strong> {{ $order->user->name ?? $order->name }} {{ $order->user->surname ?? '' }}<br>
+                    <strong>Business Name:</strong> {{ $order->user->surname ?? $order->surname }} <br>
+                    <strong>Name:</strong> {{ $order->user->name ?? '' }}<br>
                     <strong>Email:</strong> {{ $order->user->email ?? $order->email }}<br>
                     <strong>Phone:</strong> {{ $order->user->phone ?? $order->phone }}<br>
                     <strong>Address:</strong> {!! $order->user?->address ?? '' !!}
@@ -52,9 +53,13 @@
               <div class="col-sm-4 invoice-col">  </div>
               <!-- /.col -->
               <div class="col-sm-4 invoice-col">
-                <h4 class="mb-3">Order Information</h4>
-                <strong>Invoice:</strong> {{ $order->invoice }} <br>
-                <strong>Purchase Date:</strong> {{ \Carbon\Carbon::parse($order->purchase_date)->format('d-m-Y') }} <br>
+                <h4 class="mb-3">@if($order->order_type == 1 )Order Information @elseif($order->order_type == 2)Quotation Information @endif</h4>
+
+                <strong>{{ $order->order_type == 1 ? 'Invoice:' : ($order->order_type == 2 ? 'Quotation:' : '') }}</strong> {{ $order->invoice }} <br>
+
+                <strong>Date:</strong> {{ \Carbon\Carbon::parse($order->purchase_date)->format('d-m-Y') }} <br>
+
+                @if($order->order_type != 2)
                 <strong>Payment Method:</strong> 
                     @if($order->payment_method === 'paypal')
                         PayPal
@@ -89,6 +94,7 @@
                         {{ $order->order_type === 1 ? 'In House' : ($order->order_type === 2 ? 'Quotation' : 'Frontend') }}
                     <br>
                 <strong>Note:</strong> {!! $order->note !!}
+                @endif
               </div>
               <!-- /.col -->
             </div>
@@ -101,20 +107,19 @@
                 <table class="table table-bordered table-striped">
                     <thead>
                         <tr>
-                            <th>Product Image</th>
-                            <th>Product Name</th>
-                            <th>Quantity</th>
-                            <th>Size</th>
-                            <th>Color</th>
-                            <th>Price per Unit</th>
-                            <th>Total Price</th>
-                            <th>Supplier</th>
+                            <th style="text-align: center">Product Image</th>
+                            <th style="text-align: center">Product Name</th>
+                            <th style="text-align: center">Quantity</th>
+                            <th style="text-align: center">Size</th>
+                            <th style="text-align: center">Color</th>
+                            <th style="text-align: right">Price per Unit</th>
+                            <th style="text-align: right">Total Price</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($order->orderDetails as $orderDetail)
                             <tr>
-                                <td>
+                                <td style="text-align: center">
                                     @if($orderDetail->product)
                                         <img src="{{ asset('/images/products/' . $orderDetail->product->feature_image) }}" alt="{{ $orderDetail->product->name }}" style="width: 100px; height: auto;">
                                     @elseif($order->bundleProduct)
@@ -123,7 +128,7 @@
                                         N/A
                                     @endif
                                 </td>
-                                <td>
+                                <td style="text-align: center">
                                     @if($orderDetail->product)
                                         {{ $orderDetail->product->name ?? 'N/A' }}
                                     @elseif($order->bundleProduct)
@@ -133,12 +138,12 @@
                                     @endif
                                 </td>
 
-                                <td>{{ $orderDetail->quantity }}</td>
-                                <td>{{ $orderDetail->size }}</td>
-                                <td>{{ $orderDetail->color }}</td>
-                                <td>{{ number_format($orderDetail->price_per_unit, 2) }}</td>
-                                <td>{{ number_format($orderDetail->total_price, 2) }}</td>
-                                <td>
+                                <td style="text-align: center">{{ $orderDetail->quantity }}</td>
+                                <td style="text-align: center">{{ $orderDetail->size }}</td>
+                                <td style="text-align: center">{{ $orderDetail->color }}</td>
+                                <td style="text-align: right">{{ number_format($orderDetail->price_per_unit, 2) }}</td>
+                                <td style="text-align: right">{{ number_format($orderDetail->total_price, 2) }}</td>
+                                <td class="d-none">
                                     @if($orderDetail->supplier)
                                         {{ $orderDetail->supplier->name }}
                                     @else

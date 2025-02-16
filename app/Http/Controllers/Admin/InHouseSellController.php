@@ -302,6 +302,10 @@ class InHouseSellController extends Controller
 
         $netAmount = $itemTotalAmount - $validated['discount'] + $request->vat;
 
+        $latestOrder = Order::where('invoice', 'like', "STL-{$request->invoice}-" . date('Y') . '-%')
+        ->orderBy('invoice', 'desc')
+        ->first();
+
         $nextNumber = $latestOrder ? (intval(substr($latestOrder->invoice, -5)) + 1) : 1;
         $invoice = "STL-{$request->invoice}-" . date('Y') . '-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
 
@@ -414,7 +418,7 @@ class InHouseSellController extends Controller
                 // <!-- Single Property Start -->
                 $prop.= '<tr>
                             <td>
-                                '.$item->product->name.' - '.$item->product->product_code.'
+                                '.$item->product->product_code.'-'.$item->product->name.'
                             </td>
                             <td>
                                 '.$item->warehouse->name.'

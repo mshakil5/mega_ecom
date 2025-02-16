@@ -115,7 +115,7 @@
                                                     data-sizes="{{ json_encode($product->stockhistory->pluck('size')->unique()->values()) }}" 
                                                     data-colors="{{ json_encode($product->stockhistory->pluck('color')->unique()->values()) }}"
                                                     >
-                                                    {{ $product->name }} - {{ $product->product_code }}
+                                                    {{ $product->product_code }}-{{ $product->name }}
                                                 </option>
                                             @endforeach
                                         </select>
