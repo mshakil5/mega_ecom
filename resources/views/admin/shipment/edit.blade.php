@@ -39,6 +39,7 @@
                                 </div>
                             </div>
 
+                            <div class="table-responsive" style="max-height: 500px; overflow-y: auto; overflow-x: auto;">
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
@@ -46,20 +47,20 @@
                                         <th>Product</th>
                                         <th>Size</th>
                                         <th>Color</th>
-                                        <th>Current Stock</th>
-                                        <th>Purchased Qty</th>
-                                        <th>Shipped Qty</th>
-                                        <th>Missing/Damaged Qty</th>
-                                        <th>Sample Qty</th>
-                                        <th>Saleable Qty</th>
-                                        <th>To Ship Qty</th>
-                                        <th>Purchase Price Per Unit</th>
+                                        <th>Stock</th>
+                                        <th>Purchased</th>
+                                        <th>Shipped</th>
+                                        <th>Damaged</th>
+                                        <th>Sample</th>
+                                        <th>Saleable</th>
+                                        <th>To Ship</th>
+                                        <th>Unit Price</th>
                                         <th>Ground Price</th>
-                                        <th>Profit Margin(%)</th>
-                                        <th>Current Selling Price</th>
-                                        <th>New Selling Price</th>
-                                        <th>Minimum Margin(%)</th>
-                                        <th>Minimum Price</th>
+                                        <th>Margin(%)</th>
+                                        <th>Selling Price</th>
+                                        <th>New Price</th>
+                                        <th>Min Margin(%)</th>
+                                        <th>Min Price</th>
                                         <!-- <th>Action</th> -->
                                     </tr>
                                 </thead>
@@ -136,6 +137,7 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                            </div>
 
                             <div class="col-sm-10 mt-5 mb-5">
                                 <div class="row">

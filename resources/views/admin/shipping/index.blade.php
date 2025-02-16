@@ -206,8 +206,8 @@
                                         <th>Product</th>
                                         <th>Size</th>
                                         <th>Color</th>        
-                                        <th>Shipped Quantity</th>
-                                        <th>Missing Quantity</th>
+                                        <th>Shipped Qty</th>
+                                        <th>Missing Qty</th>
                                         <th>Purchase Price Per Unit</th>
                                         <th>Ground Price</th>
                                         <th>Profit Margin</th>
