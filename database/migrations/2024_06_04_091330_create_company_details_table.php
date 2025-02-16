@@ -43,6 +43,8 @@ return new class extends Migration
             $table->longText('google_map')->nullable();
             $table->longText('about_us')->nullable();
             $table->string('currency',191)->nullable();
+            $table->string('company_reg_number')->nullable();
+            $table->string('vat_number')->nullable();
             $table->string('design',191)->nullable();
             $table->longText('size_guide')->nullable();
             $table->string('created_by',191)->nullable();

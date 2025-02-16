@@ -193,6 +193,20 @@
                     </div>
                 </div>
 
+                <div class="col-sm-4">
+                    <div class="form-group">
+                    <label>Company Registration Number</label>
+                    <input type="text" class="form-control @error('company_reg_number') is-invalid @enderror" id="company_reg_number" name="company_reg_number" value="{{$data->company_reg_number}}">
+                    </div>
+                </div>
+                
+                <div class="col-sm-4">
+                    <div class="form-group">
+                    <label>Vat Number</label>
+                    <input type="text" class="form-control @error('vat_number') is-invalid @enderror" id="vat_number" name="vat_number" value="{{$data->vat_number}}">
+                    </div>
+                </div>
+
                 <div class="col-sm-12">
                     <div class="form-group">
                     <label>Frontend Design</label>

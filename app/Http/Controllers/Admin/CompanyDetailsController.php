@@ -41,6 +41,8 @@ class CompanyDetailsController extends Controller
             'opening_time' => 'nullable|string|max:10',
             'footer_link' => 'nullable|string|max:255',
             'currency' => 'nullable|string|max:10',
+            'company_reg_number' => 'nullable',
+            'vat_number' => 'nullable',
             'design' => 'nullable',
             'about_us' => 'nullable|string',
             'footer_content' => 'nullable|string',
@@ -100,6 +102,8 @@ class CompanyDetailsController extends Controller
         $data->opening_time = $request->opening_time;
         $data->footer_link = $request->footer_link;
         $data->currency = $request->currency;
+        $data->company_reg_number = $request->company_reg_number;
+        $data->vat_number = $request->vat_number;
         $data->design = $request->design;
         $data->size_guide = $request->size_guide;
         $data->about_us = $request->about_us;
