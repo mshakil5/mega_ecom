@@ -33,6 +33,12 @@
   <link rel="stylesheet" href="{{ asset('assets/admin/select2/select2.min.css')}}">
   <link rel="stylesheet" href="{{ asset('assets/admin/summernote/summernote-bs4.min.css')}}">
   <link rel="stylesheet" href="{{ asset('assets/admin/css/customize.css')}}">
+
+  <style>
+    .select2-selection{
+      height: 36px !important;
+    }
+  </style>
   
 
 

@@ -3,7 +3,7 @@
 
 <head>
     @php
-    $company = \App\Models\CompanyDetails::select('company_name','company_logo')->first();
+    $company = \App\Models\CompanyDetails::select('company_name','company_logo', 'email1', 'company_reg_number', 'vat_number')->first();
     use Carbon\Carbon;
     @endphp
 
@@ -104,9 +104,11 @@
 
                 <div class="col-md-6" style="margin-top: -50px; padding-bottom: 15px">
                     <div class="text-end">
+                        @if($order->user->business_name) <strong></strong> {{ $order->user->business_name }}<br> @endif
                         @if($order->user->name) <strong></strong> {{ $order->user->name }}<br> @endif
                         @if($order->user->email) <strong></strong> {{ $order->user->email }}<br> @endif
                         @if($order->user->phone) <strong></strong> {{ $order->user->phone }} <br> @endif
+                        @if($order->user->address) <strong></strong> {{ $order->user->address }} <br> @endif
                     </div>
                 </div>
             </div>
@@ -127,8 +129,8 @@
                     <th class="text-center">Item Description</th>
                     <th class="text-center">Size / Color</th>
                     <th class="text-center">Quantity</th>
-                    <th class="text-center">Unit Selling Price ({{ $currency }})</th>
-                    <th class="text-center">Total Selling Price ({{ $currency }})</th>
+                    <th class="text-center">Unit Selling Price({{ $currency }})</th>
+                    <th class="text-center">Total Selling Price({{ $currency }})</th>
                 </tr>
             </thead>
             <tbody>
@@ -158,8 +160,8 @@
                     @endif
                     <td class="text-center">{{ $detail->size }} / {{ $detail->color }}</td>
                     <td class="text-center">{{ $detail->quantity }}</td>
-                    <td class="text-center">{{ $currency }} {{ number_format($detail->price_per_unit, 2) }}</td>
-                    <td class="text-center">{{ $currency }} {{ number_format($detail->total_price, 2) }}</td>
+                    <td class="text-center">{{ $currency }}{{ number_format($detail->price_per_unit, 2) }}</td>
+                    <td class="text-center">{{ $currency }}{{ number_format($detail->total_price, 2) }}</td>
                     @if ($index > 0)
                 </tr>
                 @endif
@@ -177,7 +179,7 @@
                 </tr>
                 <tr>
                     <td class="font-weight-bold" colspan="3" style="background-color: rgb(228, 235, 253); color: black;">Grand Total</td>
-                    <td class="text-center font-weight-bold" style="background-color: rgb(228, 235, 253); color: black;">{{ $currency }} {{ number_format($order->net_amount, 2) }}</td>
+                    <td class="text-center font-weight-bold" style="background-color: rgb(228, 235, 253); color: black;">{{ $currency }}{{ number_format($order->net_amount, 2) }}</td>
                 </tr>
 
                 <tr>
@@ -204,12 +206,10 @@
                 <div class="row">
                     <div class="col-5">
                         <div>
-                            <strong>Payment Terms are through Bank Transfer Only:</strong><br>
-                            SAPPHIRE TRADELINKS<br>
-                            Acc no: 48302821<br>
-                            Sort Code: 56-00-70<br>
-                            IBAN: GB44NWBK56007048302821 <br>
-                            SWIFT: NWBKGB2L
+                            {{$company->company_name}}<br>
+                            {{$company->email1}}<br>
+                            Company Reg. No. {{$company->company_reg_number}}<br>
+                            VAT Reg. No. {{$company->vat_number}}
                         </div>
                     </div>
 
@@ -219,7 +219,7 @@
                         </div>
                         <div class="signature mt-3">
                             <div style="border-top: 1px solid #000; width: 100px; margin: 10px 0; display: inline-block;"></div>
-                            <div><strong>ISMAIL MIAH</strong></div>
+                            <div><strong>Team Sapphire</strong></div>
                         </div>
                     </div>
                 </div>
