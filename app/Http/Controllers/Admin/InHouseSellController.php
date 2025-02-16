@@ -46,6 +46,7 @@ class InHouseSellController extends Controller
             'purchase_date' => 'required|date',
             'user_id' => 'required|exists:users,id',
             'payment_method' => 'required|string',
+            'invoice' => 'required',
             'warehouse_id' => 'required',
             'ref' => 'nullable|string',
             'remarks' => 'nullable|string',
@@ -58,14 +59,33 @@ class InHouseSellController extends Controller
 
         $products = json_decode($validated['products'], true);
 
+        if(!$products){
+            return response()->json(['message' => 'Please add at least one product'], 422);
+        }
+
         $itemTotalAmount = array_reduce($products, function ($carry, $product) {
             return $carry + $product['total_price'];
         }, 0);
 
         $netAmount = $itemTotalAmount - $validated['discount'] + $request->vat;
 
+        foreach ($products as $product) {
+            $stock = Stock::where('product_id', $product['product_id'])->where('size', $product['product_size'])->where('color', $product['product_color'])->first();
+
+            if(!$stock || $stock->quantity < $product['quantity']) {
+                return response()->json(['message' => 'Not enough stock available for product ' . $product['product_name'] . ' with size ' . $product['product_size'] . ' and color ' . $product['product_color']], 422);
+            }
+        }
+
+        $latestOrder = Order::where('invoice', 'like', "STL-{$request->invoice}-" . date('Y') . '-%')
+        ->orderBy('invoice', 'desc')
+        ->first();
+
+        $nextNumber = $latestOrder ? (intval(substr($latestOrder->invoice, -5)) + 1) : 1;
+        $invoice = "STL-{$request->invoice}-" . date('Y') . '-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+
         $order = new Order();
-        $order->invoice = random_int(100000, 999999);
+        $order->invoice = $invoice;
         $order->warehouse_id = $request->warehouse_id;
         $order->purchase_date = $validated['purchase_date'];
         $order->user_id = $validated['user_id'];
@@ -262,6 +282,7 @@ class InHouseSellController extends Controller
             'purchase_date' => 'required|date',
             'user_id' => 'required|exists:users,id',
             'payment_method' => 'required|string',
+            'invoice' => 'required',
             'ref' => 'nullable|string',
             'remarks' => 'nullable|string',
             'discount' => 'nullable',
@@ -271,14 +292,21 @@ class InHouseSellController extends Controller
 
         $products = json_decode($validated['products'], true);
 
+        if(!$products){
+            return response()->json(['message' => 'Please add at least one product'], 422);
+        }
+
         $itemTotalAmount = array_reduce($products, function ($carry, $product) {
             return $carry + $product['total_price'];
         }, 0);
 
         $netAmount = $itemTotalAmount - $validated['discount'] + $request->vat;
 
+        $nextNumber = $latestOrder ? (intval(substr($latestOrder->invoice, -5)) + 1) : 1;
+        $invoice = "STL-{$request->invoice}-" . date('Y') . '-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+
         $order = new Order();
-        $order->invoice = random_int(100000, 999999);
+        $order->invoice = $invoice;
         $order->purchase_date = $validated['purchase_date'];
         $order->user_id = $validated['user_id'];
         $order->payment_method = $validated['payment_method'];
@@ -312,7 +340,7 @@ class InHouseSellController extends Controller
         $encoded_order_id = base64_encode($order->id);
         $pdfUrl = route('orders.download-pdf', ['encoded_order_id' => $encoded_order_id]);
 
-        Mail::to($order->user->email)->send(new OrderConfirmation($order, $pdfUrl));
+        // Mail::to($order->user->email)->send(new OrderConfirmation($order, $pdfUrl));
 
         // $contactEmails = ContactEmail::where('status', 1)->pluck('email');
 
@@ -386,7 +414,7 @@ class InHouseSellController extends Controller
                 // <!-- Single Property Start -->
                 $prop.= '<tr>
                             <td>
-                                '.$item->product->name.'
+                                '.$item->product->name.' - '.$item->product->product_code.'
                             </td>
                             <td>
                                 '.$item->warehouse->name.'
@@ -416,10 +444,11 @@ class InHouseSellController extends Controller
         $bankAmount = $order->transactions->where('payment_type', 'Bank')->first();
         $discountAmount = $order->transactions->where('transaction_type', 'Current')->where('discount', '>', 0)->first();
         $customers = User::where('is_type', '0')->where('status', 1)->orderby('id','asc')->get();
-        $products = Product::whereHas('stock', function ($query) {
-            $query->where('quantity', '>', 0);
-        })
-        ->orderby('id','DESC')->select('id', 'name','price', 'product_code')->get();
+        // $products = Product::whereHas('stock', function ($query) {
+        //     $query->where('quantity', '>', 0);
+        // })
+        // ->orderby('id','DESC')->select('id', 'name','price', 'product_code')->get();
+        $products = Product::with('stock')->orderby('id','DESC')->select('id', 'name','price', 'product_code')->get();
         $colors = Color::orderby('id','DESC')->where('status', 1)->get();
         $sizes = Size::orderby('id','DESC')->where('status', 1)->get();
         $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();

@@ -141,6 +141,10 @@ class StockController extends Controller
                 $totalQuantity = ($row->quantity ?? 0) + ($row->received_quantity ?? 0);
                 return number_format($totalQuantity, 0);
             })
+            ->addColumn('selling_price', function ($row) {
+                $selling_price = ($row->selling_price ?? 0) ;
+                return number_format($selling_price, 2);
+            })
             
             ->addColumn('selling_qty', function ($row) {
                 return $row->selling_qty ? $row->selling_qty : '0';
@@ -333,7 +337,12 @@ class StockController extends Controller
             'products.*.total_price_with_vat' => 'required|numeric',
         ]);
 
-        $invoice = date('y') .  '-' . date('m') .  '-' . $request->invoice;
+        $latestPurchase = Purchase::where('invoice', 'like', "STL-{$request->invoice}-" . date('Y') . '-%')
+        ->orderBy('invoice', 'desc')
+        ->first();
+
+        $nextNumber = $latestPurchase ? (intval(substr($latestPurchase->invoice, -5)) + 1) : 1;
+        $invoice = "STL-{$request->invoice}-" . date('Y') . '-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
 
         $data = $request->all();
         $purchase = new Purchase();

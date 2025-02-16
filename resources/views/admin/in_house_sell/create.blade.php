@@ -63,17 +63,29 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-sm-2">
+                                <div class="col-sm-1">
                                     <div class="form-group">
                                         <label for="ref">Ref</label>
                                         <input type="text" class="form-control" id="ref" name="ref" placeholder="Enter reference">
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="remarks">Remarks</label>
                                         <textarea class="form-control" id="remarks" name="remarks" rows="1" placeholder="Enter remarks"></textarea>
                                     </div>
+                                </div>
+                                <div class="form-group col-sm-2">
+                                    <label for="">Invoice<span style="color: red;">*</span></label>
+                                    <select class="form-control" id="invoice" name="invoice">
+                                        <option value="">Select Season, system will create code based on Season</option>
+                                        <option value="Spring">Spring</option>
+                                        <option value="Summer">Summer</option>
+                                        <option value="Autumn">Autumn</option>
+                                        <option value="Winter">Winter</option>
+                                    </select>
+                                    <small class="text-muted">Example: <span id="productCodePreview">STL-Season-Year-XXXXX</span></small>
+                                    <span id="productCodeError" class="text-danger"></span>
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
@@ -410,18 +422,18 @@
                     },
                     success: function(response) {
 
-                        if (!response.in_stock) {
-                            swal({
-                                text: "Sorry, this product is out of stock.",
-                                icon: "error",
-                                button: {
-                                    text: "OK",
-                                    className: "swal-button--error"
-                                }
-                            });
+                        // if (!response.in_stock) {
+                        //     swal({
+                        //         text: "Sorry, this product is out of stock.",
+                        //         icon: "error",
+                        //         button: {
+                        //             text: "OK",
+                        //             className: "swal-button--error"
+                        //         }
+                        //     });
 
-                            return;
-                        }
+                        //     return;
+                        // }
 
                         if(quantity > response.stock_quantity){
                             quantity = response.stock_quantity;
@@ -459,10 +471,11 @@
                                 </span> <br>
                                 <span>Ground Price: <strong>${groundPrice.toFixed(2)}</strong></span> <br>
                                 <span>
-                                    Considerable Price: <strong>${considerablePrice.toFixed(2)}</strong> 
+                                    Minimum Price: <strong>${considerablePrice.toFixed(2)}</strong> 
                                     (<strong>${Math.round(considerableMargin)}%</strong>)
                                 </span>
                                 <input type="hidden" name="product_id[]" value="${productId}">
+                                <input type="hidden" name="product_name[]" value="${productName}">
                             </td> 
                             <td>
                                 <input type="number" class="form-control quantity" 
@@ -581,9 +594,11 @@
             formData.push({ name: 'net_amount', value: $('#net_amount').val() });
             formData.push({ name: 'cash_payment', value: $('#cash_payment').val() });
             formData.push({ name: 'bank_payment', value: $('#bank_payment').val() });
+            formData.push({ name: 'invoice', value: $('#invoice').val() });
 
             $('#productTable tbody tr').each(function() {
                 var productId = $(this).find('input[name="product_id[]"]').val();
+                var productName = $(this).find('input[name="product_name[]"]').val();
                 var quantity = parseFloat($(this).find('input.quantity').val()) || 0;
                 var unitPrice = parseFloat($(this).find('input.price_per_unit').val()) || 0;
                 var vatPercent = parseFloat($(this).find('input.vat_percent').val()) || 0;
@@ -595,6 +610,7 @@
 
                 products.push({
                     product_id: productId,
+                    product_name: productName,
                     quantity: quantity,
                     unit_price: unitPrice,
                     product_size: productSize,
@@ -673,6 +689,7 @@
             formData.push({ name: 'discount', value: $('#discount').val() });
             formData.push({ name: 'net_amount', value: $('#net_amount').val() });
             formData.push({ name: 'warehouse_id', value: $('#warehouse_id').val() });
+            formData.push({ name: 'invoice', value: $('#invoice').val() });
 
             $('#productTable tbody tr').each(function() {
                 var productId = $(this).find('input[name="product_id[]"]').val();

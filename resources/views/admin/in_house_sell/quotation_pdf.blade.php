@@ -104,7 +104,7 @@
 
                 <div class="col-md-6" style="margin-top: -50px; padding-bottom: 15px">
                     <div class="text-end">
-                        @if($order->user->business_name) <strong></strong> {{ $order->user->business_name }}<br> @endif
+                        @if($order->user->surname) <strong></strong> {{ $order->user->surname }}<br> @endif
                         @if($order->user->name) <strong></strong> {{ $order->user->name }}<br> @endif
                         @if($order->user->email) <strong></strong> {{ $order->user->email }}<br> @endif
                         @if($order->user->phone) <strong></strong> {{ $order->user->phone }} <br> @endif

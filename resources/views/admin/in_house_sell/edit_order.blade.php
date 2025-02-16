@@ -107,8 +107,8 @@
                                                     data-profit-margin="{{ $profitMargin }}"
                                                     data-considerable-margin="{{ $considerableMargin }}"
                                                     data-considerable-price="{{ $considerablePrice }}"
-                                                    data-sizes="{{ json_encode($product->stock->pluck('size')->unique()) }}" 
-                                                    data-colors="{{ json_encode($product->stock->pluck('color')->unique()) }}"
+                                                    data-sizes="{{ json_encode($product->stockhistory->pluck('size')->unique()->values()) }}" 
+                                                    data-colors="{{ json_encode($product->stockhistory->pluck('color')->unique()->values()) }}"
                                                     >
                                                     {{ $product->name }} - {{ $product->product_code }}
                                                 </option>
@@ -164,7 +164,27 @@
                                         <button type="button" id="addProductBtn" class="btn btn-secondary">Add</button>
                                      </div>
                                 </div>
-                                <div class="col-sm-12 mt-3">
+
+                                <div class="col-sm-12 mt-1">
+                                    <h5>Stock List:</h5>
+                                    <table class="table table-bordered text-center" id="stockTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Product</th>
+                                                <th>Warehouse</th>
+                                                <th>Size</th>
+                                                <th>Color</th>
+                                                <th>Quantity</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            
+                                            
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="col-sm-12 mt-1">
                                     <h2>Product List:</h2>
                                     <table class="table table-bordered" id="productTable">
                                         <thead>
@@ -461,7 +481,7 @@
                                 </span> <br>
                                 <span>Ground Price: <strong>${groundPrice.toFixed(2)}</strong></span> <br>
                                 <span>
-                                    Considerable Price: <strong>${considerablePrice.toFixed(2)}</strong> 
+                                    Minimum Price: <strong>${considerablePrice.toFixed(2)}</strong> 
                                     (<strong>${Math.round(considerableMargin)}%</strong>)
                                 </span>
                                 <input type="hidden" name="product_id[]" value="${productId}">
@@ -824,6 +844,38 @@
             colors.forEach(function(color) {
                 colorSelect.append(`<option value="${color}">${color}</option>`);
             });
+
+            $.ajax({
+                url: '/admin/get-product-stock',
+                type: 'POST',
+                data: {
+                    product_id: selectedProduct.val(),
+                    size: $('#size').val(),
+                    color: $('#color').val(),
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.getStockcount > 0) {
+                        $('#stockTable tbody').html(response.stock);
+                    } else {
+                        $('#stockTable tbody').html(
+                            '<tr><td colspan="5"> <span class="text-danger">No stock available</span>  </td></tr>'
+                        );
+                        
+                    }
+                },
+                error: function(xhr) {
+                    swal({
+                        text: "Error fetching stock quantity.",
+                        icon: "error",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--error"
+                        }
+                    });
+                }
+            });
+
         });
     });
 </script>

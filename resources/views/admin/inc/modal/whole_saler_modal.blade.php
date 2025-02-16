@@ -20,7 +20,7 @@
                         </div>
                         <div class="col-sm-6">
                             <div class="form-group">
-                                <label>Business Name</label>
+                                <label>Business Name <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="business_name" name="business_name" placeholder="Enter business name">
                             </div>
                         </div>
@@ -32,7 +32,7 @@
                         </div>
                         <div class="col-sm-6">
                             <div class="form-group">
-                                <label>Phone</label>
+                                <label>Phone <span class="text-danger">*</span></label>
                                 <input type="number" class="form-control" id="phone" name="phone" placeholder="Enter phone">
                             </div>
                         </div>
