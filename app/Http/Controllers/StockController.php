@@ -298,6 +298,40 @@ class StockController extends Controller
                                 ->whereNotIn('status', [6, 7]);
                             })->get();
 
+            $returnedOrders = OrderDetails::where('product_id', $id)
+                ->when($fromDate, function ($query) use ($fromDate, $toDate) {
+                    $query->whereBetween('created_at', [$fromDate, $toDate]);
+                })
+                ->when($request->input('warehouse_id'), function ($query) use ($request) {
+                    $query->where("warehouse_id", $request->input('warehouse_id'));
+                })
+                ->where('size', $size)
+                ->where('color', $color)
+                ->where('warehouse_id', $warehouse_id)
+                ->whereHas('order', function ($query) {
+                    $query->where('status', 6);
+                })
+                ->orderby('id','DESC')
+                ->get();
+
+
+            $cancelledOrders = OrderDetails::where('product_id', $id)
+                ->when($fromDate, function ($query) use ($fromDate, $toDate) {
+                    $query->whereBetween('created_at', [$fromDate, $toDate]);
+                })
+                ->when($request->input('warehouse_id'), function ($query) use ($request) {
+                    $query->where("warehouse_id", $request->input('warehouse_id'));
+                })
+                ->where('size', $size)
+                ->where('color', $color)
+                ->where('warehouse_id', $warehouse_id)
+                ->whereHas('order', function ($query) {
+                    $query->where('status', 7);
+                })
+                ->orderby('id','DESC')
+                ->get();
+
+
 
                     $stockTransferRequests = StockTransferRequest::where('product_id', $id)
                         ->when($size, function ($query) use ($size) {
