@@ -51,7 +51,7 @@
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="invoice">Invoice <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="invoice" name="invoice" placeholder="Enter invoice" value="{{ $purchase->invoice }}">
+                                        <input type="text" class="form-control" id="invoice" name="invoice" placeholder="Enter invoice" value="{{ $purchase->invoice }}" readonly>
                                         <small id="invoice-error" class="text-danger" style="display: none;">This invoice already exists.</small>
                                     </div>
                                 </div>
@@ -71,7 +71,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 d-none">
                                     <div class="form-group">
                                         <label for="ref">Ref</label>
                                         <input type="text" class="form-control" id="ref" name="ref" placeholder="Enter reference" value="{{ $purchase->ref }}">

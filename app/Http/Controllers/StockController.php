@@ -313,6 +313,7 @@ class StockController extends Controller
     {
 
         $validatedData = $request->validate([
+            'season' => 'required',
             'invoice' => 'required',
             'supplier_id' => 'required|exists:suppliers,id',
             // 'warehouse_id' => 'required|exists:warehouses,id',
@@ -337,16 +338,14 @@ class StockController extends Controller
             'products.*.total_price_with_vat' => 'required|numeric',
         ]);
 
-        $latestPurchase = Purchase::where('invoice', 'like', "STL-{$request->invoice}-" . date('Y') . '-%')
-        ->orderBy('invoice', 'desc')
-        ->first();
-
-        $nextNumber = $latestPurchase ? (intval(substr($latestPurchase->invoice, -5)) + 1) : 1;
-        $invoice = "STL-{$request->invoice}-" . date('Y') . '-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+        $season = $request->input('season');
+        $invoice = $request->input('invoice');
+    
+        $invoicePrefix = "STL-{$season}-" . date('Y') . "-{$invoice}";
 
         $data = $request->all();
         $purchase = new Purchase();
-        $purchase->invoice = $invoice;
+        $purchase->invoice = $invoicePrefix;
         $purchase->supplier_id = $request->supplier_id;
         $purchase->purchase_date = $request->purchase_date;
         $purchase->purchase_type = $request->purchase_type;
@@ -1126,15 +1125,15 @@ class StockController extends Controller
 
     public function checkInvoice(Request $request)
     {
+        $season = $request->input('season');
         $invoice = $request->input('invoice');
-        $purchaseId = $request->input('purchase_id');
-        $exists = Purchase::where('invoice', $invoice)
-            ->when($purchaseId, function ($query) use ($purchaseId) {
-                $query->where('id', '!=', $purchaseId);
-            })->exists();
-
+    
+        $invoicePrefix = "STL-{$season}-" . date('Y') . "-{$invoice}";
+    
+        $exists = Purchase::where('invoice', 'like', $invoicePrefix)->exists();
+    
         return response()->json(['exists' => $exists]);
-    }
+    } 
 
     public function getWarehouses(Request $request)
     {

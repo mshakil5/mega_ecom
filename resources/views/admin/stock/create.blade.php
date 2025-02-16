@@ -64,12 +64,22 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-sm-2">
-                                    <div class="form-group">
-                                        <label for="invoice">Invoice <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="invoice" name="invoice" placeholder="Enter invoice" required>
-                                        <small id="invoice-error" class="text-danger" style="display: none;">This invoice already exists.</small>
-                                    </div>
+                                <div class="form-group col-sm-2">
+                                    <label for="season">Season<span style="color: red;">*</span></label>
+                                    <select class="form-control" id="season" name="season">
+                                        <option value="">Select Season</option>
+                                        <option value="Spring">Spring</option>
+                                        <option value="Summer">Summer</option>
+                                        <option value="Autumn">Autumn</option>
+                                        <option value="Winter">Winter</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-sm-2">
+                                    <label for="invoice">Invoice<span style="color: red;">*</span></label>
+                                    <input type="text" class="form-control" id="invoice" name="invoice">
+                                    <small class="text-muted">Example: <span id="productCodePreview">STL-Season-Year-XXXXX</span></small>
+                                    <span id="invoice-error" class="text-danger" style="display: none;">Invoice already exists</span>
                                 </div>
                                 <div class="col-sm-3 d-none">
                                     <div class="form-group">
@@ -82,7 +92,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-sm-2">
+                                <div class="col-sm-2 d-none">
                                     <div class="form-group">
                                         <label for="ref">Ref</label>
                                         <input type="text" class="form-control" id="ref" name="ref" placeholder="Enter reference">
@@ -460,6 +470,7 @@
             var formData = {};
             var selectedProducts = [];
 
+            formData.season = $('#season').val();
             formData.invoice = $('#invoice').val();
             formData.purchase_date = $('#purchase_date').val();
             formData.supplier_id = $('#supplier_id').val();
@@ -560,18 +571,20 @@
 
         });
 
-        $('#invoice').on('input', function () {
-            let invoice = $(this).val();
+        $('#invoice, #season').on('input change', function () {
+            let invoice = $('#invoice').val();
+            let season = $('#season').val();
             let errorElement = $('#invoice-error');
             let createButton = $('#addBtn');
 
-            if (invoice.length > 0) {
+            if (invoice.length > 0 && season.length > 0) {
                 $.ajax({
                     url: "{{ route('admin.check.invoice') }}",
                     method: "POST",
                     data: {
                         _token: "{{ csrf_token() }}",
-                        invoice: invoice
+                        invoice: invoice,
+                        season: season
                     },
                     success: function (response) {
                         if (response.exists) {
