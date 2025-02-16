@@ -93,7 +93,7 @@
                         <strong>Order Type:</strong> 
                         {{ $order->order_type === 1 ? 'In House' : ($order->order_type === 2 ? 'Quotation' : 'Frontend') }}
                     <br>
-                <strong>Note:</strong> {!! $order->note !!}
+                <div class="d-none"> <strong>Note:</strong> {!! $order->note !!} </div>
                 @endif
               </div>
               <!-- /.col -->
@@ -108,7 +108,7 @@
                     <thead>
                         <tr>
                             <th style="text-align: center">Product Image</th>
-                            <th style="text-align: center">Product Name</th>
+                            <th style="text-align: center">Product</th>
                             <th style="text-align: center">Quantity</th>
                             <th style="text-align: center">Size</th>
                             <th style="text-align: center">Color</th>
@@ -130,7 +130,7 @@
                                 </td>
                                 <td style="text-align: center">
                                     @if($orderDetail->product)
-                                        {{ $orderDetail->product->name ?? 'N/A' }}
+                                    {{ $orderDetail->product->product_code ?? '' }}-{{ $orderDetail->product->name ?? '' }}
                                     @elseif($order->bundleProduct)
                                         {{ $order->bundleProduct->name }}
                                     @else

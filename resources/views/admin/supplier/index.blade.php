@@ -37,6 +37,12 @@
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-group">
+                                        <label>Company</label>
+                                        <input type="text" class="form-control" id="company" name="company" placeholder="Enter name" required>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
                                         <label>Supplier ID <span style="color: red;">*</span></label>
                                         <input type="number" class="form-control" id="id_number" name="id_number" placeholder="Enter code" required>
                                     </div>
@@ -71,22 +77,16 @@
                                         <input type="number" class="form-control" id="vat_reg" name="vat_reg" placeholder="Enter vat reg">
                                     </div>
                                 </div>
-                                <div class="col-sm-6">
+                                <div class="col-sm-6 d-none">
                                     <div class="form-group">
                                         <label>Contract Date</label>
                                         <input type="date" class="form-control" id="contract_date" name="contract_date" placeholder="Enter contract date">
                                     </div>
                                 </div>
-                                <div class="col-sm-6">
+                                <div class="col-sm-12">
                                     <div class="form-group">
                                         <label>Address</label>
                                         <textarea class="form-control" id="address" name="address" rows="3" placeholder="Enter address"></textarea>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label>Company</label>
-                                        <textarea class="form-control" id="company" name="company" rows="3" placeholder="Enter company"></textarea>
                                     </div>
                                 </div>
                             </div>

@@ -45,6 +45,11 @@ class SupplierController extends Controller
             return response()->json(['status'=> 303,'message'=>$message]);
             exit();
         }
+        if(empty($request->company)){
+            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Supplier company \" field..!</b></div>";
+            return response()->json(['status'=> 303,'message'=>$message]);
+            exit();
+        }
         
         if(isset($request->password) && ($request->password != $request->confirm_password)){
             $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Password doesn't match.</b></div>";
@@ -259,6 +264,7 @@ class SupplierController extends Controller
         $request->validate([
             'id_number' => 'required|unique:suppliers',
             'name' => 'required|string|max:255',
+            'company' => 'required|string|max:255',
             'email' => 'required|email',
             'phone' => 'nullable|numeric',
             'password' => 'nullable|string|min:6',

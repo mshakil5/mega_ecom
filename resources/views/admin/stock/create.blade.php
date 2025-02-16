@@ -553,7 +553,7 @@
                         });
 
                         swal({
-                            title: "Validation Error",
+                            title: "Error",
                             text: errorMessage,
                             icon: "error",
                             button: {

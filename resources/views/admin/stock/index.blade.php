@@ -442,6 +442,8 @@
                     text: JSON.parse(xhr.responseText).errors.toWarehouse[0] || "An error occurred while sending the request.",
                     icon: "error"
                     });
+                    $('#submitRequest').prop('disabled', false);
+                    $('#submitRequest').html('Submit Request');
                 }
                 });
             } else {

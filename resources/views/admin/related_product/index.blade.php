@@ -38,7 +38,7 @@
                                     </select>
                                 </div>
                                  <div class="form-group col-md-12">
-                                    <label for="related_product_ids">Products <span style="color: red;">*</span></label>
+                                    <label for="related_product_ids">Related Products <span style="color: red;">*</span></label>
                                     <select class="form-control select2" id="related_product_ids" name="related_product_ids[]" multiple="multiple" data-placeholder="Select products">
                                         @foreach($products as $product)
                                         <option value="{{ $product->id }}">{{ $product->name }}</option>
@@ -64,7 +64,7 @@
             <div class="col-md-12">
                 <div class="card card-secondary">
                     <div class="card-header">
-                        <h3 class="card-title">Bundle Products</h3>
+                        <h3 class="card-title">Related Products</h3>
                     </div>
                     <div class="card-body">
                         <table id="bundleProductsTable" class="table table-bordered table-striped">
@@ -140,11 +140,10 @@
         });
 
         $("#bundleProductsTable").DataTable({
-            "responsive": true,
-            "lengthChange": false,
-            "autoWidth": false,
-            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-        }).buttons().container().appendTo('#bundleProductsTable_wrapper .col-md-6:eq(0)');
+            "responsive": true, 
+            "lengthChange": true,
+            "autoWidth": true,
+        });
 
         $('.select2').select2({
             placeholder: "Select products",

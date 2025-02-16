@@ -27,7 +27,7 @@
                                         <td>{{ $key + 1 }}</td>
                                         <td>{{ $sampleProduct->shipment->shipping->shipping_id }}
                                          - {{ $sampleProduct->shipment->shipping->shipping_date }} - {{ $sampleProduct->shipment->shipping->shipping_name }}</td>
-                                        <td>{{ $sampleProduct->product->product_code }} - {{ $sampleProduct->product->name }}</td>
+                                        <td>{{ $sampleProduct->product->product_code }} - {{ $sampleProduct->product->name }} ( {{ $sampleProduct->size ?? '' }} - {{ $sampleProduct->color ?? '' }} ) </td>
                                         <td>{{ $sampleProduct->sample_quantity }}</td>
                                     </tr>
                                     @endforeach

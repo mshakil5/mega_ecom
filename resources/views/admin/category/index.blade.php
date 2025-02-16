@@ -98,7 +98,7 @@
                                         <a id="EditBtn" rid="{{ $data->id }}">
                                             <i class="fa fa-edit" style="color: #2196f3; font-size:16px;"></i>
                                         </a>
-                                        <a id="deleteBtn" rid="{{ $data->id }}">
+                                        <a id="deleteBtn" rid="{{ $data->id }}" class="d-none">
                                             <i class="fa fa-trash-o" style="color: red; font-size:16px;"></i>
                                         </a>
                                     </td>
@@ -121,9 +121,10 @@
 <script>
     $(function () {
       $("#example1").DataTable({
-        "responsive": true, "lengthChange": false, "autoWidth": false,
-        "buttons": ["copy", "csv", "excel", "pdf", "print"]
-      }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+        "responsive": true, 
+        "lengthChange": true,
+        "autoWidth": true,
+      });
     });
 </script>
 

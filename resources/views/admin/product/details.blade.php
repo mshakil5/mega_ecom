@@ -81,7 +81,11 @@
 
                 <div class="bg-gray py-2 px-3 mt-4">
                 <h2 class="mb-0">
-                    {{ $product->price }} {{ $currency }}
+
+                    @php
+                        $price = \App\Models\Stock::orderby('id','desc')->where('product_id', $product->id)->select('selling_price')->first();
+                    @endphp
+                    {{ $currency }}{{ $price->selling_price ?? '' }}
                 </h2>
                 <h4 class="mt-0">
                 </h4>
@@ -111,8 +115,8 @@
             <nav class="w-100">
                 <div class="nav nav-tabs" id="product-tab" role="tablist">
                 <a class="nav-item nav-link active" id="product-desc-tab" data-toggle="tab" href="#product-desc" role="tab" aria-controls="product-desc" aria-selected="true">Description</a>
-                <a class="nav-item nav-link" id="product-comments-tab" data-toggle="tab" href="#product-comments" role="tab" aria-controls="product-comments" aria-selected="false">Comments</a>
-                <a class="nav-item nav-link" id="product-rating-tab" data-toggle="tab" href="#product-rating" role="tab" aria-controls="product-rating" aria-selected="false">Rating</a>
+                <a class="nav-item nav-link d-none" id="product-comments-tab" data-toggle="tab" href="#product-comments" role="tab" aria-controls="product-comments" aria-selected="false">Comments</a>
+                <a class="nav-item nav-link d-none" id="product-rating-tab" data-toggle="tab" href="#product-rating" role="tab" aria-controls="product-rating" aria-selected="false">Rating</a>
                 </div>
             </nav>
             <div class="tab-content p-3" id="nav-tabContent">

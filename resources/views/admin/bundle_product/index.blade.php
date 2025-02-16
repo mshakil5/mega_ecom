@@ -269,11 +269,10 @@
         });
 
         $("#bundleProductsTable").DataTable({
-            "responsive": true,
-            "lengthChange": false,
-            "autoWidth": false,
-            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-        }).buttons().container().appendTo('#bundleProductsTable_wrapper .col-md-6:eq(0)');
+            "responsive": true, 
+            "lengthChange": true,
+            "autoWidth": true,
+        });
 
         $('.select2').select2({
             placeholder: "Select products",
