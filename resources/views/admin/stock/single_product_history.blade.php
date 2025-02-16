@@ -224,10 +224,10 @@
                                         <tr>
                                             <td>{{ date('d-m-Y', strtotime($request->created_at)) }}</td>
                                             <td>
-                                                @if ($request->from_warehouse_id == $warehouse_id)
-                                                    Transferred Out
+                                                @if ($request->from_warehouse_id == $warehouse_id)                                               
+                                                    <span class="btn btn-sm btn-danger">Transferred Out</span> 
                                                 @elseif ($request->to_warehouse_id == $warehouse_id)
-                                                    Received
+                                                   <span class="btn btn-sm btn-success">Received</span> 
                                                 @endif
                                             </td>
                                             <td>{{ $request->fromWarehouse->name ?? '' }}</td>
