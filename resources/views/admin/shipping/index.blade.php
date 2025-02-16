@@ -73,7 +73,7 @@
                                     <td>
                                         @if($shipping->shipment)
                                             <span class="badge bg-success ms-2">Price Added</span>
-                                            <a href="{{ route('admin.shipment.edit', $shipping->shipment->id) }}" class="btn btn-info btn-sm"><i class="fas fa-dollar-sign"></i></a>
+                                            <a href="{{ route('admin.shipment.edit', $shipping->shipment->id) }}" class="btn btn-info btn-sm"><i class="fa fa-pencil"></i></a>
                                             <a href="{{ route('admin.shipment.print', $shipping->shipment->id) }}" class="btn btn-info btn-sm">
                                                 <i class="fas fa-print"></i>
                                             </a>
@@ -94,16 +94,17 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <button class="btn btn-warning btn-sm"
+                                        @if(!$shipping->shipment) 
+                                           <button class="btn btn-warning btn-sm"
                                             onclick="editShipment(this)"
                                             data-id="{{ $shipping->id }}"
                                             data-shipping-id="{{ $shipping->shipping_id }}"
                                             data-shipping-name="{{ $shipping->shipping_name }}"
                                             data-shipping-date="{{ $shipping->shipping_date }}"
                                             data-purchase-ids="{{ $shipping->purchase_ids }}"
-                                            @if($shipping->shipment) disabled @endif>
+                                            >
                                             Edit
-                                        </button>
+                                        </button>  @endif
                                     </td>
                                 </tr>
                                 @endforeach

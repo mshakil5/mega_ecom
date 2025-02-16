@@ -75,7 +75,7 @@
                                             <input type="hidden" value="{{ $detail->size }}" class="product_size">
                                             <input type="hidden" value="{{ $detail->color }}" class="product_color">
                                             <input type="hidden" value="{{ $detail->ground_price_per_unit }}" class="ground_price_per_unit">
-                                            <input type="hidden" value="{{ $detail->systemLose->id }}" class="system_lose_id">
+                                            <input type="hidden" value="{{ $detail->systemLose->id ?? '' }}" class="system_lose_id">
                                             <input type="hidden" value="{{ $detail->price_per_unit }}" class="purchase_price">
                                         </td>
                                         <td>

@@ -16,7 +16,7 @@
                                 <thead>
                                     <tr>
                                         <th>Date</th>
-                                        <th>Product Name</th>
+                                        <th>Product</th>
                                         <th>Quantity</th>
                                         <th>Reason</th>
                                     </tr>
@@ -25,7 +25,7 @@
                                     @foreach ($systemLosses as $key => $systemLoss)
                                     <tr>
                                         <td>{{ \Carbon\Carbon::parse($systemLoss->created_at)->format('d-m-Y') }}</td>
-                                        <td>{{ $systemLoss->product->name }}</td>
+                                        <td>{{ ($systemLoss->product->product_code ?? '') . '-' . ($systemLoss->product->name ?? '') . '-' . ($systemLoss->size ?? '') . '-' . ($systemLoss->color ?? '') }}</td>
                                         <td>{{ $systemLoss->quantity }}</td>
                                         <td>{!! $systemLoss->reason !!}</td>
                                     </tr>
