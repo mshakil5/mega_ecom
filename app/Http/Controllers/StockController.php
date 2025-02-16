@@ -960,6 +960,8 @@ class StockController extends Controller
             'warehouse' => 'required', 
             'lossQuantity' => 'required|numeric|min:1', 
             'lossReason' => 'nullable|string|max:255',
+            'color' => 'nullable',
+            'size' => 'nullable',
         ]);
 
         $stock = Stock::where('product_id', $validatedData['productId'])->where('size',$request->size)->where('color',$request->color)->where('warehouse_id', $request->warehouse)->first();
@@ -979,6 +981,8 @@ class StockController extends Controller
         $systemLoss->product_id = $validatedData['productId'];
         $systemLoss->quantity = $validatedData['lossQuantity'];
         $systemLoss->reason = $validatedData['lossReason'];
+        $systemLoss->color = $validatedData['color'];
+        $systemLoss->size = $validatedData['size'];
         $systemLoss->created_by = Auth::user()->id;
         $systemLoss->save();
 

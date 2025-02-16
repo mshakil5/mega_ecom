@@ -463,7 +463,7 @@
 <script>
     $(document).ready(function() {
         function openLossModal(productId, size, color, warehouse) {
-            console.log(productId, size, warehouse);
+            // console.log(productId, size, warehouse); 
 
             $('#systemLossForm')[0].reset();
             $('#lossProductId').val(productId);

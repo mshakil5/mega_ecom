@@ -2,6 +2,13 @@
 
 @section('content')
 
+@php
+    // system loss calculation start
+    $systemLosses = \App\Models\SystemLose::with('product')->where('product_id', $product->id)->where('size', $size)->where('warehouse_id', $warehouse_id)->where('color', $color)->latest()->get();
+    // system loss calculation end
+@endphp
+
+
 <section class="content" id="newBtnSection">
     <div class="container-fluid">
       <div class="row">
@@ -104,7 +111,8 @@
                                         <th>Size</th>
                                         <th>Colour</th>
                                         <th>Quantity</th>
-                                        <th>Price</th>
+                                        <th>Purchase Price</th>
+                                        <th>Selling Price</th>
                                         <!-- <th>Vat Amount</th> -->
                                         <th>Total Price</th>
                                         <!-- <th>Total</th> -->
@@ -126,8 +134,9 @@
                                             <td>{{ $data->color}}</td>
                                             <td>{{ $data->quantity}}</td>
                                             <td>{{ $data->price_per_unit}}</td>
+                                            <td>{{ $data->selling_price}}</td>
                                             <!-- <td>{{ $data->total_vat}}</td> -->
-                                            <td>{{ $data->price_per_unit * $data->quantity}}</td>
+                                            <td>{{ $data->selling_price * $data->quantity}}</td>
                                             <!-- <td>{{ $data->shipment->total_product_quantity}}</td> -->
                                         </tr>
                                     @endforeach
@@ -235,6 +244,49 @@
                                             <td>{{ $request->request_quantity }}</td>
                                             <td>{{ $request->note }}</td>
                                         </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-secondary">
+                    <div class="card-body">
+
+                        <div class="text-center mb-4 company-name-container">
+                            <h2>{{ $product->name }} - {{ $size }} - {{ $color }}</h2>
+                            <h4>System Loss</h4>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped p-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Size</th>
+                                        <th>Color</th>
+                                        <th>Reason</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($systemLosses as $key => $systemLoss)
+                                    <tr>
+                                        <td>{{ \Carbon\Carbon::parse($systemLoss->created_at)->format('d-m-Y') }}</td>
+                                        <td>{{ ($systemLoss->product->product_code ?? '') . '-' . ($systemLoss->product->name ?? '') . '-' . ($systemLoss->size ?? '') . '-' . ($systemLoss->color ?? '') }}</td>
+                                        <td>{{ $systemLoss->quantity }}</td>
+                                        <td>{{ $systemLoss->size }}</td>
+                                        <td>{{ $systemLoss->color }}</td>
+                                        <td>{!! $systemLoss->reason !!}</td>
+                                    </tr>
                                     @endforeach
                                 </tbody>
                             </table>
