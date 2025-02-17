@@ -327,6 +327,11 @@ class StockController extends Controller
             })->get();
 
         $stockTransferRequests = StockTransferRequest::where('product_id', $id)
+
+            ->where(function ($query) use ($warehouse_id) {
+                $query->where('from_warehouse_id', $warehouse_id)
+                    ->orWhere('to_warehouse_id', $warehouse_id);
+            })
             ->when($size, function ($query) use ($size) {
                 $query->where('size', $size);
             })
