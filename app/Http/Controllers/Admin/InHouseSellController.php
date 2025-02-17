@@ -408,8 +408,29 @@ class InHouseSellController extends Controller
     public function getStock(Request $request)
     {
         $productId = $request->input('product_id');
-        $getStock = Stock::with(['warehouse', 'product'])->where('product_id', $productId)->get();
-        $getStockcount = Stock::with(['warehouse', 'product'])->where('product_id', $productId)->count();
+
+        $warehouseId = $request->input('warehouse_id');
+
+        $selectedSize = $request->input('size');
+        $selectedColor = $request->input('color');
+
+        $getStock = Stock::with(['warehouse', 'product'])
+                ->where('product_id', $productId)
+                ->where('quantity', '>', 0)
+                ->when($warehouseId, function ($query) use ($warehouseId) {
+                    return $query->where('warehouse_id', $warehouseId);
+                })
+                ->when($selectedSize, function ($query) use ($selectedSize) {
+                    return $query->where('size', $selectedSize);
+                })
+                ->when($selectedColor, function ($query) use ($selectedColor) {
+                    return $query->where('color', $selectedColor);
+                })
+                ->get();
+
+        $getStockcount = $getStock->count();
+
+        $totalQuantity = $getStock->sum('quantity');
 
         $prop = '';
         
@@ -438,6 +459,7 @@ class InHouseSellController extends Controller
         return response()->json([
             'stock' => $prop,
             'getStockcount' => $getStockcount,
+            'totalQuantity' => $totalQuantity
         ]);
     } 
 

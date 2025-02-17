@@ -178,7 +178,7 @@
 
                                 
                                 <div class="col-sm-12 mt-1">
-                                    <h5>Stock List:</h5>
+                                    <h5 id="stockHeading">Stock List:</h5>
                                     <table class="table table-bordered text-center" id="stockTable">
                                         <thead>
                                             <tr>
@@ -800,8 +800,16 @@
 <script>
     $(document).ready(function() {
 
-        $('#product_id').change(function() {
-            var selectedProduct = $(this).find(':selected');
+        $('#quantity').on('input', function() {
+            if ($(this).val() < 0) {
+                $(this).val(1);
+            }
+        });
+
+        $('#product_id, #warehouse_id').change(function() {
+            var selectedProduct = $('#product_id').find(':selected');
+            var selectedProductId = $('#product_id').val();
+            var warehouseId = $('#warehouse_id').val() || '';
             var pricePerUnit = selectedProduct.data('price');
             var groundPrice = selectedProduct.data('ground-price');
             var profitMargin = selectedProduct.data('profit-margin');
@@ -843,8 +851,7 @@
                 type: 'POST',
                 data: {
                     product_id: selectedProduct.val(),
-                    size: $('#size').val(),
-                    color: $('#color').val(),
+                    warehouse_id: warehouseId,
                     _token: '{{ csrf_token() }}'
                 },
                 success: function(response) {
@@ -856,6 +863,69 @@
                         );
                         
                     }
+                    $('h5#stockHeading').html(`Stock List: (Total Quantity: ${response.totalQuantity})`);
+                },
+                error: function(xhr) {
+                    swal({
+                        text: "Error fetching stock quantity.",
+                        icon: "error",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--error"
+                        }
+                    });
+                }
+            });
+        });
+
+        $('#size, #color').change(function() {
+            var selectedProduct = $('#product_id').find(':selected');
+            var selectedProductId = $('#product_id').val();
+            var warehouseId = $('#warehouse_id').val() || '';
+            var pricePerUnit = selectedProduct.data('price');
+            var groundPrice = selectedProduct.data('ground-price');
+            var profitMargin = selectedProduct.data('profit-margin');
+            var considerableMargin = selectedProduct.data('considerable-margin');
+            var considerablePrice = selectedProduct.data('considerable-price');
+            $('#quantity').val(1);
+            
+            if(pricePerUnit) {
+                $('#price_per_unit').val(pricePerUnit);
+                $('#ground_price').val(groundPrice);
+                $('#profit_margin').val(profitMargin);
+                $('#considerable_margin').val(considerableMargin);
+                $('#considerable_price').val(considerablePrice);
+            } else {
+                $('#price_per_unit').val('');
+                $('#ground_price').val('');
+                $('#profit_margin').val('');
+                $('#considerable_margin').val('');
+                $('#considerable_price').val('');
+            }
+
+            var selectedSize = $('#size').val() || '';
+            var selectedColor = $('#color').val() || '';
+
+            $.ajax({
+                url: '/admin/get-product-stock',
+                type: 'POST',
+                data: {
+                    product_id: selectedProduct.val(),
+                    warehouse_id: warehouseId,
+                    size: selectedSize,
+                    color: selectedColor,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.getStockcount > 0) {
+                        $('#stockTable tbody').html(response.stock);
+                    } else {
+                        $('#stockTable tbody').html(
+                            '<tr><td colspan="5"> <span class="text-danger">No stock available</span>  </td></tr>'
+                        );
+                        
+                    }
+                    $('h5#stockHeading').html(`Stock List: (Total Quantity: ${response.totalQuantity})`);
                 },
                 error: function(xhr) {
                     swal({
