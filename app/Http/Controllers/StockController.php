@@ -246,7 +246,7 @@ class StockController extends Controller
         ->get();
 
         $products = $products->map(function ($product) {
-            $product->total_quantity = $product->stock ? $product->stock->quantity : 0; 
+            $product->total_quantity = number_format($product->stock ? $product->stock->quantity : 0, 0);
             return $product;
         });
     
