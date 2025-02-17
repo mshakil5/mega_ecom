@@ -3,7 +3,7 @@
 
 <head>
     @php
-    $company = \App\Models\CompanyDetails::select('company_name','company_logo', 'email1', 'company_reg_number', 'vat_number')->first();
+    $company = \App\Models\CompanyDetails::first();
     use Carbon\Carbon;
     @endphp
 
@@ -97,7 +97,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <div>
-                        <strong>Quotation #: </strong> {{ $order->invoice }}<br>
+                        <strong>Quotation: </strong> {{ $order->invoice }}<br>
                         <strong>Date: </strong> {{ Carbon::parse($order->purchase_date)->format('d F Y') }}
                     </div>
                 </div>
@@ -206,10 +206,11 @@
                 <div class="row">
                     <div class="col-5">
                         <div>
-                            {{$company->company_name}}<br>
-                            {{$company->email1}}<br>
-                            Company Reg. No. {{$company->company_reg_number}}<br>
-                            VAT Reg. No. {{$company->vat_number}}
+                            <strong>Payment Terms are through Bank Transfer Only:</strong> <br>
+                            Acc no: 48302821 <br>
+                            Sort Code: 56-00-70 <br>
+                            IBAN: GB44NWBK5600070483021 <br>
+                            SWIFT: NWBKGB2L
                         </div>
                     </div>
 
@@ -224,6 +225,37 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="row overflow" style="position:fixed; bottom:0; width:100%;font-family: Arial, Helvetica; ">
+        <div style="border-top: 1px solid #000; margin: 10px 0; display: inline-block;"></div>
+            <table style="width:100%; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th style="width: 50%;"></th>
+                        <th style="width: 50%;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="width: 50%; text-align:left;" colspan="1"><b>{{ $company->company_name }}</b></td>
+                        <td style="width: 50%; text-align:right;" colspan="1"><b>Contact Information</b></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Registration Number: {{ $company->company_reg_number }} <br>
+                            Vat Number: {{ $company->vat_number }} <br>
+                            {{ $company->address1 }} <br>
+                        </td>
+                        <td style="width: 50%; text-align:right;">
+                            {{ $company->phone1 }} <br>
+                            {{ $company->email1 }} <br>
+                            {{ $company->website }} <br>
+
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
     </div>

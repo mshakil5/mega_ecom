@@ -44,7 +44,7 @@
                                     <td>
                                         <form method="POST" action="{{ route('orders.send-email', $order->id) }}" class="d-inline-block">
                                             @csrf
-                                            <button type="submit" class="btn btn-success btn-round btn-shadow email-btn">
+                                            <button type="submit" class="btn btn-success btn-round btn-shadow email-btn d-none">
                                                 <i class="fas fa-envelope"></i> Email
                                             </button>
                                         </form>

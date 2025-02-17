@@ -356,17 +356,17 @@
         $('#addProductBtn').click(function() {
 
             var warehouseId = $('#warehouse_id').val();
-            if (!warehouseId) {
-                swal({
-                    text: 'Please select warehouse',
-                    icon: "error",
-                    button: {
-                        text: "OK",
-                        className: "swal-button--error"
-                    }
-                });
-                return;
-            }
+            // if (!warehouseId) {
+            //     swal({
+            //         text: 'Please select warehouse',
+            //         icon: "error",
+            //         button: {
+            //             text: "OK",
+            //             className: "swal-button--error"
+            //         }
+            //     });
+            //     return;
+            // }
 
             var selectedProduct = $('#product_id option:selected');
             var productId = selectedProduct.val();
