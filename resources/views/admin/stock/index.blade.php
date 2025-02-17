@@ -467,7 +467,7 @@
 
             $('#systemLossForm')[0].reset();
             $('#lossProductId').val(productId);
-            $('#warehouses').val(warehouse);
+            $('#warehouses').val(warehouse).prop('disabled', true);
             $('#systemLossModal').modal('show');
 
             $('#systemLossForm').submit(function(e) {

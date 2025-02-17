@@ -274,6 +274,8 @@
                                         <th>Quantity</th>
                                         <th>Size</th>
                                         <th>Color</th>
+                                        <th>Warehouse</th>
+                                        <th>Performed By</th>
                                         <th>Reason</th>
                                     </tr>
                                 </thead>
@@ -285,6 +287,8 @@
                                         <td>{{ $systemLoss->quantity }}</td>
                                         <td>{{ $systemLoss->size }}</td>
                                         <td>{{ $systemLoss->color }}</td>
+                                        <td>{{ $systemLoss->warehouse->name ?? '' }}</td>
+                                        <td>{{ $systemLoss->user->name ?? '' }}</td>
                                         <td>{!! $systemLoss->reason !!}</td>
                                     </tr>
                                     @endforeach

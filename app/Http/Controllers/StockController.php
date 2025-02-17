@@ -1082,6 +1082,7 @@ class StockController extends Controller
         $warehouseId = $orderDetails->warehouse_id;
 
         $systemLoss = new SystemLose();
+        $systemLoss->warehouse_id = $warehouseId;
         $systemLoss->product_id = $product_id;
         $systemLoss->order_id = $request->order_id;
         $systemLoss->quantity = $quantity;

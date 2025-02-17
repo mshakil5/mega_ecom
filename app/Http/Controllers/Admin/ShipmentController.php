@@ -187,6 +187,7 @@ class ShipmentController extends Controller
                 SystemLose::create([
                     'product_id' => $detail['product_id'],
                     'shipment_detail_id' => $detailShipment->id,
+                    'warehouse_id' => $request->warehouse_id,
                     'quantity' => $detail['missing_quantity'],
                     'size' => $detail['size'],
                     'color' => $detail['color'],
@@ -367,6 +368,7 @@ class ShipmentController extends Controller
                     SystemLose::create([
                         'product_id' => $detail['product_id'],
                         'shipment_detail_id' => $shipmentDetail->id,
+                        'warehouse_id' => $shipmentDetail->warehouse_id,
                         'quantity' => $detail['missing_quantity'],
                         'size' => $detail['size'],
                         'color' => $detail['color'],

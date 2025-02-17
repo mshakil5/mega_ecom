@@ -200,7 +200,7 @@
           </div>
           <span class="text">
             <span style="color: #007bff; font-weight: bold;"></span> has ordered a new item.
-            <span style="color: #28a745; font-weight: bold;">Net Amount: ${{ number_format($order->net_amount, 2) }}</span>
+            <span style="color: #28a745; font-weight: bold;">Net Amount: £{{ number_format($order->net_amount, 2) }}</span>
           </span>
 
           <small class="badge {{ $badgeClass }}"><i class="far fa-clock"></i> {{ $timeDiff }}</small>
