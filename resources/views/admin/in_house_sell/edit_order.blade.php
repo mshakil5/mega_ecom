@@ -122,20 +122,8 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-sm-2">
-                                    <div class="form-group">
-                                        <label for="quantity">Quantity <span class="text-danger">*</span></label>
-                                        <input type="number" class="form-control quantity" id="quantity" name="quantity" placeholder="Enter quantity" min="1">
-                                    </div>
-                                </div>
-                                <div class="col-sm-2">
-                                    <div class="form-group">
-                                        <label for="price_per_unit">Unit Price <span class="text-danger">*</span></label>
-                                        <input type="number" step="0.01" class="form-control" id="price_per_unit" name="price_per_unit" placeholder="Enter unit price">
-                                        <input type="hidden" step="0.01" class="form-control" id="ground_price">
-                                        <input type="hidden" step="0.01" class="form-control" id="profit_margin">
-                                    </div>
-                                </div>
+
+                                
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="size">Size <span class="text-danger">*</span></label>
@@ -164,6 +152,23 @@
                                         </select>
                                     </div>
                                 </div>
+
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <label for="quantity">Quantity <span class="text-danger">*</span></label>
+                                        <input type="number" class="form-control quantity" id="quantity" name="quantity" placeholder="Enter quantity" min="1">
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <label for="price_per_unit">Unit Price <span class="text-danger">*</span></label>
+                                        <input type="number" step="0.01" class="form-control" id="price_per_unit" name="price_per_unit" placeholder="Enter unit price">
+                                        <input type="hidden" step="0.01" class="form-control" id="ground_price">
+                                        <input type="hidden" step="0.01" class="form-control" id="profit_margin">
+                                    </div>
+                                </div>
+
+
                                 <div class="col-sm-1">
                                     <label for="addProductBtn">Action</label>
                                     <div class="col-auto d-flex align-items-end">
