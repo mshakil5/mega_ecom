@@ -191,6 +191,7 @@ class ShipmentController extends Controller
                     'quantity' => $detail['missing_quantity'],
                     'size' => $detail['size'],
                     'color' => $detail['color'],
+                    'reason' => 'Damaged from shipment',
                     'created_by' => auth()->id()
                 ]);
             }
