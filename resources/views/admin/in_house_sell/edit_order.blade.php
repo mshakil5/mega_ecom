@@ -24,7 +24,7 @@
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="supplier_id">Select Wholesaler 
+                                        <label for="supplier_id">Wholesaler 
                                         @if($order->user_id)
                                             <span class="text-danger">*</span>
                                         @endif
@@ -57,6 +57,12 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <label for="purchase_date">Invoice</label>
+                                        <input type="text" class="form-control" id="invoice" name="invoice" placeholder="" value="{{ $order->invoice }}" readonly>
+                                    </div>
+                                </div>
 
                                 <div class="col-sm-2 d-none">
                                     <div class="form-group">
@@ -68,13 +74,13 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-sm-2">
+                                <div class="col-sm-1">
                                     <div class="form-group">
                                         <label for="ref">Ref</label>
                                         <input type="text" class="form-control" id="ref" name="ref" placeholder="Enter reference" value="{{ $order->ref }}">
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="remarks">Remarks</label>
                                         <textarea class="form-control" id="remarks" name="remarks" rows="1" placeholder="Enter remarks"> {{ $order->remarks }}</textarea>
@@ -490,8 +496,8 @@
                                 <input type="number" class="form-control quantity" 
                                     value="${quantity}" 
                                     min="1" 
-                                    max="${response.stock_quantity}" 
-                                    data-max="${response.stock_quantity}" />
+                                    max="${response.stock_quantity > 0 ? response.stock_quantity : 1}" 
+                                    data-max="${response.stock_quantity > 0 ? response.stock_quantity : 1}" />
                             </td>
                             <td>${selectedSize}</td>
                             <td>${selectedColor}</td>

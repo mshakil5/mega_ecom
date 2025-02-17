@@ -23,7 +23,7 @@
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="supplier_id">Select Wholesaler <span class="text-danger">*</span></label>
+                                        <label for="supplier_id">Wholesaler <span class="text-danger">*</span></label>
                                         <select class="form-control" id="user_id" name="user_id">
                                             <option value="" >Select...</option>
                                             @foreach($customers as $customer)
@@ -52,6 +52,18 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="form-group col-sm-2">
+                                    <label for="">Invoice<span style="color: red;">*</span></label>
+                                    <select class="form-control" id="invoice" name="invoice">
+                                        <option value="">Select Season, system will create code based on Season</option>
+                                        <option value="Spring">Spring</option>
+                                        <option value="Summer">Summer</option>
+                                        <option value="Autumn">Autumn</option>
+                                        <option value="Winter">Winter</option>
+                                    </select>
+                                    <small class="text-muted">Example: <span id="productCodePreview">STL-Season-Year-XXXXX</span></small>
+                                    <span id="productCodeError" class="text-danger"></span>
+                                </div>
 
                                 <div class="col-sm-2 d-none">
                                     <div class="form-group">
@@ -74,18 +86,6 @@
                                         <label for="remarks">Remarks</label>
                                         <textarea class="form-control" id="remarks" name="remarks" rows="1" placeholder="Enter remarks"></textarea>
                                     </div>
-                                </div>
-                                <div class="form-group col-sm-2">
-                                    <label for="">Invoice<span style="color: red;">*</span></label>
-                                    <select class="form-control" id="invoice" name="invoice">
-                                        <option value="">Select Season, system will create code based on Season</option>
-                                        <option value="Spring">Spring</option>
-                                        <option value="Summer">Summer</option>
-                                        <option value="Autumn">Autumn</option>
-                                        <option value="Winter">Winter</option>
-                                    </select>
-                                    <small class="text-muted">Example: <span id="productCodePreview">STL-Season-Year-XXXXX</span></small>
-                                    <span id="productCodeError" class="text-danger"></span>
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
@@ -481,8 +481,8 @@
                                 <input type="number" class="form-control quantity" 
                                     value="${quantity}" 
                                     min="1" 
-                                    max="${response.stock_quantity}" 
-                                    data-max="${response.stock_quantity}" />
+                                    max="${response.stock_quantity > 0 ? response.stock_quantity : 1}" 
+                                    data-max="${response.stock_quantity > 0 ? response.stock_quantity : 1}" />
                             </td>
                             <td>${selectedSize}</td>
                             <td>${selectedColor}</td>
