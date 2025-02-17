@@ -93,7 +93,7 @@
                                             ->orderBy('id', 'desc')
                                             : collect();
 
-                                            $currentStock = $filteredStock->sum('quantity');
+                                            $currentStock = number_format ($filteredStock->sum('quantity'), 0);
                                             $currentSellingPrice = $filteredStock->first()->selling_price ?? 0;
                                         @endphp
                                         <td>{{ $currentStock }}</td>
@@ -244,7 +244,11 @@
 
 
                                     <div class="col-sm-12 d-flex justify-content-center mt-5">
+                                        @if($status)
+                                        <button id="receivedButton" class="btn btn-success" style="margin-left: 10px;">Confirm Received</button>                              
+                                        @else
                                         <button id="calculateSalesPriceBtn" class="btn btn-success" style="margin-left: 10px;">Update Sales Price</button>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -421,11 +425,171 @@
                     }, 2000);
                 },
                 error: function(xhr, status, error) {
-                    // console.error(xhr.responseText);
+                    let response = Object.values(xhr.responseJSON.errors)[0][0];
                     $(".ermsg").html(`
                         <div class='alert alert-danger'>
                             <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
-                            <b>Error updating shipment. Please try again.</b>
+                            <b>${response}</b>
+                        </div>
+                    `).show();
+                    pagetop();
+                }
+            });
+        });
+
+        $('#receivedButton').on('click', function(event) {
+            event.preventDefault();
+
+            if (!confirm("Are you sure you want to proceed with updating the shipment?")) {
+                return;
+            }
+
+            let warehouseId = $('#warehouse_id').val();
+            let shipmentId = $('#id').val();
+            let totalQuantity = $('#totalQuantity').text();
+            let totalMissingQuantity = $('#totalMissingQuantity').text();
+            let target_budget = $('#target_budget').val();
+            let totalProfit = $('#total_profit').val();
+            let budget_over = $('#budgetDifference').val();
+            let total_cost_of_the_shipment = $('#total_cost_of_the_shipment').val();
+            let shipmentDetails = [];
+            let expenses = [];
+
+            $('#purchaseData tr').each(function() {
+                let id = $(this).find('.id').val();
+                let supplierId = $(this).find('.supplier_id').val();
+                let purchaseHistoryId = $(this).find('.purchase_history_id').val();
+                let systemLoseId = $(this).find('.system_lose_id').val();
+                let productId = $(this).find('.product_id').val();
+                let size = $(this).find('.product_size').val();
+                let color = $(this).find('.product_color').val();
+                let shippedQuantity = $(this).find('.shipped_quantity').val();
+                let missingQuantity = $(this).find('.missing_quantity').val();
+                let remainingQuantity = $(this).find('.remaining_quantity').val();
+                let pricePerUnit = $(this).find('.purchase_price').val();
+                let groundCost = $(this).find('.ground_cost').text().replace(/,/g, '');
+                let profitMargin = $(this).find('.profit_margin').val().replace(/,/g, '');
+                let sellingPrice = $(this).find('.selling_price').text().replace(/,/g, '');
+                let considerableMargin = $(this).find('.considerable_margin').val();
+                let considerablePrice = $(this).find('.considerable_price').text().replace(/,/g, '');
+                let sampleQuantity = $(this).find('.sample_quantity').val();
+                let saleableQuantity = $(this).find('.saleable_quantity').val();
+
+                if (productId && shippedQuantity > 0) {
+                    shipmentDetails.push({
+                        id: id,
+                        purchase_history_id: purchaseHistoryId,
+                        system_lose_id: systemLoseId,
+                        supplier_id: supplierId,
+                        product_id: productId,
+                        size: size,
+                        color: color,
+                        shipped_quantity: shippedQuantity,
+                        missing_quantity: missingQuantity,
+                        remaining_quantity: remainingQuantity,
+                        price_per_unit: pricePerUnit,
+                        ground_cost: groundCost,
+                        profit_margin: profitMargin,
+                        selling_price: sellingPrice,
+                        considerable_margin: considerableMargin,
+                        considerable_price: considerablePrice,
+                        sample_quantity: sampleQuantity,
+                        quantity: saleableQuantity
+                    });
+                }
+            });
+
+            $('.expense-row').each(function() {
+                let transactionId = $(this).find('.id').val();
+                let expenseId = $(this).find('.expense-type').val();
+                let paymentType = $(this).find('.payment-type').val();
+                let amount = $(this).find('.expense-amount').val();
+                let description = $(this).find('.expense-description').val();
+                let note = $(this).find('.expense-note').val();
+
+                if (expenseId && amount > 0) {
+                    expenses.push({
+                        chart_of_account_id: expenseId,
+                        transaction_id: transactionId,
+                        payment_type: paymentType,
+                        amount: parseFloat(amount),
+                        description: description,
+                        note: note
+                    });
+                }
+            });
+
+            if (!expenses || expenses.length === 0) {
+                $(".ermsg").html(`
+                    <div class='alert alert-danger'>
+                        <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
+                        <b>Please add at least one expense before proceeding.</b>
+                    </div>
+                `).show();
+                pagetop();
+                return;
+            }
+
+            if (shipmentDetails.length === 0) {
+                $(".ermsg").html(`
+                    <div class='alert alert-danger'>
+                        <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
+                        <b>Please add at least one valid product to the shipment.</b>
+                    </div>
+                `).show();
+                pagetop();
+                return;
+            }
+
+            let dataToSend = {
+                id: shipmentId,
+                warehouse_id: warehouseId,
+                target_budget: target_budget,
+                total_profit: totalProfit,
+                budget_over: budget_over,
+                total_cost_of_the_shipment: total_cost_of_the_shipment,
+                total_quantity: totalQuantity,
+                total_missing_quantity: totalMissingQuantity,
+                total_purchase_cost: $('#direct_cost').val().replace(/,/g, ''),
+                total_additional_cost: $('#total_additional_cost').val().replace(/,/g, ''),
+                shipment_details: shipmentDetails,
+                removed_ids: removedShipmentDetailIds,
+                expenses: expenses
+            };
+
+            let _token = $('meta[name="csrf-token"]').attr('content');
+
+            console.log(dataToSend);
+
+
+            $.ajax({
+                url: '/admin/shipment-received/' + shipmentId,
+                method: 'PUT',
+                headers: {
+                    'X-CSRF-TOKEN': _token
+                },
+                data: dataToSend,
+                success: function(response) {
+                    console.log(response);
+                    $(".ermsg").html(`
+                        <div class='alert alert-success'>
+                            <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
+                            <b>Shipment updated successfully!</b>
+                        </div>
+                    `).show();
+                    pagetop();
+
+                    setTimeout(function() {
+                        window.location.href = "{{ route('admin.shipping') }}";
+                    }, 2000);
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                    let response = Object.values(xhr.responseJSON.errors)[0][0];
+                    $(".ermsg").html(`
+                        <div class='alert alert-danger'>
+                            <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
+                            <b>${response}</b>
                         </div>
                     `).show();
                     pagetop();
@@ -434,37 +598,31 @@
         });
 
         function updateCalculations() {
-            const tableRows = $('#purchaseData tr');
-            let totalPurchaseCost = 0;
-            let totalQuantity = 0;
-            let totalMissingQuantity = 0;
+            let totalPurchaseCost = 0, totalQuantity = 0, totalMissingQuantity = 0, totalSharedCosts = 0;
 
-            tableRows.each(function () {
-                const purchasePrice = parseFloat($(this).find('.purchase_price').val());
-                let maxQuantity = parseInt($(this).find('.max-quantity').val()) || 0;
+            $('.expense-amount').each(function () {
+                totalSharedCosts += parseFloat($(this).val()) || 0;
+            });
+            $('#total_additional_cost').val(totalSharedCosts.toFixed(2));
 
-                let shippedQuantity = parseInt($(this).find('.shipped_quantity').val()) || 0;
-                let missingQuantity = parseInt($(this).find('.missing_quantity').val()) || 0;
-                let sampleQuantity = parseInt($(this).find('.sample_quantity').val()) || 0;
+            $('#purchaseData tr').each(function () {
+                const $row = $(this);
+                const purchasePrice = parseFloat($row.find('.purchase_price').val()) || 0;
+                const maxQuantity = parseInt($row.find('.max-quantity').val()) || 0;
+                let shippedQuantity = parseInt($row.find('.shipped_quantity').val()) || 0;
+                let missingQuantity = parseInt($row.find('.missing_quantity').val()) || 0;
+                let sampleQuantity = parseInt($row.find('.sample_quantity').val()) || 0;
 
-                if (missingQuantity + sampleQuantity > shippedQuantity) {
-                    const availableQuantity = shippedQuantity - (missingQuantity + sampleQuantity);
-                    if (availableQuantity < 0) {
-                        sampleQuantity = 0;
-                        missingQuantity = 0;
-                    } else {
-                        sampleQuantity = Math.min(sampleQuantity, availableQuantity);
-                        missingQuantity = Math.min(missingQuantity, availableQuantity - sampleQuantity);
-                    }
-                }
+                let availableQuantity = Math.max(0, shippedQuantity - (missingQuantity + sampleQuantity));
+                sampleQuantity = Math.min(sampleQuantity, availableQuantity);
+                missingQuantity = Math.min(missingQuantity, availableQuantity - sampleQuantity);
 
                 const saleableQuantity = shippedQuantity - missingQuantity - sampleQuantity;
-                $(this).find('.saleable_quantity').val(saleableQuantity);
-
-                const remainingQuantity = maxQuantity - shippedQuantity;
-                $(this).find('.remaining_quantity').val(remainingQuantity < 0 ? 0 : remainingQuantity);
-
+                const remainingQuantity = Math.max(0, maxQuantity - shippedQuantity);
                 const productTotal = purchasePrice * shippedQuantity;
+
+                $row.find('.saleable_quantity').val(saleableQuantity);
+                $row.find('.remaining_quantity').val(remainingQuantity);
 
                 totalPurchaseCost += productTotal;
                 totalQuantity += saleableQuantity;
@@ -474,90 +632,49 @@
             $('#totalQuantity').text(totalQuantity);
             $('#totalQuantityInPcs').val(totalQuantity);
             $('#totalMissingQuantity').text(totalMissingQuantity);
-
-            const totalCostOfShipment = parseFloat($('#total_cost_of_the_shipment').val()) || 0;
-
-            if (totalQuantity > 0) {
-                const costPerPiece = totalCostOfShipment / totalQuantity;
-                $('#costPerPieces').val(costPerPiece.toFixed(2));
-            } else {
-                $('#costPerPieces').val('0.00');
-            }
-
-            const totalSharedCosts = parseFloat($('#total_additional_cost').val()) || 0;
-
-            const totalShipmentCost = totalPurchaseCost + totalSharedCosts;
             $('#direct_cost').val(totalPurchaseCost.toFixed(2));
 
+            let totalShipmentCost = totalPurchaseCost + totalSharedCosts;
+            $('#total_cost_of_the_shipment').val(totalShipmentCost.toFixed(2));
+            
+            let costPerPiece = totalQuantity > 0 ? totalShipmentCost / totalQuantity : 0;
+            $('#costPerPieces').val(costPerPiece.toFixed(2));
+
             let totalProfit = 0;
+            $('#purchaseData tr').each(function () {
+                const $row = $(this);
+                const purchasePrice = parseFloat($row.find('.purchase_price').val()) || 0;
+                const saleableQuantity = parseFloat($row.find('.saleable_quantity').val()) || 0;
+                const profitMargin = parseFloat($row.find('.profit_margin').val()) || 0;
+                const considerableMargin = parseFloat($row.find('.considerable_margin').val()) || 0;
 
-            tableRows.each(function() {
-                const purchasePrice = parseFloat($(this).find('.purchase_price').val()) || 0;
-                const totalSharedCosts = parseFloat($('#total_additional_cost').val()) || 0;
-                const totalQuantityInPcs = parseInt($('#totalQuantityInPcs').val()) || 0;
+                let groundCostPerUnit = totalQuantity > 0 ? purchasePrice + (totalSharedCosts / totalQuantity) : purchasePrice;
+                let sellingPrice = groundCostPerUnit * (1 + profitMargin / 100);
+                let profitAmount = (sellingPrice - groundCostPerUnit) * saleableQuantity;
+                let considerablePrice = groundCostPerUnit * (1 + considerableMargin / 100);
 
-                let groundCostPerUnit;
-
-                if (totalQuantityInPcs > 0) {
-                    groundCostPerUnit = purchasePrice + (totalSharedCosts / totalQuantityInPcs);
-                } else {
-                    groundCostPerUnit = purchasePrice;
-                }
-
-                $(this).find('.ground_cost').text(groundCostPerUnit.toFixed(2));
-
-                const profitMargin = parseFloat($(this).find('.profit_margin').val()) || 0;
-                const saleableQuantity = parseFloat($(this).find('.saleable_quantity').val()) || 0;
-                const considerableMargin = parseFloat($(this).find('.considerable_margin').val()) || 0;
-
-                const sellingPrice = groundCostPerUnit * (1 + profitMargin / 100);
-                const profitAmount = (sellingPrice - groundCostPerUnit) * saleableQuantity;
-                const considerablePrice = groundCostPerUnit * (1 + considerableMargin / 100);
-
-                $(this).find('.selling_price').text(sellingPrice.toFixed(2));
-                $(this).find('.considerable_price').text(considerablePrice.toFixed(2));
+                $row.find('.ground_cost').text(groundCostPerUnit.toFixed(2));
+                $row.find('.selling_price').text(sellingPrice.toFixed(2));
+                $row.find('.considerable_price').text(considerablePrice.toFixed(2));
 
                 totalProfit += profitAmount;
             });
 
             $('#total_profit').val(totalProfit.toFixed(2));
 
-            let total = 0;
-
-            $('.expense-amount').each(function() {
-                const value = parseFloat($(this).val()) || 0;
-                total += value;
-            });
-
-            $('#total_additional_cost').val(total.toFixed(2));
-
-            let purchaseCost = 0;
-            purchaseCost = parseFloat($('#direct_cost').val()) || 0;
-            totalCost = purchaseCost + total;
-            costPerPiece = totalCost / totalQuantity;
-            $('#total_cost_of_the_shipment').val(totalCost.toFixed(2));
-            $('#costPerPieces').val(costPerPiece.toFixed(2));
-
             const targetBudget = parseFloat($('#target_budget').val()) || 0;
-
+            const difference = targetBudget - totalShipmentCost;
             const $messageContainer = $('#budget-message');
             const $messageText = $messageContainer.find('span');
 
             if (targetBudget > 0) {
-                const difference = targetBudget - totalCost;
                 $('#budgetDifference').val(difference.toFixed(2));
                 $messageContainer.removeClass('d-none');
-
-                if (difference < 0) {
-                    $messageText.html(`<span style="color: red;">You're over budget by ${difference.toFixed(2)}</span>`);
-                } else {
-                    $messageText.html(`<span style="color: green;">You're under budget by ${difference.toFixed(2)}</span>`);
-                }
+                $messageText.html(`<span style="color: ${difference < 0 ? 'red' : 'green'};">You're ${difference < 0 ? 'over' : 'under'} budget by ${difference.toFixed(2)}</span>`);
             } else {
                 $('#budgetDifference').val('');
                 $messageContainer.addClass('d-none');
             }
-
         }
 
         $(document).on('input', '.shipped_quantity, .missing_quantity, .expense-amount, .profit_margin, .considerable_margin, .sample_quantity, .saleable_quantity,  #target_budget', function() {

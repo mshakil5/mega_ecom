@@ -613,11 +613,11 @@
                     window.location.href = "{{ route('admin.shipping') }}";
                 },
                 error: function(xhr, status, error) {
-                    // console.error(xhr.responseText);
+                    let response = Object.values(xhr.responseJSON.errors)[0][0];
                     $(".ermsg").html(`
                         <div class='alert alert-danger'>
                             <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
-                            <b>Error creating shipment. Please try again.</b>
+                            <b>${response}</b>
                         </div>
                     `).show();
                     pagetop();

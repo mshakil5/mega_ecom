@@ -31,13 +31,20 @@
                     <form id="productCreateThisForm">
                         @csrf
                         <div class="form-row">
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-6">
                                 <label for="name">Product Name <span style="color: red;">*</span></label>
                                 <input type="text" class="form-control" id="name" name="name" placeholder="Ex. Stylish Running Shoes">
                             </div>
-                            <div class="form-group col-md-2">
+                            <div class="form-group col-md-6">
                                 <label for="price">Product Code <span style="color: red;">*</span></label>
-                                <input type="text" class="form-control" id="product_code" name="product_code" placeholder="Ex. PRD-12345">
+                                <select class="form-control" id="product_code" name="product_code">
+                                    <option value="">Select Season, system will create code based on Season</option>
+                                    <option value="Spring">Spring</option>
+                                    <option value="Summer">Summer</option>
+                                    <option value="Autumn">Autumn</option>
+                                    <option value="Winter">Winter</option>
+                                </select>
+                                <small class="text-muted">Example: <span id="productCodePreview">STL-Season-Year-XXXXX</span></small>
                                 <span id="productCodeError" class="text-danger"></span>
                             </div>
                             <div class="form-group col-md-2 d-none">

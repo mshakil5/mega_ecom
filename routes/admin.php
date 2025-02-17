@@ -300,11 +300,13 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::post('/shipment-store', [ShipmentController::class, 'storeShipment']);
 
-    Route::get('/shipment-history/edit/{id}', [ShipmentController::class, 'editShipment'])->name('admin.shipment.edit');
+    Route::get('/shipment-history/edit/{id}/{status?}', [ShipmentController::class, 'editShipment'])->name('admin.shipment.edit');
 
     Route::get('/shipment/print/{id}', [ShipmentController::class, 'printShipment'])->name('admin.shipment.print');
 
     Route::put('/shipment-update/{id}', [ShipmentController::class, 'updateShipment'])->name('admin.shipment.update');
+
+    Route::put('/shipment-received/{id}', [ShipmentController::class, 'shipmentReceived'])->name('admin.shipment.received');
 
     Route::get('/shipment/sample-products', [ShipmentController::class, 'showSampleProducts'])->name('shipment.sample_products');
     

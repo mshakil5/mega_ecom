@@ -159,7 +159,7 @@ class ProductController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'product_code' => 'required|string|unique:products,product_code',
+            'product_code' => 'required',
             'price' => 'nullable|numeric',
             'size_ids' => 'nullable|array',
             'size_ids.*' => 'exists:sizes,id',

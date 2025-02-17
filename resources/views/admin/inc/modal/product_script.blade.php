@@ -127,29 +127,29 @@
             });
         });
 
-        $('#product_code').on('keyup', function() {
-            let productCode = $(this).val().trim();
+        // $('#product_code').on('keyup', function() {
+        //     let productCode = $(this).val().trim();
 
-            if (productCode.length >= 2) {
-                $.ajax({
-                    url: "{{ route('check.product.code') }}",
-                    method: "GET",
-                    data: { product_code: productCode },
-                    success: function(response) {
-                        if (response.exists) {
-                            $('#productCodeError').text('This product code is already in use.');
-                            $('#productaddBtn').attr('disabled', true);
-                        } else {
-                            $('#productCodeError').text('');
-                            $('#productaddBtn').attr('disabled', false);
-                        }
-                    }
-                });
-            } else {
-                $('#productCodeError').text('');
-                $('#productaddBtn').attr('disabled', true);
-            }
-        });
+        //     if (productCode.length >= 2) {
+        //         $.ajax({
+        //             url: "{{ route('check.product.code') }}",
+        //             method: "GET",
+        //             data: { product_code: productCode },
+        //             success: function(response) {
+        //                 if (response.exists) {
+        //                     $('#productCodeError').text('This product code is already in use.');
+        //                     $('#productaddBtn').attr('disabled', true);
+        //                 } else {
+        //                     $('#productCodeError').text('');
+        //                     $('#productaddBtn').attr('disabled', false);
+        //                 }
+        //             }
+        //         });
+        //     } else {
+        //         $('#productCodeError').text('');
+        //         $('#productaddBtn').attr('disabled', true);
+        //     }
+        // });
     });
 </script>
 <!-- Create Product End -->

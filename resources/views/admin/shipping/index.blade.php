@@ -61,11 +61,11 @@
                                     <td>{{ $shipping->shipment ? $shipping->shipment->total_purchase_cost + $shipping->shipment->total_additional_cost : '' }}</td>
                                     <td style="width: 100%;">
                                         @if($shipping)
-                                            <select class="form-control shipping-status" data-shipping-id="{{ $shipping->id }}">
+                                            <select class="form-control shipping-status" data-shipping-id="{{ $shipping->id }}" data-shipment-id="{{ $shipping->shipment ? $shipping->shipment->id : '' }}">
                                                 <option value="1" {{ $shipping->status == 1 ? 'selected' : '' }}>Processing</option>
                                                 <option value="2" {{ $shipping->status == 2 ? 'selected' : '' }}>On The Way</option>
-                                                <option value="3" {{ $shipping->status == 3 ? 'selected' : '' }}>Received</option>
-                                                <option value="4" {{ $shipping->status == 4 ? 'selected' : '' }}>Stocking Completed</option>
+                                               @if($shipping->shipment) <option value="3" {{ $shipping->status == 3 ? 'selected' : '' }}>Received</option> @endif
+                                                <!-- <option value="4" {{ $shipping->status == 4 ? 'selected' : '' }}>Stocking Completed</option> -->
                                             </select>
                                         @endif
                                     </td>
@@ -73,7 +73,9 @@
                                     <td>
                                         @if($shipping->shipment)
                                             <span class="badge bg-success ms-2">Price Added</span>
+                                            @if($shipping->status != 3)
                                             <a href="{{ route('admin.shipment.edit', $shipping->shipment->id) }}" class="btn btn-info btn-sm"><i class="fa fa-pencil"></i></a>
+                                            @endif
                                             <a href="{{ route('admin.shipment.print', $shipping->shipment->id) }}" class="btn btn-info btn-sm">
                                                 <i class="fas fa-print"></i>
                                             </a>
@@ -374,9 +376,12 @@
 
         $(document).on('change', '.shipping-status', function() {
             const shippingId = $(this).data('shipping-id');
+            const shipmentId = $(this).data('shipment-id');
             const status = $(this).val();
 
-            $.ajax({
+            if( status == '3'){
+                window.location.href = "{{ route('admin.shipment.edit', ['id' => 'ID', 'status' => 'STATUS']) }}".replace('ID',shipmentId).replace('STATUS','received');
+            } else { $.ajax({
                 url: '/admin/shipping/update-status',
                 method: 'POST',
                 data: {
@@ -408,6 +413,7 @@
                     });
                 }
             });
+            }
         });
 
     });
