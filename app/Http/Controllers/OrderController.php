@@ -1172,8 +1172,11 @@ class OrderController extends Controller
                                     <a href="' . route('order-edit', ['orderId' => $order->id]) . '" class="btn btn-warning btn-round btn-shadow">
                                         <i class="fas fa-edit"></i> Edit
                                     </a> ';
+                    $deliveryNoteButton = '<a href="' . route('in-house-sell.generate-delivery-note', ['encoded_order_id' => base64_encode($order->id)]) . '" class="btn btn-primary btn-round btn-shadow" target="_blank">
+                                    <i class="fas fa-truck"></i> Delivery Note
+                                </a>';                     
                 
-                    return $invoiceButton . ' ' . $detailsButton;
+                    return $invoiceButton . ' ' . $deliveryNoteButton . ' ' . $detailsButton;
                 })            
                 ->editColumn('subtotal_amount', function ($order) {
                     return number_format($order->subtotal_amount, 2);
@@ -1275,8 +1278,11 @@ class OrderController extends Controller
                                     <a href="' . route('order-edit', ['orderId' => $order->id]) . '" class="btn btn-warning btn-round btn-shadow">
                                         <i class="fas fa-edit"></i> Edit
                                     </a> ';
+                     $deliveryNoteButton = '<a href="' . route('in-house-sell.generate-delivery-note', ['encoded_order_id' => base64_encode($order->id)]) . '" class="btn btn-primary btn-round btn-shadow" target="_blank">
+                                            <i class="fas fa-truck"></i> Delivery Note
+                                        </a>';               
                 
-                    return $invoiceButton . ' ' . $detailsButton;
+                    return $invoiceButton . ' ' . $deliveryNoteButton . ' ' . $detailsButton;
                 })            
                 ->editColumn('subtotal_amount', function ($order) {
                     return number_format($order->subtotal_amount, 2);
