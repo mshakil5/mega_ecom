@@ -503,9 +503,21 @@ class InHouseSellController extends Controller
             'user_id.exists' => 'Please choose a valid wholesaler.',
         ]);
 
-        $order = Order::findOrFail($validated['id']);
-        
         $products = json_decode($validated['products'], true);
+
+        if(!$products){
+            return response()->json(['message' => 'Please add at least one product'], 422);
+        }
+
+        foreach ($products as $product) {
+            $stock = Stock::where('product_id', $product['product_id'])->where('size', $product['product_size'])->where('color', $product['product_color'])->first();
+
+            if(!$stock || $stock->quantity < $product['quantity']) {
+                return response()->json(['message' => 'Not enough stock available for product ' . $product['product_name'] . ' with size ' . $product['product_size'] . ' and color ' . $product['product_color']], 422);
+            }
+        }
+
+        $order = Order::findOrFail($validated['id']);
 
         $itemTotalAmount = array_reduce($products, function ($carry, $product) {
             return $carry + $product['total_price'];

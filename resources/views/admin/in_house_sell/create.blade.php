@@ -355,19 +355,6 @@
 
         $('#addProductBtn').click(function() {
 
-            var warehouseId = $('#warehouse_id').val();
-            // if (!warehouseId) {
-            //     swal({
-            //         text: 'Please select warehouse',
-            //         icon: "error",
-            //         button: {
-            //             text: "OK",
-            //             className: "swal-button--error"
-            //         }
-            //     });
-            //     return;
-            // }
-
             var selectedProduct = $('#product_id option:selected');
             var productId = selectedProduct.val();
             var productName = selectedProduct.data('name');
@@ -407,125 +394,79 @@
                 return;
             }
 
-            if (productId && quantity && unitPrice && selectedSize && selectedColor) {
-                $.ajax({
-                    type: 'POST',
-                    url: '/admin/check-product-stock',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    data: {
-                        warehouse_id: warehouseId,
-                        product_id: productId,
-                        size: selectedSize,
-                        color: selectedColor,
-                    },
-                    success: function(response) {
+            var productExists = false;
 
-                        // if (!response.in_stock) {
-                        //     swal({
-                        //         text: "Sorry, this product is out of stock.",
-                        //         icon: "error",
-                        //         button: {
-                        //             text: "OK",
-                        //             className: "swal-button--error"
-                        //         }
-                        //     });
+            $('#productTable tbody tr').each(function() {
+                var existingProductId = $(this).data('product-id');
+                var existingSize = $(this).find('td:eq(2)').text().trim();
+                var existingColor = $(this).find('td:eq(3)').text().trim();
 
-                        //     return;
-                        // }
-
-                        if(quantity > response.stock_quantity){
-                            quantity = response.stock_quantity;
-                        }
-
-                        var productExists = false;
-
-                        $('#productTable tbody tr').each(function() {
-                            var existingProductId = $(this).data('product-id');
-                            var existingSize = $(this).find('td:eq(2)').text().trim();
-                            var existingColor = $(this).find('td:eq(3)').text().trim();
-
-                            if (productId == existingProductId && selectedSize == existingSize && selectedColor == existingColor) {
-                                productExists = true;
-                                return false;
-                            }
-                        });
-                        if (productExists) {
-                            swal({
-                                text: "This product with the same size and color is already added.",
-                                icon: "warning",
-                                button: {
-                                    text: "OK",
-                                    className: "swal-button--warning"
-                                }
-                            });
-                            return;
-                        }
-
-                        var productRow = `<tr data-product-id="${productId}">
-                            <td>
-                                ${productName} <br>
-                                <span>
-                                    Profit Margin: <strong>${Math.round(profitMargin)}%</strong>
-                                </span> <br>
-                                <span>Ground Price: <strong>${groundPrice.toFixed(2)}</strong></span> <br>
-                                <span>
-                                    Minimum Price: <strong>${considerablePrice.toFixed(2)}</strong> 
-                                    (<strong>${Math.round(considerableMargin)}%</strong>)
-                                </span>
-                                <input type="hidden" name="product_id[]" value="${productId}">
-                                <input type="hidden" name="product_name[]" value="${productName}">
-                            </td> 
-                            <td>
-                                <input type="number" class="form-control quantity" 
-                                    value="${quantity}" 
-                                    min="1" 
-                                    max="${response.stock_quantity > 0 ? response.stock_quantity : 1}" 
-                                    data-max="${response.stock_quantity > 0 ? response.stock_quantity : 1}" />
-                            </td>
-                            <td>${selectedSize}</td>
-                            <td>${selectedColor}</td>
-                            <td><input type="number" step="0.01" class="form-control price_per_unit" value="${unitPrice.toFixed(2)}" /></td>
-                            <td><input type="number" step="0.01" class="form-control vat_percent" value="${vatPercent}" /></td>
-                            <td>${vatAmount}</td>
-                            <td>${totalPrice}</td>
-                            <td>${totalPriceWithVat}</td>
-                            <td><button type="button" class="btn btn-sm btn-danger remove-product">Remove</button></td>
-                        </tr>`;    
-
-                        $('#productTable tbody').append(productRow);
-
-                        $('.quantity').on('input', function () {
-                            var maxQuantity = $(this).data('max');
-                            if (parseInt(this.value) > maxQuantity) {
-                                this.value = maxQuantity;
-                            }
-                            if (this.value < 1) {
-                                this.value = 1;
-                            }
-                        });
-
-                        $('#quantity').val('');
-                        $('#price_per_unit').val('');
-                        $('#color').val('');
-                        $('#size').val('');
-                        $('#product_id').val(null).trigger('change');
-                        updateSummary();
-                    },
-                    error: function(xhr) {
-                        swal({
-                            text: xhr.responseJSON.message,
-                            icon: "error",
-                            button: {
-                                text: "OK",
-                                className: "swal-button--error"
-                            }
-                        })
-                        // console.error(xhr.responseText);
-                    },
+                if (productId == existingProductId && selectedSize == existingSize && selectedColor == existingColor) {
+                    productExists = true;
+                    return false;
+                }
+            });
+            if (productExists) {
+                swal({
+                    text: "This product with the same size and color is already added.",
+                    icon: "warning",
+                    button: {
+                        text: "OK",
+                        className: "swal-button--warning"
+                    }
                 });
+                return;
             }
+
+            var productRow = `<tr data-product-id="${productId}">
+                <td>
+                    ${productName} <br>
+                    <span>
+                        Profit Margin: <strong>${Math.round(profitMargin)}%</strong>
+                    </span> <br>
+                    <span>Ground Price: <strong>${groundPrice.toFixed(2)}</strong></span> <br>
+                    <span>
+                        Minimum Price: <strong>${considerablePrice.toFixed(2)}</strong> 
+                        (<strong>${Math.round(considerableMargin)}%</strong>)
+                    </span>
+                    <input type="hidden" name="product_id[]" value="${productId}">
+                    <input type="hidden" name="product_name[]" value="${productName}">
+                </td> 
+                <td>
+                    <input type="number" class="form-control quantity" 
+                        value="${quantity}" 
+                        min="1" 
+                        max="${quantity}" 
+                        data-max="${quantity}" />
+                </td>
+                <td>${selectedSize}</td>
+                <td>${selectedColor}</td>
+                <td><input type="number" step="0.01" class="form-control price_per_unit" value="${unitPrice.toFixed(2)}" /></td>
+                <td><input type="number" step="0.01" class="form-control vat_percent" value="${vatPercent}" /></td>
+                <td>${vatAmount}</td>
+                <td>${totalPrice}</td>
+                <td>${totalPriceWithVat}</td>
+                <td><button type="button" class="btn btn-sm btn-danger remove-product">Remove</button></td>
+            </tr>`;    
+
+            $('#productTable tbody').append(productRow);
+
+            $('.quantity').on('input', function () {
+                var maxQuantity = $(this).data('max');
+                if (parseInt(this.value) > maxQuantity) {
+                    this.value = maxQuantity;
+                }
+                if (this.value < 1) {
+                    this.value = 1;
+                }
+            });
+
+            $('#quantity').val('');
+            $('#price_per_unit').val('');
+            $('#color').val('');
+            $('#size').val('');
+            $('#product_id').val(null).trigger('change');
+            updateSummary();
         });
 
         $(document).on('click', '.remove-product', function() {
@@ -574,6 +515,20 @@
 
         $('#addBtn').on('click', function(e) {
             e.preventDefault();
+
+            var warehouseId = $('#warehouse_id').val();
+            
+            if (!warehouseId) {
+                swal({
+                    text: 'Please select warehouse',
+                    icon: "error",
+                    button: {
+                        text: "OK",
+                        className: "swal-button--error"
+                    }
+                });
+                return;
+            }
 
             $(this).attr('disabled', true);
             $('#quotationBtn').attr('disabled', true);
