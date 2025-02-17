@@ -173,7 +173,7 @@
                                         <th>Colour</th>
                                         <th>Quantity</th>
                                         <th>Price</th>
-                                        <th>Vat Amount</th>
+                                        <th>Status</th>
                                         <th>Total Price</th>
                                         <th>Total</th>
                                     </tr>
@@ -192,7 +192,24 @@
                                             <td>{{ $data->color}}</td>
                                             <td>{{ $data->quantity}}</td>
                                             <td>{{ $data->price_per_unit}}</td>
-                                            <td></td>
+                                            <td>
+                                            @if ($data->order->status == 1)
+                                                <span class="btn btn-sm btn-primary">Pending</span>
+                                            @elseif ($data->order->status == 2)
+                                               <span class="btn btn-sm btn-info">Processing</span> 
+                                            @elseif ($data->order->status == 3)
+                                                <span class="btn btn-sm btn-primary">Packed</span>
+                                            @elseif ($data->order->status == 4)
+                                                <span class="btn btn-sm btn-info">Shipped</span>
+                                            @elseif ($data->order->status == 5)                                            
+                                                <span class="btn btn-sm btn-success">Delivered</span>
+                                            @elseif ($data->order->status == 6)                                   
+                                                <span class="btn btn-sm btn-warning">Returned</span>
+                                            @elseif ($data->order->status == 7)
+                                                <span class="btn btn-sm btn-danger">Cancelled</span>
+                                            @else
+                                                
+                                            @endif</td>
                                             <td>{{ $data->total_price}}</td>
                                             <td>{{ $salesHistories->sum('total_price')}}</td>
                                         </tr>

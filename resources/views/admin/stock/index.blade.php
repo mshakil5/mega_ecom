@@ -1,81 +1,102 @@
 @extends('admin.layouts.admin')
 
 @section('content')
-<style>
-    .select2-selection{
-      height: 35px !important;
-    }
-  </style>
+
 <section class="content pt-3" id="contentContainer">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-12">
-                <div class="card card-secondary">
-                    <div class="card-header">
-                        <h3 class="card-title">All Stocks</h3>
+            <div class="col-12 col-sm-12">
+                <div class="card card-secondary card-tabs">
+                    <div class="card-header p-0 pt-1">
+                        <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="custom-tabs-one-profile-tab" data-toggle="pill" href="#custom-tabs-one-profile" role="tab" aria-controls="custom-tabs-one-profile" aria-selected="false">Stock List( With Warehouse )</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="custom-tabs-one-messages-tab" data-toggle="pill" href="#custom-tabs-one-messages" role="tab" aria-controls="custom-tabs-one-messages" aria-selected="false">Total Stock</a>
+                            </li>
+                        </ul>
                     </div>
                     <div class="card-body">
-
-                        <form action="#" method="GET">
-                            <div class="row mb-3">
-
-                                <div class="col-md-3">
-                                    <label class="label label-primary">Product</label>
-                                    <select class="form-control select2" id="product_id" name="product_id">
-                                        <option value="">Select...</option>
-                                        @foreach($products as $product)
-                                        <option value="{{ $product->id }}">{{ $product->product_code }}-{{ $product->name }}</option>
-                                        @endforeach
-                                    </select>
+                        <div class="tab-content" id="custom-tabs-one-tabContent">
+                            <div class="tab-pane fade active show" id="custom-tabs-one-profile" role="tabpanel" aria-labelledby="custom-tabs-one-profile-tab">
+                                <form action="#" method="GET">
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label class="label label-primary">Product</label>
+                                            <select class="form-control select2" id="product_id" name="product_id">
+                                                <option value="">Select...</option>
+                                                @foreach($products as $product)
+                                                <option value="{{ $product->id }}">{{ $product->product_code }}-{{ $product->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="label label-primary">Warehouses</label>
+                                            <select class="form-control select2" id="warehouse_id" name="warehouse_id">
+                                                <option value="">Select...</option>
+                                                @foreach($warehouses as $warehouse)
+                                                <option value="{{ $warehouse->id }}">{{ $warehouse->name }}-{{ $warehouse->location }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="label label-primary" style="visibility:hidden;">Action</label>
+                                            <button type="submit" class="btn btn-secondary btn-block">Search</button>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <label class="label label-primary" style="visibility:hidden;">Action</label>
+                                            <button type="button" id="reset-button" class="btn btn-secondary btn-block">
+                                                <i class="fas fa-sync-alt"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                                <div class="row mb-3">
+                                    <div class="col-md-12">
+                                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#requestStockModal">
+                                            Request Stock
+                                        </button>
+                                    </div>
                                 </div>
-
-                                <div class="col-md-3">
-                                    <label class="label label-primary">Warehouses</label>
-                                    <select class="form-control select2" id="warehouse_id" name="warehouse_id">
-                                        <option value="">Select...</option>
-                                        @foreach($warehouses as $warehouse)
-                                        <option value="{{ $warehouse->id }}">{{ $warehouse->name }}-{{ $warehouse->location }}</option>
-                                        @endforeach
-                                    </select>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped" id="stock-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Sl</th>
+                                                <th>Product</th>
+                                                <th>Warehouse</th>
+                                                <th>Size</th>
+                                                <th>Color</th>
+                                                <th>Quantity</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
                                 </div>
-
-                                <div class="col-md-2">
-                                    <label class="label label-primary" style="visibility:hidden;">Action</label>
-                                    <button type="submit" class="btn btn-secondary btn-block">Search</button>
-                                </div>
-
-                                <div class="col-md-1">
-                                    <label class="label label-primary" style="visibility:hidden;">Action</label>
-                                    <button type="button" id="reset-button" class="btn btn-secondary btn-block">
-                                        <i class="fas fa-sync-alt"></i>
-                                    </button>
-                                </div>
-
                             </div>
-                        </form>
-
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#requestStockModal">
-                                    Request Stock
-                                </button>
+                            <div class="tab-pane fade" id="custom-tabs-one-messages" role="tabpanel" aria-labelledby="custom-tabs-one-messages-tab">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Total Stock</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-striped" id="total-stock-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Sl</th>
+                                                        <th>Product</th>
+                                                        <th>Size</th>
+                                                        <th>Color</th>
+                                                        <th>Qty</th>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-striped" id="stock-table">
-                                <thead>
-                                    <tr>
-                                        <th>Sl</th>
-                                        <th>Product</th>
-                                        <th>Warehouse</th>
-                                        <th>Size</th>
-                                        <th>Color</th>
-                                        <th>Quantity</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                            </table>
                         </div>
                     </div>
                 </div>
@@ -352,7 +373,7 @@
             $('#max_quantity').val('');
         }
 
-        $('#requestStockModal').on('hidden.bs.modal', function () {
+        $('#requestStockModal').on('hidden.bs.modal', function() {
             $('#requestStockForm')[0].reset();
 
             $('#productId').val('').trigger('change');
@@ -375,85 +396,85 @@
 
             // Validate required fields
             $('#requestStockForm').find('input, select').each(function() {
-            if ($(this).val().trim() === '') {
-                isValid = false;
-                $(this).addClass('is-invalid');
-            } else {
-                $(this).removeClass('is-invalid');
-            }
+                if ($(this).val().trim() === '') {
+                    isValid = false;
+                    $(this).addClass('is-invalid');
+                } else {
+                    $(this).removeClass('is-invalid');
+                }
             });
 
             if (isValid && (quantity > maxQuantity)) {
-            isValid = false;
-            $('#quantity').addClass('is-invalid');
-            swal({
-                text: "Quantity must be less than or equal to Max Transfer Quantity.",
-                icon: "error",
-            });
-            $('#submitRequest').prop('disabled', false);
-            $('#submitRequest').html('Submit Request');
-            return;
+                isValid = false;
+                $('#quantity').addClass('is-invalid');
+                swal({
+                    text: "Quantity must be less than or equal to Max Transfer Quantity.",
+                    icon: "error",
+                });
+                $('#submitRequest').prop('disabled', false);
+                $('#submitRequest').html('Submit Request');
+                return;
             }
 
             if (!isValid) {
-            swal({
-                text: "Please fill out all required fields before submitting.",
-                icon: "error",
-            });
-            $('#submitRequest').prop('disabled', false);
-            $('#submitRequest').html('Submit Request');
-            return;
+                swal({
+                    text: "Please fill out all required fields before submitting.",
+                    icon: "error",
+                });
+                $('#submitRequest').prop('disabled', false);
+                $('#submitRequest').html('Submit Request');
+                return;
             }
 
             swal({
-            text: "Are you sure you want to send this request?",
-            icon: "warning",
-            buttons: ["Cancel", "Yes"],
-            dangerMode: true,
+                text: "Are you sure you want to send this request?",
+                icon: "warning",
+                buttons: ["Cancel", "Yes"],
+                dangerMode: true,
             }).then((willSend) => {
-            if (willSend) {
-                var formData = new FormData($('#requestStockForm')[0]);
-                var csrfToken = $('meta[name="csrf-token"]').attr('content');
+                if (willSend) {
+                    var formData = new FormData($('#requestStockForm')[0]);
+                    var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
-                $.ajax({
-                url: '/admin/stock-transfer-requests',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken
-                },
-                success: function(response) {
-                    $('#submitRequest').prop('disabled', false);
-                    $('#submitRequest').html('Submit Request');
-                    swal({
-                    text: "Request sent successfully",
-                    icon: "success"
+                    $.ajax({
+                        url: '/admin/stock-transfer-requests',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        success: function(response) {
+                            $('#submitRequest').prop('disabled', false);
+                            $('#submitRequest').html('Submit Request');
+                            swal({
+                                text: "Request sent successfully",
+                                icon: "success"
+                            });
+                            $('#requestStockForm')[0].reset();
+                            $('#requestStockModal').modal('hide');
+                            setTimeout(function() {
+                                location.reload();
+                            }, 2000);
+                        },
+                        error: function(xhr) {
+                            swal({
+                                text: JSON.parse(xhr.responseText).errors.toWarehouse[0] || "An error occurred while sending the request.",
+                                icon: "error"
+                            });
+                            $('#submitRequest').prop('disabled', false);
+                            $('#submitRequest').html('Submit Request');
+                        }
                     });
-                    $('#requestStockForm')[0].reset();
-                    $('#requestStockModal').modal('hide');
-                    setTimeout(function() {
-                    location.reload();
-                    }, 2000);
-                },
-                error: function(xhr) {
+                } else {
                     swal({
-                    text: JSON.parse(xhr.responseText).errors.toWarehouse[0] || "An error occurred while sending the request.",
-                    icon: "error"
+                        text: "Request cancelled.",
+                        icon: "info",
                     });
                     $('#submitRequest').prop('disabled', false);
                     $('#submitRequest').html('Submit Request');
                 }
-                });
-            } else {
-                swal({
-                text: "Request cancelled.",
-                icon: "info",
-                });
-                $('#submitRequest').prop('disabled', false);
-                $('#submitRequest').html('Submit Request');
-            }
             });
         });
 
@@ -579,6 +600,44 @@
             // ],
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
+            ]
+        });
+
+        var totalStockTable = $('#total-stock-table').DataTable({
+            processing: true,
+            serverSide: true,
+            autoWidth: false,
+            responsive: true,
+            ajax: {
+                url: "{{ route('totalstocks') }}",
+                error: function(xhr, error, code) {
+                    console.error(xhr.responseText);
+                }
+            },
+            pageLength: 50,
+            columns: [
+                {
+                    data: 'sl',
+                    name: 'sl',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'product_details',
+                    name: 'product_details'
+                },
+                {
+                    data: 'size',
+                    name: 'size'
+                },
+                {
+                    data: 'color',
+                    name: 'color'
+                },
+                {
+                    data: 'quantity',
+                    name: 'quantity'
+                }
             ]
         });
 

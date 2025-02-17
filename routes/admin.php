@@ -255,6 +255,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/stocking-history', [StockController::class, 'stockingHistory'])->name('stockhistory');
     Route::get('/get-stocking-history', [StockController::class, 'getStockingHistory'])->name('getstockhistory');
 
+    Route::get('/total-stock', [StockController::class, 'getTotalStock'])->name('totalstocks');
+
     Route::post('/get-warehouses', [StockController::class, 'getWarehouses']);
     Route::post('/get-colors', [StockController::class, 'getColors']);
     Route::post('/get-sizes', [StockController::class, 'getSizes']);

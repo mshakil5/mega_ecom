@@ -93,6 +93,33 @@ class StockController extends Controller
             ->make(true);
     }
 
+    public function getTotalStock(Request $request)
+    {
+        $user = Auth::user();
+        $warehouseIds = json_decode($user->warehouse_ids, true);
+    
+        $data = Stock::whereIn('warehouse_id', $warehouseIds)
+            ->selectRaw('product_id, size, color, SUM(quantity) as total_quantity')
+            ->groupBy('product_id', 'size', 'color')
+            ->with('product')
+            ->orderByDesc('product_id')
+            ->get();
+    
+        return DataTables::of($data)
+
+            ->addColumn('sl', function ($row) {
+                static $i = 1;
+                return $i++;
+            })
+            ->addColumn('product_details', function ($row) {
+                return $row->product ? "{$row->product->product_code} - {$row->product->name}" : 'N/A';
+            })
+            ->addColumn('quantity', function ($row) {
+                return number_format($row->total_quantity, 0);
+            })
+            ->make(true);
+    }
+
     public function stockingHistory()
     {
         $products = Product::whereHas('stock', function ($query) {
@@ -257,97 +284,63 @@ class StockController extends Controller
     {
         if ($request->fromDate || $request->toDate) {
             $request->validate([
-                'fromDate' => 'nullable|date', 
-                'toDate' => 'required_with:fromDate|date|after_or_equal:fromDate', 
+                'fromDate' => 'nullable|date',
+                'toDate' => 'required_with:fromDate|date|after_or_equal:fromDate',
             ]);
 
             $fromDate = Carbon::parse($request->input('fromDate'))->startOfDay();
-            $toDate = Carbon::parse($request->input('toDate'))->endOfDay();   
-        }else{
+            $toDate = Carbon::parse($request->input('toDate'))->endOfDay();
+        } else {
             $fromDate = '';
             $toDate = '';
         }
-        
-        $product = Product::select('id', 'name','product_code')->where('id', $id)->first();
+
+        $product = Product::select('id', 'name', 'product_code')->where('id', $id)->first();
         $warehouses = Warehouse::where('status', 1)->get();
 
         $shipmentDetails = ShipmentDetails::where('product_id', $id)
-                ->when($fromDate, function ($query) use ($fromDate, $toDate) {
-                    $query->whereBetween('created_at', [$fromDate, $toDate]);
-                })
-                ->where('size', $size)
-                ->where('color', $color)
-                ->where('warehouse_id', $warehouse_id)
-                ->orderby('id', 'DESC')
-                ->get();
+            ->when($fromDate, function ($query) use ($fromDate, $toDate) {
+                $query->whereBetween('created_at', [$fromDate, $toDate]);
+            })
+            ->where('size', $size)
+            ->where('color', $color)
+            ->where('warehouse_id', $warehouse_id)
+            ->orderby('id', 'DESC')
+            ->get();
 
         $salesHistories = OrderDetails::where('product_id', $id)
-                            ->when($fromDate, function ($query) use ($fromDate, $toDate) {
-                                $query->whereBetween('created_at', [$fromDate, $toDate]);
-                            })
-                            ->when($request->input('warehouse_id'), function ($query) use ($request) {
-                                $query->where("warehouse_id",$request->input('warehouse_id'));
-                            })
-                            ->where('size', $size)
-                            ->where('color', $color)
-                            ->where('warehouse_id', $warehouse_id)
-                            ->orderby('id','DESC')
-                            ->whereHas('order', function ($query) {
-                                $query->whereIn('order_type', ['0','1'])
-                                ->whereNotNull('warehouse_id')
-                                ->whereNotIn('status', [6, 7]);
-                            })->get();
+            ->when($fromDate, function ($query) use ($fromDate, $toDate) {
+                $query->whereBetween('created_at', [$fromDate, $toDate]);
+            })
+            ->when($request->input('warehouse_id'), function ($query) use ($request) {
+                $query->where("warehouse_id", $request->input('warehouse_id'));
+            })
+            ->where('size', $size)
+            ->where('color', $color)
+            ->where('warehouse_id', $warehouse_id)
+            ->orderby('id', 'DESC')
+            ->whereHas('order', function ($query) {
+                $query->whereIn('order_type', ['0', '1'])
+                    ->whereNotNull('warehouse_id')
+                    // ->whereNotIn('status', [6, 7])
+                    ;
+            })->get();
 
-            $returnedOrders = OrderDetails::where('product_id', $id)
-                ->when($fromDate, function ($query) use ($fromDate, $toDate) {
-                    $query->whereBetween('created_at', [$fromDate, $toDate]);
-                })
-                ->when($request->input('warehouse_id'), function ($query) use ($request) {
-                    $query->where("warehouse_id", $request->input('warehouse_id'));
-                })
-                ->where('size', $size)
-                ->where('color', $color)
-                ->where('warehouse_id', $warehouse_id)
-                ->whereHas('order', function ($query) {
-                    $query->where('status', 6);
-                })
-                ->orderby('id','DESC')
-                ->get();
+        $stockTransferRequests = StockTransferRequest::where('product_id', $id)
+            ->when($size, function ($query) use ($size) {
+                $query->where('size', $size);
+            })
+            ->when($color, function ($query) use ($color) {
+                $query->where('color', $color);
+            })
+            ->when($fromDate, function ($query) use ($fromDate, $toDate) {
+                $query->whereBetween('created_at', [$fromDate, $toDate]);
+            })
+            ->where('status', 1)
+            ->orderBy('id', 'DESC')
+            ->get();
 
-
-            $cancelledOrders = OrderDetails::where('product_id', $id)
-                ->when($fromDate, function ($query) use ($fromDate, $toDate) {
-                    $query->whereBetween('created_at', [$fromDate, $toDate]);
-                })
-                ->when($request->input('warehouse_id'), function ($query) use ($request) {
-                    $query->where("warehouse_id", $request->input('warehouse_id'));
-                })
-                ->where('size', $size)
-                ->where('color', $color)
-                ->where('warehouse_id', $warehouse_id)
-                ->whereHas('order', function ($query) {
-                    $query->where('status', 7);
-                })
-                ->orderby('id','DESC')
-                ->get();
-
-
-
-                    $stockTransferRequests = StockTransferRequest::where('product_id', $id)
-                        ->when($size, function ($query) use ($size) {
-                            $query->where('size', $size);
-                        })
-                        ->when($color, function ($query) use ($color) {
-                            $query->where('color', $color);
-                        })
-                        ->when($fromDate, function ($query) use ($fromDate, $toDate) {
-                            $query->whereBetween('created_at', [$fromDate, $toDate]);
-                        })
-                        ->where('status', 1)
-                        ->orderBy('id', 'DESC')
-                        ->get();                        
-
-        return view('admin.stock.single_product_history', compact('shipmentDetails','salesHistories', 'stockTransferRequests','product','warehouses', 'id', 'size', 'color', 'warehouse_id'));
+        return view('admin.stock.single_product_history', compact('shipmentDetails', 'salesHistories', 'stockTransferRequests', 'product', 'warehouses', 'id', 'size', 'color', 'warehouse_id'));
     }
 
     public function addstock()
