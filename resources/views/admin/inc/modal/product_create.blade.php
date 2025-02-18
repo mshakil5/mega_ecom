@@ -68,11 +68,11 @@
 
                         <div class="form-row">
                             <div class="form-group col-md-6">
-                                <label for="short_description">Short Description <span style="color: red;">*</span></label>
+                                <label for="short_description">Short Description</label>
                                 <textarea class="form-control" id="short_description" name="short_description"></textarea>
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="description">Long Description <span style="color: red;">*</span></label>
+                                <label for="description">Long Description</label>
                                 <textarea class="form-control" id="long_description" name="long_description"></textarea>
                             </div>
                         </div>
@@ -192,7 +192,7 @@
                         <div class="form-row">
                             <div class="form-group col-md-5">
                                 <label for="color_id">Select Color</label>
-                                <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
+                                <span class="badge badge-success d-none" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
                                 <select class="form-control" name="color_id[]" id="color_id">
                                     <option value="">Choose Color</option>
                                     @foreach($colors as $color)

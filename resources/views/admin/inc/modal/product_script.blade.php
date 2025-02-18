@@ -96,7 +96,11 @@
                 },
                 success: function(response) {
 
-                    $('#product_id').append(`<option value="${response.product.id}">${response.product.name}</option>`);
+                    $('#product_id').append(`
+                        <option value="${response.product.id}" data-name="${response.product.name}" data-price="${response.product.price}">
+                            ${response.product.product_code} - ${response.product.name}
+                        </option>
+                    `);
                     $('#newProductModal').modal('hide');
                     $('#productCreateThisForm')[0].reset();
                     swal({

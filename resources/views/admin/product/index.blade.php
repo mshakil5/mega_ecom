@@ -15,7 +15,8 @@
                             <thead>
                                 <tr>
                                     <th>Sl</th>
-                                    <th>Product</th>
+                                    <th>Product Code</th>
+                                    <th>Product Name</th>
                                     <th>Image</th>
                                     <th>Price</th>
                                     <th>Category</th>
@@ -36,7 +37,8 @@
                                 @endphp
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
-                                    <td>{{ $data->product_code }} - {{ $data->name }}</td>
+                                    <td>{{ $data->product_code }}</td>
+                                    <td>{{ $data->name }}</td>
                                     <td>
                                     <img src="{{ asset('images/products/' . $data->feature_image) }}" alt="Product Image" style="width: 50px; height: 50px; object-fit: cover;">
                                 </td>

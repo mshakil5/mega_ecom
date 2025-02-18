@@ -113,7 +113,7 @@
                                         <select class="form-control" id="product_id" name="product_id">
                                             <option value="">Select...</option>
                                             @foreach($products as $product)
-                                                <option value="{{ $product->id }}" data-name="{{ $product->name }}" data-price="{{ $product->price }}">{{ $product->product_code }} - {{ $product->name }}</option>
+                                                <option value="{{ $product->id }}" data-name="{{ $product->name }}" data-code="{{ $product->product_code }}" data-price="{{ $product->price }}">{{ $product->product_code }} - {{ $product->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -165,7 +165,7 @@
                                     <table class="table table-bordered" id="productTable">
                                         <thead>
                                             <tr>
-                                                <th>Product Name</th>
+                                                <th>Product</th>
                                                 <th>Quantity</th>
                                                 <th>Size</th>
                                                 <th>Color</th>
@@ -376,6 +376,7 @@
             var selectedProduct = $('#product_id option:selected');
             var productId = selectedProduct.val();
             var productName = selectedProduct.data('name');
+            var productCode = selectedProduct.data('code');
             var quantity = $('#quantity').val() || 1;
             var unitPrice = $('#unit_price').val();
             var vatPercent = 0;
@@ -408,7 +409,7 @@
 
             if (productId && quantity && unitPrice && selectedSize && selectedColor) {
                 var productRow = `<tr data-id="${productId}">
-                                    <td>${productName}</td>
+                                    <td>${productCode} - ${productName}</td>
                                     <td><input type="number" class="form-control quantity" value="${quantity}" min="1" /></td>
                                     <td>${selectedSize}</td>
                                     <td>${selectedColor}</td>

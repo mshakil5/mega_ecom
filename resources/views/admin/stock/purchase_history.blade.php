@@ -133,15 +133,19 @@
                 </div>
                 <div class="row mb-3">
                     <div class="col"><strong>Supplier:</strong> <span id="supplierName"></span></div>
-                    <div class="col"><strong>Transaction Type:</strong> <span id="purchaseType"></span></div>
+                    <div class="col"><strong>Remarks:</strong> <span id="remarks"></span></div>
                 </div>
                 <div class="row mb-3">
-                    <div class="col"><strong>Ref:</strong> <span id="purchaseRef"></span></div>
-                    <div class="col"><strong>Total Amount:</strong> <span id="purchaseNetAmount"></span></div>
+                    <div class="col"><strong>Transaction Type:</strong> <span id="transactionType"></span></div>
+                    <div class="col"><strong>Net Amount:</strong> <span id="purchaseNetAmount"></span></div>
                 </div>
                 <div class="row mb-3">
                     <div class="col"><strong>Paid Amount:</strong> <span id="purchasePaidAmount"></span></div>
                     <div class="col"><strong>Due Amount:</strong> <span id="purchaseDueAmount"></span></div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col"><strong>Vat Amount:</strong> <span id="vatAmount"></span></div>
+                    <div class="col"><strong>Discount Amount:</strong> <span id="discountAmount"></span></div>
                 </div>
 
                 <div class="mb-3">
@@ -305,12 +309,14 @@
                 var formattedDate = moment(response.purchase_date).format('DD-MM-YYYY');
                 $('#purchaseDate').text(formattedDate);
                 $('#purchaseInvoice').text(response.invoice);
-                $('#supplierName').text(response.supplier ? response.supplier.name : 'Unknown Supplier');
-                $('#purchaseType').text(response.purchase_type);
-                $('#purchaseRef').text(response.ref);
-                $('#purchaseNetAmount').text(response.net_amount);
-                $('#purchasePaidAmount').text(response.paid_amount);
-                $('#purchaseDueAmount').text(response.due_amount);
+                $('#supplierName').text(response.supplier ? response.supplier.name : '');
+                $('#remarks').text(response.remarks);
+                $('#transactionType').text(response.purchase_type);
+                $('#discountAmount').text(response.discount > 0 ? response.discount.toString() : '0.00');
+                $('#purchaseNetAmount').text(response.net_amount > 0 ? response.net_amount.toString() : '0.00');
+                $('#purchasePaidAmount').text(response.paid_amount > 0 ? response.paid_amount.toString() : '0.00');
+                $('#purchaseDueAmount').text(response.due_amount > 0 ? response.due_amount.toString() : '0.00');
+                $('#vatAmount').text(response.vat_amount > 0 ? response.vat_amount.toString() : '0.00');
 
                 if (response.purchase_history && response.purchase_history.length > 0) {
                     let purchaseHistoryHtml = '';
