@@ -24,15 +24,15 @@
                             <div class="col-4">
                                 <div class="alert alert-primary d-flex justify-content-between align-items-center">
                                     <h6 class="mb-0">Target Budget:</h6>
-                                    <h6 class="mb-0">£ {{ number_format($shipment->target_budget, 2) }}</h6>
+                                    <h6 class="mb-0">£{{ number_format($shipment->target_budget, 2) }}</h6>
                                 </div>
                                 <div class="alert alert-warning d-flex justify-content-between align-items-center">
                                     <h6 class="mb-0">Total Cost Shipment:</h6>
-                                    <h6 class="mb-0">£ {{ number_format($shipment->total_cost_of_shipment, 2) }}</h6>
+                                    <h6 class="mb-0">£{{ number_format($shipment->total_cost_of_shipment, 2) }}</h6>
                                 </div>
                                 <div class="alert {{ $shipment->budget_over < 0 ? 'alert-danger' : 'alert-success' }} d-flex justify-content-between align-items-center">
                                     <h6 class="mb-0">{{ $shipment->budget_over < 0 ? 'Over Budget By:' : 'Under Budget By:' }}</h6>
-                                    <h6 class="mb-0">£ {{ number_format($shipment->budget_over, 2) }}</h6>
+                                    <h6 class="mb-0">£{{ number_format($shipment->budget_over, 2) }}</h6>
                                 </div>
 
                                 <div class="card bg-light mt-4">
@@ -54,15 +54,15 @@
                                         </div>
                                         <div class="d-flex justify-content-between mb-3">
                                             <span class="font-weight-bold fs-5">Total Purchase Cost:</span>
-                                            <span class="fs-5">£ {{ number_format($shipment->total_purchase_cost ?? 0, 2) }}</span>
+                                            <span class="fs-5">£{{ number_format($shipment->total_purchase_cost ?? 0, 2) }}</span>
                                         </div>
                                         <div class="d-flex justify-content-between mb-3">
                                             <span class="font-weight-bold fs-5">Total Additional Cost:</span>
-                                            <span class="fs-5">£ {{ number_format($shipment->total_additional_cost ?? 0, 2) }}</span>
+                                            <span class="fs-5">£{{ number_format($shipment->total_additional_cost ?? 0, 2) }}</span>
                                         </div>
                                         <div class="d-flex justify-content-between mb-3">
                                             <span class="font-weight-bold fs-5">Total Cost Of The Shipment:</span>
-                                            <span class="fs-5">£ {{ number_format($shipment->total_cost_of_shipment ?? 0, 2) }}</span>
+                                            <span class="fs-5">£{{ number_format($shipment->total_cost_of_shipment ?? 0, 2) }}</span>
                                         </div>
                                         <div class="d-flex justify-content-between mb-3">
                                             <span class="font-weight-bold fs-5">Shipped Qty (PCS):</span>
@@ -91,7 +91,7 @@
                                         {{-- 
                                         <div class="d-flex justify-content-between mb-3">
                                             <span class="font-weight-bold fs-5">Cost Per Piece:</span>
-                                            <span class="fs-5">£ {{ $shipment->total_product_quantity > 0 ? number_format($shipment->total_cost_of_shipment / $shipment->total_product_quantity, 2) : '0.00' }}</span>
+                                            <span class="fs-5">£{{ $shipment->total_product_quantity > 0 ? number_format($shipment->total_cost_of_shipment / $shipment->total_product_quantity, 2) : '0.00' }}</span>
                                         </div>
                                         <div class="d-flex justify-content-between mb-3">
                                             <span class="font-weight-bold fs-5">Selling Price With Markup Per Piece:</span>
@@ -101,7 +101,7 @@
                                         --}}
                                         <div class="d-flex justify-content-between mb-3">
                                             <span class="font-weight-bold fs-5">Total Selling Price:</span>
-                                            <span class="fs-5">£ {{ number_format($totalSellingPrice, 2) }}</span>
+                                            <span class="fs-5">£{{ number_format($totalSellingPrice, 2) }}</span>
                                         </div>
 
                                         @php
@@ -120,7 +120,7 @@
                                         </div>
                                         <div class="d-flex justify-content-between mb-3">
                                             <span class="font-weight-bold fs-5 bg-success text-white rounded px-2 py-1">Profit On The Full Shipment:</span>
-                                            <span class="fs-5 bg-success text-white rounded px-2 py-1">£ {{ number_format($shipment->total_profit ?? 0, 2) }}</span>
+                                            <span class="fs-5 bg-success text-white rounded px-2 py-1">£{{ number_format($shipment->total_profit ?? 0, 2) }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -145,9 +145,9 @@
                                             <div class="col-3">Product Cost</div>
                                             <div class="col-2">{{ $shipment->shipping->shipping_name }} (Dated {{ \Carbon\Carbon::parse($shipment->shipping->shipping_date)->format('d/M/Y') }})
                                             </div>
-                                            <div class="col-2">£ {{ number_format($shipment->total_purchase_cost, 2) }}</div>
+                                            <div class="col-2">£{{ number_format($shipment->total_purchase_cost, 2) }}</div>
                                             <div class="col-1">{{ $shipment->shipmentDetails->sum('shipped_quantity') ?? '0' }}</div>
-                                            <div class="col-2">£ {{ number_format($shipment->total_purchase_cost, 2) }}</div>
+                                            <div class="col-2">£{{ number_format($shipment->total_purchase_cost, 2) }}</div>
                                             <div class="col-2"></div>
                                         </div>
                                         <hr>
@@ -155,9 +155,9 @@
                                         <div class="row text-center">
                                             <div class="col-3">{{ $transaction->chartOfAccount->account_name ?? '' }}</div>
                                             <div class="col-2">{{ $transaction->description ?? '' }}</div>
-                                            <div class="col-2">£ {{ number_format($transaction->amount, 2) ?? '0.00' }}</div>
+                                            <div class="col-2">£{{ number_format($transaction->amount, 2) ?? '0.00' }}</div>
                                             <div class="col-1">1</div>
-                                            <div class="col-2">£ {{ number_format($transaction->amount, 2) ?? '0.00' }}</div>
+                                            <div class="col-2">£{{ number_format($transaction->amount, 2) ?? '0.00' }}</div>
                                             <div class="col-2">{{ $transaction->note ?? '' }}</div>
                                         </div>
                                         <hr>
@@ -167,7 +167,7 @@
                                             <div class="col-2"></div>
                                             <div class="col-2"></div>
                                             <div class="col-1"></div>
-                                            <div class="col-2">£ {{ number_format($shipment->total_cost_of_shipment, 2) }}</div>
+                                            <div class="col-2">£{{ number_format($shipment->total_cost_of_shipment, 2) }}</div>
                                             <div class="col-2"></div>
                                         </div>
                                     </div>
@@ -203,10 +203,10 @@
                                                 ({{ $detail->size ?? '' }} {{ $detail->color ?? '' }})
                                             </div>
                                             <div class="col-2">{{ $detail->quantity / 2 }} ({{ $detail->quantity }} Pcs)</div>
-                                            <div class="col-2">£ {{ number_format($detail->price_per_unit, 2) }}</div>
-                                            <div class="col-1">£ {{ number_format($detail->ground_price_per_unit, 2) }}</div>
-                                            <div class="col-1">£ {{ number_format($detail->selling_price, 2) }}</div>
-                                            <div class="col-2">£ {{ number_format($detail->price_per_unit * $detail->quantity, 2) }}</div>
+                                            <div class="col-2">£{{ number_format($detail->price_per_unit, 2) }}</div>
+                                            <div class="col-1">£{{ number_format($detail->ground_price_per_unit, 2) }}</div>
+                                            <div class="col-1">£{{ number_format($detail->selling_price, 2) }}</div>
+                                            <div class="col-2">£{{ number_format($detail->price_per_unit * $detail->quantity, 2) }}</div>
                                         </div>
                                         <hr>
                                         @endforeach
@@ -215,7 +215,7 @@
                                             <div class="col-3"></div>
                                             <div class="col-2">{{ $shipment->shipmentDetails->sum('quantity') / 2 }}Set ({{ $shipment->shipmentDetails->sum('quantity') }} Pcs)</div>
                                             <div class="col-4"></div>
-                                            <div class="col-2">£ {{ number_format($shipment->shipmentDetails->sum(function($detail) { return $detail->price_per_unit * $detail->quantity; }), 2) }}</div>
+                                            <div class="col-2">£{{ number_format($shipment->shipmentDetails->sum(function($detail) { return $detail->price_per_unit * $detail->quantity; }), 2) }}</div>
                                         </div>
                                     </div>
                                 </div>
