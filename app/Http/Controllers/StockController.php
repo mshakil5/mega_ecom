@@ -38,8 +38,10 @@ class StockController extends Controller
         $user = Auth::user();
         $warehouseIds = json_decode($user->warehouse_ids, true);
         $warehouses = Warehouse::where('status', 1)->get();
+        $sizes = Stock::distinct()->pluck('size')->filter();
+        $colors = Stock::distinct()->pluck('color')->filter();
         $filteredWarehouses = Warehouse::whereIn('id', $warehouseIds)->select('id', 'name','location')->where('status', 1)->get();
-        return view('admin.stock.index', compact('warehouses','products','filteredWarehouses'));
+        return view('admin.stock.index', compact('warehouses','products','filteredWarehouses','sizes','colors'));
     }
 
     public function getStocks(Request $request)
@@ -58,6 +60,14 @@ class StockController extends Controller
 
         if ($request->has('product_id') && $request->product_id != '') {
             $query->where('product_id', $request->product_id);
+        }
+
+        if ($request->has('color') && $request->color != '') {
+            $query->where('color', $request->color);
+        }
+
+        if ($request->has('size') && $request->size != '') {
+            $query->where('size', $request->size);
         }
 
         $data = $query->orderBy('id', 'DESC')->get();
@@ -130,8 +140,9 @@ class StockController extends Controller
         ->orderby('id','DESC')->select('id', 'name','price', 'product_code')->get();
 
         $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
-
-        return view('admin.stock.stockhistory', compact('warehouses','products'));
+        $sizes = Stock::distinct()->pluck('size')->filter();
+        $colors = Stock::distinct()->pluck('color')->filter();
+        return view('admin.stock.stockhistory', compact('warehouses','products','sizes','colors'));
     }
 
     public function getStockingHistory(Request $request)
@@ -148,6 +159,12 @@ class StockController extends Controller
         }
         if ($request->has('product_id') && $request->product_id != '') {
             $query->where('product_id', $request->product_id);
+        }
+        if ($request->has('size') && $request->size != '') {
+            $query->where('size', $request->size);
+        }
+        if ($request->has('color') && $request->color != '') {
+            $query->where('color', $request->color);
         }
         $data = $query->orderBy('available_qty', 'DESC')->get();
 

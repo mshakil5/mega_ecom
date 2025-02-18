@@ -36,6 +36,24 @@
                                 </select>
                             </div>
                             <div class="col-md-2">
+                                <label class="label label-primary">Size</label>
+                                <select class="form-control select2" id="size_id" name="size_id">
+                                    <option value="">Select...</option>
+                                    @foreach($sizes as $size)
+                                    <option value="{{ $size }}">{{ $size }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="label label-primary">Color</label>
+                                <select class="form-control select2" id="color_id" name="color_id">
+                                    <option value="">Select...</option>
+                                    @foreach($colors as $color)
+                                    <option value="{{ $color }}">{{ $color }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-1">
                                 <label class="label label-primary" style="visibility:hidden;">Action</label>
                                 <button type="submit" class="btn btn-secondary btn-block">Search</button>
                             </div>
@@ -193,6 +211,8 @@
                 data: function(d) {
                     d.warehouse_id = $('#warehouse_id').val();
                     d.product_id = $('#product_id').val();
+                    d.color = $('#color_id').val();
+                    d.size = $('#size_id').val();
                 },
                 error: function(xhr, error, code) {
                     console.error(xhr.responseText);
@@ -232,6 +252,8 @@
         $('#reset-button').on('click', function() {
             $('#warehouse_id').val(null).trigger('change');
             $('#product_id').val(null).trigger('change');
+            $('#color_id').val(null).trigger('change');
+            $('#size_id').val(null).trigger('change');
             table.draw();
         });
 
