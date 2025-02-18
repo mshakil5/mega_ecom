@@ -61,12 +61,16 @@
                                     <td>{{ $shipping->shipment ? $shipping->shipment->total_purchase_cost + $shipping->shipment->total_additional_cost : '' }}</td>
                                     <td style="width: 100%;">
                                         @if($shipping)
+                                            @if($shipping->status == 3)
+                                            <span class="btn btn-sm btn-success">Received</span>
+                                            @else
                                             <select class="form-control shipping-status" data-shipping-id="{{ $shipping->id }}" data-shipment-id="{{ $shipping->shipment ? $shipping->shipment->id : '' }}">
                                                 <option value="1" {{ $shipping->status == 1 ? 'selected' : '' }}>Processing</option>
                                                 <option value="2" {{ $shipping->status == 2 ? 'selected' : '' }}>On The Way</option>
                                                @if($shipping->shipment) <option value="3" {{ $shipping->status == 3 ? 'selected' : '' }}>Received</option> @endif
                                                 <!-- <option value="4" {{ $shipping->status == 4 ? 'selected' : '' }}>Stocking Completed</option> -->
                                             </select>
+                                            @endif
                                         @endif
                                     </td>
 

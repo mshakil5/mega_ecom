@@ -293,43 +293,6 @@ class ShipmentController extends Controller
             }
         }
     
-        // if (!empty($request->removed_ids)) {
-        //     $removedDetails = ShipmentDetails::whereIn('id', $request->removed_ids)->get();
-        //     foreach ($removedDetails as $removedDetail) {
-        //         $stock = Stock::where('product_id', $removedDetail->product_id)
-        //             ->where('size', $removedDetail->size)
-        //             ->where('color', $removedDetail->color)
-        //             ->where('warehouse_id', $removedDetail->warehouse_id)
-        //             ->first();
-        
-        //         if ($stock) {
-        //             $stock->quantity -= $removedDetail->quantity;
-        //             $stock->updated_by = auth()->id();
-        //             $stock->save();
-        //         }
-        
-        //         $stockHistory = StockHistory::where('product_id', $removedDetail->product_id)
-        //             ->where('size', $removedDetail->size)
-        //             ->where('color', $removedDetail->color)
-        //             ->where('warehouse_id', $removedDetail->warehouse_id)
-        //             ->where('stock_id', $stock->id)
-        //             ->first();
-        
-        //         if ($stockHistory) {
-        //             $stockHistory->quantity -= $removedDetail->quantity;
-        //             $stockHistory->available_qty -= $removedDetail->quantity;
-        
-        //             $stockHistory->quantity = max($stockHistory->quantity, 0);
-        //             $stockHistory->available_qty = max($stockHistory->available_qty, 0);
-        
-        //             $stockHistory->updated_by = auth()->id();
-        //             $stockHistory->save();
-        //         }
-        
-        //         $removedDetail->delete();
-        //     }
-        // }        
-    
         return response()->json(['message' => 'Shipment updated successfully!']);
     }    
 

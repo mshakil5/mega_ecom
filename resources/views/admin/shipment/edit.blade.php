@@ -260,6 +260,16 @@
     </div>
 </section>
 
+<style>
+    th, td {
+        white-space: nowrap;
+    },
+    .table {
+        table-layout: fixed;
+        width: 100%;
+    }
+</style>
+
 @endsection
 
 @section('script')
@@ -294,6 +304,7 @@
             let budget_over = $('#budgetDifference').val();
             let total_cost_of_the_shipment = $('#total_cost_of_the_shipment').val();
             let shipmentDetails = [];
+            let hasIncompleteEntry = false;
             let expenses = [];
 
             $('#purchaseData tr').each(function() {
@@ -316,7 +327,7 @@
                 let sampleQuantity = $(this).find('.sample_quantity').val();
                 let saleableQuantity = $(this).find('.saleable_quantity').val();
 
-                if (productId && shippedQuantity > 0) {
+                if (productId) {
                     shipmentDetails.push({
                         id: id,
                         purchase_history_id: purchaseHistoryId,
@@ -348,6 +359,10 @@
                 let description = $(this).find('.expense-description').val();
                 let note = $(this).find('.expense-note').val();
 
+                if ((expenseId && amount === 0) || (!expenseId && amount > 0)) {
+                    hasIncompleteEntry = true;
+                }
+
                 if (expenseId && amount > 0) {
                     expenses.push({
                         chart_of_account_id: expenseId,
@@ -360,11 +375,11 @@
                 }
             });
 
-            if (!expenses || expenses.length === 0) {
+            if (hasIncompleteEntry || expenses.length === 0) {
                 $(".ermsg").html(`
                     <div class='alert alert-danger'>
                         <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
-                        <b>Please add at least one expense before proceeding.</b>
+                        <b>Please select at least one expense with a valid amount.</b>
                     </div>
                 `).show();
                 pagetop();
@@ -440,7 +455,11 @@
         $('#receivedButton').on('click', function(event) {
             event.preventDefault();
 
-            if (!confirm("Are you sure you want to proceed with updating the shipment?")) {
+            if (!confirm("Are you sure to make this shipment received?")) {
+                return;
+            }
+
+            if (!confirm("You can't update this shipment further. Are you sure?")) {
                 return;
             }
 
@@ -453,6 +472,7 @@
             let budget_over = $('#budgetDifference').val();
             let total_cost_of_the_shipment = $('#total_cost_of_the_shipment').val();
             let shipmentDetails = [];
+            let hasIncompleteEntry = false;
             let expenses = [];
 
             $('#purchaseData tr').each(function() {
@@ -507,6 +527,10 @@
                 let description = $(this).find('.expense-description').val();
                 let note = $(this).find('.expense-note').val();
 
+                if ((expenseId && amount === 0) || (!expenseId && amount > 0)) {
+                    hasIncompleteEntry = true;
+                }
+
                 if (expenseId && amount > 0) {
                     expenses.push({
                         chart_of_account_id: expenseId,
@@ -519,11 +543,11 @@
                 }
             });
 
-            if (!expenses || expenses.length === 0) {
+            if (hasIncompleteEntry || expenses.length === 0) {
                 $(".ermsg").html(`
                     <div class='alert alert-danger'>
                         <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
-                        <b>Please add at least one expense before proceeding.</b>
+                        <b>Please select at least one expense with a valid amount.</b>
                     </div>
                 `).show();
                 pagetop();
@@ -559,7 +583,7 @@
 
             let _token = $('meta[name="csrf-token"]').attr('content');
 
-            console.log(dataToSend);
+            // console.log(dataToSend);
 
 
             $.ajax({
@@ -570,7 +594,7 @@
                 },
                 data: dataToSend,
                 success: function(response) {
-                    console.log(response);
+                    // console.log(response);
                     $(".ermsg").html(`
                         <div class='alert alert-success'>
                             <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>

@@ -61,7 +61,7 @@
                                         <th>New Price</th>
                                         <th>Min Margin(%)</th>
                                         <th>Min Price</th>
-                                        <th>Action</th>
+                                        <th class="d-none">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="purchaseData">
@@ -126,7 +126,7 @@
                                             <input type="number" value="10" min="1" class="form-control considerable_margin" />
                                         </td>
                                         <td class="considerable_price"></td>
-                                        <td>
+                                        <td class="d-none">
                                             <button type="button" class="btn btn-danger remove-row"><i class="fas fa-trash"></i></button>
                                         </td>
                                     </tr>
@@ -237,6 +237,16 @@
         </div>
     </div>
 </section>
+
+<style>
+    th, td {
+        white-space: nowrap;
+    },
+    .table {
+        table-layout: fixed;
+        width: 100%;
+    }
+</style>
 
 @endsection
 
@@ -492,6 +502,7 @@
             let totalQuantity = $('#totalQuantity').text();
             let totalMissingQuantity = $('#totalMissingQuantity').text();
             let shipmentDetails = [];
+            let hasIncompleteEntry = false;
             let expenses = [];
 
             $('#purchaseData tr').each(function() {
@@ -512,7 +523,7 @@
                 let sampleQuantity = $(this).find('.sample_quantity').val();
                 let saleableQuantity = $(this).find('.saleable_quantity').val();
 
-                if (productId && shippedQuantity > 0) {
+                if (productId) {
                     shipmentDetails.push({
                         purchase_history_id: purchaseHistoryId,
                         supplier_id: supplierId,
@@ -541,6 +552,9 @@
                 let description = $(this).find('.expense-description').val();
                 let note = $(this).find('.expense-note').val();
 
+                if ((expenseId && amount === 0) || (!expenseId && amount > 0)) {
+                    hasIncompleteEntry = true;
+                }
 
                 if (expenseId && amount > 0) {
                     expenses.push({
@@ -553,11 +567,11 @@
                 }
             });
 
-            if (!expenses || expenses.length === 0) {
+            if (hasIncompleteEntry || expenses.length === 0) {
                 $(".ermsg").html(`
                     <div class='alert alert-danger'>
                         <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
-                        <b>Please add at least one expense before proceeding.</b>
+                        <b>Please select at least one expense with a valid amount.</b>
                     </div>
                 `).show();
                 pagetop();
