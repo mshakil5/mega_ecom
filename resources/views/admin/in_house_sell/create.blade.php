@@ -107,6 +107,7 @@
                                             @endphp        
                                                 <option value="{{ $product->id }}" 
                                                     data-name="{{ $product->name }}" 
+                                                    data-code="{{ $product->product_code }}" 
                                                     data-price="{{ $sellingPrice }}" 
                                                     data-ground-price="{{ $groundPrice }}" 
                                                     data-profit-margin="{{ $profitMargin }}"
@@ -358,6 +359,7 @@
             var selectedProduct = $('#product_id option:selected');
             var productId = selectedProduct.val();
             var productName = selectedProduct.data('name');
+            var productCode = selectedProduct.data('code');
             var unitPrice = parseFloat($('#price_per_unit').val()) || 0;
             var groundPrice = parseFloat($('#ground_price').val()) || 0;
             var profitMargin = parseFloat($('#profit_margin').val()) || 0;
@@ -420,7 +422,7 @@
 
             var productRow = `<tr data-product-id="${productId}">
                 <td>
-                    ${productName} <br>
+                    ${productCode} - ${productName} <br>
                     <span>
                         Profit Margin: <strong>${Math.round(profitMargin)}%</strong>
                     </span> <br>

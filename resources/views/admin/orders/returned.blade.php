@@ -20,6 +20,7 @@
                         <table id="example1" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
+                                    <th>Date</th>
                                     <th>Name/Email/Phone</th>
                                     <th>Total</th>
                                     <th>Returned Items</th>
@@ -31,6 +32,7 @@
                             <tbody>
                                 @foreach ($orders as $order)
                                     <tr>
+                                        <td>{{ date('d-m-Y', strtotime($order->created_at)) }}</td>
                                     <td>
                                         {{ optional($order->user)->name ?? $order->name }} {{ optional($order->user)->surname ?? '' }} <br> {{ optional($order->user)->email ?? $order->email }} <br> {{ optional($order->user)->phone ?? $order->phone }}
                                     </td>
@@ -38,7 +40,7 @@
                                         <td>
                                             @foreach ($order->orderReturns as $return)
                                                 <p>
-                                                    <strong>Product:</strong> {{ $return->product->name }}( {{ $return->orderDetails->size }} - {{ $return->orderDetails->color }} )<br>
+                                                    <strong>Product:</strong>{{ $return->product->product_code }} - {{ $return->product->name }}( {{ $return->orderDetails->size }} - {{ $return->orderDetails->color }} )<br>
                                                     <strong>Quantity:</strong> {{ $return->quantity }}<br>
                                                     <strong class="d-none">Reason:</strong> {{ $return->reason }}<br>
                                                     <strong>Returned By:</strong> {{ optional($return->returnedBy)->name }}
@@ -48,7 +50,7 @@
                                         <td>      
                                             @foreach ($order->orderReturns as $return)
                                                 <p>
-                                                    <strong>Product:</strong> {{ $return->product->name }}( {{ $return->orderDetails->size }} - {{ $return->orderDetails->color }} )<br>
+                                                    <strong>Product:</strong>{{ $return->product->product_code }} - {{ $return->product->name }}( {{ $return->orderDetails->size }} - {{ $return->orderDetails->color }} )<br>
                                                     <strong>Returned to Stock:</strong> {{ $return->return_stock }}<br>
                                                     <strong>System Loss:</strong> {{ $return->system_lose }}<br>
                                                 </p>

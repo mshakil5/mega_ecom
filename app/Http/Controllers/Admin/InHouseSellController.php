@@ -70,12 +70,23 @@ class InHouseSellController extends Controller
         $netAmount = $itemTotalAmount - $validated['discount'] + $request->vat;
 
         foreach ($products as $product) {
-            $stock = Stock::where('product_id', $product['product_id'])->where('size', $product['product_size'])->where('color', $product['product_color'])->first();
-
-            if(!$stock || $stock->quantity < $product['quantity']) {
-                return response()->json(['message' => 'Not enough stock available for product ' . $product['product_name'] . ' with size ' . $product['product_size'] . ' and color ' . $product['product_color']], 422);
+            $stock = Stock::where('product_id', $product['product_id'])
+                ->where('size', $product['product_size'])
+                ->where('color', $product['product_color'])
+                ->where('warehouse_id', $request->warehouse_id)
+                ->first();
+        
+            if (!$stock || $stock->quantity < $product['quantity']) {
+                $warehouse = Warehouse::find($request->warehouse_id);
+                return response()->json([
+                    'message' => 'Not enough stock available for product ' . $product['product_name'] . 
+                                 ' with size ' . $product['product_size'] . 
+                                 ' and color ' . $product['product_color'] . 
+                                 ' in warehouse: ' . ($warehouse->name ?? '') . 
+                                 ' (Location: ' . ($warehouse->location ?? '') . ')',
+                ], 422);
             }
-        }
+        } 
 
         $latestOrder = Order::where('invoice', 'like', "STL-{$request->invoice}-" . date('Y') . '-%')
         ->orderBy('invoice', 'desc')
@@ -172,49 +183,46 @@ class InHouseSellController extends Controller
                 ->where('size', $product['product_size'])
                 ->where('color', $product['product_color'])
                 ->where('warehouse_id', $request->warehouse_id)
-                ->first();
+                    ->first();
                 if ($stock) {
                     $stock->quantity -= $product['quantity'];
                     $stock->save();
-                }else {
+                } else {
                     $stock = new Stock();
                     $stock->warehouse_id = $request->warehouse_id;
                     $stock->product_id = $product['product_id'];
                     $stock->size = $product['product_size'];
                     $stock->color = $product['product_color'];
-                    $stock->quantity = - $product['quantity'];
+                    $stock->quantity = -$product['quantity'];
                     $stock->created_by = auth()->user()->id;
                     $stock->save();
                 }
 
                 $stockHistories = StockHistory::where('stock_id', $stock->id)
-                        ->where('available_qty', '>', 0)
-                        ->orderBy('created_at', 'asc')
-                        ->get();
+                    ->where('available_qty', '>', 0)
+                    ->orderBy('created_at', 'asc')
+                    ->get();
 
-                        foreach ($stockHistories as $stockHistorie) {
-                            if ($requiredQty > 0) {
-                                if ($stockHistorie->available_qty >= $requiredQty) {
-                                    // Reduce the quantity from the current stock entry
-                                    $stockHistorie->available_qty -= $requiredQty;
-                                    $stockHistorie->selling_qty += $requiredQty;
-                                    $stockHistorie->save();
-                                    $requiredQty = 0; // All required quantity is reduced
-                                } else {
-                                    // If the stock quantity is less than required, deduct all from this entry
-                                    $requiredQty -= $stockHistorie->available_qty;
-                                    $stockHistorie->available_qty = 0;
-                                    $stockHistorie->selling_qty += $requiredQty;
-                                    $stockHistorie->save();
-                                }
-                            } else {
-                                break; // Exit loop if all the quantity is reduced
-                            }
+                foreach ($stockHistories as $stockHistorie) {
+                    if ($requiredQty > 0) {
+                        if ($stockHistorie->available_qty >= $requiredQty) {
+                            // Reduce the quantity from the current stock entry
+                            $stockHistorie->available_qty -= $requiredQty;
+                            $stockHistorie->selling_qty += $requiredQty;
+                            $stockHistorie->save();
+                            $requiredQty = 0; // All required quantity is reduced
+                        } else {
+                            // If the stock quantity is less than required, deduct all from this entry
+                            $requiredQty -= $stockHistorie->available_qty;
+                            $stockHistorie->available_qty = 0;
+                            $stockHistorie->selling_qty += $requiredQty;
+                            $stockHistorie->save();
                         }
-
-
+                    } else {
+                        break; // Exit loop if all the quantity is reduced
+                    }
+                }
             }
-            
         }
 
         $encoded_order_id = base64_encode($order->id);
@@ -287,7 +295,7 @@ class InHouseSellController extends Controller
             'remarks' => 'nullable|string',
             'discount' => 'nullable',
             'products' => 'required|json',
-            'warehouse_id' => 'required',
+            'warehouse_id' => 'nullable',
         ]);
 
         $products = json_decode($validated['products'], true);
@@ -357,7 +365,7 @@ class InHouseSellController extends Controller
 
     public function allquotations()
     {
-        $warehouseIds = json_decode(Auth::user()->warehouse_ids, true);
+        // $warehouseIds = json_decode(Auth::user()->warehouse_ids, true);
 
         $inHouseOrders = Order::with('user')
             ->where('order_type', 2)
@@ -510,12 +518,32 @@ class InHouseSellController extends Controller
         }
 
         foreach ($products as $product) {
-            $stock = Stock::where('product_id', $product['product_id'])->where('size', $product['product_size'])->where('color', $product['product_color'])->first();
+            $previousQty = OrderDetails::where('order_id', $order->id)
+                ->where('product_id', $product['product_id'])
+                ->where('size', $product['product_size'])
+                ->where('color', $product['product_color'])
+                ->sum('quantity');
 
-            if(!$stock || $stock->quantity < $product['quantity']) {
-                return response()->json(['message' => 'Not enough stock available for product ' . $product['product_name'] . ' with size ' . $product['product_size'] . ' and color ' . $product['product_color']], 422);
+            $quantityDifference = $product['quantity'] - $previousQty;
+            if ($quantityDifference > 0) {
+                $stock = Stock::where('product_id', $product['product_id'])
+                    ->where('size', $product['product_size'])
+                    ->where('color', $product['product_color'])
+                    ->where('warehouse_id', $request->warehouse_id)
+                    ->first();
+        
+                if (!$stock || $stock->quantity < $quantityDifference) {
+                    $warehouse = Warehouse::find($request->warehouse_id);
+                    return response()->json([
+                        'message' => 'Not enough stock available for product ' . $product['product_name'] . 
+                                     ' with size ' . $product['product_size'] . 
+                                     ' and color ' . $product['product_color'] . 
+                                     ' in warehouse: ' . ($warehouse->name ?? '') . 
+                                     ' (Location: ' . ($warehouse->location ?? '') . ')',
+                    ], 422);
+                }
             }
-        }
+        }        
 
         $order = Order::findOrFail($validated['id']);
 
@@ -536,6 +564,7 @@ class InHouseSellController extends Controller
         $order->paid_amount = $request->cash_payment + $request->bank_payment;
         $order->due_amount = $netAmount - $request->cash_payment - $request->bank_payment;
         $order->subtotal_amount = $itemTotalAmount;
+        $order->warehouse_id = $request->warehouse_id;
         $order->status = 2;
         if ($order->order_type != 0) {
             $order->order_type = 1;
@@ -572,9 +601,16 @@ class InHouseSellController extends Controller
             }
         }
 
-        OrderDetails::where('order_id', $order->id)->delete();
+        $previousOrderDetails = OrderDetails::where('order_id', $order->id)->get();
+        $previousOrderDetailIds = $previousOrderDetails->pluck('id')->toArray();
 
         foreach ($products as $product) {
+            $previousQty = $previousOrderDetails
+                ->where('product_id', $product['product_id'])
+                ->where('size', $product['product_size'])
+                ->where('color', $product['product_color'])
+                ->sum('quantity');
+
             $orderDetail = new OrderDetails();
             $orderDetail->order_id = $order->id;
             $orderDetail->warehouse_id = $request->warehouse_id;
@@ -590,13 +626,15 @@ class InHouseSellController extends Controller
             $orderDetail->status = 1;
             $orderDetail->save();
 
+            $quantityDifference = $product['quantity'] - $previousQty;
+
             $stock = Stock::where('product_id', $product['product_id'])
                 ->where('size', $product['product_size'])
                 ->where('color', $product['product_color'])
                 ->where('warehouse_id', $request->warehouse_id)
                 ->first();
             if ($stock) {
-                $stock->quantity -= $product['quantity'];
+                $stock->quantity += $quantityDifference;
                 $stock->save();
             } else {
                 $stock = new Stock();
@@ -604,11 +642,74 @@ class InHouseSellController extends Controller
                 $stock->product_id = $product['product_id'];
                 $stock->size = $product['product_size'];
                 $stock->color = $product['product_color'];
-                $stock->quantity = -$product['quantity'];
+                $stock->quantity = max(0, $quantityDifference);
                 $stock->created_by = auth()->user()->id;
                 $stock->save();
             }
+
+            $requiredQty = abs($quantityDifference);
+
+            if ($quantityDifference != 0) {
+
+                $stockHistories = StockHistory::where('stock_id', $stock->id)
+                ->where('available_qty', '>', 0)
+                ->orderBy('created_at', 'asc')
+                ->get();
+
+                foreach ($stockHistories as $stockHistorie) {
+                    if ($requiredQty > 0) {
+                        if ($stockHistorie->available_qty >= $requiredQty) {
+                            $stockHistorie->available_qty -= $requiredQty;
+                            $stockHistorie->selling_qty += $requiredQty;
+                            $stockHistorie->save();
+                            $requiredQty = 0;
+                        } else {
+                            $requiredQty -= $stockHistorie->available_qty;
+                            $stockHistorie->selling_qty += $stockHistorie->available_qty;
+                            $stockHistorie->available_qty = 0;
+                            $stockHistorie->save();
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
         }
+
+        $removedOrderDetails = $previousOrderDetails->filter(function ($orderDetail) use ($products) {
+            return !in_array($orderDetail->product_id, array_column($products, 'product_id')) ||
+                   !in_array($orderDetail->size, array_column($products, 'product_size')) ||
+                   !in_array($orderDetail->color, array_column($products, 'product_color'));
+        });
+
+        foreach ($removedOrderDetails as $removedDetail) {
+            $stock = Stock::where('product_id', $removedDetail->product_id)
+                          ->where('size', $removedDetail->size)
+                          ->where('color', $removedDetail->color)
+                          ->where('warehouse_id', $removedDetail->warehouse_id)
+                          ->first();
+        
+            if ($stock) {
+                $stock->quantity += $removedDetail->quantity;
+                $stock->save();
+            }
+
+            $stockHistory = StockHistory::where('stock_id', $stock->id)
+                                        ->where('product_id', $removedDetail->product_id)
+                                        ->where('size', $removedDetail->size)
+                                        ->where('color', $removedDetail->color)
+                                        ->where('warehouse_id', $removedDetail->warehouse_id)
+                                        ->orderBy('created_at', 'asc')
+                                        ->first();
+        
+            if ($stockHistory) {
+                $stockHistory->available_qty += $removedDetail->quantity;
+                $stockHistory->selling_qty -= $removedDetail->quantity;
+                $stockHistory->save();
+            }
+        }
+
+        OrderDetails::whereIn('id', $previousOrderDetailIds)->delete();
 
         $encoded_order_id = base64_encode($order->id);
         $pdfUrl = route('in-house-sell.generate-pdf', ['encoded_order_id' => $encoded_order_id]);

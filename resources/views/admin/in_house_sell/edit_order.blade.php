@@ -29,7 +29,7 @@
                                             <span class="text-danger">*</span>
                                         @endif
                                         </label>
-                                        <select class="form-control" id="user_id" name="user_id">
+                                        <select class="form-control" id="user_id" name="user_id" @if($order->user_id) disabled @endif>
                                             <option value="" >Select...</option>
                                             @foreach($customers as $customer)
                                             <option value="{{ $customer->id }}" {{ $customer->id == $order->user_id ? 'selected' : '' }}>{{ $customer->name }}</option>
@@ -37,7 +37,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-sm-1">
+                                <div class="col-sm-1 d-none">
                                     <div class="form-group">
                                         <label>New</label>
                                         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#newWholeSalerModal">
@@ -49,7 +49,7 @@
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="warehouse_id">Warehouse <span class="text-danger">*</span></label>
-                                        <select name="warehouse_id" id="warehouse_id" class="form-control">
+                                        <select name="warehouse_id" id="warehouse_id" class="form-control" @if($order->warehouse_id) disabled @endif>
                                             <option value="">Select</option>
                                             @foreach ($warehouses as $warehouse)
                                             <option value="{{ $warehouse->id }}" {{ $warehouse->id == $order->warehouse_id ? 'selected' : '' }}>{{ $warehouse->name }}-{{ $warehouse->location }}</option>
@@ -74,7 +74,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-sm-1">
+                                <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="ref">Ref</label>
                                         <input type="text" class="form-control" id="ref" name="ref" placeholder="Enter reference" value="{{ $order->ref }}">
@@ -108,6 +108,7 @@
 
                                             <option value="{{ $product->id }}" 
                                                     data-name="{{ $product->name }}" 
+                                                    data-code="{{ $product->product_code }}" 
                                                     data-price="{{ $sellingPrice }}" 
                                                     data-ground-price="{{ $groundPrice }}" 
                                                     data-profit-margin="{{ $profitMargin }}"
@@ -215,7 +216,7 @@
                                         <tbody>
                                         @foreach ($order->orderDetails as $detail)
                                             <tr data-product-id="{{ $detail->product_id }}">
-                                                <td>{{ $detail->product->name }}
+                                                <td>{{ $detail->product->product_code }} - {{ $detail->product->name }}
                                                     <input type="hidden" name="product_id[]" value="{{ $detail->product_id }}">
                                                     <input type="hidden" name="product_name[]" value="{{ $detail->product->name }}">
                                                 </td>
@@ -380,6 +381,7 @@
             var selectedProduct = $('#product_id option:selected');
             var productId = selectedProduct.val();
             var productName = selectedProduct.data('name');
+            var productCode = selectedProduct.data('code');
             var unitPrice = parseFloat($('#price_per_unit').val()) || 0;
             var groundPrice = parseFloat($('#ground_price').val()) || 0;
             var profitMargin = parseFloat($('#profit_margin').val()) || 0;
@@ -430,7 +432,7 @@
 
             var productRow = `<tr data-product-id="${productId}">
                 <td>
-                    ${productName} <br>
+                    ${productCode} ${productName} <br>
                     <span>
                         Profit Margin: <strong>${Math.round(profitMargin)}%</strong>
                     </span> <br>

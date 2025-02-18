@@ -36,20 +36,20 @@ class StockController extends Controller
         })
         ->orderby('id','DESC')->select('id', 'name','price', 'product_code')->get();
         $user = Auth::user();
-        $warehouseIds = json_decode($user->warehouse_ids, true);
+        // $warehouseIds = json_decode($user->warehouse_ids, true);
         $warehouses = Warehouse::where('status', 1)->get();
         $sizes = Stock::distinct()->pluck('size')->filter();
         $colors = Stock::distinct()->pluck('color')->filter();
-        $filteredWarehouses = Warehouse::whereIn('id', $warehouseIds)->select('id', 'name','location')->where('status', 1)->get();
+        $filteredWarehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
         return view('admin.stock.index', compact('warehouses','products','filteredWarehouses','sizes','colors'));
     }
 
     public function getStocks(Request $request)
     {
         $user = Auth::user();
-        $warehouseIds = json_decode($user->warehouse_ids, true);
+        // $warehouseIds = json_decode($user->warehouse_ids, true);
         
-        $query = Stock::whereIn('warehouse_id', $warehouseIds)->with('warehouse', 'product');
+        $query = Stock::with('warehouse', 'product');
         
         // $query = Stock::with('warehouse', 'product')
         //     ->select('product_id', 'size', 'color', 'warehouse_id', 'quantity');
@@ -108,10 +108,9 @@ class StockController extends Controller
     public function getTotalStock(Request $request)
     {
         $user = Auth::user();
-        $warehouseIds = json_decode($user->warehouse_ids, true);
+        // $warehouseIds = json_decode($user->warehouse_ids, true);
     
-        $data = Stock::whereIn('warehouse_id', $warehouseIds)
-            ->selectRaw('product_id, size, color, SUM(quantity) as total_quantity')
+        $data = Stock::selectRaw('product_id, size, color, SUM(quantity) as total_quantity')
             ->groupBy('product_id', 'size', 'color')
             ->with('product')
             ->orderByDesc('product_id')
@@ -147,12 +146,12 @@ class StockController extends Controller
 
     public function getStockingHistory(Request $request)
     {  
-        $warehouseIds = json_decode(Auth::user()->warehouse_ids, true);
+        // $warehouseIds = json_decode(Auth::user()->warehouse_ids, true);
 
-        $query = StockHistory::select('date', 'stockid', 'purchase_id', 'product_id', 'stock_id', 'warehouse_id', 'quantity', 'selling_qty', 'available_qty', 'size', 'color', 'systemloss_qty', 'purchase_price', 'selling_price', 'received_quantity', 'ground_price_per_unit')
-        ->when(!empty($warehouseIds), function ($query) use ($warehouseIds) {
-            return $query->whereIn('warehouse_id', $warehouseIds);
-        });
+        $query = StockHistory::select('date', 'stockid', 'purchase_id', 'product_id', 'stock_id', 'warehouse_id', 'quantity', 'selling_qty', 'available_qty', 'size', 'color', 'systemloss_qty', 'purchase_price', 'selling_price', 'received_quantity', 'ground_price_per_unit');
+        // ->when(!empty($warehouseIds), function ($query) use ($warehouseIds) {
+        //     return $query->whereIn('warehouse_id', $warehouseIds);
+        // })
         
         if ($request->has('warehouse_id') && $request->warehouse_id != '') {
             $query->where('warehouse_id', $request->warehouse_id);
@@ -223,14 +222,18 @@ class StockController extends Controller
 
     public function getStockLedger()
     {
-        $warehouseIds = json_decode(Auth::user()->warehouse_ids, true);
-        $totalQty = Stock::when(!empty($warehouseIds), function ($query) use ($warehouseIds) {
-            return $query->whereIn('warehouse_id', $warehouseIds);
-        })->sum('quantity');
+        // $warehouseIds = json_decode(Auth::user()->warehouse_ids, true);
+        $totalQty = Stock::sum('quantity');
         
-        $totalProduct = Stock::when(!empty($warehouseIds), function ($query) use ($warehouseIds) {
-            return $query->whereIn('warehouse_id', $warehouseIds);
-        })->count('product_id');
+        $totalProduct = Stock::count('product_id');
+
+        // $totalQty = Stock::when(!empty($warehouseIds), function ($query) use ($warehouseIds) {
+        //     return $query->whereIn('warehouse_id', $warehouseIds);
+        // })->sum('quantity');
+
+        // $totalProduct = Stock::when(!empty($warehouseIds), function ($query) use ($warehouseIds) {
+        //     return $query->whereIn('warehouse_id', $warehouseIds);
+        // })->count('product_id');
 
         $totalSupplier = Supplier::count();
 
@@ -277,19 +280,23 @@ class StockController extends Controller
 
     public function getproductHistory()
     {
-        $warehouseIds = json_decode(Auth::user()->warehouse_ids, true);
+        // $warehouseIds = json_decode(Auth::user()->warehouse_ids, true);
 
-        $products = Product::with(['orderDetails' => function ($query) {
-            $query->whereHas('order', function ($query) {
-                $query->whereIn('order_type', [0, 1]);
-            });
-        }])
-        ->with(['stock' => function ($query) use ($warehouseIds) {
-            if (!empty($warehouseIds)) {
-                $query->whereIn('warehouse_id', $warehouseIds);
-            }
-        }, 'shipmentDetails'])
-        ->get();
+        $products = Product::with([
+            'orderDetails' => function ($query) {
+                $query->whereHas('order', function ($query) {
+                    $query->whereIn('order_type', [0, 1]);
+                });
+            },
+            'stock',
+            'shipmentDetails'
+        ])->get();
+
+        // ->with(['stock' => function ($query) use ($warehouseIds) {
+        //     if (!empty($warehouseIds)) {
+        //         $query->whereIn('warehouse_id', $warehouseIds);
+        //     }
+        // }])
 
         $products = $products->map(function ($product) {
             $product->total_quantity = number_format($product->stock ? $product->stock->quantity : 0, 0);
@@ -330,9 +337,6 @@ class StockController extends Controller
         $salesHistories = OrderDetails::where('product_id', $id)
             ->when($fromDate, function ($query) use ($fromDate, $toDate) {
                 $query->whereBetween('created_at', [$fromDate, $toDate]);
-            })
-            ->when($request->input('warehouse_id'), function ($query) use ($request) {
-                $query->where("warehouse_id", $request->input('warehouse_id'));
             })
             ->where('size', $size)
             ->where('color', $color)
@@ -1114,6 +1118,8 @@ class StockController extends Controller
         $systemLoss->product_id = $product_id;
         $systemLoss->order_id = $request->order_id;
         $systemLoss->quantity = $quantity;
+        $systemLoss->size = $size;
+        $systemLoss->color = $color;
         $systemLoss->reason = $request->input('reason');
         $systemLoss->created_by = auth()->user()->id;
         $systemLoss->save();
@@ -1134,21 +1140,21 @@ class StockController extends Controller
             ->where('warehouse_id', $warehouseId)
             ->first();
 
-        if ($stock) {
-            $stock->quantity -= $quantity;
-            $stock->save();
+        // if ($stock) {
+        //     $stock->quantity -= $quantity;
+        //     $stock->save();
 
-            $history = StockHistory::where('stock_id', $stock->id)
-                ->where('available_qty', '!=', $quantity)
-                ->orderBy('created_at', 'desc')
-                ->first();
+        //     $history = StockHistory::where('stock_id', $stock->id)
+        //         ->where('available_qty', '!=', $quantity)
+        //         ->orderBy('created_at', 'desc')
+        //         ->first();
 
-            if ($history) {
-                $history->systemloss_qty = ($history->systemloss_qty ?? 0) + $quantity;
-                $history->available_qty -= $quantity;
-                $history->save();
-            }
-        }
+        //     if ($history) {
+        //         $history->systemloss_qty = ($history->systemloss_qty ?? 0) + $quantity;
+        //         $history->available_qty -= $quantity;
+        //         $history->save();
+        //     }
+        // }
 
         return redirect()->back()->with('success', 'Sent to system lose successfully.');
     }
@@ -1230,14 +1236,14 @@ class StockController extends Controller
         ]);
 
         $user = Auth::user();
-        $warehouseIds = json_decode($user->warehouse_ids, true);
+        // $warehouseIds = json_decode($user->warehouse_ids, true);
 
         $query = Stock::where('product_id', $request->product_id)
-            ->where('quantity', '>', 0);
+        ->where('quantity', '>', 0);
 
-        if (!empty($warehouseIds)) {
-            $query->whereIn('warehouse_id', $warehouseIds);
-        }
+        // if (!empty($warehouseIds)) {
+        //     $query->whereIn('warehouse_id', $warehouseIds);
+        // }
 
         $warehouses = $query->with('warehouse')
             ->groupBy('warehouse_id')
