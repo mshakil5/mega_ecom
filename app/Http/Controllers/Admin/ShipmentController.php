@@ -424,26 +424,26 @@ class ShipmentController extends Controller
                 ]);
             }
     
-            $stockHistory = StockHistory::where('product_id', $shipmentDetail->product_id)
-                ->where('size', $shipmentDetail->size)
-                ->where('color', $shipmentDetail->color)
-                ->where('stock_id', $stock->id)
-                ->where('warehouse_id', $shipmentDetail->warehouse_id)
-                ->first();
-    
-            if ($stockHistory) {
-                $stockHistory->quantity += $quantityDifference;
-                $stockHistory->available_qty += $quantityDifference;
-                $stockHistory->missing_product_quantity += $missingDifference;
-                $stockHistory->purchase_price = $detail['price_per_unit'];
-                $stockHistory->ground_price_per_unit = $detail['ground_cost'];
-                $stockHistory->profit_margin = $detail['profit_margin'];
-                $stockHistory->selling_price = $detail['selling_price'];
-                $stockHistory->considerable_margin = $detail['considerable_margin'];
-                $stockHistory->considerable_price = $detail['considerable_price'];
-                $stockHistory->updated_by = auth()->user()->id;
-                $stockHistory->save();
-            }
+            $stockid = date('mds') . str_pad($detail['product_id'], 4, '0', STR_PAD_LEFT);
+            StockHistory::create([
+                'stock_id' => $stock->id,
+                'date' => date('Y-m-d'),
+                'product_id' => $detail['product_id'],
+                'quantity' => $detail['quantity'],
+                'size' => $detail['size'],
+                'color' => $detail['color'],
+                'warehouse_id' => $request->warehouse_id,
+                'available_qty' => $detail['quantity'],
+                'ground_price_per_unit' => $detail['ground_cost'],
+                'profit_margin' => $detail['profit_margin'],
+                'purchase_price' => $detail['price_per_unit'],
+                'selling_price' => $detail['selling_price'],
+                'considerable_margin' => $detail['considerable_margin'],
+                'considerable_price' => $detail['considerable_price'],
+                'sample_quantity' => $detail['sample_quantity'],
+                'created_by' => auth()->id(),
+                'stockid' => $stockid,
+            ]);
     
             $purchaseHistory = PurchaseHistory::find($shipmentDetail->purchase_history_id);
             if ($purchaseHistory) {
@@ -468,6 +468,7 @@ class ShipmentController extends Controller
                         'warehouse_id' => $shipmentDetail->warehouse_id,
                         'quantity' => $detail['missing_quantity'],
                         'size' => $detail['size'],
+                        'reason' => 'Damaged from shipment',
                         'color' => $detail['color'],
                         'created_by' => auth()->id()
                     ]);

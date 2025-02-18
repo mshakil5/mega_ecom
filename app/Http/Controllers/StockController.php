@@ -993,6 +993,17 @@ class StockController extends Controller
         $newQuantity = $stock->quantity - $validatedData['lossQuantity'];
         $stock->update(['quantity' => $newQuantity]);
 
+        $history = StockHistory::where('product_id', $validatedData['productId'])
+            ->where('stock_id', $stock->id)
+            ->orderBy('id', 'desc')
+            ->first();
+
+        if ($history) {
+            $history->systemloss_qty = ($history->systemloss_qty ?? 0) + $validatedData['lossQuantity'];
+            $history->available_qty = ($history->available_qty ?? 0) - $validatedData['lossQuantity'];
+            $history->save();
+        }
+
         $systemLoss = new SystemLose();
         $systemLoss->warehouse_id = $validatedData['warehouse'];
         $systemLoss->product_id = $validatedData['productId'];
@@ -1124,6 +1135,9 @@ class StockController extends Controller
             ->first();
 
         if ($stock) {
+            $stock->quantity -= $quantity;
+            $stock->save();
+
             $history = StockHistory::where('stock_id', $stock->id)
                 ->where('available_qty', '!=', $quantity)
                 ->orderBy('created_at', 'desc')
@@ -1131,6 +1145,7 @@ class StockController extends Controller
 
             if ($history) {
                 $history->systemloss_qty = ($history->systemloss_qty ?? 0) + $quantity;
+                $history->available_qty -= $quantity;
                 $history->save();
             }
         }

@@ -24,7 +24,7 @@
                                     <strong>Shipping Date:</strong> <span id="shippingDate">{{ \Carbon\Carbon::parse($shipment->shipping->shipping_date)->format('d-m-Y') }}</span><br>
                                     <strong>Shipping Name:</strong> <span id="shippingName">{{ $shipment->shipping->shipping_name }}</span> <br>
                                     <strong>Total Product Quantity:</strong> <span id="totalQuantity">{{ $shipment->total_product_quantity }}</span> <br>
-                                    <strong>Total Missing Product Quantity:</strong> <span id="totalMissingQuantity">{{ $shipment->total_missing_quantity }}</span>
+                                    <strong>Total Missing/Damaged Product Quantity:</strong> <span id="totalMissingQuantity">{{ $shipment->total_missing_quantity }}</span>
                                 </div>
                                 <div>
                                     <strong>Select Warehouse: <span class="text-danger">*</span></strong>
@@ -122,12 +122,12 @@
                                         <td>{{ number_format($detail->price_per_unit, 2) }}</td>
                                         <td class="ground_cost">{{ number_format($detail->ground_price_per_unit, 2) }}</td>
                                         <td>
-                                            <input type="number" value="{{ $detail->profit_margin }}" min="0" class="form-control profit_margin" />
+                                            <input type="number" value="{{ number_format($detail->profit_margin, 0) }}" min="0" class="form-control profit_margin" />
                                         </td>
                                         <td>{{ number_format($currentSellingPrice, 2) }}</td>
                                         <td class="selling_price">{{ number_format($detail->selling_price, 2) }}</td>
                                         <td>
-                                            <input type="number" value="{{ $detail->considerable_margin }}" min="1" class="form-control considerable_margin" />
+                                            <input type="number" value="{{ number_format($detail->considerable_margin, 0) }}" min="1" class="form-control considerable_margin" />
                                         </td>
                                         <td class="considerable_price">{{ number_format($detail->considerable_price, 2) }}</td>
                                         <!-- <td>
@@ -263,6 +263,7 @@
 <style>
     th, td {
         white-space: nowrap;
+        min-width: 100px;
     },
     .table {
         table-layout: fixed;
@@ -437,7 +438,7 @@
 
                     setTimeout(function() {
                         window.location.href = "{{ route('admin.shipping') }}";
-                    }, 2000);
+                    }, 500);
                 },
                 error: function(xhr, status, error) {
                     let response = Object.values(xhr.responseJSON.errors)[0][0];
@@ -605,7 +606,7 @@
 
                     setTimeout(function() {
                         window.location.href = "{{ route('admin.shipping') }}";
-                    }, 2000);
+                    }, 500);
                 },
                 error: function(xhr, status, error) {
                     console.error(xhr.responseText);

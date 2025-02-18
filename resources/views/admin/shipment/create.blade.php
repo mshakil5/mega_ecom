@@ -25,7 +25,7 @@
                                     <strong>Shipping Date:</strong> <span id="shippingDate">{{ \Carbon\Carbon::parse($shipping->shipping_date)->format('d-m-Y') }}</span><br>
                                     <strong>Shipping Name:</strong> <span id="shippingName">{{ $shipping->shipping_name }}</span><br>
                                     <strong>Total Product Quantity:</strong> <span id="totalQuantity">{{ $shipping->total_product_quantity }}</span><br>
-                                    <strong>Total Missing Product Quantity:</strong> <span id="totalMissingQuantity">{{ $shipping->total_missing_quantity }}</span>
+                                    <strong>Total Missing/Damaged Product Quantity:</strong> <span id="totalMissingQuantity">{{ $shipping->total_missing_quantity }}</span>
                                 </div>
 
                                 <div>
@@ -241,6 +241,7 @@
 <style>
     th, td {
         white-space: nowrap;
+        min-width: 100px;
     },
     .table {
         table-layout: fixed;
