@@ -24,6 +24,8 @@ use App\Models\Warehouse;
 use Carbon\Carbon;
 use App\Models\ShipmentDetails;
 use App\Models\StockTransferRequest;
+use App\Models\CompanyDetails;
+use PDF;
 
 class StockController extends Controller
 {
@@ -1266,5 +1268,20 @@ class StockController extends Controller
 
         return response()->json(['max_quantity' => $max_quantity]);
     }
+
+    public function generateInvoice($encoded_purchase_id)
+    {
+        $purchase_id = base64_decode($encoded_purchase_id);
+        $purchase = Purchase::with(['supplier', 'purchaseHistory.product'])->findOrFail($purchase_id);
+    
+        $company = CompanyDetails::select(
+            'company_name', 'company_logo', 'address1', 'email1', 'phone1', 'website', 
+            'company_reg_number', 'vat_number'
+        )->first();
+    
+        $pdf = PDF::loadView('admin.stock.purchase_invoice', compact('purchase', 'company'));
+        
+        return $pdf->stream('purchase_' . $purchase->id . '.pdf');
+    }    
 
 }

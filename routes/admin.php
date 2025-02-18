@@ -284,6 +284,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::post('/check-invoice', [StockController::class, 'checkInvoice'])->name('admin.check.invoice');
 
+    Route::get('/purchase/invoice/{encoded_purchase_id}', [StockController::class, 'generateInvoice'])->name('purchase.invoice');
+
     Route::get('/shipping', [ShippingController::class, 'shipping'])->name('admin.shipping');
 
     Route::post('/search-purchases', [ShippingController::class, 'searchPurchases']);

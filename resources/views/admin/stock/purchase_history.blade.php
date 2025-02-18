@@ -24,7 +24,7 @@
                                     <th>Due Amount</th>
                                     <!-- <th>Not Transferred Quantity</th>
                                     <th>Missing Quantity</th> -->
-                                    <th>Total Purchased Quantity/Shipped Quantity</th>
+                                    <th>Total Purchased Qty/Shipped Qty</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -84,6 +84,9 @@
                                     <td>
                                         <a class="btn btn-sm btn-info" onclick="showViewPurchaseModal({{ $purchase->id }})">
                                             <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ route('purchase.invoice', base64_encode($purchase->id)) }}" class="btn btn-sm btn-success" target="_blank">
+                                            <i class="fas fa-receipt"></i>
                                         </a>
                                         @php
                                             $totalShippedQuantity = $purchase->purchaseHistory->sum('shipped_quantity');
