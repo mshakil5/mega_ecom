@@ -90,6 +90,13 @@
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
+                                        <tfoot>
+                                            <tr>
+                                                <th colspan="5" class="text-right">Total Quantity:</th>
+                                                <th id="total-quantity">0</th>
+                                                <th></th>
+                                            </tr>
+                                        </tfoot>
                                     </table>
                                 </div>
                             </div>
@@ -620,7 +627,14 @@
             // ],
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
-            ]
+            ],
+            drawCallback: function(settings) {
+                var api = this.api();
+                var total = api.column(5, { page: 'current' }).data().reduce(function(a, b) {
+                    return parseFloat(a) + parseFloat(b);
+                }, 0);
+                $('#total-quantity').html(total);
+            }
         });
 
         var totalStockTable = $('#total-stock-table').DataTable({
