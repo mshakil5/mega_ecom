@@ -304,7 +304,13 @@
                                         <td>{{ $systemLoss->quantity }}</td>
                                         <td>{{ $systemLoss->size }}</td>
                                         <td>{{ $systemLoss->color }}</td>
-                                        <td>{{ $systemLoss->warehouse->name ?? '' }}</td>
+                                        <td>
+                                            @if ($systemLoss->shipment_detail_id)
+                                                <span class="text-danger">Before Stocking</span>
+                                            @else
+                                                {{ $systemLoss->warehouse->name ?? '' }}
+                                            @endif
+                                        </td>
                                         <td>{{ $systemLoss->user->name ?? '' }}</td>
                                         <td>{!! $systemLoss->reason !!}</td>
                                     </tr>
