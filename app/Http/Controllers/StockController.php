@@ -693,17 +693,6 @@ class StockController extends Controller
     public function getPurchaseHistory(Purchase $purchase)
     {
         $purchase = Purchase::with(['supplier', 'purchaseHistory.product'])
-            ->select([
-                'id', 
-                'purchase_date', 
-                'invoice', 
-                'supplier_id', 
-                'purchase_type', 
-                'ref', 
-                'net_amount', 
-                'paid_amount', 
-                'due_amount'
-            ])
             ->findOrFail($purchase->id);
 
         return response()->json($purchase);

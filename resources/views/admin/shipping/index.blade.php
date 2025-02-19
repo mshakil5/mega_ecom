@@ -500,7 +500,7 @@
         e.preventDefault();
 
         if (selectedPurchaseIds.length === 0) {
-            alert('Please select at least one purchase ID before submitting.');
+            alert('Please select at least one invoice before submitting.');
             return;
         }
 
