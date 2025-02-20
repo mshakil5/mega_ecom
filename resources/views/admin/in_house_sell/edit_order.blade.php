@@ -117,7 +117,7 @@
                                                     data-sizes="{{ json_encode($product->stockhistory->pluck('size')->unique()->values()) }}" 
                                                     data-colors="{{ json_encode($product->stockhistory->pluck('color')->unique()->values()) }}"
                                                     >
-                                                    {{ $product->name }} - {{ $product->product_code }}
+                                                    {{ $product->product_code }} -  {{ $product->name }}
                                                 </option>
                                             @endforeach
                                         </select>
@@ -316,13 +316,13 @@
 
                             </div>
                             <div class="card-footer">
-                                <button id="addBtn" class="btn btn-success" value="Create"><i class="fas fa-cart-plus"></i> @if ($order->order_type == 2)
-                                    Make Order
+                                <button id="addBtn" class="btn btn-success" value="Create"><i class="fas fa-cart-plus"></i> 
+                                    @if ($order->order_type == 2)
+                                        Make Order
                                     @else
                                         Update Order  
                                     @endif
-                                </button>  
-                                <button id="quotationBtn" class="btn btn-secondary d-none" value="Create"><i class="fas fa-file-invoice"></i> Make Quotation</button>  
+                                </button>
                                 <div id="loader" style="display: none;">
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                     Loading...
@@ -546,7 +546,6 @@
             }
 
             $(this).attr('disabled', true);
-            $('#quotationBtn').attr('disabled', true);
             $('#loader').show();
 
             var formData = $(this).serializeArray();
@@ -634,100 +633,9 @@
                 complete: function() {
                     $('#loader').hide();
                     $('#addBtn').attr('disabled', false);
-                    $('#quotationBtn').attr('disabled', false);
                 }
             });
         });
-
-        $('#quotationBtn').on('click', function(e) {
-            e.preventDefault();
-
-            $(this).attr('disabled', true);
-            $('#addBtn').attr('disabled', true);
-            $('#loader').show();
-
-            var formData = $(this).serializeArray();
-            var products = [];
-
-            formData.push({ name: 'purchase_date', value: $('#purchase_date').val() });
-            formData.push({ name: 'user_id', value: $('#user_id').val() });
-            formData.push({ name: 'payment_method', value: $('#payment_method').val() });
-            formData.push({ name: 'ref', value: $('#ref').val() });
-            formData.push({ name: 'remarks', value: $('#remarks').val() });
-            formData.push({ name: 'item_total_amount', value: $('#item_total_amount').val() });
-            formData.push({ name: 'vat', value: $('#vat').val() });
-            formData.push({ name: 'discount', value: $('#discount').val() });
-            formData.push({ name: 'net_amount', value: $('#net_amount').val() });
-
-            $('#productTable tbody tr').each(function() {
-                var productId = $(this).find('input[name="product_id[]"]').val();
-                var productName = $(this).find('input[name="product_name[]"]').val();
-                var quantity = parseFloat($(this).find('input.quantity').val()) || 0;
-                var unitPrice = parseFloat($(this).find('input.price_per_unit').val()) || 0;
-                var productSize = $(this).find('td:eq(2)').text();
-                var productColor = $(this).find('td:eq(3)').text();
-                var totalPrice = (quantity * unitPrice).toFixed(2);
-
-                products.push({
-                    product_id: productId,
-                    product_name: productName,
-                    quantity: quantity,
-                    unit_price: unitPrice,
-                    product_size: productSize,
-                    product_color: productColor,
-                    total_price: totalPrice
-                });
-            });
-
-            formData.push({ name: 'vat', value: $('#vat').val() });
-
-            formData = formData.filter(function(item) {
-                return item.name !== 'product_id' && item.name !== 'quantity' && item.name !== 'price_per_unit' && item.name !== 'size' && item.name !== 'color';
-            });
-
-            formData.push({ name: 'products', value: JSON.stringify(products) });
-
-            // console.log(formData);
-
-            $.ajax({
-                url: '/admin/make-quotation',
-                method: 'POST',
-                data: formData,
-                dataType: 'json',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(response) {
-                    swal({
-                        text: "Quotation created successfully",
-                        icon: "success",
-                        button: {
-                            text: "OK",
-                            className: "swal-button--confirm"
-                        }
-                    }).then(() => {
-                        window.location.href = "{{ route('allquotations') }}";
-                    });
-                },
-                error: function(xhr) {
-                    swal({
-                        text: xhr.responseJSON.message,
-                        icon: "error",
-                        button: {
-                            text: "OK",
-                            className: "swal-button--error"
-                        }
-                    })
-                    // console.log(xhr.responseText);
-                },
-                complete: function() {
-                    $('#loader').hide();
-                    $('#quotationBtn').attr('disabled', false);
-                    $('#addBtn').attr('disabled', false);
-                }
-            });
-        });
-
 
         $('#cash_payment').on('keyup', function() {
             paymentCheck($(this).val(), 'Cash Payment');
