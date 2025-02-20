@@ -525,21 +525,41 @@ class InHouseSellController extends Controller
                 ->sum('quantity');
 
             $quantityDifference = $product['quantity'] - $previousQty;
-            if ($quantityDifference > 0) {
+
+            if ($order->order_type != 2) {
+                if ($quantityDifference > 0) {
+                    $stock = Stock::where('product_id', $product['product_id'])
+                        ->where('size', $product['product_size'])
+                        ->where('color', $product['product_color'])
+                        ->where('warehouse_id', $request->warehouse_id)
+                        ->first();
+            
+                    if (!$stock || $stock->quantity < $quantityDifference) {
+                        $warehouse = Warehouse::find($request->warehouse_id);
+                        return response()->json([
+                            'message' => 'Not enough stock available for product ' . $product['product_name'] . 
+                                            ' with size ' . $product['product_size'] . 
+                                            ' and color ' . $product['product_color'] . 
+                                            ' in warehouse: ' . ($warehouse->name ?? '') . 
+                                            ' (Location: ' . ($warehouse->location ?? '') . ')',
+                        ], 422);
+                    }
+                }
+            } else {
                 $stock = Stock::where('product_id', $product['product_id'])
                     ->where('size', $product['product_size'])
                     ->where('color', $product['product_color'])
                     ->where('warehouse_id', $request->warehouse_id)
                     ->first();
         
-                if (!$stock || $stock->quantity < $quantityDifference) {
+                if (!$stock || $stock->quantity < $product['quantity']) {
                     $warehouse = Warehouse::find($request->warehouse_id);
                     return response()->json([
                         'message' => 'Not enough stock available for product ' . $product['product_name'] . 
-                                     ' with size ' . $product['product_size'] . 
-                                     ' and color ' . $product['product_color'] . 
-                                     ' in warehouse: ' . ($warehouse->name ?? '') . 
-                                     ' (Location: ' . ($warehouse->location ?? '') . ')',
+                                        ' with size ' . $product['product_size'] . 
+                                        ' and color ' . $product['product_color'] . 
+                                        ' in warehouse: ' . ($warehouse->name ?? '') . 
+                                        ' (Location: ' . ($warehouse->location ?? '') . ')',
                     ], 422);
                 }
             }
@@ -552,6 +572,86 @@ class InHouseSellController extends Controller
         }, 0);
 
         $netAmount = $itemTotalAmount - $validated['discount'] + $request->vat;
+
+        //Transaction Update
+        if ($order->order_type != 2) {
+            $transaction = Transaction::where('order_id', $order->id)->where('transaction_type', 'Current')->where('payment_type', 'Credit')->first();
+            if ($transaction) {
+                $transaction->date = $validated['purchase_date'];
+                $transaction->customer_id = $validated['user_id'];
+                $transaction->amount = $itemTotalAmount;
+                $transaction->vat_amount = $request->vat;
+                $transaction->discount = $validated['discount'] ?? 0.00;
+                $transaction->at_amount = $netAmount;
+                $transaction->save();
+            }
+
+            if ($request->cash_payment) {
+                $cashtransaction = Transaction::where('order_id', $order->id)->where('payment_type', 'Cash')->first();
+                if ($cashtransaction) {
+                    $cashtransaction->amount = $request->cash_payment;
+                    $cashtransaction->at_amount = $request->cash_payment;
+                    $cashtransaction->save();
+                }
+            }
+
+            if ($request->bank_payment) {
+                $banktransaction = Transaction::where('order_id', $order->id)->where('payment_type', 'Bank')->first();
+                if ($banktransaction) {
+                    $banktransaction->amount = $request->bank_payment;
+                    $banktransaction->at_amount = $request->bank_payment;
+                    $banktransaction->save();
+                }
+            }
+        } else {
+            $transaction = new Transaction();
+            $transaction->date = $validated['purchase_date'];
+            $transaction->customer_id = $validated['user_id'];
+            $transaction->order_id = $order->id;
+            $transaction->table_type = "Sales";
+            $transaction->ref = $validated['ref'];
+            $transaction->payment_type = "Credit";
+            $transaction->transaction_type = "Current";
+            $transaction->amount = $itemTotalAmount;
+            $transaction->vat_amount = $request->vat;
+            $transaction->discount = $validated['discount'] ?? 0.00;
+            $transaction->at_amount = $netAmount;
+            $transaction->save();
+            $transaction->tran_id = 'SL' . date('Ymd') . str_pad($transaction->id, 4, '0', STR_PAD_LEFT);
+            $transaction->save();
+    
+            if ($request->cash_payment) {
+                $cashtransaction = new Transaction();
+                $cashtransaction->date = $validated['purchase_date'];
+                $cashtransaction->customer_id = $validated['user_id'];
+                $cashtransaction->order_id = $order->id;
+                $cashtransaction->table_type = "Sales";
+                $cashtransaction->ref = $validated['ref'];
+                $cashtransaction->payment_type = "Cash";
+                $cashtransaction->transaction_type = "Received";
+                $cashtransaction->amount = $request->cash_payment;
+                $cashtransaction->at_amount = $request->cash_payment;
+                $cashtransaction->save();
+                $cashtransaction->tran_id = 'SL' . date('Ymd') . str_pad($cashtransaction->id, 4, '0', STR_PAD_LEFT);
+                $cashtransaction->save();
+            }
+    
+            if ($request->bank_payment) {
+                $banktransaction = new Transaction();
+                $banktransaction->date = $validated['purchase_date'];
+                $banktransaction->customer_id = $validated['user_id'];
+                $banktransaction->order_id = $order->id;
+                $banktransaction->table_type = "Sales";
+                $banktransaction->ref = $validated['ref'];
+                $banktransaction->payment_type = "Bank";
+                $banktransaction->transaction_type = "Received";
+                $banktransaction->amount = $request->bank_payment;
+                $banktransaction->at_amount = $request->bank_payment;
+                $banktransaction->save();
+                $banktransaction->tran_id = 'SL' . date('Ymd') . str_pad($banktransaction->id, 4, '0', STR_PAD_LEFT);
+                $banktransaction->save();
+            }
+        }
 
         $order->purchase_date = $validated['purchase_date'];
         $order->user_id = $validated['user_id'];
@@ -570,146 +670,7 @@ class InHouseSellController extends Controller
             $order->order_type = 1;
             $order->save();
         }
-        $order->save();
-
-        $transaction = Transaction::where('order_id', $order->id)->where('transaction_type', 'Current')->where('payment_type', 'Credit')->first();
-        if ($transaction) {
-            $transaction->date = $validated['purchase_date'];
-            $transaction->customer_id = $validated['user_id'];
-            $transaction->amount = $itemTotalAmount;
-            $transaction->vat_amount = $request->vat;
-            $transaction->discount = $validated['discount'] ?? 0.00;
-            $transaction->at_amount = $netAmount;
-            $transaction->save();
-        }
-
-        if ($request->cash_payment) {
-            $cashtransaction = Transaction::where('order_id', $order->id)->where('payment_type', 'Cash')->first();
-            if ($cashtransaction) {
-                $cashtransaction->amount = $request->cash_payment;
-                $cashtransaction->at_amount = $request->cash_payment;
-                $cashtransaction->save();
-            }
-        }
-
-        if ($request->bank_payment) {
-            $banktransaction = Transaction::where('order_id', $order->id)->where('payment_type', 'Bank')->first();
-            if ($banktransaction) {
-                $banktransaction->amount = $request->bank_payment;
-                $banktransaction->at_amount = $request->bank_payment;
-                $banktransaction->save();
-            }
-        }
-
-        $previousOrderDetails = OrderDetails::where('order_id', $order->id)->get();
-        $previousOrderDetailIds = $previousOrderDetails->pluck('id')->toArray();
-
-        foreach ($products as $product) {
-            $previousQty = $previousOrderDetails
-                ->where('product_id', $product['product_id'])
-                ->where('size', $product['product_size'])
-                ->where('color', $product['product_color'])
-                ->sum('quantity');
-
-            $orderDetail = new OrderDetails();
-            $orderDetail->order_id = $order->id;
-            $orderDetail->warehouse_id = $request->warehouse_id;
-            $orderDetail->product_id = $product['product_id'];
-            $orderDetail->quantity = $product['quantity'];
-            $orderDetail->size = $product['product_size'];
-            $orderDetail->color = $product['product_color'];
-            $orderDetail->price_per_unit = $product['unit_price'];
-            $orderDetail->total_price = $product['total_price'];
-            $orderDetail->vat_percent = $product['vat_percent'];
-            $orderDetail->total_vat = $product['total_vat'];
-            $orderDetail->total_price_with_vat = $product['total_price_with_vat'];
-            $orderDetail->status = 1;
-            $orderDetail->save();
-
-            $quantityDifference = $product['quantity'] - $previousQty;
-
-            $stock = Stock::where('product_id', $product['product_id'])
-                ->where('size', $product['product_size'])
-                ->where('color', $product['product_color'])
-                ->where('warehouse_id', $request->warehouse_id)
-                ->first();
-            if ($stock) {
-                $stock->quantity += $quantityDifference;
-                $stock->save();
-            } else {
-                $stock = new Stock();
-                $stock->warehouse_id = $request->warehouse_id;
-                $stock->product_id = $product['product_id'];
-                $stock->size = $product['product_size'];
-                $stock->color = $product['product_color'];
-                $stock->quantity = max(0, $quantityDifference);
-                $stock->created_by = auth()->user()->id;
-                $stock->save();
-            }
-
-            $requiredQty = abs($quantityDifference);
-
-            if ($quantityDifference != 0) {
-
-                $stockHistories = StockHistory::where('stock_id', $stock->id)
-                ->where('available_qty', '>', 0)
-                ->orderBy('created_at', 'asc')
-                ->get();
-
-                foreach ($stockHistories as $stockHistorie) {
-                    if ($requiredQty > 0) {
-                        if ($stockHistorie->available_qty >= $requiredQty) {
-                            $stockHistorie->available_qty -= $requiredQty;
-                            $stockHistorie->selling_qty += $requiredQty;
-                            $stockHistorie->save();
-                            $requiredQty = 0;
-                        } else {
-                            $requiredQty -= $stockHistorie->available_qty;
-                            $stockHistorie->selling_qty += $stockHistorie->available_qty;
-                            $stockHistorie->available_qty = 0;
-                            $stockHistorie->save();
-                        }
-                    } else {
-                        break;
-                    }
-                }
-            }
-        }
-
-        $removedOrderDetails = $previousOrderDetails->filter(function ($orderDetail) use ($products) {
-            return !in_array($orderDetail->product_id, array_column($products, 'product_id')) ||
-                   !in_array($orderDetail->size, array_column($products, 'product_size')) ||
-                   !in_array($orderDetail->color, array_column($products, 'product_color'));
-        });
-
-        foreach ($removedOrderDetails as $removedDetail) {
-            $stock = Stock::where('product_id', $removedDetail->product_id)
-                          ->where('size', $removedDetail->size)
-                          ->where('color', $removedDetail->color)
-                          ->where('warehouse_id', $removedDetail->warehouse_id)
-                          ->first();
-        
-            if ($stock) {
-                $stock->quantity += $removedDetail->quantity;
-                $stock->save();
-            }
-
-            $stockHistory = StockHistory::where('stock_id', $stock->id)
-                                        ->where('product_id', $removedDetail->product_id)
-                                        ->where('size', $removedDetail->size)
-                                        ->where('color', $removedDetail->color)
-                                        ->where('warehouse_id', $removedDetail->warehouse_id)
-                                        ->orderBy('created_at', 'asc')
-                                        ->first();
-        
-            if ($stockHistory) {
-                $stockHistory->available_qty += $removedDetail->quantity;
-                $stockHistory->selling_qty -= $removedDetail->quantity;
-                $stockHistory->save();
-            }
-        }
-
-        OrderDetails::whereIn('id', $previousOrderDetailIds)->delete();
+        $order->save();    
 
         $encoded_order_id = base64_encode($order->id);
         $pdfUrl = route('in-house-sell.generate-pdf', ['encoded_order_id' => $encoded_order_id]);
