@@ -219,6 +219,7 @@
                                                 <td>{{ $detail->product->product_code }} - {{ $detail->product->name }}
                                                     <input type="hidden" name="product_id[]" value="{{ $detail->product_id }}">
                                                     <input type="hidden" name="product_name[]" value="{{ $detail->product->name }}">
+                                                    <input type="hidden" name="order_details_id[]" value="{{ $detail->id }}">
                                                 </td>
                                                 <td><input type="number" class="form-control quantity" value="{{ $detail->quantity }}" min="1" name="" /></td>
                                                 <td>{{ $detail->size }}</td>
@@ -566,6 +567,7 @@
             formData.push({ name: 'id', value: $('#orderId').val() });
 
             $('#productTable tbody tr').each(function() {
+                var order_details_id = $(this).find('input[name="order_details_id[]"]').val();
                 var productId = $(this).find('input[name="product_id[]"]').val();
                 var productName = $(this).find('input[name="product_name[]"]').val();
                 var quantity = parseFloat($(this).find('input.quantity').val()) || 0;
@@ -578,6 +580,7 @@
                 var totalPrice = (quantity * unitPrice).toFixed(2);
 
                 products.push({
+                    order_details_id: order_details_id,
                     product_id: productId,
                     product_name: productName,
                     quantity: quantity,
