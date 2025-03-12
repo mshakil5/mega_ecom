@@ -865,7 +865,7 @@ class InHouseSellController extends Controller
             $order->order_type = 1;
             $order->save();
         }
-        // $order->save();    
+        $order->save();    
 
         $encoded_order_id = base64_encode($order->id);
         $pdfUrl = route('in-house-sell.generate-pdf', ['encoded_order_id' => $encoded_order_id]);
