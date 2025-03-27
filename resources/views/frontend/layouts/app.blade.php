@@ -161,6 +161,8 @@
 
     <script src="{{ asset('frontend/js/bootstrap.bundle.min.js') }}"></script>
 
+    <script src="{{ asset('frontend/js/bootstrap.min.js') }}"></script>
+
     <script src="{{ asset('frontend/js/jquery.hoverIntent.min.js') }}"></script>
 
     <script src="{{ asset('frontend/js/jquery.waypoints.min.js') }}"></script>

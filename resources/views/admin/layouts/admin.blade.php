@@ -32,6 +32,8 @@
   <link rel="stylesheet" href="{{ asset('assets/admin/datatables-buttons/css/buttons.bootstrap4.min.css')}}">
   <link rel="stylesheet" href="{{ asset('assets/admin/select2/select2.min.css')}}">
   <link rel="stylesheet" href="{{ asset('assets/admin/summernote/summernote-bs4.min.css')}}">
+  <link rel="stylesheet" href="{{ asset('assets/admin/codemirror/codemirror.css')}}">
+  <link rel="stylesheet" href="{{ asset('assets/admin/codemirror/theme/monokai.css')}}">
   <link rel="stylesheet" href="{{ asset('assets/admin/css/customize.css')}}">
 
   <style>
@@ -164,7 +166,11 @@
 <script src="{{ asset('assets/admin/js/sweetalert.min.js')}}"></script>
 <script src="{{ asset('assets/admin/select2/select2.min.js')}}"></script>
 <script src="{{ asset('assets/admin/moment/moment.min.js')}}"></script>
-<script src="{{ asset('assets/admin/summernote/summernote.min.js')}}"></script>
+<script src="{{ asset('assets/admin/summernote/summernote-bs4.min.js')}}"></script>
+<script src="{{ asset('assets/admin/codemirror/codemirror.js')}}"></script>
+<script src="{{ asset('assets/admin/codemirror/mode/css/css.js')}}"></script>
+<script src="{{ asset('assets/admin/codemirror/mode/htmlmixed/htmlmixed.js')}}"></script>
+<script src="{{ asset('assets/admin/codemirror/mode/php/php.js')}}"></script>
 
 @yield('script')
 
