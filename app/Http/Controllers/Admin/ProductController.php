@@ -310,8 +310,8 @@ class ProductController extends Controller
         }
 
         $product->name = $request->name;
-        $product->slug = Str::slug($request->name);
-        $product->product_code = $request->product_code;
+        // $product->slug = Str::slug($request->name);
+        // $product->product_code = $request->product_code;
         $product->price = $request->price;
         $product->sku = $request->sku;
         $product->short_description = $request->short_description;
