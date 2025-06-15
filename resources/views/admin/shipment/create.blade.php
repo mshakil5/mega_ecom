@@ -39,7 +39,7 @@
                                 </div>
                             </div>
 
-                            <div class="table-responsive" style="max-height: 500px; overflow-y: auto; overflow-x: auto;">
+                            <div class="table-responsive" style="max-height: 550px; overflow-y: auto; overflow-x: auto;">
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
@@ -241,7 +241,7 @@
 <style>
     th, td {
         white-space: nowrap;
-        min-width: 100px;
+        min-width: 120px;
     },
     .table {
         table-layout: fixed;

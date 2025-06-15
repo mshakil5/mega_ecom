@@ -39,7 +39,7 @@
                                 </div>
                             </div>
 
-                            <div class="table-responsive" style="max-height: 500px; overflow-y: auto; overflow-x: auto;">
+                            <div class="table-responsive" style="max-height: 550px; overflow-y: auto; overflow-x: auto;">
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
@@ -121,8 +121,11 @@
                                         </td>
                                         <td>{{ number_format($detail->price_per_unit, 2) }}</td>
                                         <td class="ground_cost">{{ number_format($detail->ground_price_per_unit, 2) }}</td>
-                                        <td>
+                                        {{-- <td>
                                             <input type="number" value="{{ number_format($detail->profit_margin, 0) }}" min="0" class="form-control profit_margin" />
+                                        </td> --}}
+                                        <td>
+                                            <input type="number" value="{{ (int) $detail->profit_margin }}" min="0" class="form-control profit_margin"/>
                                         </td>
                                         <td>{{ number_format($currentSellingPrice, 2) }}</td>
                                         <td class="selling_price">{{ number_format($detail->selling_price, 2) }}</td>
@@ -263,7 +266,7 @@
 <style>
     th, td {
         white-space: nowrap;
-        min-width: 100px;
+        min-width: 120px;
     },
     .table {
         table-layout: fixed;

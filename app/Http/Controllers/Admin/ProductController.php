@@ -172,10 +172,10 @@ class ProductController extends Controller
             'product_model_id' => 'nullable|exists:product_models,id',
             'unit_id' => 'nullable|exists:units,id',
             'group_id' => 'nullable|exists:groups,id',
-            'feature_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'feature_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             // 'color_id' => 'nullable|array',
             // 'color_id.*' => 'exists:colors,id',
-            'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
         ]);
 
         $imagePath = null;
