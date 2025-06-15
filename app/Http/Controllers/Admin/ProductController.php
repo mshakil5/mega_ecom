@@ -234,6 +234,9 @@ class ProductController extends Controller
 
         if (isset($request->color_id) && is_array($request->color_id)) {
             foreach ($request->color_id as $key => $colorId) {
+                if (is_null($colorId)) {
+                    continue;
+                }
                 $productColor = new ProductColor();
                 $productColor->product_id = $product->id;
                 $productColor->color_id = $colorId;

@@ -126,6 +126,7 @@
                                     <td>Subtotal</td>
                                     <td style="text-align:right">£{{ number_format($purchase->total_amount, 2) }}</td>
                                 </tr>
+                                @if ($purchase->discount > 0)          
                                 <tr>
                                     <td style="width: 20%">&nbsp;</td>
                                     <td style="width: 25%">&nbsp;</td>
@@ -133,7 +134,9 @@
                                     <td>Discount</td>
                                     <td style="text-align:right">£{{ number_format($purchase->discount, 2) }}</td>
                                 </tr>
+                                @endif
 
+                                @if ($purchase->total_vat_amount > 0)
                                 <tr>
                                     <td>&nbsp;</td>
                                     <td>&nbsp;</td>
@@ -141,6 +144,7 @@
                                     <td>Vat</td>
                                     <td style="text-align:right">£{{ number_format($purchase->total_vat_amount, 2) }}</td>
                                 </tr>
+                                @endif
 
                                 <tr>
                                     <td>&nbsp;</td>
@@ -149,7 +153,7 @@
                                     <td>Net Amount</td>
                                     <td style="text-align:right">£{{ number_format($purchase->net_amount, 2) }}</td>
                                 </tr>
-
+                                @if ($purchase->paid_amount > 0)                           
                                 <tr>
                                     <td>&nbsp;</td>
                                     <td>&nbsp;</td>
@@ -157,7 +161,9 @@
                                     <td>Paid Amount</td>
                                     <td style="text-align:right">£{{ number_format($purchase->paid_amount, 2) }}</td>
                                 </tr>
+                                @endif
                                 
+                                @if ($purchase->due_amount > 0)               
                                 <tr>
                                     <td>&nbsp;</td>
                                     <td>&nbsp;</td>
@@ -165,6 +171,7 @@
                                     <td>Due Amount</td>
                                     <td style="text-align:right">£{{ number_format($purchase->due_amount, 2) }}</td>
                                 </tr>
+                                @endif
 
                             </tbody>
                             <tfoot style="border :0px solid #dee2e6 ; width: 100%; ">

@@ -173,7 +173,7 @@
                                 <div class="col-sm-1">
                                     <label for="addProductBtn">Action</label>
                                     <div class="col-auto d-flex align-items-end">
-                                        <button type="button" id="addProductBtn" class="btn btn-secondary">Add</button>
+                                        <button type="button" id="addProductBtn" class="btn btn-success">Add</button>
                                      </div>
                                 </div>
 
@@ -435,11 +435,11 @@
                 <td>
                     ${productCode} ${productName} <br>
                     <span>
-                        Profit Margin: <strong>${Math.round(profitMargin)}%</strong>
+                      Margin: <strong>${Math.round(profitMargin)}%</strong>
                     </span> <br>
                     <span>Ground Price: <strong>${groundPrice.toFixed(2)}</strong></span> <br>
                     <span>
-                        Minimum Price: <strong>${considerablePrice.toFixed(2)}</strong> 
+                        Min Price: <strong>${considerablePrice.toFixed(2)}</strong> 
                         (<strong>${Math.round(considerableMargin)}%</strong>)
                     </span>
                     <input type="hidden" name="product_id[]" value="${productId}">
@@ -612,7 +612,7 @@
                 },
                 success: function(response) {
                     swal({
-                        text: "Success",
+                        text: "Order updated successfully",
                         icon: "success",
                         button: {
                             text: "OK",

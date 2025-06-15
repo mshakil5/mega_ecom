@@ -23,6 +23,7 @@
                                     <label for="price">Product Code <span style="color: red;">*</span></label>
                                     <select class="form-control" id="product_code" name="product_code">
                                         <option value="">Select Season, system will create code based on Season</option>
+                                        <option value="All">All Season</option>
                                         <option value="Spring">Spring</option>
                                         <option value="Summer">Summer</option>
                                         <option value="Autumn">Autumn</option>

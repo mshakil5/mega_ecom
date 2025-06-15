@@ -29,7 +29,13 @@
                                 </div>
 
                                 <div>
-                                    <strong>Select Warehouse: <span class="text-danger">*</span></strong>
+                                    <div>
+                                      <strong>Select Warehouse:<span class="text-danger">*</span> 
+                                        <span class="badge badge-success float-right" style="cursor:pointer;" data-toggle="modal" data-target="#addWarehouseModal">
+                                            + Add New
+                                        </span>
+                                      </strong>
+                                    </div>
                                     <select id="warehouse_id" class="form-control">
                                         <option value="">Select Warehouse</option>
                                         @foreach($warehouses as $warehouse)
@@ -238,6 +244,8 @@
     </div>
 </section>
 
+@include('admin.inc.modal.warehouse_modal')
+
 <style>
     th, td {
         white-space: nowrap;
@@ -252,6 +260,68 @@
 @endsection
 
 @section('script')
+
+<script>
+    $('#saveWarehouseBtn').on('click', function () {
+
+      let warehouseName = $('#warehouse_name').val()
+      let warehouseLocation = $('#warehouse_location').val()
+
+        if (!warehouseName) {
+            $(".ermsg").html(`
+                <div class='alert alert-danger'>
+                    <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
+                    <b>Please enter warehouse name.</b>
+                </div>
+            `).show();
+            pagetop();
+            return;
+        }
+
+        if (!warehouseLocation) {
+            $(".ermsg").html(`
+                <div class='alert alert-danger'>
+                    <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
+                    <b>Please enter warehouse location.</b>
+                </div>
+            `).show();
+            pagetop();
+            return;
+        }
+
+        var formData = {
+            name: warehouseName,
+            location: warehouseLocation,
+            _token: '{{ csrf_token() }}'
+        };
+
+        $.ajax({
+            url: '/admin/warehouse',
+            method: 'POST',
+            data: formData,
+            success: function (response) {
+                console.log(response.data);
+
+                $('#addWarehouseModal').modal('hide');
+                $('#newWarehouseForm')[0].reset();
+
+                let newOption = $('<option></option>')
+                    .val(response.data.id)
+                    .text(response.data.name + ' - ' + response.data.location)
+                    .prop('selected', true);
+
+                $('#warehouse_id').append(newOption);
+
+                $(".ermsg").html(response.message).show(); // already HTML
+                pagetop();
+            },
+            error: function () {
+                alert('Something went wrong!');
+            }
+        });
+    });
+</script>
+
 
 <script>
     const addedExpenses = new Set();

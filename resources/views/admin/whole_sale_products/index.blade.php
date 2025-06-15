@@ -214,7 +214,7 @@
                 <form id="newSizeForm">
                     <div class="col-sm-12">
                         <div class="form-group">
-                            <label for="size_name">Size</label>
+                            <label for="size_name">Size <span style="color: red;">*</span></label>
                             <input type="text" class="form-control" id="size_name" name="size_name" placeholder="Enter size">
                         </div>
                     </div>
@@ -227,8 +227,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="saveSizeBtn">Save Size</button>
+                <button type="button" class="btn btn-success" id="saveSizeBtn">Save Size</button>
             </div>
         </div>
     </div>
@@ -247,11 +246,11 @@
             <div class="modal-body">
                 <form id="newColorForm">
                     <div class="form-group">
-                        <label for="color_name">Color</label>
+                        <label for="color_name">Color <span style="color: red;">*</span></label>
                         <input type="text" class="form-control" id="color_name" name="color_name" placeholder="Enter color">
                     </div>
                     <div class="form-group">
-                        <label for="color_code">Color Code</label>
+                        <label for="color_code">Color Code <span style="color: red;">*</span></label>
                         <input type="color" class="form-control" id="color_code" name="color_code" placeholder="Enter color code">
                     </div>
                     <div class="form-group">
@@ -261,8 +260,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="saveColorBtn">Save Color</button>
+                <button type="button" class="btn btn-success" id="saveColorBtn">Save Color</button>
             </div>
         </div>
     </div>

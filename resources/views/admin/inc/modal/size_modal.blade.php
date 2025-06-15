@@ -12,7 +12,7 @@
                 <form id="newSizeForm">
                     <div class="col-sm-12">
                         <div class="form-group">
-                            <label for="size_name">Size</label>
+                            <label for="size_name">Size <span style="color: red;">*</span></label>
                             <input type="text" class="form-control" id="size_name" name="size_name" placeholder="Enter size">
                         </div>
                     </div>
@@ -25,8 +25,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="saveSizeBtn">Save Size</button>
+                <button type="button" class="btn btn-success" id="saveSizeBtn">Save Size</button>
             </div>
         </div>
     </div>

@@ -41,13 +41,13 @@
                                     </div>
                                     <div class="col-sm-6">
                                         <div class="form-group">
-                                            <label>Operator Name <span style="color: red;">*</span></label>
+                                            <label>Operator Name</label>
                                             <input type="text" class="form-control" id="operator_name" name="operator_name" placeholder="Enter operator name">
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
                                         <div class="form-group">
-                                            <label>Operator Phone <span style="color: red;">*</span></label>
+                                            <label>Operator Phone</label>
                                             <input type="number" class="form-control" id="operator_phone" name="operator_phone" placeholder="Enter operator phone">
                                         </div>
                                     </div>

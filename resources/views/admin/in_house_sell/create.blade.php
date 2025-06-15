@@ -23,21 +23,17 @@
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="supplier_id">Wholesaler <span class="text-danger">*</span></label>
+                                        <label for="supplier_id">Wholesaler <span class="text-danger">*</span>  
+                                          <span class="badge badge-success float-right" style="cursor:pointer;" data-toggle="modal" data-target="#newWholeSalerModal">
+                                              + Add New
+                                          </span>
+                                        </label>
                                         <select class="form-control" id="user_id" name="user_id">
                                             <option value="" >Select...</option>
                                             @foreach($customers as $customer)
                                                 <option value="{{ $customer->id }}">{{ $customer->name }}</option>
                                             @endforeach
                                         </select>
-                                    </div>
-                                </div>
-                                <div class="col-sm-1">
-                                    <div class="form-group">
-                                        <label>New</label>
-                                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#newWholeSalerModal">
-                                            <i class="fas fa-plus"></i> Add
-                                        </button>
                                     </div>
                                 </div>
                                 
@@ -56,6 +52,7 @@
                                     <label for="">Invoice<span style="color: red;">*</span></label>
                                     <select class="form-control" id="invoice" name="invoice">
                                         <option value="">Select Season, system will create code based on Season</option>
+                                        <option value="All">All Season</option>
                                         <option value="Spring">Spring</option>
                                         <option value="Summer">Summer</option>
                                         <option value="Autumn">Autumn</option>
@@ -75,7 +72,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-sm-1">
+                                <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="ref">Ref</label>
                                         <input type="text" class="form-control" id="ref" name="ref" placeholder="Enter reference">
@@ -173,7 +170,7 @@
                                 <div class="col-sm-1">
                                     <label for="addProductBtn">Action</label>
                                     <div class="col-auto d-flex align-items-end">
-                                        <button type="button" id="addProductBtn" class="btn btn-secondary">Add</button>
+                                        <button type="button" id="addProductBtn" class="btn btn-success">Add</button>
                                      </div>
                                 </div>
 
@@ -424,11 +421,11 @@
                 <td>
                     ${productCode} - ${productName} <br>
                     <span>
-                        Profit Margin: <strong>${Math.round(profitMargin)}%</strong>
+                      Margin: <strong>${Math.round(profitMargin)}%</strong>
                     </span> <br>
                     <span>Ground Price: <strong>${groundPrice.toFixed(2)}</strong></span> <br>
                     <span>
-                        Minimum Price: <strong>${considerablePrice.toFixed(2)}</strong> 
+                        Min Price: <strong>${considerablePrice.toFixed(2)}</strong> 
                         (<strong>${Math.round(considerableMargin)}%</strong>)
                     </span>
                     <input type="hidden" name="product_id[]" value="${productId}">
@@ -597,7 +594,7 @@
                 },
                 success: function(response) {
                     swal({
-                        text: "Created Successfully",
+                        text: "Sold Successfully",
                         icon: "success",
                         button: {
                             text: "OK",

@@ -196,8 +196,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="saveSizeBtn">Save Size</button>
+                <button type="button" class="btn btn-success" id="saveSizeBtn">Save Size</button>
             </div>
         </div>
     </div>
@@ -230,8 +229,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="saveColorBtn">Save Color</button>
+                <button type="button" class="btn btn-success" id="saveColorBtn">Save Color</button>
             </div>
         </div>
     </div>

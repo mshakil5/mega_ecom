@@ -222,7 +222,7 @@
               <div class="col-8">
                 @if($order->order_type === 2)
                     <a href="{{ route('order-edit', ['orderId' => $order->id]) }}" class="btn btn-success">
-                        <i class="far fa-credit-card"></i> Create Order
+                        <i class="far fa-credit-card"></i> Make Order
                     </a>
                 @endif
                 

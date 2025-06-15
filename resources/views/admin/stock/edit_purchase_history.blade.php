@@ -85,11 +85,13 @@
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="product_id">Choose Product <span class="text-danger">*</span></label>
+                                        <label for="product_id">Choose Product <span class="text-danger">*</span>
+                                          <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#newProductModal">Add New</span>
+                                        </label>
                                         <select class="form-control" id="product_id" name="product_id">
                                             <option value="">Select...</option>
                                             @foreach($products as $product)
-                                                <option value="{{ $product->id }}" data-name="{{ $product->name }}">{{ $product->name }}</option>
+                                                <option value="{{ $product->id }}" data-name="{{ $product->name }}">{{ $product->product_code }} - {{ $product->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -133,7 +135,7 @@
                                 <div class="col-sm-1">
                                     <label for="addProductBtn">Action</label>
                                     <div class="col-auto d-flex align-items-end">
-                                        <button type="button" id="addProductBtn" class="btn btn-secondary">Add</button>
+                                        <button type="button" id="addProductBtn" class="btn btn-success">Add</button>
                                      </div>
                                 </div>
 
@@ -269,7 +271,7 @@
 
                             </div>
                             <div class="card-footer">
-                                <button type="submit" id="addBtn" class="btn btn-secondary" value="Create"><i class="fas fa-sync-alt"></i> Update</button>    
+                                <button type="submit" id="addBtn" class="btn btn-success" value="Create"><i class="fas fa-sync-alt"></i> Update Purchase</button>    
                             </div>
                         </form>
                     </div>
@@ -282,6 +284,7 @@
 @include('admin.inc.modal.supplier_modal')
 @include('admin.inc.modal.size_modal')
 @include('admin.inc.modal.color_modal')
+@include('admin.inc.modal.product_create')
 
 @endsection
 

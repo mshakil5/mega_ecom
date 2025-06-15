@@ -39,6 +39,7 @@
                                 <label for="price">Product Code <span style="color: red;">*</span></label>
                                 <select class="form-control" id="product_code" name="product_code">
                                     <option value="">Select Season, system will create code based on Season</option>
+                                    <option value="All">All Season</option>
                                     <option value="Spring">Spring</option>
                                     <option value="Summer">Summer</option>
                                     <option value="Autumn">Autumn</option>
@@ -216,7 +217,7 @@
                     </form>
                 </div>
                 <div class="card-footer">
-                    <button type="submit" id="productaddBtn" class="btn btn-secondary" value="Create">Create</button>
+                    <button type="submit" id="productaddBtn" class="btn btn-success" value="Create">Create</button>
                     <div id="loader" style="display: none;">
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                         Loading...

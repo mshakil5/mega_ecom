@@ -21,23 +21,17 @@
                                         <input type="date" class="form-control" id="purchase_date" name="purchase_date" placeholder="Enter purchase date">
                                     </div>
                                 </div>
-                                <div class="col-sm-2">
+                                <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="supplier_id">Select Supplier <span class="text-danger">*</span></label>
+                                        <label for="supplier_id">Select Supplier <span class="text-danger">*</span>
+                                          <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#newSupplierModal">Add New</span>
+                                        </label>
                                         <select class="form-control" id="supplier_id" name="supplier_id">
                                             <option value="" >Select...</option>
                                             @foreach($suppliers as $supplier)
                                                 <option value="{{ $supplier->id }}" data-balance="{{ $supplier->balance }}">{{ $supplier->name }}</option>
                                             @endforeach
                                         </select>
-                                    </div>
-                                </div>
-                                <div class="col-sm-1">
-                                    <div class="form-group">
-                                        <label>New</label>
-                                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#newSupplierModal">
-                                            <i class="fas fa-plus"></i> Add
-                                        </button>
                                     </div>
                                 </div>
                                 <div class="col-sm-3 d-none">
@@ -67,7 +61,7 @@
                                 <div class="form-group col-sm-2">
                                     <label for="season">Season<span style="color: red;">*</span></label>
                                     <select class="form-control" id="season" name="season">
-                                        <option value="">Select Season</option>
+                                        <option value="All">All Season</option>
                                         <option value="Spring">Spring</option>
                                         <option value="Summer">Summer</option>
                                         <option value="Autumn">Autumn</option>
@@ -157,7 +151,7 @@
                                 <div class="col-sm-1">
                                     <label for="addProductBtn">Action</label>
                                     <div class="col-auto d-flex align-items-end">
-                                        <button type="button" id="addProductBtn" class="btn btn-secondary">Add</button>
+                                        <button type="button" id="addProductBtn" class="btn btn-success">Add</button>
                                      </div>
                                 </div>
                                 <div class="col-sm-12 mt-1">
@@ -280,7 +274,7 @@
 
                             </div>
                             <div class="card-footer">
-                                <button type="submit" id="addBtn" class="btn btn-secondary" value="Create"><i class="fas fa-plus"></i> Create</button>
+                                <button type="submit" id="addBtn" class="btn btn-success" value="Create"><i class="fas fa-plus"></i> Create Purchase</button>
                                 <div id="loader" style="display: none;">
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                     Loading...

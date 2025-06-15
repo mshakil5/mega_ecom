@@ -154,7 +154,7 @@
                         <label for="shipping_date">Shipping Date <span class="text-danger">*</span></label>
                         <input type="date" class="form-control" id="shipping_date" name="shipping_date" required value="{{ date('Y-m-d') }}">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group mb-5">
                         <label for="purchase_ids">Select Invoices <span class="text-danger">*</span></label>
                         <select class="form-control select2" id="purchase_ids" name="purchase_ids[]" multiple="multiple" style="width: 100%;">
                             @foreach($availablePurchases as $purchase)
@@ -162,7 +162,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-secondary" id="createShipmentBtn">Create Shipping</button>
+                    <button type="submit" class="btn btn-success" id="createShipmentBtn">Create Shipping</button>
                 </form>
             </div>
         </div>
