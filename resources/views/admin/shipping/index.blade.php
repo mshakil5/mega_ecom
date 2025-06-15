@@ -100,6 +100,11 @@
                                         @endif
                                     </td>
                                     <td>
+
+                                      @php
+                                          $purchaseIdsArray = json_decode($shipping->purchase_ids ?? '[]', true);
+                                      @endphp
+
                                         @if(!$shipping->shipment) 
                                            <button class="btn btn-warning btn-sm"
                                             onclick="editShipment(this)"
@@ -107,7 +112,7 @@
                                             data-shipping-id="{{ $shipping->shipping_id }}"
                                             data-shipping-name="{{ $shipping->shipping_name }}"
                                             data-shipping-date="{{ $shipping->shipping_date }}"
-                                            data-purchase-ids="{{ $shipping->purchase_ids }}"
+                                            data-purchase-ids='@json($purchaseIdsArray)'
                                             >
                                             Edit
                                         </button>  @endif
@@ -150,14 +155,12 @@
                         <input type="date" class="form-control" id="shipping_date" name="shipping_date" required value="{{ date('Y-m-d') }}">
                     </div>
                     <div class="form-group">
-                        <label for="purchase_search">Search Invoice</label>
-                        <input type="text" class="form-control" id="purchase_search" placeholder="Search by Invoice" oninput="searchPurchases()">
-                        <div id="purchase_results" class="list-group mt-2" style="max-height: 200px; overflow-y: auto; display: none;"></div>
-                    </div>
-                    <input type="hidden" id="selected_purchase_ids" name="purchase_ids">
-                    <div class="form-group">
-                        <label>Selected Invoices <span class="text-danger">*</span></label>
-                        <ul id="selected_invoices" class="list-group mt-2"></ul>
+                        <label for="purchase_ids">Select Invoices <span class="text-danger">*</span></label>
+                        <select class="form-control select2" id="purchase_ids" name="purchase_ids[]" multiple="multiple" style="width: 100%;">
+                            @foreach($availablePurchases as $purchase)
+                                <option value="{{ $purchase->id }}">{{ $purchase->invoice }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <button type="submit" class="btn btn-secondary" id="createShipmentBtn">Create Shipping</button>
                 </form>
@@ -300,26 +303,14 @@
         const shippingId = $(button).data('shipping-id');
         const shippingName = $(button).data('shipping-name');
         const shippingDate = $(button).data('shipping-date');
-        const purchaseIds = $(button).data('purchase-ids');
+        const purchaseIds = $(button).data('purchase-ids'); 
 
         $('#shipment_id').val(id);
         $('#shipping_id').val(shippingId);
         $('#shipping_name').val(shippingName);
         $('#shipping_date').val(shippingDate);
-
-        selectedInvoices = [];
-        selectedPurchaseIds = [];
-        $('#selected_invoices').empty();
-
-        purchaseIds.forEach(function(purchaseId) {
-            const purchase = allPurchases.find(p => p.id == purchaseId);
-            if (purchase) {
-                selectedInvoices.push(purchase.invoice);
-                selectedPurchaseIds.push(purchase.id);
-            }
-        });
-
-        updateSelectedInvoices();
+        
+        $('#purchase_ids').val(purchaseIds).trigger('change');
 
         $('#createShipmentModalLabel').text('Update Shipping');
         $('#createShipmentBtn').text('Update Shipping');
@@ -354,6 +345,11 @@
 
 <script>
     $(document).ready(function() {
+
+        $('.select2').select2({
+            placeholder: "Select invoices",
+            allowClear: true
+        });
 
         $('#previousShipmentBtn').on('click', function() {
             $('#createShipmentModal').modal('hide');
@@ -499,7 +495,8 @@
     $('#shipmentForm').on('submit', function(e) {
         e.preventDefault();
 
-        if (selectedPurchaseIds.length === 0) {
+        const selectedPurchases = $('#purchase_ids').val();
+        if (!selectedPurchases || selectedPurchases.length === 0) {
             alert('Please select at least one invoice before submitting.');
             return;
         }
@@ -510,17 +507,14 @@
             shipping_id: $('#shipping_id').val(),
             shipping_name: $('#shipping_name').val(),
             shipping_date: $('#shipping_date').val(),
-            purchase_ids: selectedPurchaseIds,
+            purchase_ids: selectedPurchases,
             _token: csrfToken
         };
 
         const shipmentId = $('#shipment_id').val();
 
         if (shipmentId) {
-
             formData.id = shipmentId;
-
-
             $.ajax({
                 url: '/admin/update-shipment/' + shipmentId,
                 method: 'PUT',
@@ -528,9 +522,7 @@
                 success: function(response) {
                     $('#createShipmentModal').modal('hide');
                     $('#shipmentForm')[0].reset();
-                    selectedInvoices = [];
-                    selectedPurchaseIds = [];
-                    updateSelectedInvoices();
+                    $('.select2').val(null).trigger('change');
 
                     $(".ermsg").html(`
                         <div class='alert alert-success'>
@@ -557,9 +549,7 @@
                 success: function(response) {
                     $('#createShipmentModal').modal('hide');
                     $('#shipmentForm')[0].reset();
-                    selectedInvoices = [];
-                    selectedPurchaseIds = [];
-                    updateSelectedInvoices();
+                    $('.select2').val(null).trigger('change');
 
                     $(".ermsg").html(`
                         <div class='alert alert-success'>

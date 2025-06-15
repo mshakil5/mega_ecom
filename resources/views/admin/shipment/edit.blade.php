@@ -57,7 +57,7 @@
                                         <th>Unit Price</th>
                                         <th>Ground Price</th>
                                         <th>Margin(%)</th>
-                                        <th>Selling Price</th>
+                                        <th>Selling Price <br> <small>(previous)</small> </th>
                                         <th>New Price</th>
                                         <th>Min Margin(%)</th>
                                         <th>Min Price</th>

@@ -17,6 +17,13 @@ class ShippingController extends Controller
     public function shipping()
     {
         $data = Shipping::with(['shipment.shipmentDetails.supplier', 'shipment.shipmentDetails.product'])->orderBy('id', 'DESC')->get();
+
+        $availablePurchases = Purchase::whereDoesntHave('purchaseHistory', function($query) {
+              $query->select('purchase_id')
+                    ->groupBy('purchase_id')
+                    ->havingRaw('SUM(quantity) = SUM(shipped_quantity)');
+          })->get();
+
         $purchases = Purchase::select('id', 'invoice')->latest()->get();
         foreach ($data as $shipment) {
             $purchaseIds = json_decode($shipment->purchase_ids);
@@ -31,7 +38,7 @@ class ShippingController extends Controller
             }
         }
 
-        return view('admin.shipping.index', compact('data', 'purchases'));
+        return view('admin.shipping.index', compact('data', 'purchases', 'availablePurchases'));
     }
 
     public function searchPurchases(Request $request)

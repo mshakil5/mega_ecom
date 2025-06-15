@@ -721,6 +721,7 @@
                 colorSelect.append(`<option value="${color}">${color}</option>`);
             });
 
+          if (selectedProductId && warehouseId) {
             $.ajax({
                 url: '/admin/get-product-stock',
                 type: 'POST',
@@ -751,6 +752,7 @@
                     });
                 }
             });
+          }
         });
 
         $('#size, #color').change(function() {
@@ -781,6 +783,7 @@
             var selectedSize = $('#size').val() || '';
             var selectedColor = $('#color').val() || '';
 
+          if (selectedProductId && warehouseId) {
             $.ajax({
                 url: '/admin/get-product-stock',
                 type: 'POST',
@@ -813,6 +816,7 @@
                     });
                 }
             });
+          }
         });
     });
 </script>
