@@ -56,6 +56,7 @@ use App\Http\Controllers\Admin\ShippingController;
 use App\Http\Controllers\Admin\ShipmentController;
 use App\Http\Controllers\Admin\StockTransferRequestController;
 use App\Http\Controllers\Admin\FAQController;
+use App\Http\Controllers\Admin\TypeController;
 
 Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], function(){
   
@@ -139,6 +140,13 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/group/{id}', [GroupController::class, 'groupDelete']);
 
     Route::post('/groups/store', [GroupController::class, 'store'])->name('group.store');
+
+    // Type crud
+    Route::get('/type', [TypeController::class, 'getType'])->name('alltype');
+    Route::post('/type', [TypeController::class, 'typeStore']);
+    Route::get('/type/{id}/edit', [TypeController::class, 'typeEdit']);
+    Route::post('/type-update', [TypeController::class, 'typeUpdate']);
+    Route::get('/type/{id}', [TypeController::class, 'typeDelete']);
 
     // Color crud
     Route::get('/color', [ColorController::class, 'index'])->name('allcolor');
