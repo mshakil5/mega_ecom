@@ -219,6 +219,9 @@
                             Feel free to contact us.
                         </div>
                         <div class="signature mt-3">
+                          <div>
+                              <img src="data:image/jpeg;base64,{{ base64_encode(file_get_contents(public_path('digital_signature.png'))) }}" alt="" style="height: 40px; display: inline-block;">
+                          </div>
                             <div style="border-top: 1px solid #000; width: 100px; margin: 10px 0; display: inline-block;"></div>
                             <div><strong>Team Sapphire</strong></div>
                         </div>
