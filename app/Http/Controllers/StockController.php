@@ -451,6 +451,7 @@ class StockController extends Controller
             
             $purchaseHistory->product_size = $product['product_size'];
             $purchaseHistory->product_color = $product['product_color'];
+            $purchaseHistory->zip = $product['zip'];
             $purchaseHistory->purchase_price = $product['unit_price'];
             $purchaseHistory->vat_percent = $product['vat_percent'];
             $purchaseHistory->vat_amount_per_unit = $product['vat_amount'] / $product['quantity'];
@@ -820,6 +821,7 @@ class StockController extends Controller
                 $purchaseHistory->quantity = $product['quantity'];
                 $purchaseHistory->product_size = $product['product_size'];
                 $purchaseHistory->product_color = $product['product_color'];
+                $purchaseHistory->zip = $product['zip'];
                 $purchaseHistory->purchase_price = $product['unit_price'];
                 $purchaseHistory->vat_percent = $product['vat_percent'];
                 $purchaseHistory->vat_amount_per_unit = $product['vat_amount'] / $product['quantity'];
