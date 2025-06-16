@@ -13,6 +13,6 @@ class Type extends Model
 
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'product_type');
+        return $this->belongsToMany(Product::class, 'product_types');
     }
 }

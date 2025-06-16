@@ -130,5 +130,15 @@ class Product extends Model
     {
         return $this->hasMany(ShipmentDetails::class);
     }
+
+    public function types()
+    {
+        return $this->belongsToMany(Type::class, 'product_types');
+    }
+
+    public function isZip()
+    {
+        return $this->types->contains('slug', 'zip');
+    }
     
 }

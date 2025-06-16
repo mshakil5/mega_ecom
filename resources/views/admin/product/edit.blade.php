@@ -66,7 +66,7 @@
                             </div>
 
                             <div class="form-row">
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-4">
                                     <label for="category">Category <span style="color: red;">*</span> <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addCategoryModal">Add New</span></label>
                                     <select class="form-control" id="category" name="category_id">
                                         <option value="">Select Category</option>
@@ -76,12 +76,23 @@
                                     </select>
                                 </div>
 
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-4">
                                     <label for="subcategory">Sub Category <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addSubCategoryModal">Add New</span></label>
                                     <select class="form-control" id="subcategory" name="sub_category_id">
                                         <option value="">Select Sub Category</option>
                                         @foreach($subCategories as $subcategory)
                                         <option value="{{ $subcategory->id }}" class="subcategory-option category-{{ $subcategory->category_id }}" {{ $subcategory->id == $product->sub_category_id ? 'selected' : '' }}>{{ $subcategory->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-4">
+                                    <label for="type_id">Type</label>
+                                    <select class="form-control select2" id="type_id" name="type_id[]" multiple>
+                                        @foreach($types as $type)
+                                            <option value="{{ $type->id }}" {{ $product->types->pluck('id')->contains($type->id) ? 'selected' : '' }}>
+                                                {{ $type->name }}
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div>

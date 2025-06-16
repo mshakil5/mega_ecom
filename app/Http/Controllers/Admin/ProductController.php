@@ -21,6 +21,7 @@ use App\Models\ProductSize;
 use App\Models\ProductColor;
 use App\Models\ProductPrice;
 use App\Models\ProductReview;
+use App\Models\Type;
 
 class ProductController extends Controller
 {
@@ -40,13 +41,13 @@ class ProductController extends Controller
         $subCategories = SubCategory::select('id', 'name', 'category_id')->orderby('id','DESC')->get();
         $sizes = Size::select('id', 'size')->orderby('id','DESC')->get();
         $colors = Color::select('id', 'color', 'color_code')->orderby('id','DESC')->get();
-
-        return view('admin.product.create', compact('brands', 'product_models', 'groups', 'units', 'categories', 'subCategories', 'sizes', 'colors'));
+        $types = Type::select('id', 'name')->where('status', 1)->orderby('id','DESC')->get();
+        return view('admin.product.create', compact('brands', 'product_models', 'groups', 'units', 'categories', 'subCategories', 'sizes', 'colors', 'types'));
     }
 
     public function productEdit($id)
     {
-        $product = Product::with('colors', 'sizes')->findOrFail($id);
+        $product = Product::with('colors', 'sizes', 'types')->findOrFail($id);
         $brands = Brand::select('id', 'name')->orderby('id','DESC')->get();
         $product_models = ProductModel::select('id', 'name')->orderby('id','DESC')->get();
         $groups = Group::select('id', 'name')->orderby('id','DESC')->get();
@@ -55,8 +56,8 @@ class ProductController extends Controller
         $subCategories = SubCategory::select('id', 'name')->orderby('id','DESC')->get();
         $sizes = Size::select('id', 'size')->orderby('id','DESC')->get();
         $colors = Color::select('id', 'color', 'color_code')->orderby('id','DESC')->get();
-    
-        return view('admin.product.edit', compact('product', 'brands', 'product_models', 'groups', 'units', 'categories', 'subCategories', 'sizes', 'colors'));
+        $types = Type::select('id', 'name')->where('status', 1)->orderby('id','DESC')->get();
+        return view('admin.product.edit', compact('product', 'brands', 'product_models', 'groups', 'units', 'categories', 'subCategories', 'sizes', 'colors', 'types'));
     }
 
     public function productDelete(Request $request)
@@ -253,6 +254,10 @@ class ProductController extends Controller
             }
         }
 
+        if ($request->has('type_id')) {
+            $product->types()->sync($request->type_id);
+        }
+
         return response()->json(['message' => 'Product created successfully!', 'product' => $product], 201);
     }
 
@@ -338,6 +343,12 @@ class ProductController extends Controller
 
         if ($request->has('size_ids')) {
             $product->sizes()->sync($request->size_ids);
+        }
+
+        if ($request->has('type_id')) {
+            $product->types()->sync($request->type_id);
+        } else {
+            $product->types()->sync([]);
         }
 
         if ($request->has('color_id')) {

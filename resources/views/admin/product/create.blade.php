@@ -63,7 +63,7 @@
                             </div>
 
                             <div class="form-row">
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-4">
                                     <label for="category">Category
                                         <span style="color: red;">*</span>
                                         <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addCategoryModal">Add New</span>
@@ -76,7 +76,7 @@
                                     </select>
                                 </div>
 
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-4">
                                     <label for="subcategory">
                                         Sub Category
                                         <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addSubCategoryModal">Add New</span>
@@ -85,6 +85,15 @@
                                         <option value="">Select Sub Category</option>
                                         @foreach($subCategories as $subcategory)
                                         <option class="subcategory-option category-{{ $subcategory->category_id }}" value="{{ $subcategory->id }}">{{ $subcategory->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-4">
+                                    <label for="type_id">Type</label>
+                                    <select class="form-control select2" id="type_id" name="type_id[]" multiple>
+                                        @foreach($types as $type)
+                                            <option value="{{ $type->id }}">{{ $type->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -249,7 +258,7 @@
 <script>
     $(function() {
         $('.select2').select2({
-            placeholder: "Select sizes",
+            placeholder: "Select",
             width: '100%'
         });
 
@@ -316,6 +325,10 @@
             $('#loader').show();
 
             var formData = new FormData($('#createThisForm')[0]);
+
+            // formData.forEach((value, key) => {
+            //     console.log(key + ':', value);
+            // });
 
             $.ajax({
                 url: '{{ route("store.product") }}',
