@@ -47,7 +47,7 @@
                                         <th>Product</th>
                                         <th>Size</th>
                                         <th>Color</th>
-                                        <th>Stock</th>
+                                        <th>Stock <br> <small>(previous)</small> </th>
                                         <th>Purchased</th>
                                         <th>Shipped</th>
                                         <th>Damaged</th>
@@ -81,6 +81,10 @@
                                         </td>
                                         <td>
                                             {{ $detail->product->product_code ? $detail->product->product_code . '-' : '' }}{{ $detail->product->name ?? '' }}
+                                            @if($detail->product->isZip())
+                                                <br>
+                                                (Zip: {{ $detail->zip == 1 ? 'Yes' : 'No' }})
+                                            @endif 
                                         </td>
                                         <td>{{ $detail->size ?? '' }}</td>
                                         <td>{{ $detail->color ?? '' }}</td>
@@ -89,6 +93,7 @@
                                             ->where('product_id', $detail->purchaseHistory->product_id)
                                             ->where('size', $detail->purchaseHistory->product_size)
                                             ->where('color', $detail->purchaseHistory->product_color)
+                                            ->where('zip', $detail->product->isZip())
                                             ->where('quantity', '>', 0)
                                             ->orderBy('id', 'desc')
                                             : collect();

@@ -369,8 +369,8 @@ class ShipmentController extends Controller
         }
 
         foreach ($request->shipment_details as $detail) {
-            $shipmentDetail = ShipmentDetails::findOrFail($detail['id']);
-            
+            $shipmentDetail = ShipmentDetails::with('purchaseHistory')->findOrFail($detail['id']);
+            $detail['zip'] = $shipmentDetail->purchaseHistory->zip ?? 0;
             $oldQuantity = $shipmentDetail->quantity;
             $oldMissingQuantity = $shipmentDetail->missing_quantity;
             $oldShippedQuantity = $shipmentDetail->shipped_quantity;
@@ -394,6 +394,7 @@ class ShipmentController extends Controller
             $stock = Stock::where('product_id', $shipmentDetail->product_id)
                 ->where('size', $shipmentDetail->size)
                 ->where('color', $shipmentDetail->color)
+                ->where('zip', $shipmentDetail->purchaseHistory->zip)
                 ->where('warehouse_id', $shipmentDetail->warehouse_id)
                 ->first();
     
@@ -413,6 +414,7 @@ class ShipmentController extends Controller
                     'quantity' => $detail['quantity'],
                     'size' => $detail['size'],
                     'color' => $detail['color'],
+                    'zip' => $detail['zip'],
                     'purchase_price' => $detail['price_per_unit'],
                     'ground_price_per_unit' => $detail['ground_cost'],
                     'profit_margin' => $detail['profit_margin'],
@@ -432,6 +434,7 @@ class ShipmentController extends Controller
                 'quantity' => $detail['quantity'],
                 'size' => $detail['size'],
                 'color' => $detail['color'],
+                'zip' => $detail['zip'],
                 'warehouse_id' => $request->warehouse_id,
                 'available_qty' => $detail['quantity'],
                 'ground_price_per_unit' => $detail['ground_cost'],

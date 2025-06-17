@@ -801,15 +801,16 @@ class StockController extends Controller
                     $purchaseHistory->total_vat = $purchaseHistory->vat_amount_per_unit * $product['quantity'];
                     $purchaseHistory->total_amount = $product['unit_price'] * $product['quantity'];
                     $purchaseHistory->total_amount_with_vat = $product['total_price_with_vat'];
-                    if ($purchaseHistory->transferred_product_quantity > 0) {
-                        // If product was transferred before, keep the transferred quantity
-                        $purchaseHistory->remaining_product_quantity = 0;
-                        $purchaseHistory->transferred_product_quantity = $product['quantity'];
-                    } else {
-                        // If the product was not transferred, just update remaining quantity
-                        $purchaseHistory->remaining_product_quantity = $product['quantity'];
-                        $purchaseHistory->transferred_product_quantity = 0;
-                    }
+                    $purchaseHistory->remaining_product_quantity = $product['quantity'];
+                    // if ($purchaseHistory->transferred_product_quantity > 0) {
+                    //     // If product was transferred before, keep the transferred quantity
+                    //     $purchaseHistory->remaining_product_quantity = 0;
+                    //     $purchaseHistory->transferred_product_quantity = $product['quantity'];
+                    // } else {
+                    //     // If the product was not transferred, just update remaining quantity
+                    //     $purchaseHistory->remaining_product_quantity = $product['quantity'];
+                    //     $purchaseHistory->transferred_product_quantity = 0;
+                    // }
                     $purchaseHistory->updated_by = Auth::user()->id;
                     $purchaseHistory->save();
                 }

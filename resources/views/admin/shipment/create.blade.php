@@ -53,7 +53,7 @@
                                         <th>Product</th>
                                         <th>Size</th>
                                         <th>Color</th>
-                                        <th>Stock</th>
+                                        <th>Stock <br> <small>(previous)</small> </th>
                                         <th>Purchased</th>
                                         <th>Shipped</th>
                                         <th>Damaged</th>           
@@ -86,7 +86,11 @@
                                             <input type="hidden" value="{{ $detail->purchase_price }}" class="purchase_price">
                                         </td>
                                         <td>
-                                            {{ $detail->product->product_code ? $detail->product->product_code . '-' : '' }}{{ $detail->product->name ?? '' }}             
+                                            {{ $detail->product->product_code ? $detail->product->product_code . '-' : '' }}{{ $detail->product->name ?? '' }} 
+                                            @if($detail->product->isZip())
+                                                <br>
+                                                (Zip: {{ $detail->zip == 1 ? 'Yes' : 'No' }})
+                                            @endif            
                                         </td>
                                         <td>{{ $detail->product_size ?? '' }}</td>
                                         <td>{{ $detail->product_color ?? '' }}</td>
@@ -96,6 +100,7 @@
                                                     ->where('product_id', $detail->product_id)
                                                     ->where('size', $detail->product_size)
                                                     ->where('color', $detail->product_color)
+                                                    ->where('zip', $detail->zip)
                                                     ->where('quantity', '>', 0)
                                                     ->orderBy('id', 'desc')
                                                 : collect();
@@ -677,6 +682,7 @@
             let _token = $('meta[name="csrf-token"]').attr('content');
 
             // console.log(dataToSend);
+            // return;
 
             $.ajax({
                 url: '/admin/shipment-store',

@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('quantity')->nullable();
             $table->string('size')->nullable();
             $table->string('color')->nullable();
+            $table->tinyInteger('zip')->default(0);
             $table->string('selling_qty')->nullable();
             $table->string('available_qty')->nullable();
             $table->string('systemloss_qty')->nullable();
