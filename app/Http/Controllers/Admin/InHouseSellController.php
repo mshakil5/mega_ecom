@@ -73,6 +73,7 @@ class InHouseSellController extends Controller
             $stock = Stock::where('product_id', $product['product_id'])
                 ->where('size', $product['product_size'])
                 ->where('color', $product['product_color'])
+                ->where('zip', $product['zip'])
                 ->where('warehouse_id', $request->warehouse_id)
                 ->first();
         
@@ -170,6 +171,7 @@ class InHouseSellController extends Controller
             $orderDetail->quantity = $product['quantity'];
             $orderDetail->size = $product['product_size'];
             $orderDetail->color = $product['product_color'];
+            $orderDetail->zip = $product['zip'];
             $orderDetail->price_per_unit = $product['unit_price'];
             $orderDetail->total_price = $product['total_price'];
             $orderDetail->vat_percent = $product['vat_percent'];
@@ -183,6 +185,7 @@ class InHouseSellController extends Controller
                 $stock = Stock::where('product_id', $product['product_id'])
                 ->where('size', $product['product_size'])
                 ->where('color', $product['product_color'])
+                ->where('zip', $product['zip'])
                 ->where('warehouse_id', $request->warehouse_id)
                     ->first();
                 if ($stock) {
@@ -194,6 +197,7 @@ class InHouseSellController extends Controller
                     $stock->product_id = $product['product_id'];
                     $stock->size = $product['product_size'];
                     $stock->color = $product['product_color'];
+                    $stock->zip = $product['zip'];
                     $stock->quantity = -$product['quantity'];
                     $stock->created_by = auth()->user()->id;
                     $stock->save();
@@ -341,6 +345,7 @@ class InHouseSellController extends Controller
             $orderDetail->quantity = $product['quantity'];
             $orderDetail->size = $product['product_size'];
             $orderDetail->color = $product['product_color'];
+            $orderDetail->zip = $product['zip'];
             $orderDetail->price_per_unit = $product['unit_price'];
             $orderDetail->total_price = $product['total_price'];
             $orderDetail->vat_percent = $product['vat_percent'];
@@ -422,6 +427,7 @@ class InHouseSellController extends Controller
 
         $selectedSize = $request->input('size');
         $selectedColor = $request->input('color');
+        $zip = $request->input('zip');
 
         $getStock = Stock::with(['warehouse', 'product'])
                 ->where('product_id', $productId)
@@ -434,6 +440,9 @@ class InHouseSellController extends Controller
                 })
                 ->when($selectedColor, function ($query) use ($selectedColor) {
                     return $query->where('color', $selectedColor);
+                })
+               ->when(!is_null($zip), function ($query) use ($zip) {
+                    return $query->where('zip', $zip);
                 })
                 ->get();
 
@@ -458,6 +467,9 @@ class InHouseSellController extends Controller
                             </td>
                             <td>
                                 '.$item->color.'
+                            </td>
+                            <td>
+                                '.($item->product->is_zip ? ($item->zip == 1 ? 'Zip' : 'No Zip') : '-').'
                             </td>
                             <td>
                                 '.intval($item->quantity).'
@@ -523,6 +535,7 @@ class InHouseSellController extends Controller
                 ->where('product_id', $product['product_id'])
                 ->where('size', $product['product_size'])
                 ->where('color', $product['product_color'])
+                ->where('zip', $product['zip'])
                 ->sum('quantity');
 
             $quantityDifference = $product['quantity'] - $previousQty;
@@ -532,6 +545,7 @@ class InHouseSellController extends Controller
                     $stock = Stock::where('product_id', $product['product_id'])
                         ->where('size', $product['product_size'])
                         ->where('color', $product['product_color'])
+                        ->where('zip', $product['zip'])
                         ->where('warehouse_id', $request->warehouse_id)
                         ->first();
             
@@ -550,6 +564,7 @@ class InHouseSellController extends Controller
                 $stock = Stock::where('product_id', $product['product_id'])
                     ->where('size', $product['product_size'])
                     ->where('color', $product['product_color'])
+                    ->where('zip', $product['zip'])
                     ->where('warehouse_id', $request->warehouse_id)
                     ->first();
         
@@ -666,6 +681,7 @@ class InHouseSellController extends Controller
 
                         $orderDetail->size = $product['product_size'];
                         $orderDetail->color = $product['product_color'];
+                        $orderDetail->zip = $product['zip'];
                         $orderDetail->price_per_unit = $product['unit_price'];
                         $orderDetail->total_price = $product['total_price'];
                         $orderDetail->vat_percent = $product['vat_percent'];
@@ -678,6 +694,7 @@ class InHouseSellController extends Controller
                         $stock = Stock::where('product_id', $product['product_id'])
                             ->where('size', $product['product_size'])
                             ->where('color', $product['product_color'])
+                            ->where('zip', $product['zip'])
                             ->where('warehouse_id', $request->warehouse_id)
                             ->first();
         
@@ -720,6 +737,7 @@ class InHouseSellController extends Controller
                     $orderDetail->quantity = $product['quantity'];
                     $orderDetail->size = $product['product_size'];
                     $orderDetail->color = $product['product_color'];
+                    $orderDetail->zip = $product['zip'];
                     $orderDetail->price_per_unit = $product['unit_price'];
                     $orderDetail->total_price = $product['total_price'];
                     $orderDetail->vat_percent = $product['vat_percent'];
@@ -731,6 +749,7 @@ class InHouseSellController extends Controller
                     $stock = Stock::where('product_id', $product['product_id'])
                     ->where('size', $product['product_size'])
                     ->where('color', $product['product_color'])
+                    ->where('zip', $product['zip'])
                     ->where('warehouse_id', $request->warehouse_id)
                         ->first();
                     if ($stock) {
@@ -742,6 +761,7 @@ class InHouseSellController extends Controller
                         $stock->product_id = $product['product_id'];
                         $stock->size = $product['product_size'];
                         $stock->color = $product['product_color'];
+                        $stock->zip = $product['zip'];
                         $stock->quantity = -$product['quantity'];
                         $stock->created_by = auth()->user()->id;
                         $stock->save();
@@ -752,6 +772,8 @@ class InHouseSellController extends Controller
                         ->orderBy('created_at', 'asc')
                         ->get();
 
+                    $requiredQty = $product['quantity'];
+                    
                     foreach ($stockHistories as $stockHistorie) {
                         if ($requiredQty > 0) {
                             if ($stockHistorie->available_qty >= $requiredQty) {
@@ -779,6 +801,7 @@ class InHouseSellController extends Controller
                     $stock = Stock::where('product_id', $existingOrderDetail->product_id)
                         ->where('size', $existingOrderDetail->size)
                         ->where('color', $existingOrderDetail->color)
+                        ->where('zip', $existingOrderDetail->zip)
                         ->where('warehouse_id', $request->warehouse_id)
                         ->first();
             
@@ -799,200 +822,108 @@ class InHouseSellController extends Controller
                     $existingOrderDetail->delete();
                 }
             }
-        } 
-        // else{
-
-        //   $existingOrderDetails = OrderDetails::where('order_id', $order->id)->get();
-        //   $existingOrderDetailIds = $existingOrderDetails->pluck('id')->toArray();
-        //   $incomingOrderDetailIds = [];
-
-        //   foreach ($products as $product) {
-        //       if (isset($product['order_details_id'])) {
-        //           // Update existing order detail
-        //           $orderDetail = OrderDetails::find($product['order_details_id']);
-        //           if ($orderDetail) {
-        //               $orderDetail->update([
-        //                   'size' => $product['product_size'],
-        //                   'color' => $product['product_color'],
-        //                   'price_per_unit' => $product['unit_price'],
-        //                   'total_price' => $product['total_price'],
-        //                   'vat_percent' => $product['vat_percent'],
-        //                   'total_vat' => $product['total_vat'],
-        //                   'total_price_with_vat' => $product['total_price_with_vat'],
-        //                   'warehouse_id' => $request->warehouse_id,
-        //                   'quantity' => $product['quantity']
-        //               ]);
-        //               $incomingOrderDetailIds[] = $orderDetail->id;
-        //           }
-        //       } else {
-        //           // Create new order detail
-        //           $orderDetail = OrderDetails::create([
-        //               'order_id' => $order->id,
-        //               'warehouse_id' => $request->warehouse_id,
-        //               'product_id' => $product['product_id'],
-        //               'quantity' => $product['quantity'],
-        //               'size' => $product['product_size'],
-        //               'color' => $product['product_color'],
-        //               'price_per_unit' => $product['unit_price'],
-        //               'total_price' => $product['total_price'],
-        //               'vat_percent' => $product['vat_percent'],
-        //               'total_vat' => $product['total_vat'],
-        //               'total_price_with_vat' => $product['total_price_with_vat'],
-        //               'status' => 1
-        //           ]);
-        //       }
-        //   }
-
-        //   foreach ($existingOrderDetails as $existingOrderDetail) {
-        //       if (!in_array($existingOrderDetail->id, $incomingOrderDetailIds)) {
-        //           $existingOrderDetail->delete();
-        //       }
-        //   }
-
-        //     $requiredQty = $product['quantity'];
-        //     if ($request->warehouse_id) {
-        //         $stock = Stock::where('product_id', $product['product_id'])
-        //         ->where('size', $product['product_size'])
-        //         ->where('color', $product['product_color'])
-        //         ->where('warehouse_id', $request->warehouse_id)
-        //             ->first();
-        //         if ($stock) {
-        //             $stock->quantity -= $product['quantity'];
-        //             $stock->save();
-        //         } else {
-        //             $stock = new Stock();
-        //             $stock->warehouse_id = $request->warehouse_id;
-        //             $stock->product_id = $product['product_id'];
-        //             $stock->size = $product['product_size'];
-        //             $stock->color = $product['product_color'];
-        //             $stock->quantity = -$product['quantity'];
-        //             $stock->created_by = auth()->user()->id;
-        //             $stock->save();
-        //         }
-
-        //         $stockHistories = StockHistory::where('stock_id', $stock->id)
-        //             ->where('available_qty', '>', 0)
-        //             ->orderBy('created_at', 'asc')
-        //             ->get();
-
-        //         foreach ($stockHistories as $stockHistorie) {
-        //             if ($requiredQty > 0) {
-        //                 if ($stockHistorie->available_qty >= $requiredQty) {
-        //                     // Reduce the quantity from the current stock entry
-        //                     $stockHistorie->available_qty -= $requiredQty;
-        //                     $stockHistorie->selling_qty += $requiredQty;
-        //                     $stockHistorie->save();
-        //                     $requiredQty = 0; // All required quantity is reduced
-        //                 } else {
-        //                     // If the stock quantity is less than required, deduct all from this entry
-        //                     $requiredQty -= $stockHistorie->available_qty;
-        //                     $stockHistorie->available_qty = 0;
-        //                     $stockHistorie->selling_qty += $requiredQty;
-        //                     $stockHistorie->save();
-        //                 }
-        //             } else {
-        //                 break; // Exit loop if all the quantity is reduced
-        //             }
-        //         }
-        //     }
-        // }
-
-         else {
-    // For order type 2 - Order Details and Stock Handling
-    $existingOrderDetails = OrderDetails::where('order_id', $order->id)->get();
-    $existingOrderDetailIds = $existingOrderDetails->pluck('id')->toArray();
-    $incomingOrderDetailIds = [];
-
-    foreach ($products as $product) {
-        // Handle Order Details
-        if (isset($product['order_details_id'])) {
-            $orderDetail = OrderDetails::find($product['order_details_id']);
-            if ($orderDetail) {
-                $orderDetail->update([
-                    'size' => $product['product_size'],
-                    'color' => $product['product_color'],
-                    'price_per_unit' => $product['unit_price'],
-                    'total_price' => $product['total_price'],
-                    'vat_percent' => $product['vat_percent'],
-                    'total_vat' => $product['total_vat'],
-                    'total_price_with_vat' => $product['total_price_with_vat'],
-                    'warehouse_id' => $request->warehouse_id,
-                    'quantity' => $product['quantity']
-                ]);
-                $incomingOrderDetailIds[] = $orderDetail->id;
-            }
-        } else {
-            $orderDetail = OrderDetails::create([
-                'order_id' => $order->id,
-                'warehouse_id' => $request->warehouse_id,
-                'product_id' => $product['product_id'],
-                'quantity' => $product['quantity'],
-                'size' => $product['product_size'],
-                'color' => $product['product_color'],
-                'price_per_unit' => $product['unit_price'],
-                'total_price' => $product['total_price'],
-                'vat_percent' => $product['vat_percent'],
-                'total_vat' => $product['total_vat'],
-                'total_price_with_vat' => $product['total_price_with_vat'],
-                'status' => 1
-            ]);
         }
 
-        // Handle Stock for each product (moved inside the loop)
-        $requiredQty = $product['quantity'];
-        if ($request->warehouse_id) {
-            $stock = Stock::where('product_id', $product['product_id'])
-                ->where('size', $product['product_size'])
-                ->where('color', $product['product_color'])
-                ->where('warehouse_id', $request->warehouse_id)
-                ->first();
+        else {
+            // For order type 2 - Order Details and Stock Handling
+            $existingOrderDetails = OrderDetails::where('order_id', $order->id)->get();
+            $existingOrderDetailIds = $existingOrderDetails->pluck('id')->toArray();
+            $incomingOrderDetailIds = [];
 
-            if ($stock) {
-                $stock->quantity -= $product['quantity'];
-                $stock->save();
-            } else {
-                $stock = new Stock();
-                $stock->warehouse_id = $request->warehouse_id;
-                $stock->product_id = $product['product_id'];
-                $stock->size = $product['product_size'];
-                $stock->color = $product['product_color'];
-                $stock->quantity = -$product['quantity'];
-                $stock->created_by = auth()->user()->id;
-                $stock->save();
-            }
-
-            $stockHistories = StockHistory::where('stock_id', $stock->id)
-                ->where('available_qty', '>', 0)
-                ->orderBy('created_at', 'asc')
-                ->get();
-
-            foreach ($stockHistories as $stockHistory) {
-                if ($requiredQty > 0) {
-                    if ($stockHistory->available_qty >= $requiredQty) {
-                        $stockHistory->available_qty -= $requiredQty;
-                        $stockHistory->selling_qty += $requiredQty;
-                        $stockHistory->save();
-                        $requiredQty = 0;
-                    } else {
-                        $requiredQty -= $stockHistory->available_qty;
-                        $stockHistory->selling_qty += $stockHistory->available_qty;
-                        $stockHistory->available_qty = 0;
-                        $stockHistory->save();
+            foreach ($products as $product) {
+                // Handle Order Details
+                if (isset($product['order_details_id'])) {
+                    $orderDetail = OrderDetails::find($product['order_details_id']);
+                    if ($orderDetail) {
+                        $orderDetail->update([
+                            'size' => $product['product_size'],
+                            'color' => $product['product_color'],
+                            'zip' => $product['zip'],
+                            'price_per_unit' => $product['unit_price'],
+                            'total_price' => $product['total_price'],
+                            'vat_percent' => $product['vat_percent'],
+                            'total_vat' => $product['total_vat'],
+                            'total_price_with_vat' => $product['total_price_with_vat'],
+                            'warehouse_id' => $request->warehouse_id,
+                            'quantity' => $product['quantity']
+                        ]);
+                        $incomingOrderDetailIds[] = $orderDetail->id;
                     }
                 } else {
-                    break;
+                    $orderDetail = OrderDetails::create([
+                        'order_id' => $order->id,
+                        'warehouse_id' => $request->warehouse_id,
+                        'product_id' => $product['product_id'],
+                        'quantity' => $product['quantity'],
+                        'size' => $product['product_size'],
+                        'color' => $product['product_color'],
+                        'zip' => $product['zip'],
+                        'price_per_unit' => $product['unit_price'],
+                        'total_price' => $product['total_price'],
+                        'vat_percent' => $product['vat_percent'],
+                        'total_vat' => $product['total_vat'],
+                        'total_price_with_vat' => $product['total_price_with_vat'],
+                        'status' => 1
+                    ]);
+                }
+
+                // Handle Stock for each product (moved inside the loop)
+                $requiredQty = $product['quantity'];
+                if ($request->warehouse_id) {
+                    $stock = Stock::where('product_id', $product['product_id'])
+                        ->where('size', $product['product_size'])
+                        ->where('color', $product['product_color'])
+                        ->where('zip', $product['zip'])
+                        ->where('warehouse_id', $request->warehouse_id)
+                        ->first();
+
+                    if ($stock) {
+                        $stock->quantity -= $product['quantity'];
+                        $stock->save();
+                    } else {
+                        $stock = new Stock();
+                        $stock->warehouse_id = $request->warehouse_id;
+                        $stock->product_id = $product['product_id'];
+                        $stock->size = $product['product_size'];
+                        $stock->color = $product['product_color'];
+                        $stock->zip = $product['zip'];
+                        $stock->quantity = -$product['quantity'];
+                        $stock->created_by = auth()->user()->id;
+                        $stock->save();
+                    }
+
+                    $stockHistories = StockHistory::where('stock_id', $stock->id)
+                        ->where('available_qty', '>', 0)
+                        ->orderBy('created_at', 'asc')
+                        ->get();
+
+                    foreach ($stockHistories as $stockHistory) {
+                        if ($requiredQty > 0) {
+                            if ($stockHistory->available_qty >= $requiredQty) {
+                                $stockHistory->available_qty -= $requiredQty;
+                                $stockHistory->selling_qty += $requiredQty;
+                                $stockHistory->save();
+                                $requiredQty = 0;
+                            } else {
+                                $requiredQty -= $stockHistory->available_qty;
+                                $stockHistory->selling_qty += $stockHistory->available_qty;
+                                $stockHistory->available_qty = 0;
+                                $stockHistory->save();
+                            }
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Clean up removed order details
+            foreach ($existingOrderDetails as $existingOrderDetail) {
+                if (!in_array($existingOrderDetail->id, $incomingOrderDetailIds)) {
+                    $existingOrderDetail->delete();
                 }
             }
         }
-    }
-
-    // Clean up removed order details
-    foreach ($existingOrderDetails as $existingOrderDetail) {
-        if (!in_array($existingOrderDetail->id, $incomingOrderDetailIds)) {
-            $existingOrderDetail->delete();
-        }
-    }
-}
 
         $order->purchase_date = $validated['purchase_date'];
         $order->user_id = $validated['user_id'];

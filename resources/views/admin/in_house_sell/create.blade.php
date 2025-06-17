@@ -112,8 +112,9 @@
                                                     data-considerable-price="{{ $considerablePrice }}"
                                                     data-sizes="{{ json_encode($product->stockhistory->pluck('size')->unique()->values()) }}" 
                                                     data-colors="{{ json_encode($product->stockhistory->pluck('color')->unique()->values()) }}"
+                                                    data-is-zip="{{ $product->isZip() ? '1' : '0' }}"
                                                     >
-                                                    {{ $product->product_code }}-{{ $product->name }}
+                                                    {{ $product->product_code }} - {{ $product->name }}
                                                 </option>
                                             @endforeach
                                         </select>
@@ -150,10 +151,10 @@
                                     </div>
                                 </div>
 
-                                <div class="col-sm-2">
+                                <div class="col-sm-1">
                                     <div class="form-group">
-                                        <label for="quantity">Quantity <span class="text-danger">*</span></label>
-                                        <input type="number" class="form-control quantity" id="quantity" name="quantity" placeholder="Enter quantity" min="1">
+                                        <label for="quantity">Qty <span class="text-danger">*</span></label>
+                                        <input type="number" class="form-control quantity" id="quantity" name="quantity" placeholder="" min="1">
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
@@ -166,6 +167,7 @@
                                         <input type="hidden" step="0.01" class="form-control" id="considerable_price">
                                     </div>
                                 </div>
+                                <div class="col-sm-1" id="zip-field-container"></div>
 
                                 <div class="col-sm-1">
                                     <label for="addProductBtn">Action</label>
@@ -184,6 +186,7 @@
                                                 <th>Warehouse</th>
                                                 <th>Size</th>
                                                 <th>Color</th>
+                                                <th>Zip</th>
                                                 <th>Quantity</th>
                                             </tr>
                                         </thead>
@@ -357,6 +360,8 @@
             var productId = selectedProduct.val();
             var productName = selectedProduct.data('name');
             var productCode = selectedProduct.data('code');
+            var isZipProduct = selectedProduct.data('is-zip') == 1;
+            var zipValue = isZipProduct ? $('#zip_option').val() : null;
             var unitPrice = parseFloat($('#price_per_unit').val()) || 0;
             var groundPrice = parseFloat($('#ground_price').val()) || 0;
             var profitMargin = parseFloat($('#profit_margin').val()) || 0;
@@ -376,50 +381,40 @@
             var vatAmount = (totalPrice * vatPercent / 100).toFixed(2);
             var totalPriceWithVat = (parseFloat(totalPrice) + parseFloat(vatAmount)).toFixed(2);
 
-            var productExists = false;
-            $('#productTable tbody tr').each(function() {
-                var existingProductId = $(this).data('product-id');
-                var existingSize = $(this).find('td:eq(2)').text();
-                var existingColor = $(this).find('td:eq(3)').text();
-
-                if (productId == existingProductId && selectedSize == existingSize && selectedColor == existingColor) {
-                    productExists = true;
-                    return false;
-                }
-            });
-
             if (!productId || !quantity || !unitPrice || !selectedSize || !selectedColor) {
                 alert('Please fill in all required fields: product, quantity, unit price, size, and color.');
                 return;
             }
 
             var productExists = false;
-
             $('#productTable tbody tr').each(function() {
                 var existingProductId = $(this).data('product-id');
-                var existingSize = $(this).find('td:eq(2)').text().trim();
-                var existingColor = $(this).find('td:eq(3)').text().trim();
+                var existingSize = $(this).find('td:eq(2)').text();
+                var existingColor = $(this).find('td:eq(3)').text();
+                var existingZip = $(this).data('zip');
 
-                if (productId == existingProductId && selectedSize == existingSize && selectedColor == existingColor) {
+                if (
+                    productId == existingProductId &&
+                    selectedSize == existingSize &&
+                    selectedColor == existingColor &&
+                    String(existingZip) === String(zipValue)
+                ) {
                     productExists = true;
                     return false;
                 }
             });
+
             if (productExists) {
-                swal({
-                    text: "This product with the same size and color is already added.",
-                    icon: "warning",
-                    button: {
-                        text: "OK",
-                        className: "swal-button--warning"
-                    }
-                });
+                alert('This product with same size, color, and zip already exists.');
                 return;
             }
 
-            var productRow = `<tr data-product-id="${productId}">
+            var zipText = zipValue === '1' ? 'Yes' : (zipValue === '0' ? 'No' : '');
+            var zipInput = zipValue !== null && zipValue !== '' ? `<input type="hidden" name="zip[]" value="${zipValue}">` : '';
+
+            var productRow = `<tr data-product-id="${productId}" data-zip="${zipValue}">
                 <td>
-                    ${productCode} - ${productName} <br>
+                    ${productCode} - ${productName} ${zipText ? ' (Zip: ' + zipText + ')' : ''} <br>
                     <span>
                       Margin: <strong>${Math.round(profitMargin)}%</strong>
                     </span> <br>
@@ -430,7 +425,8 @@
                     </span>
                     <input type="hidden" name="product_id[]" value="${productId}">
                     <input type="hidden" name="product_name[]" value="${productName}">
-                </td> 
+                </td>
+                ${zipInput} 
                 <td>
                     <input type="number" class="form-control quantity" 
                         value="${quantity}" 
@@ -561,6 +557,7 @@
                 var productSize = $(this).find('td:eq(2)').text();
                 var productColor = $(this).find('td:eq(3)').text();
                 var totalPrice = (quantity * unitPrice).toFixed(2);
+                var zipValue = $(this).find('input[name="zip[]"]').val() || 0;
 
                 products.push({
                     product_id: productId,
@@ -572,7 +569,8 @@
                     total_price: totalPrice,
                     vat_percent: vatPercent,
                     total_vat: vatAmount,
-                    total_price_with_vat: total_price_with_vat
+                    total_price_with_vat: total_price_with_vat,
+                    zip: zipValue
                 });
             });
 
@@ -583,6 +581,7 @@
             formData.push({ name: 'products', value: JSON.stringify(products) });
 
             // console.log(formData);
+            // return;
 
             $.ajax({
                 url: '/admin/in-house-sell',
@@ -655,6 +654,7 @@
                 var productSize = $(this).find('td:eq(2)').text();
                 var productColor = $(this).find('td:eq(3)').text();
                 var totalPrice = (quantity * unitPrice).toFixed(2);
+                var zipValue = $(this).find('input[name="zip[]"]').val() || 0;
 
                 products.push({
                     product_id: productId,
@@ -665,7 +665,8 @@
                     total_price: totalPrice,
                     vat_percent: vatPercent,
                     total_vat: vatAmount,
-                    total_price_with_vat: total_price_with_vat
+                    total_price_with_vat: total_price_with_vat,
+                    zip: zipValue
                 });
             });
 
@@ -760,7 +761,8 @@
             }
         });
 
-        $('#product_id, #warehouse_id').change(function() {
+        $(document).on('change', '#product_id, #warehouse_id, #zip_option', function () {
+            var zipOption = $('#zip_option').length ? $('#zip_option').val() : null;
             var selectedProduct = $('#product_id').find(':selected');
             var selectedProductId = $('#product_id').val();
             var warehouseId = $('#warehouse_id').val() || '';
@@ -797,7 +799,7 @@
             var colorSelect = $('#color');
             colorSelect.html('<option value="">Select...</option>');
             Object.values(colors).forEach(function(color) {
-              console.log(color);
+              // console.log(color);
                 colorSelect.append(`<option value="${color}">${color}</option>`);
             });
 
@@ -808,6 +810,7 @@
                 data: {
                     product_id: selectedProduct.val(),
                     warehouse_id: warehouseId,
+                    zip: zipOption,
                     _token: '{{ csrf_token() }}'
                 },
                 success: function(response) {
@@ -914,7 +917,7 @@
                 processData: false,
                 contentType: false,
                 success: function(response) {
-                    console.log(response);
+                    // console.log(response);
                     $('#user_id').append(`<option value="${response.id}" selected>${$('#name').val()} ${$('#surname').val() || ''}</option>`);
                     $('#newWholeSalerForm')[0].reset();
                     $('#newWholeSalerModal').modal('hide');
@@ -1056,6 +1059,32 @@
                     });
                 }
             });
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#product_id').on('change', function () {
+            let selected = $(this).find(':selected');
+            let isZip = selected.data('is-zip');
+            let zipContainer = $('#zip-field-container');
+
+            if (isZip == 1) {
+                if (!zipContainer.has('.form-group').length) {
+                    zipContainer.html(`
+                        <div class="form-group">
+                            <label for="zip_option">Zip</label>
+                            <select class="form-control" id="zip_option" name="zip_option">
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
+                    `);
+                }
+            } else {
+                zipContainer.empty();
+            }
         });
     });
 </script>

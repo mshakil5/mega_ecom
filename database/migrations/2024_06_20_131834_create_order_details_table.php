@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('quantity')->nullable();
             $table->string('size')->nullable();
             $table->string('color')->nullable();
+            $table->tinyInteger('zip')->default(0);
             $table->string('vat_percent')->nullable();
             $table->double('total_vat',10,2)->nullable();
             $table->decimal('price_per_unit', 10, 2);
