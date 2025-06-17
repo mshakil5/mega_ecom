@@ -518,7 +518,7 @@
 
 <script>
     $(document).ready(function() {
-        function openLossModal(productId, size, color, warehouse) {
+        function openLossModal(productId, size, color, warehouse, zip) {
             // console.log(productId, size, warehouse); 
 
             $('#systemLossForm')[0].reset();
@@ -546,6 +546,7 @@
                     data: {
                         color: color,
                         size: size,
+                        zip: zip,
                         productId: productId,
                         warehouse: warehouse,
                         lossQuantity: lossQuantity,
@@ -713,7 +714,8 @@
             let size = $(this).data('size');
             let color = $(this).data('color');
             let warehouse = $(this).data('warehouse');
-            openLossModal(productId, size, color, warehouse);
+            let zip = $(this).data('zip');
+            openLossModal(productId, size, color, warehouse, zip);
         });
 
         $('#systemLossModal').on('hidden.bs.modal', function() {

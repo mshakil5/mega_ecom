@@ -28,6 +28,7 @@ return new class extends Migration
             $table->integer('shipment_detail_id')->nullable();
             $table->string('size')->nullable();
             $table->string('color')->nullable();
+            $table->tinyInteger('zip')->default(0);
 
             $table->string('quantity')->nullable();
             $table->longText('reason')->nullable();

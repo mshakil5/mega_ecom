@@ -106,7 +106,7 @@ class StockController extends Controller
             })
             ->addColumn('action', function ($data) {
                 $btn = '<div class="table-actions"> 
-                            <button class="btn btn-sm btn-danger btn-open-loss-modal mr-2" data-size="'.$data->size.'" data-color="'.$data->color.'" data-warehouse="'.$data->warehouse_id.'" data-id="'.$data->product->id.'" >System Loss</button>';  
+                            <button class="btn btn-sm btn-danger btn-open-loss-modal mr-2" data-size="'.$data->size.'" data-color="'.$data->color.'" data-warehouse="'.$data->warehouse_id.'" data-id="'.$data->product->id.'"  data-zip="'.$data->zip.'">System Loss</button>';  
                 if (Auth::user()) {
                     $url = route('admin.product.purchasehistory', ['id' => $data->product->id, 'size' => $data->size, 'color' => $data->color, 'warehouse_id' => $data->warehouse_id]);
                     $btn .= '<a href="'.$url.'" class="btn btn-sm btn-primary">History</a>';
@@ -1007,9 +1007,10 @@ class StockController extends Controller
             'lossReason' => 'nullable|string|max:255',
             'color' => 'nullable',
             'size' => 'nullable',
+            'zip' => 'nullable',
         ]);
 
-        $stock = Stock::where('product_id', $validatedData['productId'])->where('size',$request->size)->where('color',$request->color)->where('warehouse_id', $request->warehouse)->first();
+        $stock = Stock::where('product_id', $validatedData['productId'])->where('size',$request->size)->where('color',$request->color)->where('warehouse_id', $request->warehouse)->where('zip', $request->zip)->first();
 
         if (!$stock) {
             return response()->json(['message' => 'Stock record not found.'], 404);
@@ -1038,6 +1039,7 @@ class StockController extends Controller
         $systemLoss->quantity = $validatedData['lossQuantity'];
         $systemLoss->reason = $validatedData['lossReason'];
         $systemLoss->color = $validatedData['color'];
+        $systemLoss->zip = $validatedData['zip'];
         $systemLoss->size = $validatedData['size'];
         $systemLoss->created_by = Auth::user()->id;
         $systemLoss->save();
