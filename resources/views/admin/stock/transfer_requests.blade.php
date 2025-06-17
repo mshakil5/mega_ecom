@@ -30,7 +30,11 @@
                                     <tr class="{{ $StockTransferRequest->status == 0 ? 'table-warning' : ($StockTransferRequest->status == 1 ? 'table-success' : 'table-danger') }}">
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ \Carbon\Carbon::parse($StockTransferRequest->created_at)->format('d-m-Y') }}</td>
-                                        <td>{{ $StockTransferRequest->product->name }} - {{ $StockTransferRequest->size }} - {{ $StockTransferRequest->color }}</td>
+                                        <td>{{ $StockTransferRequest->product->name }} - {{ $StockTransferRequest->size }} - {{ $StockTransferRequest->color }}
+                                        @if($StockTransferRequest->product->isZip())
+                                            (Zip: {{ $StockTransferRequest->zip == 1 ? 'Yes' : 'No' }})
+                                        @endif
+                                        </td>
                                         <td>{{ $StockTransferRequest->request_quantity }}</td>
                                         <td>{{ $StockTransferRequest->fromWarehouse->name }}</td>
                                         <td>{{ $StockTransferRequest->toWarehouse->name }}</td>

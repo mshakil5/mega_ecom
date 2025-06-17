@@ -156,7 +156,7 @@
                         <select class="form-control select2" id="productId" name="productId">
                             <option value="">Select Product...</option>
                             @foreach($products as $product)
-                            <option value="{{ $product->id }}">{{ $product->product_code }} - {{ $product->name }}</option>
+                            <option value="{{ $product->id }}" data-zip="{{ $product->isZip() ? 1 : 0 }}">{{ $product->product_code }} - {{ $product->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -198,6 +198,15 @@
                                 <label for="size">Size</label>
                                 <select class="form-control select2" id="size" name="size" disabled>
                                     <option value="">Select Size...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group" id="zipWrapper" style="display: none;">
+                                <label for="zip">Zip</label>
+                                <select class="form-control select2" id="zip_id" name="zip">
+                                    <option value="1">Zip</option>
+                                    <option value="0">No Zip</option>
                                 </select>
                             </div>
                         </div>
@@ -288,6 +297,13 @@
     $(document).ready(function() {
         $('#productId').change(function() {
             var productId = $(this).val();
+            const zip = $('option:selected', this).data('zip');
+            if (zip == 1) {
+                $('#zipWrapper').show();
+            } else {
+                $('#zipWrapper').hide();
+                $('#zip').val('').trigger('change');
+            }
             if (productId) {
                 $.ajax({
                     url: '/admin/get-warehouses',
@@ -373,12 +389,53 @@
             }
         });
 
-        $('#size').change(function() {
+        $('#size').change(function () {
             var warehouseId = $('#warehouse').val();
             var productId = $('#productId').val();
             var selectedColor = $('#color').val();
             var selectedSize = $(this).val();
-            if (warehouseId && productId && selectedColor && selectedSize) {
+            var isZipVisible = $('#zipWrapper').is(':visible');
+            var selectedZip = $('#zip_id').val();
+
+            if (warehouseId && productId && selectedColor && selectedSize && (!isZipVisible || selectedZip)) {
+                var requestData = {
+                    product_id: productId,
+                    warehouse_id: warehouseId,
+                    color: selectedColor,
+                    size: selectedSize,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                };
+
+                if (isZipVisible) {
+                    requestData.zip = selectedZip;
+                }
+
+                $.ajax({
+                    url: '/admin/get-max-quantity',
+                    method: 'POST',
+                    data: requestData,
+                    success: function (data) {
+                        $('#max_quantity').val(data.max_quantity);
+                    },
+                    error: function (xhr) {
+                        alert('An error occurred while fetching max quantity: ' + xhr.responseText);
+                    }
+                });
+            } else {
+                $('#max_quantity').val('');
+            }
+        });
+
+        $('#zip_id').change(function () {
+            var warehouseId = $('#warehouse').val();
+            var productId = $('#productId').val();
+            var selectedColor = $('#color').val();
+            var selectedSize = $('#size').val();
+            var selectedZip = $(this).val();
+
+            console.log(selectedZip);
+
+            if (warehouseId && productId && selectedColor && selectedSize && selectedZip) {
                 $.ajax({
                     url: '/admin/get-max-quantity',
                     method: 'POST',
@@ -387,13 +444,14 @@
                         warehouse_id: warehouseId,
                         color: selectedColor,
                         size: selectedSize,
+                        zip: selectedZip,
                         _token: $('meta[name="csrf-token"]').attr('content')
                     },
-                    success: function(data) {
+                    success: function (data) {
                         $('#max_quantity').val(data.max_quantity);
                     },
-                    error: function(xhr) {
-                        alert('An error occurred while fetching max quantity: ' + xhr.responseText);
+                    error: function (xhr) {
+                        alert('Error fetching max quantity: ' + xhr.responseText);
                     }
                 });
             } else {
@@ -418,6 +476,10 @@
             $('#size').val('').trigger('change');
             $('#max_quantity').val('');
         });
+
+        if (!$('#zipWrapper').is(':visible')) {
+            $('#zip_id').val('0');
+        }
 
         $('#submitRequest').on('click', function(e) {
             e.preventDefault();

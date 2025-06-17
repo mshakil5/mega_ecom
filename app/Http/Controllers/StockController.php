@@ -1321,14 +1321,20 @@ class StockController extends Controller
             'warehouse_id' => 'required|exists:warehouses,id',
             'color' => 'required|string',
             'size' => 'required|string',
+            'zip_id' => 'nullable|integer', // optional zip
         ]);
 
-        $max_quantity = Stock::where('product_id', $request->product_id)
+        $query = Stock::where('product_id', $request->product_id)
             ->where('warehouse_id', $request->warehouse_id)
             ->where('color', $request->color)
             ->where('size', $request->size)
-            ->where('quantity', '>', 0)
-            ->value('quantity');
+            ->where('quantity', '>', 0);
+
+        if (!is_null($request->zip)) {
+            $query->where('zip', $request->zip);
+        }
+
+        $max_quantity = (int) $query->value('quantity');
 
         return response()->json(['max_quantity' => $max_quantity]);
     }

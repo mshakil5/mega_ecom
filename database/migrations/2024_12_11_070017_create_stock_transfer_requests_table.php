@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
             $table->string('size')->nullable();
             $table->string('color')->nullable();
+            $table->tinyInteger('zip')->default(0);
             $table->integer('request_quantity')->nullable();
             $table->integer('max_quantity')->nullable();
             $table->boolean('status')->default(0); 
