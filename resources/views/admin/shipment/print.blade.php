@@ -201,6 +201,9 @@
                                             <div class="col-2">
                                                 {{ $detail->product->name ?? '' }} 
                                                 ({{ $detail->size ?? '' }} {{ $detail->color ?? '' }})
+                                                @if($detail->product->isZip())
+                                                    (Zip: {{ $detail->zip == 1 ? 'Yes' : 'No' }})
+                                                @endif
                                             </div>
                                             <div class="col-2">{{ $detail->quantity / 2 }} ({{ $detail->quantity }} Pcs)</div>
                                             <div class="col-2">£{{ number_format($detail->price_per_unit, 2) }}</div>

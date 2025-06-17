@@ -269,7 +269,11 @@
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${detail.supplier.name}</td>
-                        <td>${detail.product && detail.product.product_code ? `${detail.product.product_code} - ${detail.product.name}` : (detail.product ? detail.product.name : '')}</td>
+                        <td>
+                          ${detail.product 
+                            ? `${detail.product.product_code ? detail.product.product_code + ' - ' : ''}${detail.product.name} ${detail.product.is_zip ? `(Zip: ${detail.zip == 1 ? 'Yes' : 'No'})` : ''}`
+                            : ''}
+                        </td>
                         <td>${detail.size || '-'}</td>
                         <td>${detail.color || '-'}</td>
                         <td>${detail.quantity}</td>
