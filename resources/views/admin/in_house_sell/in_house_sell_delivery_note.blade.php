@@ -109,7 +109,11 @@
 
                                 @foreach ($order->orderDetails as $key => $detail )      
                                 <tr style="border-bottom:1px solid #dee2e6 ; border-right:1px solid #dee2e6 ; border-left:1px solid #dee2e6 ;">
-                                    <td style="border: 0px solid #ffffff!important; padding: 1px 10px;">{{$detail->product->product_code}} - {{ $detail->product->name }} - {{ $detail->size }} - {{ $detail->color }} </td>
+                                    <td style="border: 0px solid #ffffff!important; padding: 1px 10px;">{{$detail->product->product_code}} - {{ $detail->product->name }} - {{ $detail->size }} - {{ $detail->color }} 
+                                      @if($detail->product->isZip())
+                                        (Zip: {{ $detail->zip == 1 ? 'Yes' : 'No' }})
+                                      @endif
+                                    </td>
                                     <td style="border: 0px solid #ffffff!important; padding: 1px 10px;text-align:center;width: 10%">{{$detail->quantity}} </td>
                                 </tr>
                                 @endforeach

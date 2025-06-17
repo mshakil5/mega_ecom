@@ -136,6 +136,9 @@
                                     @else
                                         N/A
                                     @endif
+                                    @if($orderDetail->product->isZip())
+                                      (Zip: {{ $orderDetail->zip == 1 ? 'Yes' : 'No' }})
+                                    @endif
                                 </td>
 
                                 <td style="text-align: center">{{ $orderDetail->quantity }}</td>

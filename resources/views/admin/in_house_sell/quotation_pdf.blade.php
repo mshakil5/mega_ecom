@@ -134,40 +134,45 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($order->orderDetails->groupBy('product_id') as $productId => $details)
-                <tr>
-                    <td class="text-center" rowspan="{{ $details->count() }}">
-                        {{ $details->first()->product->product_code }} - {{ $details->first()->product->name }}
-                    </td>
-                    <td class="text-center" rowspan="{{ $details->count() }}">
-                        @php
-                        $imagePath = public_path('images/products/' . $details->first()->product->feature_image);
-                        $base64Image = file_exists($imagePath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($imagePath)) : null;
-                        @endphp
-                        @if ($base64Image)
-                        <x-image-with-loader
-                            src="{{ $base64Image }}"
-                            alt="{{ $details->first()->product->name }}"
-                            class="product-image" />
-                        @else
-                        <span>No Image Available</span>
-                        @endif
-                    </td>
-
-                    @foreach ($details as $index => $detail)
-                    @if ($index > 0)
-                <tr>
-                    @endif
-                    <td class="text-center">{{ $detail->size }} / {{ $detail->color }}</td>
-                    <td class="text-center">{{ $detail->quantity }}</td>
-                    <td class="text-center">{{ $currency }}{{ number_format($detail->price_per_unit, 2) }}</td>
-                    <td class="text-center">{{ $currency }}{{ number_format($detail->total_price, 2) }}</td>
-                    @if ($index > 0)
-                </tr>
-                @endif
-                @endforeach
-                </tr>
-                @endforeach
+              @foreach ($order->orderDetails->groupBy(fn($item) => $item->product_id . '-' . $item->zip) as $groupKey => $details)
+                  @php
+                      $first = $details->first();
+                  @endphp
+                  <tr>
+                      <td class="text-center" rowspan="{{ $details->count() }}">
+                          {{ $first->product->product_code }} - {{ $first->product->name }}
+                          @if($first->product->isZip())
+                              (Zip: {{ $first->zip == 1 ? 'Yes' : 'No' }})
+                          @endif
+                      </td>
+                      <td class="text-center" rowspan="{{ $details->count() }}">
+                          @php
+                              $imagePath = public_path('images/products/' . $first->product->feature_image);
+                              $base64Image = null;
+                              if (!empty($first->product->feature_image) && file_exists($imagePath)) {
+                                  $base64Image = 'data:image/png;base64,' . base64_encode(file_get_contents($imagePath));
+                              }
+                          @endphp
+                          @if ($base64Image)
+                              <x-image-with-loader
+                                  src="{{ $base64Image }}"
+                                  alt="{{ $first->product->name }}"
+                                  class="product-image" />
+                          @endif
+                      </td>
+                      @foreach ($details as $index => $detail)
+                          @if ($index > 0)
+                              <tr>
+                          @endif
+                          <td class="text-center">{{ $detail->size }} / {{ $detail->color }}</td>
+                          <td class="text-center">{{ $detail->quantity }}</td>
+                          <td class="text-center">{{ $currency }}{{ number_format($detail->price_per_unit, 2) }}</td>
+                          <td class="text-center">{{ $currency }}{{ number_format($detail->total_price, 2) }}</td>
+                          @if ($index > 0)
+                              </tr>
+                          @endif
+                      @endforeach
+              @endforeach
             </tbody>
         </table>
 
