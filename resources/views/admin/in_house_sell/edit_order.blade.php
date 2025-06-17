@@ -385,6 +385,12 @@
 
         $('#addProductBtn').click(function() {
 
+            var warehouseId = $('#warehouse_id').val();
+            if (!warehouseId) {
+                alert('Please select a warehouse first.');
+                return;
+            }
+
             var selectedProduct = $('#product_id option:selected');
             var productId = selectedProduct.val();
             var productName = selectedProduct.data('name');
