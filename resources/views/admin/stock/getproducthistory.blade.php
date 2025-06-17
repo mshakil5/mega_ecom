@@ -36,10 +36,10 @@
                                         <td>{{ $key + 1}}</td>
                                         <td>{{ $data->name }} - {{ $data->product_code }}</td>
                                         <td>{{ $data->total_quantity ?? 0 }}</td>
-                                        <td>{{ $data->shipmentDetails()->where('created_at', '<', Carbon::today())->sum('quantity') }}</td>
-                                        <td>{{ $data->shipmentDetails()->where('created_at', '=', Carbon::today())->sum('quantity') }}</td>
-                                        <td>{{ $data->orderDetails()->where('created_at', '<', Carbon::today())->sum('quantity') }}</td>
-                                        <td>{{ $data->orderDetails()->where('created_at', '=', Carbon::today())->sum('quantity') }}</td>
+                                        <td>{{ $data->shipmentDetails->where('created_at', '<', Carbon::today())->sum('quantity') }}</td>
+                                        <td>{{ $data->shipmentDetails->where('created_at', '>=', Carbon::today())->sum('quantity') }}</td>
+                                        <td>{{ $data->orderDetails->where('created_at', '<', Carbon::today())->sum('quantity') }}</td>
+                                        <td>{{ $data->orderDetails->where('created_at', '>=', Carbon::today())->sum('quantity') }}</td>
                                     </tr>
                                     @endforeach
                                 </tbody>

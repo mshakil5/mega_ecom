@@ -26,7 +26,7 @@
                                 </select>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label class="label label-primary">Warehouses</label>
                                 <select class="form-control select2" id="warehouse_id" name="warehouse_id">
                                     <option value="">Select...</option>
@@ -54,6 +54,14 @@
                                 </select>
                             </div>
                             <div class="col-md-1">
+                                <label class="label label-primary">Zip</label>
+                                <select class="form-control select2" id="zip" name="zip">
+                                    <option value="">Select...</option>
+                                    <option value="0">No</option>
+                                    <option value="1">Yes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-1">
                                 <label class="label label-primary" style="visibility:hidden;">Action</label>
                                 <button type="submit" class="btn btn-secondary btn-block">Search</button>
                             </div>
@@ -76,9 +84,10 @@
                                         <th>Product</th>
                                         <th>Size</th>
                                         <th>Color</th>
-                                        <th>Stock Qty</th>
-                                        <th>Available Qty</th>
-                                        <th>Selling Qty</th>
+                                        <th>Zip</th>
+                                        <th>Stocked</th>
+                                        <th>Available</th>
+                                        <th>Sold</th>
                                         <th>Selling Price</th>
                                         <th>Purchase Price</th>
                                         <th>Warehouse</th>
@@ -213,6 +222,7 @@
                     d.product_id = $('#product_id').val();
                     d.color = $('#color_id').val();
                     d.size = $('#size_id').val();
+                    d.zip = $('#zip').val();
                 },
                 error: function(xhr, error, code) {
                     console.error(xhr.responseText);
@@ -225,6 +235,7 @@
                 { data: 'product_details', name: 'product_details' },
                 { data: 'size', name: 'size' },
                 { data: 'color', name: 'color' },
+                { data: 'zip_status', name: 'zip_status' },
                 { data: 'quantity_formatted', name: 'quantity' },
                 { data: 'available_qty', name: 'available_qty' },
                 { data: 'selling_qty', name: 'selling_qty' },
@@ -254,6 +265,7 @@
             $('#product_id').val(null).trigger('change');
             $('#color_id').val(null).trigger('change');
             $('#size_id').val(null).trigger('change');
+            $('#zip').val(null).trigger('change');
             table.draw();
         });
 
@@ -269,8 +281,8 @@
             $('#quantityError').text('');
         });
 
-        $('#product_id, #warehouse_id').select2({
-            placeholder: "Select product...",
+        $('.select2').select2({
+            placeholder: "Select...",
             allowClear: true,
             width: '100%'
         });

@@ -31,7 +31,7 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-2">
                                             <label class="label label-primary">Warehouses</label>
                                             <select class="form-control select2" id="warehouse_id" name="warehouse_id">
                                                 <option value="">Select...</option>
@@ -56,6 +56,14 @@
                                                 @foreach($colors as $color)
                                                 <option value="{{ $color }}">{{ $color }}</option>
                                                 @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <label class="label label-primary">Zip</label>
+                                            <select class="form-control select2" id="zip" name="zip">
+                                                <option value="">Select...</option>
+                                                <option value="0">No</option>
+                                                <option value="1">Yes</option>
                                             </select>
                                         </div>
                                         <div class="col-md-1">
@@ -86,13 +94,14 @@
                                                 <th>Warehouse</th>
                                                 <th>Size</th>
                                                 <th>Color</th>
-                                                <th>Quantity</th>
+                                                <th>Zip</th>
+                                                <th>Qty</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tfoot>
                                             <tr>
-                                                <th colspan="5" class="text-right">Total Quantity:</th>
+                                                <th colspan="6" class="text-right">Total Quantity:</th>
                                                 <th id="total-quantity">0</th>
                                                 <th></th>
                                             </tr>
@@ -114,6 +123,7 @@
                                                         <th>Product</th>
                                                         <th>Size</th>
                                                         <th>Color</th>
+                                                        <th>Zip</th>
                                                         <th>Qty</th>
                                                     </tr>
                                                 </thead>
@@ -578,6 +588,7 @@
                     d.product_id = $('#product_id').val();
                     d.color = $('#color_id').val();
                     d.size = $('#size_id').val();
+                    d.zip = $('#zip').val();
                 },
                 error: function(xhr, error, code) {
                     console.error(xhr.responseText);
@@ -607,6 +618,10 @@
                     name: 'color'
                 },
                 {
+                    data: 'zip_status',
+                    name: 'zip_status'
+                },
+                {
                     data: 'quantity',
                     name: 'quantity'
                 },
@@ -630,7 +645,7 @@
             ],
             drawCallback: function(settings) {
                 var api = this.api();
-                var total = api.column(5, { page: 'current' }).data().reduce(function(a, b) {
+                var total = api.column(6, { page: 'current' }).data().reduce(function(a, b) {
                     return parseFloat(a) + parseFloat(b);
                 }, 0);
                 $('#total-quantity').html(total);
@@ -669,6 +684,10 @@
                     name: 'color'
                 },
                 {
+                    data: 'zip_status',
+                    name: 'zip_status'
+                },
+                {
                     data: 'quantity',
                     name: 'quantity'
                 }
@@ -685,6 +704,7 @@
             $('#product_id').val(null).trigger('change');
             $('#color_id').val(null).trigger('change');
             $('#size_id').val(null).trigger('change');
+            $('#zip').val(null).trigger('change');
             table.draw();
         });
 
@@ -701,14 +721,8 @@
             $('#quantityError').text('');
         });
 
-        $('#product_id').select2({
-            placeholder: "Select product...",
-            allowClear: true,
-            width: '100%'
-        });
-
         $('.select2').select2({
-            placeholder: "Select product...",
+            placeholder: "Select...",
             allowClear: true,
             width: '100%'
         });

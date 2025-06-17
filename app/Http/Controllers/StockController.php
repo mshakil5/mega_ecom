@@ -70,6 +70,15 @@ class StockController extends Controller
             $query->where('size', $request->size);
         }
 
+        if ($request->has('zip') && $request->zip != '') {
+            $query->where('zip', $request->zip)
+                  ->whereHas('product', function ($q) {
+                      $q->whereHas('types', function ($subQ) {
+                          $subQ->where('slug', 'zip');
+                      });
+                  });
+        }
+
         $data = $query->orderBy('id', 'DESC')->get();
 
         return DataTables::of($data)
@@ -91,6 +100,10 @@ class StockController extends Controller
             ->addColumn('quantity', function ($row) {
                 return $row->quantity ? number_format($row->quantity, 0) : 'N/A';
             })
+            ->addColumn('zip_status', function ($row) {
+                if (!$row->product || !$row->product->is_zip) return '-';
+                return $row->zip == 1 ? 'Yes' : 'No';
+            })
             ->addColumn('action', function ($data) {
                 $btn = '<div class="table-actions"> 
                             <button class="btn btn-sm btn-danger btn-open-loss-modal mr-2" data-size="'.$data->size.'" data-color="'.$data->color.'" data-warehouse="'.$data->warehouse_id.'" data-id="'.$data->product->id.'" >System Loss</button>';  
@@ -111,7 +124,7 @@ class StockController extends Controller
         // $warehouseIds = json_decode($user->warehouse_ids, true);
     
         $data = Stock::selectRaw('product_id, size, color, SUM(quantity) as total_quantity')
-            ->groupBy('product_id', 'size', 'color')
+            ->groupBy('product_id', 'size', 'color', 'zip')
             ->with('product')
             ->orderByDesc('product_id')
             ->get();
@@ -127,6 +140,10 @@ class StockController extends Controller
             })
             ->addColumn('quantity', function ($row) {
                 return number_format($row->total_quantity, 0);
+            })
+            ->addColumn('zip_status', function ($row) {
+                if (!$row->product || !$row->product->is_zip) return '-';
+                return $row->zip == 1 ? 'Yes' : 'No';
             })
             ->make(true);
     }
@@ -148,7 +165,7 @@ class StockController extends Controller
     {  
         // $warehouseIds = json_decode(Auth::user()->warehouse_ids, true);
 
-        $query = StockHistory::select('date', 'stockid', 'purchase_id', 'product_id', 'stock_id', 'warehouse_id', 'quantity', 'selling_qty', 'available_qty', 'size', 'color', 'systemloss_qty', 'purchase_price', 'selling_price', 'received_quantity', 'ground_price_per_unit');
+        $query = StockHistory::select('date', 'stockid', 'purchase_id', 'product_id', 'stock_id', 'warehouse_id', 'quantity', 'selling_qty', 'available_qty', 'size', 'color', 'systemloss_qty', 'purchase_price', 'selling_price', 'received_quantity', 'ground_price_per_unit', 'zip');
         // ->when(!empty($warehouseIds), function ($query) use ($warehouseIds) {
         //     return $query->whereIn('warehouse_id', $warehouseIds);
         // })
@@ -165,6 +182,15 @@ class StockController extends Controller
         if ($request->has('color') && $request->color != '') {
             $query->where('color', $request->color);
         }
+        if ($request->has('zip') && $request->zip != '') {
+            $query->where('zip', $request->zip)
+                  ->whereHas('product', function ($q) {
+                      $q->whereHas('types', function ($subQ) {
+                          $subQ->where('slug', 'zip');
+                      });
+                  });
+        }
+
         $data = $query->orderBy('available_qty', 'DESC')->get();
 
         return DataTables::of($data)
@@ -206,6 +232,12 @@ class StockController extends Controller
             
             ->addColumn('warehouse', function ($row) {
                 return $row->warehouse ? $row->warehouse->name : '';
+            })
+            ->addColumn('zip_status', function ($row) {
+                if (!$row->product || !$row->product->is_zip) {
+                    return '-';
+                }
+                return $row->zip == 1 ? 'Yes' : 'No';
             })
             ->addColumn('action', function ($data) {
                 $btn = '<div class="table-actions"> ';  
