@@ -693,7 +693,7 @@ class StockController extends Controller
 
     public function getPurchaseHistory(Purchase $purchase)
     {
-        $purchase = Purchase::with(['supplier', 'purchaseHistory.product'])
+        $purchase = Purchase::with(['supplier', 'purchaseHistory.product.types'])
             ->findOrFail($purchase->id);
 
         return response()->json($purchase);

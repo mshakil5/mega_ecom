@@ -140,5 +140,12 @@ class Product extends Model
     {
         return $this->types->contains('slug', 'zip');
     }
+
+    public function getIsZipAttribute()
+    {
+        return $this->isZip();
+    }
+
+    protected $appends = ['is_zip'];
     
 }

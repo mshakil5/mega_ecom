@@ -326,7 +326,7 @@
                     response.purchase_history.forEach(function(history) {
                         purchaseHistoryHtml += `
                             <tr>
-                                <td>${history.product.product_code} - ${history.product.name}</td>
+                                <td>${history.product.product_code} - ${history.product.name} ${history.product.is_zip ? `(Zip: ${history.zip == 1 ? 'Yes' : 'No'})` : ''}</td>
                                 <td>${history.product_size} - ${history.product_color} </td>
                                 <td>${history.quantity}</td>
                                 <td>${history.shipped_quantity}</td>

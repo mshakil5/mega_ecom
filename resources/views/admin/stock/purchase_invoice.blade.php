@@ -107,7 +107,11 @@
 
                             @foreach ($purchase->purchaseHistory as $detail)      
                                 <tr style="border-bottom:1px solid #dee2e6 ; border-right:1px solid #dee2e6 ; border-left:1px solid #dee2e6 ;">
-                                    <td style="border: 0px solid #ffffff!important; padding: 1px 10px;">{{$detail->product->product_code}} - {{ $detail->product->name }} - {{ $detail->product_size }} - {{ $detail->product_color }} </td>
+                                    <td style="border: 0px solid #ffffff!important; padding: 1px 10px;">{{$detail->product->product_code}} - {{ $detail->product->name }} - {{ $detail->product_size }} - {{ $detail->product_color }} 
+                                    @if($detail->product->isZip())
+                                      (Zip: {{ $detail->zip == 1 ? 'Yes' : 'No' }})
+                                    @endif
+                                    </td>
                                     <td style="border: 0px solid #ffffff!important; padding: 1px 10px;text-align:center;width: 10%">{{$detail->quantity}} </td>
                                     <td style="border: 0px solid #ffffff!important; padding: 1px 10px;text-align:center;width: 10%">£{{ number_format($detail->purchase_price, 2) }}</td>
                                     <td style="border: 0px solid #ffffff!important; padding: 1px 1px;text-align:right;width: 20%">£{{ number_format($detail->total_amount , 2) }}</td>
