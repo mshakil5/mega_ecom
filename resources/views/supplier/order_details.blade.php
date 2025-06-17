@@ -36,7 +36,7 @@
                                             <th>Quantity</th>
                                             <th>Size</th>
                                             <th>Color</th>
-                                            <th>Price per Unit</th>
+                                            <th>Unit Price</th>
                                             <th>Total Price</th>
                                         </tr>
                                     </thead>

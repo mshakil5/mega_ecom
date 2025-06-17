@@ -99,7 +99,7 @@
                                 <tr>
                                     <td style="border: 1px solid #dee2e6!important; padding: 0 10px 0 10;text-align:center;"><b>Style Name</b></td>
                                     <td style="border: 1px solid #dee2e6!important; padding: 0 10px 0 10;text-align:center;"><b>Qty</b></td>
-                                    <td style="border: 1px solid #dee2e6!important; padding: 0 10px 0 10;text-align:center;"><b>Price Per Unit</b></td>
+                                    <td style="border: 1px solid #dee2e6!important; padding: 0 10px 0 10;text-align:center;"><b>Unit Price</b></td>
                                     <td style="border: 1px solid #dee2e6!important; padding: 0 10px 0 10;text-align:right;"><b>Total</b></td>
                                 </tr>
                             </thead>

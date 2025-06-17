@@ -296,8 +296,8 @@
 
                             </div>
                             <div class="card-footer">
-                                <button id="addBtn" class="btn btn-success" value="Create"><i class="fas fa-cart-plus"></i> Make Sales</button>  
-                                <button id="quotationBtn" class="btn btn-secondary" value="Create"><i class="fas fa-file-invoice"></i> Make Quotation</button>  
+                                <button id="addBtn" class="btn btn-success" value="Create"><i class="fas fa-cart-plus"></i> Make Order</button>  
+                                <button id="quotationBtn" class="btn btn-info" value="Create"><i class="fas fa-file-invoice"></i> Make Quotation</button>  
                                 <div id="loader" style="display: none;">
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                     Loading...
