@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ProductType;
 use Illuminate\Http\Request;
 use App\Models\Type;
 use Illuminate\Support\Str;
@@ -41,6 +42,64 @@ class TypeController extends Controller
             return response()->json(['status'=> 300,'message'=>$message]);
         }else{
             return response()->json(['status'=> 303,'message'=>'Server Error!!']);
+        }
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255'
+        ]);
+
+        $existing = Type::whereRaw('LOWER(name) = ?', [strtolower($request->name)])->first();
+
+        if ($existing) {
+            return response()->json([
+                'status' => 'exists',
+                'message' => 'Type already exists',
+                'data' => $existing
+            ], 200);
+        }
+
+        $type = Type::create(['name' => $request->name]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Type added successfully',
+            'data' => $type
+        ], 201);
+    }
+
+    public function quickAddWithProduct(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'name' => 'required|string|max:255'
+        ]);
+
+        $existing = Type::whereRaw('LOWER(name) = ?', [strtolower($request->name)])->first();
+
+        if ($existing) {
+            return response()->json([
+                'status' => 'exists',
+                'message' => 'Type already exists',
+                'data' => $existing
+            ], 200);
+        }
+
+        $type = Type::create(['name' => $request->name]);
+
+        $productType = new ProductType([
+            'product_id' => $request->product_id,
+            'type_id' => $type->id,
+        ]);
+
+        if ($productType->save()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Type added successfully',
+                'data' => $type
+            ], 201);
         }
     }
 

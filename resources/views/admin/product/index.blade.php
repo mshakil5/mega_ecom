@@ -87,7 +87,7 @@
                                         <a href="{{ route('product.edit', $data->id) }}" id="EditBtn" rid="{{ $data->id }}">
                                             <i class="fa fa-edit" style="color: #2196f3; font-size:16px; margin-right: 10px;"></i>
                                         </a>
-                                        <a class="deleteBtn d-none" rid="{{ $data->id }}">
+                                        <a class="deleteBtn" rid="{{ $data->id }}">
                                             <i class="fa fa-trash-o" style="color: red; font-size:16px;"></i>
                                         </a>
                                     </td>

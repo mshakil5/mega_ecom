@@ -138,7 +138,7 @@ class Product extends Model
 
     public function isZip()
     {
-        return $this->types->contains('slug', 'zip');
+        return $this->types->contains('slug', '__this_slug_will_never_exist__');
     }
 
     public function getIsZipAttribute()

@@ -87,7 +87,9 @@
                                 </div>
 
                                 <div class="form-group col-md-4">
-                                    <label for="type_id">Type</label>
+                                    <label for="type_id">Type
+                                      <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addTypeModal">Add New</span>
+                                    </label>
                                     <select class="form-control select2" id="type_id" name="type_id[]" multiple>
                                         @foreach($types as $type)
                                             <option value="{{ $type->id }}" {{ $product->types->pluck('id')->contains($type->id) ? 'selected' : '' }}>
@@ -182,8 +184,10 @@
                                 @if($product->colors->isEmpty())
                                 <div class="form-row dynamic-row">
                                     <div class="form-group col-md-5">
-                                        <label for="color_id">Select Color</label>
-                                        <select class="form-control" name="color_id[]">
+                                        <label for="color_id">Select Color
+                                          <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
+                                        </label>
+                                        <select class="form-control" name="color_id[]"  id="color_id_1">
                                             <option value="">Choose Color</option>
                                             @foreach($colors as $color)
                                                 <option value="{{ $color->id }}" style="background-color: {{ $color->color_code }};">
@@ -207,7 +211,8 @@
                                     <input type="hidden" name="previous_color_ids[]" value="{{ $entry->id }}" id="previous_color_id_{{ $entry->id }}">
                                         <div class="form-group col-md-5">
                                             <label for="color_id">Select Color</label>
-                                            <select class="form-control" name="color_id[]">
+                                            <span class="badge badge-success d-none" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
+                                            <select class="form-control" name="color_id[]" id="color_id">
                                                 <option value="">Choose Color</option>
                                                 @foreach($colors as $color)
                                                     <option value="{{ $color->id }}" style="background-color: {{ $color->color_code }};" {{ $color->id == $entry->color_id ? 'selected' : '' }}>
@@ -251,11 +256,14 @@
 </section>
 
 @include('admin.inc.modal.product_modal')
+@include('admin.inc.modal.product_type_modal')
+@include('admin.inc.modal.color_modal')
 @endsection
 
 @section('script')
 
 @include('admin.inc.modal.product_modal_script')
+@include('admin.inc.modal.product_type_script')
 
 <!-- Category Wise Subcategory and Product Code Check Start -->
 <script>

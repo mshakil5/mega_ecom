@@ -90,7 +90,9 @@
                                 </div>
 
                                 <div class="form-group col-md-4">
-                                    <label for="type_id">Type</label>
+                                    <label for="type_id">Type 
+                                      <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addTypeModal">Add New</span>
+                                    </label>
                                     <select class="form-control select2" id="type_id" name="type_id[]" multiple>
                                         @foreach($types as $type)
                                             <option value="{{ $type->id }}">{{ $type->name }}</option>
@@ -190,7 +192,7 @@
                             <div class="form-row">
                                 <div class="form-group col-md-5">
                                     <label for="color_id">Select Color</label>
-                                    <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
+                                    <span class="badge badge-success d-none" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
                                     <select class="form-control" name="color_id[]" id="color_id_1">
                                         <option value="">Choose Color</option>
                                         @foreach($colors as $color)
@@ -227,13 +229,14 @@
 </section>
 
 @include('admin.inc.modal.product_modal')
+@include('admin.inc.modal.product_type_modal')
 
 @endsection
 
 @section('script')
 
 @include('admin.inc.modal.product_modal_script')
-
+@include('admin.inc.modal.product_type_script')
 <!-- Category Wise Subcategory Start -->
 <script>
     $(document).ready(function() {

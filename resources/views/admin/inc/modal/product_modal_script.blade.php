@@ -402,7 +402,10 @@
                                 className: "swal-button--confirm"
                             }
                         }).then(() => {
-                            const optionHTML = `<option value="${response.data.id}" style="background-color: ${response.data.color_code};">${response.data.color} (${response.data.color_code})</option>`;
+                            const colorCode = response.data.color_code || '#000000';
+                            const optionHTML = `<option value="${response.data.id}" style="background-color: ${colorCode}; color: #fff;">
+                                ${response.data.color} (${colorCode})
+                            </option>`;
                             $('#color_id, #color_id_1').append(optionHTML);
                             $('#addColorModal').modal('hide');
                             $('#newColorForm')[0].reset();

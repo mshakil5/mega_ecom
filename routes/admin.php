@@ -148,6 +148,10 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/type-update', [TypeController::class, 'typeUpdate']);
     Route::get('/type/{id}', [TypeController::class, 'typeDelete']);
 
+    Route::post('/types', [TypeController::class, 'store'])->name('types.store');
+
+    Route::post('types/quick-add-product', [TypeController::class, 'quickAddWithProduct'])->name('types.quickAddWithProduct');
+
     // Color crud
     Route::get('/color', [ColorController::class, 'index'])->name('allcolor');
     Route::post('/color', [ColorController::class, 'store']);
