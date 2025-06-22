@@ -53,6 +53,7 @@
                                         <th>Product</th>
                                         <th>Size</th>
                                         <th>Color</th>
+                                        <th>Type</th>
                                         <th>Stock <br> <small>(previous)</small> </th>
                                         <th>Purchased</th>
                                         <th>Shipped</th>
@@ -84,6 +85,7 @@
                                             <input type="hidden" value="{{ $detail->product_size }}" class="product_size">
                                             <input type="hidden" value="{{ $detail->product_color }}" class="product_color">
                                             <input type="hidden" value="{{ $detail->purchase_price }}" class="purchase_price">
+                                            <input type="hidden" value="{{ $detail->type_id }}" class="type_id">
                                         </td>
                                         <td>
                                             {{ $detail->product->product_code ? $detail->product->product_code . '-' : '' }}{{ $detail->product->name ?? '' }} 
@@ -94,6 +96,7 @@
                                         </td>
                                         <td>{{ $detail->product_size ?? '' }}</td>
                                         <td>{{ $detail->product_color ?? '' }}</td>
+                                        <td>{{ $detail->type->name ?? '' }}</td>
                                         @php
                                             $filteredStock = $detail->product->stock
                                                 ? $detail->product->stock
@@ -101,6 +104,7 @@
                                                     ->where('size', $detail->product_size)
                                                     ->where('color', $detail->product_color)
                                                     ->where('zip', $detail->zip)
+                                                    ->where('type_id', $detail->type_id)
                                                     ->where('quantity', '>', 0)
                                                     ->orderBy('id', 'desc')
                                                 : collect();
@@ -305,7 +309,6 @@
             method: 'POST',
             data: formData,
             success: function (response) {
-                console.log(response.data);
 
                 $('#addWarehouseModal').modal('hide');
                 $('#newWarehouseForm')[0].reset();
@@ -587,6 +590,7 @@
                 let productId = $(this).find('.product_id').val();
                 let size = $(this).find('.product_size').val();
                 let color = $(this).find('.product_color').val();
+                let type_id = $(this).find('.type_id').val();
                 let shippedQuantity = $(this).find('.shipped_quantity').val();
                 let missingQuantity = $(this).find('.missing_quantity').val();
                 let remainingQuantity = $(this).find('.remaining_quantity').val();
@@ -606,6 +610,7 @@
                         product_id: productId,
                         size: size,
                         color: color,
+                        type_id: type_id,
                         shipped_quantity: shippedQuantity,
                         missing_quantity: missingQuantity,
                         remaining_quantity: remainingQuantity,

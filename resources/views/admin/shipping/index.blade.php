@@ -215,6 +215,7 @@
                                         <th>Product</th>
                                         <th>Size</th>
                                         <th>Color</th>        
+                                        <th>Type</th>        
                                         <th>Shipped Qty</th>
                                         <th>Missing Qty</th>
                                         <th>Purchase Price Per Unit</th>
@@ -266,6 +267,7 @@
                 }
 
                 shipmentDetails.forEach(detail => {
+                  console.log(detail);
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${detail.supplier.name}</td>
@@ -276,6 +278,7 @@
                         </td>
                         <td>${detail.size || '-'}</td>
                         <td>${detail.color || '-'}</td>
+                        <td>${detail.type ? detail.type.name : ''}</td>
                         <td>${detail.quantity}</td>
                         <td>${detail.missing_quantity}</td>
                         <td>${detail.price_per_unit}</td>

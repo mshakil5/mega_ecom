@@ -200,7 +200,7 @@
                                             <div class="col-1"></div>
                                             <div class="col-2">
                                                 {{ $detail->product->name ?? '' }} 
-                                                ({{ $detail->size ?? '' }} {{ $detail->color ?? '' }})
+                                                ({{ $detail->size ?? '' }} {{ $detail->color ?? '' }} {{ $detail->type->name ?? '' }})
                                                 @if($detail->product->isZip())
                                                     (Zip: {{ $detail->zip == 1 ? 'Yes' : 'No' }})
                                                 @endif

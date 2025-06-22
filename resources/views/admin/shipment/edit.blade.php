@@ -47,6 +47,7 @@
                                         <th>Product</th>
                                         <th>Size</th>
                                         <th>Color</th>
+                                        <th>Type</th>
                                         <th>Stock <br> <small>(previous)</small> </th>
                                         <th>Purchased</th>
                                         <th>Shipped</th>
@@ -78,6 +79,7 @@
                                             <input type="hidden" value="{{ $detail->ground_price_per_unit }}" class="ground_price_per_unit">
                                             <input type="hidden" value="{{ $detail->systemLose->id ?? '' }}" class="system_lose_id">
                                             <input type="hidden" value="{{ $detail->price_per_unit }}" class="purchase_price">
+                                            <input type="hidden" value="{{ $detail->type_id }}" class="type_id">
                                         </td>
                                         <td>
                                             {{ $detail->product->product_code ? $detail->product->product_code . '-' : '' }}{{ $detail->product->name ?? '' }}
@@ -88,12 +90,14 @@
                                         </td>
                                         <td>{{ $detail->size ?? '' }}</td>
                                         <td>{{ $detail->color ?? '' }}</td>
+                                        <td>{{ $detail->type->name ?? '' }}</td>
                                         @php
                                             $filteredStock = $detail->purchaseHistory->product->stock ? $detail->purchaseHistory->product->stock
                                             ->where('product_id', $detail->purchaseHistory->product_id)
                                             ->where('size', $detail->purchaseHistory->product_size)
                                             ->where('color', $detail->purchaseHistory->product_color)
                                             ->where('zip', $detail->product->isZip())
+                                            ->where('type_id', $detail->type_id)
                                             ->where('quantity', '>', 0)
                                             ->orderBy('id', 'desc')
                                             : collect();
@@ -324,6 +328,7 @@
                 let productId = $(this).find('.product_id').val();
                 let size = $(this).find('.product_size').val();
                 let color = $(this).find('.product_color').val();
+                let type_id = $(this).find('.type_id').val();
                 let shippedQuantity = $(this).find('.shipped_quantity').val();
                 let missingQuantity = $(this).find('.missing_quantity').val();
                 let remainingQuantity = $(this).find('.remaining_quantity').val();
@@ -345,6 +350,7 @@
                         product_id: productId,
                         size: size,
                         color: color,
+                        type_id: type_id,
                         shipped_quantity: shippedQuantity,
                         missing_quantity: missingQuantity,
                         remaining_quantity: remainingQuantity,
@@ -425,6 +431,7 @@
             let _token = $('meta[name="csrf-token"]').attr('content');
 
             // console.log(dataToSend);
+            // return;
 
 
             $.ajax({
@@ -492,6 +499,7 @@
                 let productId = $(this).find('.product_id').val();
                 let size = $(this).find('.product_size').val();
                 let color = $(this).find('.product_color').val();
+                let type_id = $(this).find('.type_id').val();
                 let shippedQuantity = $(this).find('.shipped_quantity').val();
                 let missingQuantity = $(this).find('.missing_quantity').val();
                 let remainingQuantity = $(this).find('.remaining_quantity').val();
@@ -513,6 +521,7 @@
                         product_id: productId,
                         size: size,
                         color: color,
+                        type_id: type_id,
                         shipped_quantity: shippedQuantity,
                         missing_quantity: missingQuantity,
                         remaining_quantity: remainingQuantity,

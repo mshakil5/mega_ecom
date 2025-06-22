@@ -40,4 +40,9 @@ class ShipmentDetails extends Model
     {
         return $this->hasOne(SystemLose::class, 'shipment_detail_id');
     }
+
+    public function type()
+    {
+        return $this->belongsTo(Type::class);
+    }
 }

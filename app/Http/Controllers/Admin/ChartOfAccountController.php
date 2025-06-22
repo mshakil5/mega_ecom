@@ -62,7 +62,7 @@ class ChartOfAccountController extends Controller
         // }
 
         $existingAccount = ChartOfAccount::where('account_name', $request->account_name)
-                                     ->where('branch_id', Auth::user()->branch_id)
+                                    //  ->where('branch_id', Auth::user()->branch_id)
                                      ->first();
     
         if ($existingAccount) {
@@ -87,7 +87,7 @@ class ChartOfAccountController extends Controller
         $chartOfAccount->serial = $request->serial;
         $chartOfAccount->description = $request->description;
         $chartOfAccount->status = 1;
-        $chartOfAccount->branch_id = Auth::user()->branch_id;
+        // $chartOfAccount->branch_id = Auth::user()->branch_id;
         $chartOfAccount->created_by = Auth::user()->id;
         $chartOfAccount->save();
 

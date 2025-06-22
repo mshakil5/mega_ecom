@@ -16,13 +16,13 @@ class ShippingController extends Controller
 
     public function shipping()
     {
-        $data = Shipping::with(['shipment.shipmentDetails.supplier', 'shipment.shipmentDetails.product'])->orderBy('id', 'DESC')->get();
+        $data = Shipping::with(['shipment.shipmentDetails.supplier', 'shipment.shipmentDetails.product', 'shipment.shipmentDetails.type'])->orderBy('id', 'DESC')->get();
 
-        $availablePurchases = Purchase::whereDoesntHave('purchaseHistory', function($query) {
-              $query->select('purchase_id')
-                    ->groupBy('purchase_id')
-                    ->havingRaw('SUM(quantity) = SUM(shipped_quantity)');
-          })->get();
+        $availablePurchases = Purchase::whereHas('purchaseHistory', function ($query) {
+            $query->select('purchase_id')
+                  ->groupBy('purchase_id')
+                  ->havingRaw('SUM(remaining_product_quantity) > 0');
+        })->get();
 
         $purchases = Purchase::select('id', 'invoice')->latest()->get();
         foreach ($data as $shipment) {

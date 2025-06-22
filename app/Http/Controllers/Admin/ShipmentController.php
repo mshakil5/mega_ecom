@@ -28,7 +28,7 @@ class ShipmentController extends Controller
 
         $purchaseIds = json_decode($shipping->purchase_ids, true);
         $purchaseHistories = PurchaseHistory::whereIn('purchase_id', $purchaseIds)
-            ->with('product', 'purchase.supplier')
+            ->with('product', 'purchase.supplier', 'type')
             ->orderBy('purchase_id', 'asc')
             ->get();
 
@@ -114,6 +114,7 @@ class ShipmentController extends Controller
                 'purchase_history_id' => $detail['purchase_history_id'],
                 'size' => $detail['size'],
                 'color' => $detail['color'],
+                'type_id' => $detail['type_id'] ?? null,
                 'warehouse_id' => $request->warehouse_id,
                 'quantity' => $detail['quantity'],
                 'shipped_quantity' => $detail['shipped_quantity'],
@@ -142,6 +143,7 @@ class ShipmentController extends Controller
                     'quantity' => $detail['missing_quantity'],
                     'size' => $detail['size'],
                     'color' => $detail['color'],
+                    'type_id' => $detail['type_id'] ?? null,
                     'reason' => 'Damaged from shipment',
                     'created_by' => auth()->id()
                 ]);
@@ -162,7 +164,7 @@ class ShipmentController extends Controller
 
     public function printShipment($id)
     {
-        $shipment = Shipment::with('shipmentDetails.supplier', 'shipmentDetails.product', 'shipmentDetails.purchaseHistory', 'transactions')->findOrFail($id);
+        $shipment = Shipment::with('shipmentDetails.supplier', 'shipmentDetails.product', 'shipmentDetails.purchaseHistory', 'transactions', 'shipmentDetails.type')->findOrFail($id);
         return view('admin.shipment.print', compact('shipment'));
     }
 
@@ -275,6 +277,7 @@ class ShipmentController extends Controller
                     $systemLose->quantity = $detail['missing_quantity'];
                     $systemLose->size = $detail['size'];
                     $systemLose->color = $detail['color'];
+                    $systemLose->type_id = $detail['type_id'] ?? null;
                     $systemLose->updated_by = auth()->id();
                     $systemLose->save();
                 } else {
@@ -285,6 +288,7 @@ class ShipmentController extends Controller
                         'quantity' => $detail['missing_quantity'],
                         'size' => $detail['size'],
                         'color' => $detail['color'],
+                        'type_id' => $detail['type_id'] ?? null,
                         'created_by' => auth()->id()
                     ]);
                 }
@@ -396,6 +400,7 @@ class ShipmentController extends Controller
                 ->where('color', $shipmentDetail->color)
                 ->where('zip', $shipmentDetail->purchaseHistory->zip)
                 ->where('warehouse_id', $shipmentDetail->warehouse_id)
+                ->where('type_id', $shipmentDetail->type_id)
                 ->first();
     
             if ($stock) {
@@ -415,6 +420,7 @@ class ShipmentController extends Controller
                     'size' => $detail['size'],
                     'color' => $detail['color'],
                     'zip' => $detail['zip'],
+                    'type_id' => $detail['type_id'] ?? null,
                     'purchase_price' => $detail['price_per_unit'],
                     'ground_price_per_unit' => $detail['ground_cost'],
                     'profit_margin' => $detail['profit_margin'],
@@ -435,6 +441,7 @@ class ShipmentController extends Controller
                 'size' => $detail['size'],
                 'color' => $detail['color'],
                 'zip' => $detail['zip'],
+                'type_id' => $detail['type_id'] ?? null,
                 'warehouse_id' => $request->warehouse_id,
                 'available_qty' => $detail['quantity'],
                 'ground_price_per_unit' => $detail['ground_cost'],
@@ -462,6 +469,7 @@ class ShipmentController extends Controller
                     $systemLose->quantity = $detail['missing_quantity'];
                     $systemLose->size = $detail['size'];
                     $systemLose->color = $detail['color'];
+                    $systemLose->type_id = $detail['type_id'];
                     $systemLose->updated_by = auth()->id();
                     $systemLose->save();
                 } else {
@@ -471,6 +479,7 @@ class ShipmentController extends Controller
                         'warehouse_id' => $shipmentDetail->warehouse_id,
                         'quantity' => $detail['missing_quantity'],
                         'size' => $detail['size'],
+                        'type_id' => $detail['type_id'],
                         'reason' => 'Damaged from shipment',
                         'color' => $detail['color'],
                         'created_by' => auth()->id()
