@@ -134,6 +134,7 @@
                                       @if($detail->product->isZip())
                                         (Zip: {{ $detail->zip == 1 ? 'Yes' : 'No' }})
                                       @endif
+                                      @if ($detail->type_id) - {{ $detail->type->name }} @endif
                                     </td>
                                     <td style="border: 0px solid #ffffff!important; padding: 1px 10px;text-align:center;width: 10%">{{$detail->quantity}} </td>
                                     <td style="border: 0px solid #ffffff!important; padding: 1px 10px;text-align:center;width: 10%">£{{ number_format($detail->price_per_unit, 2) }}</td>

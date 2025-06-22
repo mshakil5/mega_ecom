@@ -50,7 +50,7 @@
                                         <td>      
                                             @foreach ($order->orderReturns as $return)
                                                 <p>
-                                                    <strong>Product:</strong>{{ $return->product->product_code }} - {{ $return->product->name }}( {{ $return->orderDetails->size }} - {{ $return->orderDetails->color }} )<br>
+                                                    <strong>Product:</strong>{{ $return->product->product_code }} - {{ $return->product->name }}( {{ $return->orderDetails->size }} - {{ $return->orderDetails->color }} @if ($return->orderDetails->type_id) - {{ $return->orderDetails->type->name }} @endif )<br>
                                                     <strong>Returned to Stock:</strong> {{ $return->return_stock }}<br>
                                                     <strong>System Loss:</strong> {{ $return->system_lose }}<br>
                                                 </p>
@@ -62,7 +62,7 @@
                                             </a>
                                         </td>
                                         <td>
-                                            <button class="btn btn-success btn-stock" data-order-id="{{ $order->id }}" data-returned-items='@json($order->orderReturns)' @if($order->orderReturns->sum('new_quantity') <= 0) disabled @endif>Send to Stock</button>
+                                            <button class="btn btn-success btn-stock" data-order-id="{{ $order->id }}" data-returned-items='@json($order->orderReturns)' @if($order->orderReturns->sum('new_quantity') <= 0) disabled @endif>Stock Back</button>
                                                 <hr>
                                             <button class="btn btn-danger btn-system-loss" data-order-id="{{ $order->id }}" data-returned-items='@json($order->orderReturns)' @if($order->orderReturns->sum('new_quantity') <= 0) disabled @endif>System Loss</button>
                                         </td>

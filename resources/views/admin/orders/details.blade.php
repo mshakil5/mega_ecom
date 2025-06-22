@@ -112,6 +112,7 @@
                             <th style="text-align: center">Quantity</th>
                             <th style="text-align: center">Size</th>
                             <th style="text-align: center">Color</th>
+                            <th style="text-align: center">Type</th>
                             <th style="text-align: right">Price per Unit</th>
                             <th style="text-align: right">Total Price</th>
                         </tr>
@@ -144,6 +145,7 @@
                                 <td style="text-align: center">{{ $orderDetail->quantity }}</td>
                                 <td style="text-align: center">{{ $orderDetail->size }}</td>
                                 <td style="text-align: center">{{ $orderDetail->color }}</td>
+                                <td style="text-align: center">{{ $orderDetail->type->name ?? '' }}</td>
                                 <td style="text-align: right">{{ number_format($orderDetail->price_per_unit, 2) }}</td>
                                 <td style="text-align: right">{{ number_format($orderDetail->total_price, 2) }}</td>
                                 <td class="d-none">

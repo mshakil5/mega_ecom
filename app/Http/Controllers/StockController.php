@@ -1119,6 +1119,7 @@ class StockController extends Controller
             ->where('size', $size)
             ->where('color', $color)
             ->where('warehouse_id', $warehouseId)
+            ->where('type_id', $orderDetails->type_id)
             ->first();
 
         if ($stock) {
@@ -1182,6 +1183,7 @@ class StockController extends Controller
         $systemLoss->warehouse_id = $warehouseId;
         $systemLoss->product_id = $product_id;
         $systemLoss->order_id = $request->order_id;
+        $systemLoss->type_id = $orderDetails->type_id;
         $systemLoss->quantity = $quantity;
         $systemLoss->size = $size;
         $systemLoss->color = $color;

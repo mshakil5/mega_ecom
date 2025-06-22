@@ -127,51 +127,34 @@
                 <tr style="background-color: rgb(228, 235, 253); color: black;">
                     <th class="text-center">Style Name</th>
                     <th class="text-center">Item Description</th>
-                    <th class="text-center">Size / Color</th>
+                    <th class="text-center">Size/Color/Type</th>
                     <th class="text-center">Quantity</th>
                     <th class="text-center">Unit Selling Price({{ $currency }})</th>
                     <th class="text-center">Total Selling Price({{ $currency }})</th>
                 </tr>
             </thead>
             <tbody>
-              @foreach ($order->orderDetails->groupBy(fn($item) => $item->product_id . '-' . $item->zip) as $groupKey => $details)
+              @foreach ($order->orderDetails as $detail)
                   @php
-                      $first = $details->first();
+                      $product = $detail->product;
+                      $imagePath = public_path('images/products/' . $product->feature_image);
+                      $base64Image = null;
+                      if (!empty($product->feature_image) && file_exists($imagePath)) {
+                          $base64Image = 'data:image/png;base64,' . base64_encode(file_get_contents($imagePath));
+                      }
                   @endphp
                   <tr>
-                      <td class="text-center" rowspan="{{ $details->count() }}">
-                          {{ $first->product->product_code }} - {{ $first->product->name }}
-                          @if($first->product->isZip())
-                              (Zip: {{ $first->zip == 1 ? 'Yes' : 'No' }})
-                          @endif
-                      </td>
-                      <td class="text-center" rowspan="{{ $details->count() }}">
-                          @php
-                              $imagePath = public_path('images/products/' . $first->product->feature_image);
-                              $base64Image = null;
-                              if (!empty($first->product->feature_image) && file_exists($imagePath)) {
-                                  $base64Image = 'data:image/png;base64,' . base64_encode(file_get_contents($imagePath));
-                              }
-                          @endphp
+                      <td class="text-center">{{ $product->product_code }} - {{ $product->name }}</td>
+                      <td class="text-center">
                           @if ($base64Image)
-                              <x-image-with-loader
-                                  src="{{ $base64Image }}"
-                                  alt="{{ $first->product->name }}"
-                                  class="product-image" />
+                              <x-image-with-loader src="{{ $base64Image }}" alt="{{ $product->name }}" class="product-image" />
                           @endif
                       </td>
-                      @foreach ($details as $index => $detail)
-                          @if ($index > 0)
-                              <tr>
-                          @endif
-                          <td class="text-center">{{ $detail->size }} / {{ $detail->color }}</td>
-                          <td class="text-center">{{ $detail->quantity }}</td>
-                          <td class="text-center">{{ $currency }}{{ number_format($detail->price_per_unit, 2) }}</td>
-                          <td class="text-center">{{ $currency }}{{ number_format($detail->total_price, 2) }}</td>
-                          @if ($index > 0)
-                              </tr>
-                          @endif
-                      @endforeach
+                      <td class="text-center">{{ $detail->size }} / {{ $detail->color }}@if ($detail->type_id) / {{ $detail->type->name }} @endif</td>
+                      <td class="text-center">{{ $detail->quantity }}</td>
+                      <td class="text-center">{{ $currency }}{{ number_format($detail->price_per_unit, 2) }}</td>
+                      <td class="text-center">{{ $currency }}{{ number_format($detail->total_price, 2) }}</td>
+                  </tr>
               @endforeach
             </tbody>
         </table>
