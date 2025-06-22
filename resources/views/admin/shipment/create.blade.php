@@ -125,7 +125,7 @@
                                             <input type="number" value="0" max="{{ $detail->remaining_product_quantity }}" min="0" class="form-control sample_quantity"/>
                                         </td>
                                         <td>
-                                            <input type="number" value="{{ $detail->remaining_product_quantity }}" max="{{ $detail->remaining_product_quantity }}" min="0" class="form-control saleable_quantity"/>
+                                            <input type="number" value="{{ $detail->remaining_product_quantity }}" max="{{ $detail->remaining_product_quantity }}" min="0" class="form-control saleable_quantity" readonly/>
                                         </td>
                                         <td>
                                             <input type="number" value="0" max="{{ $detail->remaining_product_quantity }}" min="0" class="form-control remaining_quantity" readonly>
@@ -217,6 +217,62 @@
                                     </div>
 
                                     <div class="col-sm-7">
+
+                                      <div class="modal fade" id="chartModal" tabindex="-1" role="dialog" aria-labelledby="chartModalLabel" aria-hidden="true">
+                                          <div class="modal-dialog modal-md" role="document">
+                                              <div class="modal-content">
+                                                  <div class="modal-header">
+                                                      <h4 class="modal-title">Cost Of Goods Sold</h4>
+                                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                          <span aria-hidden="true">&times;</span>
+                                                      </button>   
+                                                  </div>
+                                                  <form class="form-horizontal" id="customer-form">
+                                                      <div class="modal-body">
+                                                          <div class="row d-none">
+                                                              <div class="col-md-6">
+                                                                  <div class="form-group">
+                                                                      <label for="account_head" class="col-form-label">Account Head</label>
+                                                                      <select class="form-control" name="account_head" id="account_head">
+                                                                          <option value="Expenses" selected>Expenses</option>
+                                                                      </select>
+                                                                  </div>
+                                                              </div>
+                                                              <div class="col-md-6">
+                                                                  <div class="form-group">
+                                                                      <label for="sub_account_head" class="col-form-label">Account Sub Head</label>
+                                                                      <select class="form-control" name="sub_account_head" id="sub_account_head">
+                                                                          <option value='Cost Of Good Sold' selected>Cost Of Good Sold</option>
+                                                                      </select>
+                                                                  </div>
+                                                              </div>
+                                                          </div>
+
+                                                          <div class="row">
+                                                              <div class="col-md-12">
+                                                                  <div class="form-group">
+                                                                      <label for="account_name" class="col-form-label">Account Name</label>
+                                                                      <input type="text" name="account_name" class="form-control" id="account_name" >
+                                                                  </div>
+                                                              </div>
+                                                              <div class="col-md-12">
+                                                                  <div class="form-group">
+                                                                      <label for="description" class="col-form-label">Description</label>
+                                                                      <textarea class="form-control" id="description" rows="3" name="description"></textarea>
+                                                                  </div>
+                                                              </div>
+                                                          </div>
+
+                                                      </div>
+                                                      <div class="modal-footer">
+                                                          <button type="button" class="btn btn-primary submit-btn save-btn">Save</button>
+                                                      </div>
+                                                  </form>
+                                              </div>
+                                          </div>
+                                      </div>
+
+                                      <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#chartModal">Add New Expense</span>
                                         <div id="expense-container">
                                             <div class="row mt-1 expense-row" id="row-default">
                                                 <div class="col-sm-12 d-flex align-items-center">
@@ -269,6 +325,51 @@
 @endsection
 
 @section('script')
+
+<script>
+    $(document).on('click', '.save-btn', function () {
+        let formData = {
+            account_head: $('#account_head').val(),
+            sub_account_head: $('#sub_account_head').val(),
+            account_name: $('#account_name').val(),
+            description: $('#description').val(),
+            _token: '{{ csrf_token() }}'
+        };
+
+        $.ajax({
+            url: "/admin/chart-of-account",
+            method: "POST",
+            data: formData,
+            success: function (res) {
+                if (res.status === 200) {
+                    $('#chartModal').modal('hide');
+                    $('#account_name').val(''); 
+                    $('#description').val(''); 
+                    $(".ermsg").html(res.message).show();
+                    appendExpenseToSelects(res.data.id, res.data.account_name);
+                } else {
+                    alert(res.message);
+                }
+            },
+            error: function (xhr) {
+                $(".ermsg").html(xhr.responseText).show();
+                console.log(xhr.responseText);
+            }
+        });
+    });
+
+    function appendExpenseToSelects(id, name) {
+        const option = `<option value="${id}">${name}</option>`;
+        $('.expense-type').append(option);
+        expensesList.push({ id: id, account_name: name });
+    }
+
+</script>
+
+<script>
+    var expensesList = @json($expenses);
+</script>
+
 
 <script>
     $('#saveWarehouseBtn').on('click', function () {
@@ -371,11 +472,11 @@
     }
 
     function generateDropdownOptions() {
-        return `
-            @foreach($expenses as $expense)
-                <option value="{{ $expense->id }}">{{ $expense->account_name }}</option>
-            @endforeach
-        `;
+        let options = '';
+        expensesList.forEach(e => {
+            options += `<option value="${e.id}">${e.account_name}</option>`;
+        });
+        return options;
     }
 
     function checkDuplicateExpense(selectElement) {

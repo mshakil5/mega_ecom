@@ -91,7 +91,7 @@ class ChartOfAccountController extends Controller
         $chartOfAccount->created_by = Auth::user()->id;
         $chartOfAccount->save();
 
-        return response()->json(['status' => 200, 'message' => 'Created Successfully']);
+        return response()->json(['status' => 200, 'message' => 'Created Successfully', 'data' => $chartOfAccount]);
     }
 
     public function edit($id)
