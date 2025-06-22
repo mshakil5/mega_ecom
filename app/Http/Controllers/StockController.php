@@ -405,7 +405,7 @@ class StockController extends Controller
 
     public function addstock()
     {
-        $products = Product::orderby('id','DESC')->select('id', 'name','price', 'product_code')->get();
+        $products = Product::with('types:id,name')->orderBy('id','DESC')->select('id', 'name', 'price', 'product_code')->get();
         $suppliers = Supplier::where('status', 1)->select('id', 'name')->orderby('id','DESC')->get();
         $colors = Color::where('status', 1)->select('id', 'color')->orderby('id','DESC')->get();
         $sizes = Size::where('status', 1)->select('id', 'size')->orderby('id','DESC')->get();
@@ -436,6 +436,7 @@ class StockController extends Controller
             'products.*.quantity' => 'required|numeric|min:1',
             'products.*.product_size' => 'nullable|string',
             'products.*.product_color' => 'nullable|string',
+            'products.*.type_id' => 'nullable|exists:types,id',
             'products.*.unit_price' => 'required|numeric',
             'products.*.vat_percent' => 'nullable|numeric',
             'products.*.vat_amount' => 'nullable|numeric',
@@ -479,6 +480,7 @@ class StockController extends Controller
             $purchaseHistory = new PurchaseHistory();
             $purchaseHistory->purchase_id = $purchase->id;
             $purchaseHistory->product_id = $product['product_id'];
+            $purchaseHistory->type_id = $product['type_id'] ?? null;
             $purchaseHistory->quantity = $product['quantity'];
             
             $purchaseHistory->product_size = $product['product_size'];
@@ -725,7 +727,7 @@ class StockController extends Controller
 
     public function getPurchaseHistory(Purchase $purchase)
     {
-        $purchase = Purchase::with(['supplier', 'purchaseHistory.product.types'])
+        $purchase = Purchase::with(['supplier', 'purchaseHistory.product.types', 'purchaseHistory.type'])
             ->findOrFail($purchase->id);
 
         return response()->json($purchase);
@@ -733,8 +735,8 @@ class StockController extends Controller
 
     public function editPurchaseHistory(Purchase $purchase)
     {
-        $purchase = Purchase::with('supplier', 'purchaseHistory.product')->findOrFail($purchase->id);
-        $products = Product::orderby('id','DESC')->get();
+        $purchase = Purchase::with('supplier', 'purchaseHistory.product', 'purchaseHistory.type')->findOrFail($purchase->id);
+        $products = Product::with('types:id,name')->orderby('id','DESC')->get();
         $suppliers = Supplier::orderby('id','DESC')->get();
         $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
         $cashAmount = $purchase->transactions->where('payment_type', 'Cash')->first();
@@ -762,12 +764,12 @@ class StockController extends Controller
             'due_amount' => 'required|numeric',
             'products' => 'required|array',
             'products.*.product_id' => 'required|exists:products,id',
+            'products.*.type_id' => 'nullable|exists:types,id',
             'products.*.quantity' => 'required|numeric|min:1',
             'products.*.product_size' => 'nullable|string',
             'products.*.product_color' => 'nullable|string',
             'products.*.unit_price' => 'required|numeric',
-            'products.*.vat_percent' => 'required|numeric',
-            'products.*.vat_amount' => 'required|numeric',
+            'products.*.vat_percent' => 'nullable|numeric',
             'products.*.total_price_with_vat' => 'required|numeric',
             'cash_payment' => 'nullable|numeric',
             'bank_payment' => 'nullable|numeric',
@@ -827,6 +829,7 @@ class StockController extends Controller
                     $purchaseHistory->quantity = $product['quantity'];
                     $purchaseHistory->product_size = $product['product_size'];
                     $purchaseHistory->product_color = $product['product_color'];
+                    $purchaseHistory->type_id = $product['type_id'] ?? null;
                     $purchaseHistory->purchase_price = $product['unit_price'];
                     $purchaseHistory->vat_percent = $product['vat_percent'];
                     $purchaseHistory->vat_amount_per_unit = $product['vat_amount'] / $product['quantity'];
@@ -1342,7 +1345,7 @@ class StockController extends Controller
     public function generateInvoice($encoded_purchase_id)
     {
         $purchase_id = base64_decode($encoded_purchase_id);
-        $purchase = Purchase::with(['supplier', 'purchaseHistory.product'])->findOrFail($purchase_id);
+        $purchase = Purchase::with(['supplier', 'purchaseHistory.product', 'purchaseHistory.type'])->findOrFail($purchase_id);
     
         $company = CompanyDetails::select(
             'company_name', 'company_logo', 'address1', 'email1', 'phone1', 'website', 

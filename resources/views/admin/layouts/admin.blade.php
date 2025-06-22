@@ -40,6 +40,10 @@
     .select2-selection{
       height: 36px !important;
     }
+    .select2-results__option[aria-selected="true"] {
+      background-color: #28a745 !important;
+      color: white !important; 
+    }
   </style>
   
 

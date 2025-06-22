@@ -83,15 +83,21 @@
                                         <textarea class="form-control" id="remarks" name="remarks" rows="1" placeholder="Enter remarks">{{ $purchase->remarks }}</textarea>
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="product_id">Choose Product <span class="text-danger">*</span>
-                                          <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#newProductModal">Add New</span>
+                                          <span class="badge badge-success d-none" style="cursor: pointer;" data-toggle="modal" data-target="#newProductModal">Add New</span>
                                         </label>
                                         <select class="form-control" id="product_id" name="product_id">
                                             <option value="">Select...</option>
                                             @foreach($products as $product)
-                                                <option value="{{ $product->id }}" data-name="{{ $product->name }}" data-code="{{ $product->product_code }}" data-price="{{ $product->price }}" data-is-zip="{{ $product->isZip() ? '1' : '0' }}">{{ $product->product_code }} - {{ $product->name }}</option>
+                                                <option value="{{ $product->id }}" 
+                                                  data-name="{{ $product->name }}" 
+                                                  data-code="{{ $product->product_code }}" 
+                                                  data-price="{{ $product->price }}" 
+                                                  data-is-zip="{{ $product->isZip() ? '1' : '0' }}" 
+                                                  data-types='@json($product->types->map(fn($t) => ['id' => $t->id, 'name' => $t->name]))'
+                                                  >{{ $product->product_code }} - {{ $product->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -102,10 +108,10 @@
                                         <input type="number" class="form-control" id="quantity" name="quantity" placeholder="Enter quantity">
                                     </div>
                                 </div>
-                                <div class="col-sm-2">
+                                <div class="col-sm-1">
                                     <div class="form-group">
                                         <label for="unit_price">Unit Price <span class="text-danger">*</span></label>
-                                        <input type="number" step="0.01" class="form-control" id="unit_price" name="unit_price" placeholder="Enter unit price">
+                                        <input type="number" step="0.01" class="form-control" id="unit_price" name="unit_price" placeholder="">
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
@@ -132,6 +138,17 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-sm-2">
+                                  <div class="form-group">
+                                    <label>Type
+                                        <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addProductTypeModal" id="quick-add-type">Add New</span>
+                                    </label>
+                                    <select id="product-type-select" name="product_type_id" class="form-control">
+                                        <option value="">Select Type</option>
+                                        {{-- Options --}}
+                                    </select>
+                                  </div>
+                                </div>
                                 <div class="col-sm-1" id="zip-field-container"></div>
                                 <div class="col-sm-1">
                                     <label for="addProductBtn">Action</label>
@@ -149,6 +166,7 @@
                                                 <th>Quantity</th>
                                                 <th>Size</th>
                                                 <th>Color</th>
+                                                <th>Type</th>
                                                 <th>Unit Price</th>
                                                 <th>VAT %</th>
                                                 <th>VAT Amount</th>
@@ -159,7 +177,10 @@
                                         </thead>
                                         <tbody id="productTable">
                                             @foreach($purchase->purchaseHistory as $history)
-                                            <tr data-id="{{ $history->id }}" data-product-id="{{ $history->product->id }}" data-zip="{{ $history->zip == 1 ? 1 : 0 }}">
+                                            <tr data-id="{{ $history->id }}" 
+                                              data-product-id="{{ $history->product->id }}" 
+                                              data-zip="{{ $history->zip == 1 ? 1 : 0 }}" data-type-id="{{ $history->type_id }}"
+                                              >
                                                 <td>{{ $history->product->product_code }} {{ $history->product->name }} 
                                                   @if($history->product->isZip())
                                                       (Zip: {{ $history->zip == 1 ? 'Yes' : 'No' }})
@@ -169,6 +190,9 @@
                                                 <td><input type="number" class="form-control quantity" value="{{ $history->quantity }}" /></td>
                                                 <td>{{ $history->product_size }}</td>
                                                 <td>{{ $history->product_color }}</td>
+                                                <td>{{ $history->type->name ?? '' }}
+                                                  <input type="hidden" name="product_type_id[]" value="{{ $history->type_id }}">
+                                                </td>
                                                 <td><input type="number" step="0.01" class="form-control unit_price" value="{{ $history->purchase_price }}" /></td>
                                                 <td><input type="number" step="0.01" class="form-control vat_percent" value="{{ $history->vat_percent }}" /></td>
                                                 <td>{{ $history->vat_amount }}</td>
@@ -291,10 +315,50 @@
 @include('admin.inc.modal.size_modal')
 @include('admin.inc.modal.color_modal')
 @include('admin.inc.modal.product_create')
+@include('admin.inc.modal.product_type_modal')
 
 @endsection
 
 @section('script')
+
+<script>
+    $('#quick-add-type').on('click', function () {
+      $('#addTypeModal').modal('show');
+    });
+
+    $('#add-type-form').on('submit', function (e) {
+        e.preventDefault();
+
+        const productId = $('#product_id').val();
+        const typeName = $('input[name="new_type_id"]').val();
+
+        if (!productId) {
+            alert('Please select a product first.');
+            return;
+        }
+
+        $.ajax({
+            url: '{{ route("types.quickAddWithProduct") }}',
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                product_id: productId,
+                name: typeName
+            },
+            success: function (res) {
+                if (res.status === 'exists') {
+                    alert('Type already exists.');
+                } else if (res.status === 'success' && res.data?.id && res.data?.name) {
+                    let newOption = new Option(res.data.name, res.data.id, true, true);
+                    $('#product-type-select').append(newOption).val(res.data.id);
+                    $('#addTypeModal').modal('hide');
+                    $('input[name="new_type_id"]').val('');
+                }
+            }
+        });
+    });
+</script>
+
 <script>
 
     $(document).ready(function() {
@@ -497,9 +561,9 @@
                 var vatAmount = (totalPrice * vatPercent / 100).toFixed(2);
                 var totalPriceWithVat = (parseFloat(totalPrice) + parseFloat(vatAmount)).toFixed(2);
 
-                $(this).find('td:eq(7)').text(totalPrice);
-                $(this).find('td:eq(8)').text(totalPriceWithVat);
-                $(this).find('td:eq(6)').text(vatAmount);
+                $(this).find('td:eq(8)').text(totalPrice);
+                $(this).find('td:eq(9)').text(totalPriceWithVat);
+                $(this).find('td:eq(7)').text(vatAmount);
 
                 itemTotalAmount += parseFloat(totalPrice) || 0;
                 totalVatAmount += parseFloat(vatAmount) || 0;
@@ -558,6 +622,8 @@
             var quantity = $('#quantity').val() || 1;
             var unitPrice = $('#unit_price').val();
             var vatPercent = 0;
+            var typeId = $('#product-type-select').val() || '';
+            var typeName = $('#product-type-select option:selected').text() || '';
 
             if (isNaN(quantity) || quantity <= 0) {
                 alert('Quantity must be a positive number.');
@@ -582,12 +648,13 @@
                 var existingSize = $(this).find('td:eq(2)').text();
                 var existingColor = $(this).find('td:eq(3)').text();
                 var existingZip = $(this).data('zip');
+                var existingTypeId = $(this).data('type-id') || '';
 
                 if (
                     productId == existingProductId &&
                     selectedSize == existingSize &&
                     selectedColor == existingColor &&
-                    String(existingZip) === String(zipValue)
+                    String(typeId) === String(existingTypeId)
                 ) {
                     productExists = true;
                     return false;
@@ -595,19 +662,21 @@
             });
 
             if (productExists) {
-                alert('This product with same size, color, and zip already exists.');
+                alert('This product exists in product list.');
                 return;
             }
 
             var zipText = zipValue === '1' ? 'Yes' : (zipValue === '0' ? 'No' : '');
-            var zipInput = zipValue !== null && zipValue !== '' ? `<input type="hidden" name="zip[]" value="${zipValue}">` : '';
+            var zipInput = zipValue !== null && zipValue !== '' ? `<input type="hidden" name="zip[]" value="${zipValue}">` : '0';
+            var typeCell = typeId ? `${typeName}<input type="hidden" name="product_type_id[]" value="${typeId}">` : `<input type="hidden" name="product_type_id[]" value="">`;
 
-            var productRow = `<tr data-product-id="${productId}">
+            var productRow = `<tr data-product-id="${productId}" data-zip="${zipValue}" data-type-id="${typeId}">
                                 <td>${productCode} - ${productName}${zipText ? ' (Zip: ' + zipText + ')' : ''}</td>
                                 ${zipInput}
                                 <td><input type="number" class="form-control quantity" value="${quantity}" min="1" /></td>
                                 <td>${selectedSize}</td>
                                 <td>${selectedColor}</td>
+                                <td>${typeCell}</td>
                                 <td><input type="number" step="0.01" class="form-control unit_price" value="${unitPrice}" /></td>
                                 <td><input type="number" step="0.01" class="form-control vat_percent" value="${vatPercent}" /></td>
                                 <td>${vatAmount}</td>
@@ -699,6 +768,7 @@
                 var totalPrice = $(this).find('td:eq(7)').text();
                 var totalPriceWithVat = $(this).find('td:eq(8)').text();
                 var zipValue = $(this).find('input[name="zip[]"]').val() || 0;
+                var typeId = $(this).find('input[name="product_type_id[]"]').val() || '';
 
                 selectedProducts.push({
                     purchase_history_id: purchaseHistoryId,
@@ -711,7 +781,8 @@
                     vat_amount: vatAmount,
                     total_price: totalPrice,
                     total_price_with_vat: totalPriceWithVat,
-                    zip: zipValue
+                    zip: zipValue,
+                    type_id: typeId
                 });
             });
 
@@ -813,6 +884,12 @@
 
             let price = selected.data('price');
             $('#unit_price').val(price !== undefined ? price : '');
+            const types = selected.data('types') || [];
+            const $typeSelect = $('#product-type-select');
+            $typeSelect.empty().append('<option value="">Select Type</option>');
+            types.forEach(function(type) {
+                $typeSelect.append(`<option value="${type.id}">${type.name}</option>`);
+            });
 
             let isZip = selected.data('is-zip');
             let zipContainer = $('#zip-field-container');

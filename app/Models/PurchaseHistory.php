@@ -23,4 +23,9 @@ class PurchaseHistory extends Model
     {
         return $this->hasMany(ShipmentDetail::class, 'purchase_history_id');
     }
+
+    public function type()
+    {
+        return $this->belongsTo(Type::class);
+    }
 }

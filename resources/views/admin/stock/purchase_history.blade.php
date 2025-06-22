@@ -157,7 +157,7 @@
                         <thead>
                             <tr>
                                 <th>Product Details</th>
-                                <th>Size-Color</th>
+                                <th>Size-Color-Type</th>
                                 <th>Purchased Quantity</th>
                                 <th>Shipped Quantity</th>
                                 <th>Purchase Price Per Unit</th>
@@ -327,7 +327,7 @@
                         purchaseHistoryHtml += `
                             <tr>
                                 <td>${history.product.product_code} - ${history.product.name} ${history.product.is_zip ? `(Zip: ${history.zip == 1 ? 'Yes' : 'No'})` : ''}</td>
-                                <td>${history.product_size} - ${history.product_color} </td>
+                                <td>${history.product_size} - ${history.product_color} ${history.type ? ' - ' + history.type.name : ''}</td>
                                 <td>${history.quantity}</td>
                                 <td>${history.shipped_quantity}</td>
                                 <td>${history.purchase_price}</td>
