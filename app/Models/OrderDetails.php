@@ -34,4 +34,9 @@ class OrderDetails extends Model
         return $this->belongsTo(Warehouse::class);
     }
 
+    public function type()
+    {
+        return $this->belongsTo(Type::class, 'type_id');
+    }
+
 }

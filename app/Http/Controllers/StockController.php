@@ -439,7 +439,7 @@ class StockController extends Controller
 
     public function addstock()
     {
-        $products = Product::with('types:id,name')->orderBy('id','DESC')->select('id', 'name', 'price', 'product_code')->get();
+        $products = Product::with(['stock', 'types:id,name'])->orderBy('id','DESC')->select('id', 'name', 'price', 'product_code')->where('active_status', 1)->get();
         $suppliers = Supplier::where('status', 1)->select('id', 'name')->orderby('id','DESC')->get();
         $colors = Color::where('status', 1)->select('id', 'color')->orderby('id','DESC')->get();
         $sizes = Size::where('status', 1)->select('id', 'size')->orderby('id','DESC')->get();

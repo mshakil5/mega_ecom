@@ -98,7 +98,7 @@
                                         <textarea class="form-control" id="remarks" name="remarks" rows="1" placeholder="Enter remarks"></textarea>
                                     </div>
                                 </div>
-                                <div class="col-sm-2">
+                                <div class="col-sm-3">
                                     <div class="form-group">
                                         <label for="product_id">Choose Product <span class="text-danger">*</span></label>
                                         
@@ -166,7 +166,7 @@
                                   </div>
                                 </div>
 
-                                <div class="col-sm-1" id="zip-field-container"></div>
+                                <div class="col-sm-1 d-none" id="zip-field-container"></div>
                                 <div class="col-sm-1">
                                     <label for="addProductBtn">Action</label>
                                     <div class="col-auto d-flex align-items-end">

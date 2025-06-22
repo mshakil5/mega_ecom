@@ -117,12 +117,24 @@
                                                     data-sizes="{{ json_encode($product->stockhistory->pluck('size')->unique()->values()) }}" 
                                                     data-colors="{{ json_encode($product->stockhistory->pluck('color')->unique()->values()) }}"
                                                     data-is-zip="{{ $product->isZip() ? '1' : '0' }}"
+                                                    data-types='@json($product->types->map(fn($t) => ['id' => $t->id, 'name' => $t->name]))'
                                                     >
                                                     {{ $product->product_code }} -  {{ $product->name }}
                                                 </option>
                                             @endforeach
                                         </select>
                                     </div>
+                                </div>
+
+                                <div class="col-sm-2">
+                                  <div class="form-group">
+                                    <label>Type                                       
+                                    </label>
+                                    <select id="type_id" name="type_id" class="form-control">
+                                        <option value="">Select Type</option>
+                                        {{-- Options --}}
+                                    </select>
+                                  </div>
                                 </div>
 
                                 
@@ -161,15 +173,15 @@
                                         <input type="number" class="form-control quantity" id="quantity" name="quantity" placeholder="" min="1">
                                     </div>
                                 </div>
-                                <div class="col-sm-2">
+                                <div class="col-sm-1">
                                     <div class="form-group">
                                         <label for="price_per_unit">Unit Price <span class="text-danger">*</span></label>
-                                        <input type="number" step="0.01" class="form-control" id="price_per_unit" name="price_per_unit" placeholder="Enter unit price">
+                                        <input type="number" step="0.01" class="form-control" id="price_per_unit" name="price_per_unit" placeholder="">
                                         <input type="hidden" step="0.01" class="form-control" id="ground_price">
                                         <input type="hidden" step="0.01" class="form-control" id="profit_margin">
                                     </div>
                                 </div>
-                                <div class="col-sm-1" id="zip-field-container"></div>
+                                <div class="col-sm-1 d-none" id="zip-field-container"></div>
 
 
                                 <div class="col-sm-1">
@@ -188,6 +200,7 @@
                                                 <th>Warehouse</th>
                                                 <th>Size</th>
                                                 <th>Color</th>
+                                                <th>Type</th>
                                                 <th>Zip</th>
                                                 <th>Quantity</th>
                                             </tr>
@@ -208,6 +221,7 @@
                                                 <th>Quantity</th>
                                                 <th>Size</th>
                                                 <th>Color</th>
+                                                <th>Type</th>
                                                 <th>Selling Price</th>
                                                 <th>VAT %</th>
                                                 <th>VAT Amount</th>
@@ -218,7 +232,7 @@
                                         </thead>
                                         <tbody>
                                         @foreach ($order->orderDetails as $detail)
-                                            <tr data-product-id="{{ $detail->product_id }}" data-zip="{{ $detail->zip }}">
+                                            <tr data-product-id="{{ $detail->product_id }}" data-zip="{{ $detail->zip }}" data-type-id="{{ $detail->type_id }}">
                                                 <td>{{ $detail->product->product_code }} - {{ $detail->product->name }}
                                                   @if($detail->product->isZip())
                                                       (Zip: {{ $detail->zip == 1 ? 'Yes' : 'No' }})
@@ -230,6 +244,8 @@
                                                 <td><input type="number" class="form-control quantity" value="{{ $detail->quantity }}" min="1" name="" /></td>
                                                 <td>{{ $detail->size }}</td>
                                                 <td>{{ $detail->color }}</td>
+                                                <td>{{ $detail->type->name ?? '' }}</td>
+                                                <input type="hidden" name="product_type_id[]" value="{{ $detail->type_id ?? '' }}">
                                                 <td><input type="number" step="0.01" class="form-control price_per_unit" value="{{ $detail->price_per_unit }}" /></td>
                                                 <td><input type="number" step="0.01" class="form-control vat_percent" name="" value="{{ $detail->vat_percent }}" /></td>
                                                 <td>{{ $detail->total_vat }}</td>
@@ -366,9 +382,9 @@
                 var vatAmount = (totalPrice * vatPercent / 100).toFixed(2);
                 var totalPriceWithVat = (parseFloat(totalPrice) + parseFloat(vatAmount)).toFixed(2);
 
-                $(this).find('td:eq(6)').text(vatAmount);
-                $(this).find('td:eq(7)').text(totalPrice);
-                $(this).find('td:eq(8)').text(totalPriceWithVat);
+                $(this).find('td:eq(7)').text(vatAmount);
+                $(this).find('td:eq(8)').text(totalPrice);
+                $(this).find('td:eq(9)').text(totalPriceWithVat);
 
                 itemTotalAmount += parseFloat(totalPrice) || 0;
                 totalVatAmount += parseFloat(vatAmount) || 0;
@@ -407,6 +423,9 @@
             var selectedColor = $('#color').val();
             var vatPercent = 0;
 
+            var typeId = $('#type_id').val() || '';
+            var typeName = $('#type_id option:selected').text() || '';
+
             if (isNaN(quantity) || quantity <= 0) {
                 alert('Quantity must be a positive number.');
                 return;
@@ -428,26 +447,29 @@
                 var existingSize = $(this).find('td:eq(2)').text().trim();
                 var existingColor = $(this).find('td:eq(3)').text().trim();
                 var existingZip = $(this).data('zip');
+                var existingTypeId = $(this).data('type-id') || '';
 
                 if (
                     productId == existingProductId &&
                     selectedSize == existingSize &&
                     selectedColor == existingColor &&
-                    String(existingZip) === String(zipValue)
+                    String(typeId) === String(existingTypeId)
                 ) {
                     productExists = true;
                     return false;
                 }
             });
             if (productExists) {
-                alert('This product with same size, color, and zip already exists.');
+                alert('This product exists in product list.');
                 return;
             }
 
             var zipText = zipValue === '1' ? 'Yes' : (zipValue === '0' ? 'No' : '');
             var zipInput = zipValue !== null && zipValue !== '' ? `<input type="hidden" name="zip[]" value="${zipValue}">` : '';
 
-            var productRow = `<tr data-product-id="${productId}" data-zip="${zipValue}">
+            var typeCell = typeId ? `${typeName}<input type="hidden" name="product_type_id[]" value="${typeId}">` : `<input type="hidden" name="product_type_id[]" value="">`;
+
+            var productRow = `<tr data-product-id="${productId}" data-zip="${zipValue}" data-type-id="${typeId}">
                 <td>
                     ${productCode} - ${productName} ${zipText ? ' (Zip: ' + zipText + ')' : ''} <br>
                     <span>
@@ -471,6 +493,7 @@
                 </td>
                 <td>${selectedSize}</td>
                 <td>${selectedColor}</td>
+                <td>${typeCell}</td>
                 <td><input type="number" step="0.01" class="form-control price_per_unit" value="${unitPrice.toFixed(2)}" /></td>
                 <td><input type="number" step="0.01" class="form-control vat_percent" value="${vatPercent}" /></td>
                 <td>${vatAmount}</td>
@@ -596,6 +619,7 @@
                 var productColor = $(this).find('td:eq(3)').text();
                 var totalPrice = (quantity * unitPrice).toFixed(2);
                 var zipValue = $(this).find('input[name="zip[]"]').val() || 0;
+                var typeId = $(this).find('input[name="product_type_id[]"]').val() || '';
 
                 products.push({
                     order_details_id: order_details_id,
@@ -609,7 +633,8 @@
                     vat_percent: vatPercent,
                     total_vat: vatAmount,
                     total_price_with_vat: total_price_with_vat,
-                    zip: zipValue
+                    zip: zipValue,
+                    type_id: typeId
                 });
             });
 
@@ -701,11 +726,75 @@
             }
         });
 
-        $(document).on('change', '#product_id, #warehouse_id, #zip_option', function () {
+        function fetchStock() {
+            var selectedProduct = $('#product_id').find(':selected');
+            var selectedProductId = $('#product_id').val();
+            var warehouseId = $('#warehouse_id').val() || '';
+            var typeId = $('#type_id').val() || '';
+            var selectedSize = $('#size').val() || '';
+            var selectedColor = $('#color').val() || '';
+
+            var pricePerUnit = selectedProduct.data('price');
+            var groundPrice = selectedProduct.data('ground-price');
+            var profitMargin = selectedProduct.data('profit-margin');
+            var considerableMargin = selectedProduct.data('considerable-margin');
+            var considerablePrice = selectedProduct.data('considerable-price');
+
+            $('#quantity').val(1);
+            $('#price_per_unit').val(pricePerUnit || '');
+            $('#ground_price').val(groundPrice || '');
+            $('#profit_margin').val(profitMargin || '');
+            $('#considerable_margin').val(considerableMargin || '');
+            $('#considerable_price').val(considerablePrice || '');
+
+            var sizes = selectedProduct.data('sizes') || {};
+            var colors = selectedProduct.data('colors') || {};
+            console.log(sizes, colors);
+            var sizeSelect = $('#size').html('<option value="">Select...</option>');
+            Object.values(sizes).forEach(s => sizeSelect.append(`<option value="${s}">${s}</option>`));
+            var colorSelect = $('#color').html('<option value="">Select...</option>');
+            Object.values(colors).forEach(c => colorSelect.append(`<option value="${c}">${c}</option>`));
+
+            if (selectedProductId && warehouseId) {
+                $.ajax({
+                    url: '/admin/get-product-stock',
+                    type: 'POST',
+                    data: {
+                        product_id: selectedProductId,
+                        warehouse_id: warehouseId,
+                        size: selectedSize,
+                        color: selectedColor,
+                        type_id: typeId,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.getStockcount > 0) {
+                            $('#stockTable tbody').html(response.stock);
+                        } else {
+                            $('#stockTable tbody').html('<tr><td colspan="5"><span class="text-danger">No stock available</span></td></tr>');
+                        }
+                        $('h5#stockHeading').html(`Stock List: (Total Quantity: ${response.totalQuantity})`);
+                    },
+                    error: function() {
+                        swal({
+                            text: "Error fetching stock quantity.",
+                            icon: "error",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--error"
+                            }
+                        });
+                    }
+                });
+            }
+        }
+
+        $(document).on('change', '#product_id, #warehouse_id, #type_id', function () {
             var zipOption = $('#zip_option').length ? $('#zip_option').val() : null;
             var selectedProduct = $('#product_id').find(':selected');
             var selectedProduct = $('#product_id').find(':selected');
             var selectedProductId = $('#product_id').val();
+            var typeId = $('#type_id').val() || '';
             var warehouseId = $('#warehouse_id').val() || '';
             var pricePerUnit = selectedProduct.data('price');
             var groundPrice = selectedProduct.data('ground-price');
@@ -750,6 +839,7 @@
                 data: {
                     product_id: selectedProduct.val(),
                     warehouse_id: warehouseId,
+                    type_id: typeId,
                     zip: zipOption,
                     _token: '{{ csrf_token() }}'
                 },
@@ -1009,6 +1099,12 @@
             let selected = $(this).find(':selected');
             let isZip = selected.data('is-zip');
             let zipContainer = $('#zip-field-container');
+            const types = selected.data('types') || [];
+            const $typeSelect = $('#type_id');
+            $typeSelect.empty().append('<option value="">Select Type</option>');
+            types.forEach(function(type) {
+                $typeSelect.append(`<option value="${type.id}">${type.name}</option>`);
+            });
 
             if (isZip == 1) {
                 if (!zipContainer.has('.form-group').length) {

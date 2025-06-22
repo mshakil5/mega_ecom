@@ -31,7 +31,7 @@ class InHouseSellController extends Controller
         // })
         // ->orderby('id','DESC')->select('id', 'name','price', 'product_code')->get();
 
-        $products = Product::with('stock')->orderby('id','DESC')->select('id', 'name','price', 'product_code')->get();
+        $products = Product::with(['stock', 'types:id,name'])->orderby('id','DESC')->select('id', 'name','price', 'product_code')->get();
 
         $colors = Color::where('status', 1)->select('id', 'color')->orderby('id','DESC')->get();
         $sizes = Size::where('status', 1)->select('id', 'size')->orderby('id','DESC')->get();
@@ -75,6 +75,7 @@ class InHouseSellController extends Controller
                 ->where('color', $product['product_color'])
                 ->where('zip', $product['zip'])
                 ->where('warehouse_id', $request->warehouse_id)
+                ->where('type_id', $product['type_id'])
                 ->first();
         
             if (!$stock || $stock->quantity < $product['quantity']) {
@@ -85,6 +86,7 @@ class InHouseSellController extends Controller
                                  ' and color ' . $product['product_color'] . 
                                  ' in warehouse: ' . ($warehouse->name ?? '') . 
                                  ' (Location: ' . ($warehouse->location ?? '') . ')',
+                                 'stock_data' => $stock,
                 ], 422);
             }
         } 
@@ -171,6 +173,7 @@ class InHouseSellController extends Controller
             $orderDetail->quantity = $product['quantity'];
             $orderDetail->size = $product['product_size'];
             $orderDetail->color = $product['product_color'];
+            $orderDetail->type_id = $product['type_id'] ?? null;
             $orderDetail->zip = $product['zip'];
             $orderDetail->price_per_unit = $product['unit_price'];
             $orderDetail->total_price = $product['total_price'];
@@ -185,6 +188,7 @@ class InHouseSellController extends Controller
                 $stock = Stock::where('product_id', $product['product_id'])
                 ->where('size', $product['product_size'])
                 ->where('color', $product['product_color'])
+                ->where('type_id', $product['type_id'])
                 ->where('zip', $product['zip'])
                 ->where('warehouse_id', $request->warehouse_id)
                     ->first();
@@ -198,6 +202,7 @@ class InHouseSellController extends Controller
                     $stock->size = $product['product_size'];
                     $stock->color = $product['product_color'];
                     $stock->zip = $product['zip'];
+                    $stock->type_id = $product['type_id'];
                     $stock->quantity = -$product['quantity'];
                     $stock->created_by = auth()->user()->id;
                     $stock->save();
@@ -346,6 +351,7 @@ class InHouseSellController extends Controller
             $orderDetail->size = $product['product_size'];
             $orderDetail->color = $product['product_color'];
             $orderDetail->zip = $product['zip'];
+            $orderDetail->type_id = $product['type_id'];
             $orderDetail->price_per_unit = $product['unit_price'];
             $orderDetail->total_price = $product['total_price'];
             $orderDetail->vat_percent = $product['vat_percent'];
@@ -421,68 +427,44 @@ class InHouseSellController extends Controller
     
     public function getStock(Request $request)
     {
-        $productId = $request->input('product_id');
-
+        $productId   = $request->input('product_id');
         $warehouseId = $request->input('warehouse_id');
-
         $selectedSize = $request->input('size');
         $selectedColor = $request->input('color');
-        $zip = $request->input('zip');
+        $typeId = $request->input('type_id');
 
-        $getStock = Stock::with(['warehouse', 'product'])
-                ->where('product_id', $productId)
-                ->where('quantity', '>', 0)
-                ->when($warehouseId, function ($query) use ($warehouseId) {
-                    return $query->where('warehouse_id', $warehouseId);
-                })
-                ->when($selectedSize, function ($query) use ($selectedSize) {
-                    return $query->where('size', $selectedSize);
-                })
-                ->when($selectedColor, function ($query) use ($selectedColor) {
-                    return $query->where('color', $selectedColor);
-                })
-               ->when(!is_null($zip), function ($query) use ($zip) {
-                    return $query->where('zip', $zip);
-                })
-                ->get();
+        $getStock = Stock::with(['warehouse', 'product', 'type'])
+            ->where('product_id', $productId)
+            ->where('quantity', '>', 0)
+            ->when($warehouseId, fn($q) => $q->where('warehouse_id', $warehouseId))
+            ->when($selectedSize, fn($q) => $q->where('size', $selectedSize))
+            ->when($selectedColor, fn($q) => $q->where('color', $selectedColor))
+            ->when($typeId, fn($q) => $q->where('type_id', $typeId))
+            ->get();
 
         $getStockcount = $getStock->count();
-
         $totalQuantity = $getStock->sum('quantity');
 
         $prop = '';
-        
-            foreach ($getStock as $item){
+        foreach ($getStock as $item) {
+            $typeName = $item->type->name ?? '-';
+            $prop .= '<tr>
+                        <td>' . $item->product->product_code . '-' . $item->product->name . '</td>
+                        <td>' . $item->warehouse->name . '</td>
+                        <td>' . $item->size . '</td>
+                        <td>' . $item->color . '</td>
+                        <td>' . $typeName . '</td>
+                        <td>' . intval($item->quantity) . '</td>
+                      </tr>';
+        }
 
-                // <!-- Single Property Start -->
-                $prop.= '<tr>
-                            <td>
-                                '.$item->product->product_code.'-'.$item->product->name.'
-                            </td>
-                            <td>
-                                '.$item->warehouse->name.'
-                            </td>
-                            <td>
-                                '.$item->size.'
-                            </td>
-                            <td>
-                                '.$item->color.'
-                            </td>
-                            <td>
-                                '.($item->product->is_zip ? ($item->zip == 1 ? 'Zip' : 'No Zip') : '-').'
-                            </td>
-                            <td>
-                                '.intval($item->quantity).'
-                            </td>';
-                $prop.= '</tr>';
-            }
-    
         return response()->json([
             'stock' => $prop,
             'getStockcount' => $getStockcount,
             'totalQuantity' => $totalQuantity
         ]);
-    } 
+    }
+
 
     public function editOrder($orderId)
     {
@@ -495,7 +477,8 @@ class InHouseSellController extends Controller
         //     $query->where('quantity', '>', 0);
         // })
         // ->orderby('id','DESC')->select('id', 'name','price', 'product_code')->get();
-        $products = Product::with('stock')->orderby('id','DESC')->select('id', 'name','price', 'product_code')->get();
+        $products = Product::with(['stock', 'types:id,name'])->orderby('id','DESC')->select('id', 'name','price', 'product_code')->get();
+        
         $colors = Color::orderby('id','DESC')->where('status', 1)->get();
         $sizes = Size::orderby('id','DESC')->where('status', 1)->get();
         $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
@@ -536,6 +519,7 @@ class InHouseSellController extends Controller
                 ->where('size', $product['product_size'])
                 ->where('color', $product['product_color'])
                 ->where('zip', $product['zip'])
+                ->where('type_id', $product['type_id'])
                 ->sum('quantity');
 
             $quantityDifference = $product['quantity'] - $previousQty;
@@ -546,6 +530,7 @@ class InHouseSellController extends Controller
                         ->where('size', $product['product_size'])
                         ->where('color', $product['product_color'])
                         ->where('zip', $product['zip'])
+                        ->where('type_id', $product['type_id'])
                         ->where('warehouse_id', $request->warehouse_id)
                         ->first();
             
@@ -565,6 +550,7 @@ class InHouseSellController extends Controller
                     ->where('size', $product['product_size'])
                     ->where('color', $product['product_color'])
                     ->where('zip', $product['zip'])
+                    ->where('type_id', $product['type_id'])
                     ->where('warehouse_id', $request->warehouse_id)
                     ->first();
         
@@ -682,6 +668,7 @@ class InHouseSellController extends Controller
                         $orderDetail->size = $product['product_size'];
                         $orderDetail->color = $product['product_color'];
                         $orderDetail->zip = $product['zip'];
+                        $orderDetail->type_id = $product['type_id'];
                         $orderDetail->price_per_unit = $product['unit_price'];
                         $orderDetail->total_price = $product['total_price'];
                         $orderDetail->vat_percent = $product['vat_percent'];
@@ -695,6 +682,7 @@ class InHouseSellController extends Controller
                             ->where('size', $product['product_size'])
                             ->where('color', $product['product_color'])
                             ->where('zip', $product['zip'])
+                            ->where('type_id', $product['type_id'])
                             ->where('warehouse_id', $request->warehouse_id)
                             ->first();
         
@@ -738,6 +726,7 @@ class InHouseSellController extends Controller
                     $orderDetail->size = $product['product_size'];
                     $orderDetail->color = $product['product_color'];
                     $orderDetail->zip = $product['zip'];
+                    $orderDetail->type_id = $product['type_id'];
                     $orderDetail->price_per_unit = $product['unit_price'];
                     $orderDetail->total_price = $product['total_price'];
                     $orderDetail->vat_percent = $product['vat_percent'];
@@ -750,6 +739,7 @@ class InHouseSellController extends Controller
                     ->where('size', $product['product_size'])
                     ->where('color', $product['product_color'])
                     ->where('zip', $product['zip'])
+                    ->where('type_id', $product['type_id'])
                     ->where('warehouse_id', $request->warehouse_id)
                         ->first();
                     if ($stock) {
@@ -762,6 +752,7 @@ class InHouseSellController extends Controller
                         $stock->size = $product['product_size'];
                         $stock->color = $product['product_color'];
                         $stock->zip = $product['zip'];
+                        $stock->type_id = $product['type_id'];
                         $stock->quantity = -$product['quantity'];
                         $stock->created_by = auth()->user()->id;
                         $stock->save();
@@ -802,6 +793,7 @@ class InHouseSellController extends Controller
                         ->where('size', $existingOrderDetail->size)
                         ->where('color', $existingOrderDetail->color)
                         ->where('zip', $existingOrderDetail->zip)
+                        ->where('type_id', $existingOrderDetail->type_id)
                         ->where('warehouse_id', $request->warehouse_id)
                         ->first();
             
@@ -839,6 +831,7 @@ class InHouseSellController extends Controller
                             'size' => $product['product_size'],
                             'color' => $product['product_color'],
                             'zip' => $product['zip'],
+                            'type_id' => $product['type_id'],
                             'price_per_unit' => $product['unit_price'],
                             'total_price' => $product['total_price'],
                             'vat_percent' => $product['vat_percent'],
@@ -858,6 +851,7 @@ class InHouseSellController extends Controller
                         'size' => $product['product_size'],
                         'color' => $product['product_color'],
                         'zip' => $product['zip'],
+                        'type_id' => $product['type_id'],
                         'price_per_unit' => $product['unit_price'],
                         'total_price' => $product['total_price'],
                         'vat_percent' => $product['vat_percent'],
@@ -874,6 +868,7 @@ class InHouseSellController extends Controller
                         ->where('size', $product['product_size'])
                         ->where('color', $product['product_color'])
                         ->where('zip', $product['zip'])
+                        ->where('type_id', $product['type_id'])
                         ->where('warehouse_id', $request->warehouse_id)
                         ->first();
 
@@ -887,6 +882,7 @@ class InHouseSellController extends Controller
                         $stock->size = $product['product_size'];
                         $stock->color = $product['product_color'];
                         $stock->zip = $product['zip'];
+                        $stock->type_id = $product['type_id'];
                         $stock->quantity = -$product['quantity'];
                         $stock->created_by = auth()->user()->id;
                         $stock->save();
