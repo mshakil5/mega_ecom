@@ -359,69 +359,82 @@ class StockController extends Controller
 
     public function getsingleProductHistory(Request $request, $id, $size = null, $color = null, $warehouse_id = null, $type_id = null)
     {
-        if ($request->fromDate || $request->toDate) {
-            $request->validate([
-                'fromDate' => 'nullable|date',
-                'toDate' => 'required_with:fromDate|date|after_or_equal:fromDate',
-            ]);
+      if ($request->fromDate || $request->toDate) {
+        $request->validate([
+          'fromDate' => 'nullable|date',
+          'toDate' => 'required_with:fromDate|date|after_or_equal:fromDate',
+        ]);
 
-            $fromDate = Carbon::parse($request->input('fromDate'))->startOfDay();
-            $toDate = Carbon::parse($request->input('toDate'))->endOfDay();
-        } else {
-            $fromDate = '';
-            $toDate = '';
-        }
+        $fromDate = Carbon::parse($request->input('fromDate'))->startOfDay();
+        $toDate = Carbon::parse($request->input('toDate'))->endOfDay();
+      } else {
+        $fromDate = '';
+        $toDate = '';
+      }
 
-        $product = Product::select('id', 'name', 'product_code')->where('id', $id)->first();
-        $warehouses = Warehouse::where('status', 1)->get();
+      $product = Product::select('id', 'name', 'product_code')->where('id', $id)->first();
+      $warehouses = Warehouse::where('status', 1)->get();
 
-        $shipmentDetails = ShipmentDetails::where('product_id', $id)
-            ->when($fromDate, function ($query) use ($fromDate, $toDate) {
-                $query->whereBetween('created_at', [$fromDate, $toDate]);
-            })
-            ->where('size', $size)
-            ->where('color', $color)
-            ->where('warehouse_id', $warehouse_id)
-            ->where('type_id', $type_id)
-            ->orderby('id', 'DESC')
-            ->get();
+      $shipmentDetails = ShipmentDetails::where('product_id', $id)
+        ->when($fromDate, function ($query) use ($fromDate, $toDate) {
+          $query->whereBetween('created_at', [$fromDate, $toDate]);
+        })
+        ->where('size', $size)
+        ->where('color', $color)
+        ->where('warehouse_id', $warehouse_id)
+        ->where('type_id', $type_id)
+        ->orderby('id', 'DESC')
+        ->get();
 
-        $salesHistories = OrderDetails::where('product_id', $id)
-            ->when($fromDate, function ($query) use ($fromDate, $toDate) {
-                $query->whereBetween('created_at', [$fromDate, $toDate]);
-            })
-            ->where('size', $size)
-            ->where('color', $color)
-            ->where('warehouse_id', $warehouse_id)
-            ->where('type_id', $type_id)
-            ->orderby('id', 'DESC')
-            ->whereHas('order', function ($query) {
-                $query->whereIn('order_type', ['0', '1'])
-                    ->whereNotNull('warehouse_id')
-                    // ->whereNotIn('status', [6, 7])
-                    ;
-            })->get();
+      $salesHistories = OrderDetails::where('product_id', $id)
+        ->when($fromDate, function ($query) use ($fromDate, $toDate) {
+          $query->whereBetween('created_at', [$fromDate, $toDate]);
+        })
+        ->where('size', $size)
+        ->where('color', $color)
+        ->where('warehouse_id', $warehouse_id)
+        ->where('type_id', $type_id)
+        ->orderby('id', 'DESC')
+        ->whereHas('order', function ($query) {
+          $query->whereIn('order_type', ['0', '1'])
+            ->whereNotNull('warehouse_id')
+            // ->whereNotIn('status', [6, 7])
+          ;
+        })->get();
 
-        $stockTransferRequests = StockTransferRequest::where('product_id', $id)
+      $stockTransferRequests = StockTransferRequest::where('product_id', $id)
 
-            ->where(function ($query) use ($warehouse_id) {
-                $query->where('from_warehouse_id', $warehouse_id)
-                    ->orWhere('to_warehouse_id', $warehouse_id);
-            })
-            ->when($size, function ($query) use ($size) {
-                $query->where('size', $size);
-            })
-            ->when($color, function ($query) use ($color) {
-                $query->where('color', $color);
-            })
-            ->when($fromDate, function ($query) use ($fromDate, $toDate) {
-                $query->whereBetween('created_at', [$fromDate, $toDate]);
-            })
-            ->where('status', 1)
-            ->orderBy('id', 'DESC')
-            ->get();
+        ->where(function ($query) use ($warehouse_id) {
+          $query->where('from_warehouse_id', $warehouse_id)
+            ->orWhere('to_warehouse_id', $warehouse_id);
+        })
+        ->when($size, function ($query) use ($size) {
+          $query->where('size', $size);
+        })
+        ->when($color, function ($query) use ($color) {
+          $query->where('color', $color);
+        })
+        ->when($fromDate, function ($query) use ($fromDate, $toDate) {
+          $query->whereBetween('created_at', [$fromDate, $toDate]);
+        })
+        ->where('status', 1)
+        ->orderBy('id', 'DESC')
+        ->get();
 
-        return view('admin.stock.single_product_history', compact('shipmentDetails', 'salesHistories', 'stockTransferRequests', 'product', 'warehouses', 'id', 'size', 'color', 'warehouse_id'));
+      $systemLosses = SystemLose::with('product')
+        ->where('product_id', $id)
+        ->where('size', $size)
+        ->where('warehouse_id', $warehouse_id)
+        ->where('color', $color)
+        ->latest()
+        ->get();
+
+      $type = null;
+      if ($type_id) {
+        $type = Type::find($type_id);
+      }
+
+      return view('admin.stock.single_product_history', compact('shipmentDetails', 'salesHistories', 'stockTransferRequests', 'product', 'warehouses', 'id', 'size', 'color', 'warehouse_id', 'type', 'systemLosses'));
     }
 
     public function addstock()

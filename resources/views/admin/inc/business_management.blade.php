@@ -158,7 +158,7 @@
                         <p>Sample Products</p>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item d-none">
                     <a href="{{ route('stockReturnHistory') }}" class="nav-link {{ (request()->is('admin/purchase-return-history') || request()->routeIs('stockReturnHistory')) ? 'active' : '' }}">
                         <i class="fas fa-undo nav-icon"></i>
                         <p>Return History</p>

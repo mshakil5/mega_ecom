@@ -2,14 +2,7 @@
 
 @section('content')
 
-@php
-    // system loss calculation start
-    $systemLosses = \App\Models\SystemLose::with('product')->where('product_id', $product->id)->where('size', $size)->where('warehouse_id', $warehouse_id)->where('color', $color)->latest()->get();
-    // system loss calculation end
-@endphp
-
-
-<section class="content" id="newBtnSection">
+<section class="content">
     <div class="container-fluid">
       <div class="row">
         <div class="col-2">
@@ -18,10 +11,24 @@
       </div>
     </div>
 </section>
-<section class="content" id="contentContainer">
+
+<div class="card card-primary sticky-top mx-3 mb-3 bg-success">
+    <div class="card-body">
+        <h4>
+            <strong>Product:</strong> {{ $product->name }} ({{ $product->product_code }}) |
+            <strong>Size:</strong> {{ $size }} |
+            <strong>Color:</strong> {{ $color }} |
+            <strong>Warehouse:</strong> {{ optional($warehouses->firstWhere('id', $warehouse_id))->name }}
+            @if (!empty($type))
+                | <strong>Type:</strong> {{ $type->name }}
+            @endif
+        </h4>
+    </div>
+</div>
+
+<section class="content">
     <div class="container-fluid">
 
-        
         <div class="row">
             <div class="col-12">
                 <div class="card card-secondary">
@@ -29,7 +36,6 @@
                         <h3 class="card-title">Search</h3>
                     </div>
                     <div class="card-body">
-                        <!-- Filter Form Section -->
                         <form action="{{route('admin.product.purchasehistorysearch',['id' => $id, 'size' => $size, 'color' => $color, 'warehouse_id' => $warehouse_id])}}" method="POST">
                             @csrf
                             <div class="row mb-3 ">
@@ -93,23 +99,15 @@
             <div class="col-12">
                 <div class="card card-secondary">
                     <div class="card-header">
-                        <h3 class="card-title">Product Name: {{$product->name}}-{{$product->product_code}}</h3>
+                        <h3 class="card-title">Shipment history</h3>
                     </div>
                     <div class="card-body">
-
-                        <div class="text-center mb-4 company-name-container">
-                            <h2>{{$product->name}}</h2>
-                            <h4>Shipment history</h4>
-                        </div>
-
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped p-table">
                                 <thead>
                                     <tr>
                                         <th>Date</th>
                                         <th>Supplier</th>
-                                        <th>Size</th>
-                                        <th>Colour</th>
                                         <th>Quantity</th>
                                         <th>Purchase Price</th>
                                         <th>Selling Price</th>
@@ -130,8 +128,6 @@
                                                 </a>
                                                 @endif
                                             </td>
-                                            <td>{{ $data->size}}</td>
-                                            <td>{{ $data->color}}</td>
                                             <td>{{ $data->quantity}}</td>
                                             <td>{{ $data->price_per_unit}}</td>
                                             <td>{{ $data->selling_price}}</td>
@@ -148,20 +144,13 @@
             </div>
         </div>
 
-        
         <div class="row">
             <div class="col-12">
                 <div class="card card-secondary">
                     <div class="card-header">
-                        <h3 class="card-title">Product Name: {{$product->name}}-{{$product->product_code}}</h3>
+                        <h3 class="card-title">Sales history</h3>
                     </div>
                     <div class="card-body">
-
-                        <div class="text-center mb-4 company-name-container">
-                            <h2>{{$product->name}}</h2>
-                            <h4>Sales history</h4>
-                        </div>
-
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped p-table">
                                 <thead>
@@ -169,8 +158,6 @@
                                         <th>Date</th>
                                         <th>Whole Saler</th>
                                         <th>Warehouse</th>
-                                        <th>Size</th>
-                                        <th>Colour</th>
                                         <th>Quantity</th>
                                         <th>Price</th>
                                         <th>Status</th>
@@ -188,8 +175,6 @@
                                                 </a>
                                             </td>
                                             <td>{{ $data->warehouse_id ? $data->warehouse->name : " "}}</td>
-                                            <td>{{ $data->size}}</td>
-                                            <td>{{ $data->color}}</td>
                                             <td>{{ $data->quantity}}</td>
                                             <td>{{ $data->price_per_unit}}</td>
                                             <td>
@@ -222,17 +207,13 @@
             </div>
         </div>
 
-
         <div class="row">
             <div class="col-12">
                 <div class="card card-secondary">
+                    <div class="card-header">
+                        <h3 class="card-title">Transfer History</h3>
+                    </div>
                     <div class="card-body">
-
-                        <div class="text-center mb-4 company-name-container">
-                            <h2>{{ $product->name }} - {{ $size }} - {{ $color }}</h2>
-                            <h4>Transfer History</h4>
-                        </div>
-
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped p-table">
                                 <thead>
@@ -270,18 +251,13 @@
             </div>
         </div>
 
-
-
         <div class="row">
             <div class="col-12">
                 <div class="card card-secondary">
+                    <div class="card-header">
+                        <h3 class="card-title">System Losses</h3>
+                    </div>
                     <div class="card-body">
-
-                        <div class="text-center mb-4 company-name-container">
-                            <h2>{{ $product->name }} - {{ $size }} - {{ $color }}</h2>
-                            <h4>System Loss</h4>
-                        </div>
-
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped p-table">
                                 <thead>
@@ -289,8 +265,6 @@
                                         <th>Date</th>
                                         <th>Product</th>
                                         <th>Quantity</th>
-                                        <th>Size</th>
-                                        <th>Color</th>
                                         <th>Warehouse</th>
                                         <th>Performed By</th>
                                         <th>Reason</th>
@@ -302,8 +276,6 @@
                                         <td>{{ \Carbon\Carbon::parse($systemLoss->created_at)->format('d-m-Y') }}</td>
                                         <td>{{ ($systemLoss->product->product_code ?? '') . '-' . ($systemLoss->product->name ?? '') . '-' . ($systemLoss->size ?? '') . '-' . ($systemLoss->color ?? '') }}</td>
                                         <td>{{ $systemLoss->quantity }}</td>
-                                        <td>{{ $systemLoss->size }}</td>
-                                        <td>{{ $systemLoss->color }}</td>
                                         <td>
                                             @if ($systemLoss->shipment_detail_id)
                                                 <span class="text-danger">Before Stocking</span>
