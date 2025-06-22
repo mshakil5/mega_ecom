@@ -216,6 +216,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::get('/check-product-code', [ProductController::class, 'checkProductCode'])->name('check.product.code');
 
+    Route::post('/toggle-active', [ProductController::class, 'toggleActive'])->name('toggleActive');
     Route::post('/toggle-featured', [ProductController::class, 'toggleFeatured'])->name('toggleFeatured');
     Route::post('/toggle-recent', [ProductController::class, 'toggleRecent'])->name('toggle-recent');
     Route::post('/toggle-popular', [ProductController::class, 'togglePopular'])->name('togglePopular');

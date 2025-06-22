@@ -47,7 +47,7 @@ class ProductController extends Controller
 
     public function productEdit($id)
     {
-        $product = Product::with('colors', 'sizes', 'types')->findOrFail($id);
+        $product = Product::withoutGlobalScopes()->with('colors', 'sizes', 'types')->findOrFail($id);
         $brands = Brand::select('id', 'name')->orderby('id','DESC')->get();
         $product_models = ProductModel::select('id', 'name')->orderby('id','DESC')->get();
         $groups = Group::select('id', 'name')->orderby('id','DESC')->get();
@@ -64,7 +64,7 @@ class ProductController extends Controller
     {
         $id = $request->input('id');
         
-        $product = Product::find($id);
+        $product = Product::withoutGlobalScopes()->find($request->id);
     
         if (!$product) {
             return response()->json(['success' => false, 'message' => 'Product not found.']);
@@ -93,6 +93,20 @@ class ProductController extends Controller
         $product->delete();
     
         return response()->json(['success' => true, 'message' => 'Product and images deleted successfully.']);
+    }
+
+    public function toggleActive(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:products,id',
+            'active_status' => 'required|boolean',
+        ]);
+
+        $product = Product::find($request->id);
+        $product->active_status = $request->active_status;
+        $product->save();
+
+        return response()->json(['message' => 'Active status updated successfully!']);
     }
 
     public function toggleFeatured(Request $request)

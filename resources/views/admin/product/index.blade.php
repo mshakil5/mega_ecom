@@ -23,6 +23,7 @@
                                     <!-- <th>Sub Category</th>
                                     <th>Brand</th>
                                     <th>Model</th> -->
+                                    <th>Status</th>
                                     <th>Featured</th>
                                     <th>Recent</th>
                                     <th>Popular</th>
@@ -49,6 +50,12 @@
                                     <!-- <td>@if ($data->subCategory) {{ $data->subCategory->name }} @endif</td>
                                     <td>@if ($data->brand) {{ $data->brand->name }} @endif</td>
                                     <td>@if ($data->productModel) {{ $data->productModel->name }} @endif</td> -->
+                                    <td>
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input toggle-active" id="customSwitchActive{{ $data->id }}" data-id="{{ $data->id }}" {{ $data->active_status == 1 ? 'checked' : '' }}>
+                                            <label class="custom-control-label" for="customSwitchActive{{ $data->id }}"></label>
+                                        </div>
+                                    </td>
                                     <td>
                                         <div class="custom-control custom-switch">
                                             <input type="checkbox" class="custom-control-input toggle-featured" id="customSwitch{{ $data->id }}" data-id="{{ $data->id }}" {{ $data->is_featured == 1 ? 'checked' : '' }}>
@@ -120,6 +127,32 @@
 <!-- Toggle Status Change and Delete -->
 <script>
     $(document).ready(function() {
+
+        // Active Toggle
+        $('.toggle-active').change(function() {
+            var isChecked = $(this).is(':checked');
+            var itemId = $(this).data('id');
+
+            $.ajax({
+                url: '/admin/toggle-active',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    id: itemId,
+                    active_status: isChecked ? 1 : 0
+                },
+                success: function(d) {
+                    swal({
+                        text: "Active status updated successfully!",
+                        icon: "success",
+                    });
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+
         // Featured Toggle
         $('.toggle-featured').change(function() {
             var isChecked = $(this).is(':checked');
