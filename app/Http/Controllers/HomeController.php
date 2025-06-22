@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
   
 class HomeController extends Controller
 {
@@ -78,5 +80,81 @@ class HomeController extends Controller
         $user->save();
 
         return redirect()->route('admin.dashboard');
+    }
+
+    public function truncateTables()
+    {
+      $tables = [
+        'ads',
+        'branches',
+        'bundle_products',
+        'bundle_product_images',
+        'buy_one_get_ones',
+        'buy_one_get_one_images',
+        'campaigns',
+        'campaign_requests',
+        'campaign_request_products',
+        'cancelled_orders',
+        'categories',
+        'chart_of_accounts',
+        'colors',
+        'contacts',
+        'coupons',
+        'coupon_usages',
+        'delivery_charges',
+        'delivery_men',
+        'equity_holders',
+        'faq_questions',
+        'flash_sells',
+        'flash_sell_details',
+        'groups',
+        'orders',
+        'order_details',
+        'order_due_collections',
+        'order_returns',
+        'products',
+        'product_colors',
+        'product_models',
+        'product_prices',
+        'product_reviews',
+        'product_sizes',
+        'product_types',
+        'purchases',
+        'purchase_histories',
+        'purchase_history_logs',
+        'purchase_returns',
+        'related_products',
+        'shipments',
+        'shipment_details',
+        'shippings',
+        'shipping_costs',
+        'shipping_costs',
+        'sizes',
+        'sliders',
+        'special_offers',
+        'special_offer_details',
+        'stocks',
+        'stock_histories',
+        'stock_transfer_requests',
+        'sub_categories',
+        'suppliers',
+        'supplier_stocks',
+        'supplier_transactions',
+        'system_loses',
+        'transactions',
+        'types',
+        'units',
+        'warehouses',
+      ];
+
+      Schema::disableForeignKeyConstraints();
+
+      foreach ($tables as $table) {
+        DB::table($table)->truncate();
+      }
+
+      Schema::enableForeignKeyConstraints();
+
+      return 'Tables truncated successfully.';
     }
 }

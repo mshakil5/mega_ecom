@@ -653,6 +653,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/faq-questions-update', [FAQController::class, 'update']);
     Route::get('/faq-questions/{id}', [FAQController::class, 'delete']);    
 
+    Route::get('/truncate-tables', [HomeController::class, 'truncateTables']);
 
 });
   
