@@ -4,12 +4,26 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class Product extends Model
 {
     use HasFactory;
     
     protected $guarded = [];
+
+    protected static function booted()
+    {
+        static::addGlobalScope('active_status_restriction', function (Builder $builder) {
+            if (!app()->runningInConsole() && request()->is('admin/*') === false) {
+                if (!Auth::check() || !Auth::user()->is_admin) {
+                    $builder->where('active_status', 1);
+                }
+            }
+        });
+    }
+
 
     public function category()
     {
