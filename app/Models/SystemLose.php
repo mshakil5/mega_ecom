@@ -26,4 +26,9 @@ class SystemLose extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function type()
+    {
+        return $this->belongsTo(Type::class, 'type_id');
+    }
+
 }

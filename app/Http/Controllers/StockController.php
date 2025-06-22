@@ -26,6 +26,7 @@ use App\Models\ShipmentDetails;
 use App\Models\StockTransferRequest;
 use App\Models\CompanyDetails;
 use PDF;
+use App\Models\Type;
 
 class StockController extends Controller
 {
@@ -40,8 +41,9 @@ class StockController extends Controller
         $warehouses = Warehouse::where('status', 1)->get();
         $sizes = Stock::distinct()->pluck('size')->filter();
         $colors = Stock::distinct()->pluck('color')->filter();
+        $types = Type::where('status', 1)->get();
         $filteredWarehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
-        return view('admin.stock.index', compact('warehouses','products','filteredWarehouses','sizes','colors'));
+        return view('admin.stock.index', compact('warehouses','products','filteredWarehouses','sizes','colors','types'));
     }
 
     public function getStocks(Request $request)
@@ -49,7 +51,7 @@ class StockController extends Controller
         $user = Auth::user();
         // $warehouseIds = json_decode($user->warehouse_ids, true);
         
-        $query = Stock::with('warehouse', 'product');
+        $query = Stock::with('warehouse', 'product', 'type');
         
         // $query = Stock::with('warehouse', 'product')
         //     ->select('product_id', 'size', 'color', 'warehouse_id', 'quantity');
@@ -68,6 +70,10 @@ class StockController extends Controller
 
         if ($request->has('size') && $request->size != '') {
             $query->where('size', $request->size);
+        }
+
+        if ($request->has('type_id') && $request->type_id != '') {
+            $query->where('type_id', $request->type_id);
         }
 
         if ($request->has('zip') && $request->zip != '') {
@@ -104,11 +110,14 @@ class StockController extends Controller
                 if (!$row->product || !$row->product->is_zip) return '-';
                 return $row->zip == 1 ? 'Yes' : 'No';
             })
+            ->addColumn('type', function ($row) {
+                return $row->type ? $row->type->name : '-';
+            })
             ->addColumn('action', function ($data) {
                 $btn = '<div class="table-actions"> 
-                            <button class="btn btn-sm btn-danger btn-open-loss-modal mr-2" data-size="'.$data->size.'" data-color="'.$data->color.'" data-warehouse="'.$data->warehouse_id.'" data-id="'.$data->product->id.'"  data-zip="'.$data->zip.'">System Loss</button>';  
+                            <button class="btn btn-sm btn-danger btn-open-loss-modal mr-2" data-size="'.$data->size.'" data-color="'.$data->color.'" data-warehouse="'.$data->warehouse_id.'" data-id="'.$data->product->id.'" data-type-id="'.($data->type_id ?? '').'"  data-zip="'.$data->zip.'">System Loss</button>';  
                 if (Auth::user()) {
-                    $url = route('admin.product.purchasehistory', ['id' => $data->product->id, 'size' => $data->size, 'color' => $data->color, 'warehouse_id' => $data->warehouse_id]);
+                    $url = route('admin.product.purchasehistory', ['id' => $data->product->id, 'size' => $data->size, 'color' => $data->color, 'warehouse_id' => $data->warehouse_id, 'type_id' => $data->type_id]);
                     $btn .= '<a href="'.$url.'" class="btn btn-sm btn-primary">History</a>';
                 }
                 $btn .= '</div>';
@@ -123,9 +132,9 @@ class StockController extends Controller
         $user = Auth::user();
         // $warehouseIds = json_decode($user->warehouse_ids, true);
     
-        $data = Stock::selectRaw('product_id, size, color, SUM(quantity) as total_quantity')
-            ->groupBy('product_id', 'size', 'color', 'zip')
-            ->with('product')
+        $data = Stock::selectRaw('product_id, size, color, type_id, SUM(quantity) as total_quantity')
+            ->groupBy('product_id', 'size', 'color', 'type_id')
+            ->with(['product', 'type'])
             ->orderByDesc('product_id')
             ->get();
     
@@ -140,6 +149,9 @@ class StockController extends Controller
             })
             ->addColumn('quantity', function ($row) {
                 return number_format($row->total_quantity, 0);
+            })
+            ->addColumn('type', function ($row) {
+                return $row->type ? $row->type->name : '-';
             })
             ->addColumn('zip_status', function ($row) {
                 if (!$row->product || !$row->product->is_zip) return '-';
@@ -158,14 +170,15 @@ class StockController extends Controller
         $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
         $sizes = Stock::distinct()->pluck('size')->filter();
         $colors = Stock::distinct()->pluck('color')->filter();
-        return view('admin.stock.stockhistory', compact('warehouses','products','sizes','colors'));
+        $types = Type::where('status', 1)->get();
+        return view('admin.stock.stockhistory', compact('warehouses','products','sizes','colors','types'));
     }
 
     public function getStockingHistory(Request $request)
     {  
         // $warehouseIds = json_decode(Auth::user()->warehouse_ids, true);
 
-        $query = StockHistory::select('date', 'stockid', 'purchase_id', 'product_id', 'stock_id', 'warehouse_id', 'quantity', 'selling_qty', 'available_qty', 'size', 'color', 'systemloss_qty', 'purchase_price', 'selling_price', 'received_quantity', 'ground_price_per_unit', 'zip');
+        $query = StockHistory::with('type')->select('date', 'stockid', 'purchase_id', 'product_id', 'stock_id', 'warehouse_id', 'quantity', 'selling_qty', 'available_qty', 'size', 'color', 'systemloss_qty', 'purchase_price', 'selling_price', 'received_quantity', 'ground_price_per_unit', 'zip', 'type_id');
         // ->when(!empty($warehouseIds), function ($query) use ($warehouseIds) {
         //     return $query->whereIn('warehouse_id', $warehouseIds);
         // })
@@ -181,6 +194,9 @@ class StockController extends Controller
         }
         if ($request->has('color') && $request->color != '') {
             $query->where('color', $request->color);
+        }
+        if ($request->has('type_id') && $request->type_id != '') {
+            $query->where('type_id', $request->type_id);
         }
         if ($request->has('zip') && $request->zip != '') {
             $query->where('zip', $request->zip)
@@ -216,6 +232,9 @@ class StockController extends Controller
             ->addColumn('selling_price', function ($row) {
                 $selling_price = ($row->selling_price ?? 0) ;
                 return number_format($selling_price, 2);
+            })
+            ->addColumn('type', function ($row) {
+                return $row->type ? $row->type->name : '-';
             })
             
             ->addColumn('selling_qty', function ($row) {
@@ -338,7 +357,7 @@ class StockController extends Controller
         return view('admin.stock.getproducthistory', compact('products'));
     }
 
-    public function getsingleProductHistory(Request $request, $id, $size = null, $color = null, $warehouse_id = null)
+    public function getsingleProductHistory(Request $request, $id, $size = null, $color = null, $warehouse_id = null, $type_id = null)
     {
         if ($request->fromDate || $request->toDate) {
             $request->validate([
@@ -363,6 +382,7 @@ class StockController extends Controller
             ->where('size', $size)
             ->where('color', $color)
             ->where('warehouse_id', $warehouse_id)
+            ->where('type_id', $type_id)
             ->orderby('id', 'DESC')
             ->get();
 
@@ -373,6 +393,7 @@ class StockController extends Controller
             ->where('size', $size)
             ->where('color', $color)
             ->where('warehouse_id', $warehouse_id)
+            ->where('type_id', $type_id)
             ->orderby('id', 'DESC')
             ->whereHas('order', function ($query) {
                 $query->whereIn('order_type', ['0', '1'])
@@ -1011,9 +1032,10 @@ class StockController extends Controller
             'color' => 'nullable',
             'size' => 'nullable',
             'zip' => 'nullable',
+            'type_id' => 'nullable',
         ]);
 
-        $stock = Stock::where('product_id', $validatedData['productId'])->where('size',$request->size)->where('color',$request->color)->where('warehouse_id', $request->warehouse)->where('zip', $request->zip)->first();
+        $stock = Stock::where('product_id', $validatedData['productId'])->where('size',$request->size)->where('color',$request->color)->where('warehouse_id', $request->warehouse)->where('zip', $request->zip)->where('type_id', $request->type_id)->first();
 
         if (!$stock) {
             return response()->json(['message' => 'Stock record not found.'], 404);
@@ -1044,6 +1066,7 @@ class StockController extends Controller
         $systemLoss->color = $validatedData['color'];
         $systemLoss->zip = $validatedData['zip'];
         $systemLoss->size = $validatedData['size'];
+        $systemLoss->type_id = $validatedData['type_id'] ?? null;
         $systemLoss->created_by = Auth::user()->id;
         $systemLoss->save();
 
@@ -1052,7 +1075,7 @@ class StockController extends Controller
 
     public function systemLosses()
     {
-        $systemLosses = SystemLose::with('product')->latest()->get();
+        $systemLosses = SystemLose::with('product', 'type')->latest()->get();
         return view('admin.stock.system_losses', compact('systemLosses'));
     }
 
@@ -1317,6 +1340,46 @@ class StockController extends Controller
         return response()->json(['sizes' => $sizes]);
     }
 
+    public function getTypes(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'warehouse_id' => 'required|exists:warehouses,id',
+            'color' => 'required|string',
+            'size' => 'required|string',
+        ]);
+
+        try {
+            $types = Stock::with('type') // Eager load the type relationship
+                ->where('product_id', $request->product_id)
+                ->where('warehouse_id', $request->warehouse_id)
+                ->where('color', $request->color)
+                ->where('size', $request->size)
+                ->where('quantity', '>', 0)
+                ->whereNotNull('type_id') // Only stocks with a type
+                ->get()
+                ->pluck('type') // Get the Type models
+                ->unique('id') // Get unique types by ID
+                ->map(function ($type) {
+                    return [
+                        'id' => $type->id,
+                        'name' => $type->name // Assuming your Type model has a 'name' field
+                    ];
+                })
+                ->values();
+
+            return response()->json([
+                'success' => true,
+                'types' => $types
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch types: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function getMaxQuantity(Request $request)
     {
         $request->validate([
@@ -1324,7 +1387,8 @@ class StockController extends Controller
             'warehouse_id' => 'required|exists:warehouses,id',
             'color' => 'required|string',
             'size' => 'required|string',
-            'zip_id' => 'nullable|integer', // optional zip
+            'zip' => 'nullable|integer',
+            'type_id' => 'nullable|integer',
         ]);
 
         $query = Stock::where('product_id', $request->product_id)
@@ -1333,8 +1397,12 @@ class StockController extends Controller
             ->where('size', $request->size)
             ->where('quantity', '>', 0);
 
-        if (!is_null($request->zip)) {
+        if ($request->filled('zip')) {
             $query->where('zip', $request->zip);
+        }
+
+        if ($request->filled('type_id')) {
+            $query->where('type_id', $request->type_id);
         }
 
         $max_quantity = (int) $query->value('quantity');

@@ -24,4 +24,9 @@ class Stock extends Model
     {
         return $this->hasMany(StockHistory::class);
     }
+    
+    public function type()
+    {
+        return $this->belongsTo(Type::class, 'type_id');
+    }
 }

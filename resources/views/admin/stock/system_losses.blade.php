@@ -27,7 +27,10 @@
                                     @foreach ($systemLosses as $key => $systemLoss)
                                     <tr>
                                         <td>{{ \Carbon\Carbon::parse($systemLoss->created_at)->format('d-m-Y') }}</td>
-                                        <td>{{ ($systemLoss->product->product_code ?? '') . '-' . ($systemLoss->product->name ?? '') . '-' . ($systemLoss->size ?? '') . '-' . ($systemLoss->color ?? '') }}
+                                        <td>{{ ($systemLoss->product->product_code ?? '') . '-' . ($systemLoss->product->name ?? '') . '-' . ($systemLoss->size ?? '') . '-' . ($systemLoss->color ?? '') }} 
+                                          @if($systemLoss->type_id && $systemLoss->type)
+                                              - {{ $systemLoss->type->name }}
+                                          @endif
                                           @if(optional($systemLoss->product)->is_zip)
                                             - Zip: {{ $systemLoss->zip == 1 ? 'Zip' : 'No' }}
                                           @endif

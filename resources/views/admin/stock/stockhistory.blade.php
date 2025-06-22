@@ -16,7 +16,7 @@
                     <form action="#" method="GET">
                         <div class="row mb-3">
                             
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <label class="label label-primary">Product</label>
                                 <select class="form-control select2" id="product_id" name="product_id">
                                     <option value="">Select...</option>
@@ -36,6 +36,15 @@
                                 </select>
                             </div>
                             <div class="col-md-2">
+                                <label class="label label-primary">Type</label>
+                                <select class="form-control select2" id="type_id" name="type_id">
+                                    <option value="">Select...</option>
+                                    @foreach($types as $type)
+                                    <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-1">
                                 <label class="label label-primary">Size</label>
                                 <select class="form-control select2" id="size_id" name="size_id">
                                     <option value="">Select...</option>
@@ -44,7 +53,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-1">
                                 <label class="label label-primary">Color</label>
                                 <select class="form-control select2" id="color_id" name="color_id">
                                     <option value="">Select...</option>
@@ -53,7 +62,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-1">
+                            <div class="col-md-1 d-none">
                                 <label class="label label-primary">Zip</label>
                                 <select class="form-control select2" id="zip" name="zip">
                                     <option value="">Select...</option>
@@ -84,7 +93,7 @@
                                         <th>Product</th>
                                         <th>Size</th>
                                         <th>Color</th>
-                                        <th>Zip</th>
+                                        <th>Type</th>
                                         <th>Stocked</th>
                                         <th>Available</th>
                                         <th>Sold</th>
@@ -223,19 +232,21 @@
                     d.color = $('#color_id').val();
                     d.size = $('#size_id').val();
                     d.zip = $('#zip').val();
+                    d.type_id = $('#type_id').val();
                 },
                 error: function(xhr, error, code) {
                     console.error(xhr.responseText);
                 }
             },
             pageLength: 100,
+            dom: 'Bfrtip',
             columns: [
                 { data: 'sl', name: 'sl', orderable: false, searchable: false },
                 { data: 'date', name: 'date' },
                 { data: 'product_details', name: 'product_details' },
                 { data: 'size', name: 'size' },
                 { data: 'color', name: 'color' },
-                { data: 'zip_status', name: 'zip_status' },
+                { data: 'type', name: 'type' },
                 { data: 'quantity_formatted', name: 'quantity' },
                 { data: 'available_qty', name: 'available_qty' },
                 { data: 'selling_qty', name: 'selling_qty' },
@@ -266,6 +277,7 @@
             $('#color_id').val(null).trigger('change');
             $('#size_id').val(null).trigger('change');
             $('#zip').val(null).trigger('change');
+            $('#type_id').val(null).trigger('change');
             table.draw();
         });
 

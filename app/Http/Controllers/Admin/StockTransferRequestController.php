@@ -16,7 +16,7 @@ class StockTransferRequestController extends Controller
 
     public function index()
     {
-        $stockTransferRequests = StockTransferRequest::orderBy('id', 'desc')->get();
+        $stockTransferRequests = StockTransferRequest::with('type')->orderBy('id', 'desc')->get();
         return view('admin.stock.transfer_requests', compact('stockTransferRequests'));
     }
     public function storeTransferRequest(Request $request)
@@ -27,6 +27,7 @@ class StockTransferRequestController extends Controller
             'toWarehouse' => 'required|exists:warehouses,id|different:warehouse',
             'color' => 'nullable|string',
             'size' => 'nullable|string',
+            'type' => 'nullable',
             'quantity' => 'required|integer|min:1',
             'max_quantity' => 'required|numeric|min:0',
         ], [
@@ -43,6 +44,7 @@ class StockTransferRequestController extends Controller
         $stockTransferRequest->to_warehouse_id = $request->toWarehouse;
         $stockTransferRequest->color = $request->color;
         $stockTransferRequest->size = $request->size;
+        $stockTransferRequest->type_id = $request->type ?? null;
         $stockTransferRequest->zip = $request->zip;
         $stockTransferRequest->request_quantity = $request->quantity;
         $stockTransferRequest->max_quantity = $request->max_quantity;
@@ -82,6 +84,7 @@ class StockTransferRequestController extends Controller
                 ->where('size', $stockTransferRequest->size)
                 ->where('color', $stockTransferRequest->color)
                 ->where('zip', $stockTransferRequest->zip)
+                ->where('type_id', $stockTransferRequest->type_id)
                 ->first();
         
             $stockTo = Stock::where('product_id', $stockTransferRequest->product_id)
@@ -89,6 +92,7 @@ class StockTransferRequestController extends Controller
                 ->where('size', $stockTransferRequest->size)
                 ->where('color', $stockTransferRequest->color)
                 ->where('zip', $stockTransferRequest->zip)
+                ->where('type_id', $stockTransferRequest->type_id)
                 ->first();
         
             if (!$stockFrom) {
@@ -106,6 +110,7 @@ class StockTransferRequestController extends Controller
                 ->where('color', $stockFrom->color)
                 ->where('size', $stockFrom->size)
                 ->where('zip', $stockFrom->zip)
+                ->where('type_id', $stockFrom->type_id)
                 ->orderBy('id')
                 ->get();
         
@@ -161,6 +166,7 @@ class StockTransferRequestController extends Controller
                 $stockTo->size = $stockFrom->size;
                 $stockTo->color = $stockFrom->color;
                 $stockTo->zip = $stockFrom->zip;
+                $stockTo->type_id = $stockFrom->type_id ?? null;
                 $stockTo->warehouse_id = $stockTransferRequest->to_warehouse_id;
                 $stockTo->purchase_price = $stockFrom->purchase_price;
                 $stockTo->ground_price_per_unit = $stockFrom->ground_price_per_unit; 
@@ -183,6 +189,7 @@ class StockTransferRequestController extends Controller
                     $newStockHistory->color = $stockTo->color;
                     $newStockHistory->size = $stockTo->size;
                     $newStockHistory->zip = $stockTo->zip;
+                    $newStockHistory->type_id = $stockTo->type_id ?? null;
                     $newStockHistory->available_qty = $stockTransferRequest->request_quantity; 
                     $newStockHistory->received_quantity = $stockTransferRequest->request_quantity;
                     $newStockHistory->purchase_price = $latestUsedHistory->purchase_price;
@@ -202,6 +209,7 @@ class StockTransferRequestController extends Controller
                     ->where('size', $stockTo->size)
                     ->where('color', $stockTo->color)
                     ->where('zip', $stockTo->zip)
+                    ->where('type_id', $stockTo->type_id)
                     ->where('warehouse_id', $stockTransferRequest->to_warehouse_id)
                     ->orderBy('id', 'desc')
                     ->first();
@@ -219,6 +227,7 @@ class StockTransferRequestController extends Controller
                     $newStockHistory->color = $stockTo->color;
                     $newStockHistory->size = $stockTo->size;
                     $newStockHistory->zip = $stockTo->zip;
+                    $newStockHistory->type_id = $stockTo->type_id ?? null;
                     $newStockHistory->available_qty = $stockTransferRequest->request_quantity;
                     $newStockHistory->received_quantity = $stockTransferRequest->request_quantity;
                     $newStockHistory->purchase_price = $latestUsedHistory->purchase_price;

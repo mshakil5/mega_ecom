@@ -31,6 +31,9 @@
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ \Carbon\Carbon::parse($StockTransferRequest->created_at)->format('d-m-Y') }}</td>
                                         <td>{{ $StockTransferRequest->product->name }} - {{ $StockTransferRequest->size }} - {{ $StockTransferRequest->color }}
+                                        @if($StockTransferRequest->type_id)
+                                            ({{ $StockTransferRequest->type->name }})
+                                        @endif
                                         @if($StockTransferRequest->product->isZip())
                                             (Zip: {{ $StockTransferRequest->zip == 1 ? 'Yes' : 'No' }})
                                         @endif

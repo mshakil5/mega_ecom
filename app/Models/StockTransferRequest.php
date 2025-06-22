@@ -25,4 +25,9 @@ class StockTransferRequest extends Model
     {
         return $this->belongsTo(Warehouse::class, 'to_warehouse_id');
     }
+
+    public function type()
+    {
+      return $this->belongsTo(Type::class, 'type_id');
+    }
 }

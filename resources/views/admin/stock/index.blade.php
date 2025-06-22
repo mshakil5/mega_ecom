@@ -22,7 +22,7 @@
                             <div class="tab-pane fade active show" id="custom-tabs-one-profile" role="tabpanel" aria-labelledby="custom-tabs-one-profile-tab">
                                 <form action="#" method="GET">
                                     <div class="row mb-3">
-                                        <div class="col-md-3">
+                                        <div class="col-md-4">
                                             <label class="label label-primary">Product</label>
                                             <select class="form-control select2" id="product_id" name="product_id">
                                                 <option value="">Select...</option>
@@ -41,6 +41,15 @@
                                             </select>
                                         </div>
                                         <div class="col-md-2">
+                                            <label class="label label-primary">Type</label>
+                                            <select class="form-control select2" id="type_id" name="type_id">
+                                                <option value="">Select...</option>
+                                                @foreach($types as $type)
+                                                <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-md-1">
                                             <label class="label label-primary">Size</label>
                                             <select class="form-control select2" id="size_id" name="size_id">
                                                 <option value="">Select...</option>
@@ -49,7 +58,7 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                        <div class="col-md-2">
+                                        <div class="col-md-1">
                                             <label class="label label-primary">Color</label>
                                             <select class="form-control select2" id="color_id" name="color_id">
                                                 <option value="">Select...</option>
@@ -58,7 +67,7 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                        <div class="col-md-1">
+                                        <div class="col-md-1 d-none">
                                             <label class="label label-primary">Zip</label>
                                             <select class="form-control select2" id="zip" name="zip">
                                                 <option value="">Select...</option>
@@ -94,7 +103,7 @@
                                                 <th>Warehouse</th>
                                                 <th>Size</th>
                                                 <th>Color</th>
-                                                <th>Zip</th>
+                                                <th>Type</th>
                                                 <th>Qty</th>
                                                 <th>Action</th>
                                             </tr>
@@ -123,7 +132,7 @@
                                                         <th>Product</th>
                                                         <th>Size</th>
                                                         <th>Color</th>
-                                                        <th>Zip</th>
+                                                        <th>Type</th>
                                                         <th>Qty</th>
                                                     </tr>
                                                 </thead>
@@ -184,7 +193,7 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="color">Color</label>
                                 <select class="form-control select2" id="color" name="color" disabled>
@@ -192,12 +201,21 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
 
                             <div class="form-group">
                                 <label for="size">Size</label>
                                 <select class="form-control select2" id="size" name="size" disabled>
                                     <option value="">Select Size...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+
+                            <div class="form-group">
+                                <label for="type">Type</label>
+                                <select class="form-control select2" id="type" name="type" disabled>
+                                    <option value="">Select Type...</option>
                                 </select>
                             </div>
                         </div>
@@ -389,42 +407,83 @@
             }
         });
 
-        $('#size').change(function () {
+        $('#size').change(function() {
             var warehouseId = $('#warehouse').val();
             var productId = $('#productId').val();
             var selectedColor = $('#color').val();
             var selectedSize = $(this).val();
-            var isZipVisible = $('#zipWrapper').is(':visible');
-            var selectedZip = $('#zip_id').val();
 
-            if (warehouseId && productId && selectedColor && selectedSize && (!isZipVisible || selectedZip)) {
-                var requestData = {
+            if (warehouseId && productId && selectedColor && selectedSize) {
+                $.ajax({
+                    url: '/admin/get-types',
+                    method: 'POST',
+                    data: {
+                        product_id: productId,
+                        warehouse_id: warehouseId,
+                        color: selectedColor,
+                        size: selectedSize,
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(data) {
+                        $('#type').empty().append('<option value="">Select Type...</option>');
+                        if (data.types && data.types.length > 0) {
+                            $.each(data.types, function(index, type) {
+                                $('#type').append('<option value="' + type.id + '">' + type.name + '</option>');
+                            });
+                            $('#type').prop('disabled', false);
+                        } else {
+                            $('#type').empty().append('<option value="">No types available</option>').prop('disabled', true);
+                        }
+                        
+                        getMaxQuantity();
+                    },
+                    error: function(xhr) {
+                        alert('An error occurred while fetching types');
+                    }
+                });
+            } else {
+                $('#type').empty().append('<option value="">Select Type...</option>').prop('disabled', true);
+            }
+        });
+
+        $('#type').change(function() {
+            getMaxQuantity();
+        });
+
+        function getMaxQuantity() {
+            var warehouseId = $('#warehouse').val();
+            var productId = $('#productId').val();
+            var selectedColor = $('#color').val();
+            var selectedSize = $('#size').val();
+            var selectedZip = $('#zip_id').val() || null;
+            var selectedType = $('#type').val() || null;
+
+            if (warehouseId && productId && selectedColor && selectedSize) {
+                var data = {
                     product_id: productId,
                     warehouse_id: warehouseId,
                     color: selectedColor,
                     size: selectedSize,
                     _token: $('meta[name="csrf-token"]').attr('content')
                 };
-
-                if (isZipVisible) {
-                    requestData.zip = selectedZip;
-                }
+                if (selectedZip !== null) data.zip = selectedZip;
+                if (selectedType !== null && selectedType !== '') data.type_id = selectedType;
 
                 $.ajax({
                     url: '/admin/get-max-quantity',
                     method: 'POST',
-                    data: requestData,
-                    success: function (data) {
+                    data: data,
+                    success: function(data) {
                         $('#max_quantity').val(data.max_quantity);
                     },
-                    error: function (xhr) {
-                        alert('An error occurred while fetching max quantity: ' + xhr.responseText);
+                    error: function(xhr) {
+                        alert('Error fetching max quantity: ' + xhr.responseText);
                     }
                 });
             } else {
                 $('#max_quantity').val('');
             }
-        });
+        }
 
         $('#zip_id').change(function () {
             var warehouseId = $('#warehouse').val();
@@ -433,7 +492,7 @@
             var selectedSize = $('#size').val();
             var selectedZip = $(this).val();
 
-            console.log(selectedZip);
+            // console.log(selectedZip);
 
             if (warehouseId && productId && selectedColor && selectedSize && selectedZip) {
                 $.ajax({
@@ -580,7 +639,7 @@
 
 <script>
     $(document).ready(function() {
-        function openLossModal(productId, size, color, warehouse, zip) {
+        function openLossModal(productId, size, color, warehouse, zip, type_id) {
             // console.log(productId, size, warehouse); 
 
             $('#systemLossForm')[0].reset();
@@ -609,6 +668,7 @@
                         color: color,
                         size: size,
                         zip: zip,
+                        type_id: type_id,
                         productId: productId,
                         warehouse: warehouse,
                         lossQuantity: lossQuantity,
@@ -652,6 +712,7 @@
                     d.color = $('#color_id').val();
                     d.size = $('#size_id').val();
                     d.zip = $('#zip').val();
+                    d.type_id = $('#type_id').val();
                 },
                 error: function(xhr, error, code) {
                     console.error(xhr.responseText);
@@ -681,8 +742,8 @@
                     name: 'color'
                 },
                 {
-                    data: 'zip_status',
-                    name: 'zip_status'
+                    data: 'type',
+                    name: 'type'
                 },
                 {
                     data: 'quantity',
@@ -706,6 +767,7 @@
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
+            dom: 'Bfrtip',
             drawCallback: function(settings) {
                 var api = this.api();
                 var total = api.column(6, { page: 'current' }).data().reduce(function(a, b) {
@@ -727,6 +789,7 @@
                 }
             },
             pageLength: 50,
+            dom: 'Bfrtip',
             columns: [
                 {
                     data: 'sl',
@@ -747,8 +810,8 @@
                     name: 'color'
                 },
                 {
-                    data: 'zip_status',
-                    name: 'zip_status'
+                    data: 'type',
+                    name: 'type'
                 },
                 {
                     data: 'quantity',
@@ -768,6 +831,7 @@
             $('#color_id').val(null).trigger('change');
             $('#size_id').val(null).trigger('change');
             $('#zip').val(null).trigger('change');
+            $('#type_id').val(null).trigger('change');
             table.draw();
         });
 
@@ -777,7 +841,8 @@
             let color = $(this).data('color');
             let warehouse = $(this).data('warehouse');
             let zip = $(this).data('zip');
-            openLossModal(productId, size, color, warehouse, zip);
+            let type_id = $(this).data('type-id');
+            openLossModal(productId, size, color, warehouse, zip, type_id);
         });
 
         $('#systemLossModal').on('hidden.bs.modal', function() {
