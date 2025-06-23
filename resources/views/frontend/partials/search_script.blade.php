@@ -5,17 +5,16 @@
         const $searchResults = $('.search-products');
         const $desktopSearchIcon = $('.search-icon');
         const $mobileSearchIcon = $('#mobile-search-icon');
+        let debounceTimer;
 
         function performSearch($input) {
             let query = $input.val();
-            // console.log(query);
             if (query.length > 2) {
                 $.ajax({
                     url: "{{ route('search.products') }}",
                     method: 'GET',
                     data: { query: query },
                     success: function(response) {
-                        // console.log(response.products);
                         const products = response.products;
                         let productListHtml = '';
 
@@ -77,8 +76,15 @@
             }
         }
 
+        function debouncedSearch($input) {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                performSearch($input);
+            }, 300);
+        }
+
         $desktopSearchInput.on('keyup', function() {
-            performSearch($(this));
+            debouncedSearch($(this));
         });
 
         $desktopSearchIcon.on('click', function() {
@@ -86,11 +92,18 @@
         });
 
         $mobileSearchInput.on('keyup', function() {
-            performSearch($(this));
+            debouncedSearch($(this));
         });
 
         $mobileSearchIcon.on('click', function() {
             performSearch($mobileSearchInput);
+        });
+
+        $('.search-input, #mobile-search-input').on('input', function() {
+            if ($(this).val().length === 0) {
+                $searchResults.empty();
+                $('.mobile-menu-close').click();
+            }
         });
     });
 </script>

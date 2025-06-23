@@ -70,17 +70,15 @@
                                 <td colspan="2" class="" style="border :0px solid #828283 ;width:40%;">
                                     <div class="col-lg-2 text-end" style="flex: 2; text-align: right;">
                                         <h5 style="font-size: 12px; margin : 5px;text-align: left; line-height: 10px;">Invoice To</h5>
-                                        @if($order->user->surname)
-                                        <p style="font-size: 12px; margin : 5px;text-align: left; line-height: 10px;">{{ $order->user->surname }}</p>
-                                        @endif
-                                        <p style="font-size: 12px; margin : 5px;text-align: left; line-height: 10px;">{{ $order->user->name }}</p>
-                                        <p style="font-size: 12px; margin : 5px;text-align: left; line-height: 10px;">{{ $order->user->email }}</p>
-                                        <p style="font-size: 12px; margin : 5px;text-align: left; line-height: 10px;">{{ $order->user->phone }}</p>
-                                        @if($order->user->address)
+                                        
+                                        <p style="font-size: 12px; margin : 5px;text-align: left; line-height: 10px;">{{ $order->user->surname ?? $order->surname ?? '' }}</p>
+                                      
+                                        <p style="font-size: 12px; margin : 5px;text-align: left; line-height: 10px;">{{ $order->user->name ?? $order->name ?? '' }}</p>
+                                        <p style="font-size: 12px; margin : 5px;text-align: left; line-height: 10px;">{{ $order->user->email ?? $order->email ?? '' }}</p>
+                                        <p style="font-size: 12px; margin : 5px;text-align: left; line-height: 10px;">{{ $order->user->phone ?? $order->phone ?? '' }}</p>
                                         <p style="font-size: 12px; margin: 5px; text-align: left; line-height: 10px;">
-                                            {{ $order->user->address }}
+                                            {{ $order->user->address ?? $order->house_number ?? '' }} {{ $order->user->street_name ?? $order->street_name ?? '' }} {{ $order->user->town ?? $order->town ?? '' }} {{ $order->user->postcode ?? $order->postcode ?? '' }}
                                         </p>
-                                        @endif
                                     </div>
                                 </td>
 

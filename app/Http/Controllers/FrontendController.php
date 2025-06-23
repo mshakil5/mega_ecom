@@ -63,8 +63,8 @@ class FrontendController extends Controller
             ->orderByDesc('id')
             ->whereDoesntHave('specialOfferDetails')
             ->whereDoesntHave('flashSellDetails')
-            ->with('stock')
-            ->select('id', 'name', 'feature_image', 'slug', 'price')
+            ->with('stock', 'category')
+            ->select('id', 'name', 'feature_image', 'slug', 'price', 'category_id')
             ->take(12)
             ->get();
 
@@ -73,8 +73,8 @@ class FrontendController extends Controller
             ->orderByDesc('watch')
             ->whereDoesntHave('specialOfferDetails')
             ->whereDoesntHave('flashSellDetails')
-            ->with('stock')
-            ->select('id', 'name', 'feature_image', 'price', 'slug')
+            ->with('stock', 'category')
+            ->select('id', 'name', 'feature_image', 'price', 'slug', 'category_id')
             ->take(12)
             ->get();
 
@@ -83,19 +83,50 @@ class FrontendController extends Controller
             ->orderByDesc('id')
             ->whereDoesntHave('specialOfferDetails')
             ->whereDoesntHave('flashSellDetails')
-            ->with('stock')
-            ->select('id', 'name', 'feature_image', 'price', 'slug')
+            ->with('stock', 'category')
+            ->select('id', 'name', 'feature_image', 'price', 'slug', 'category_id')
             ->take(12)
             ->get();
-        $buyOneGetOneProducts = BuyOneGetOne::where('status', 1)
-            ->with(['product' => function($query) {
-                $query->select('id', 'name', 'feature_image', 'price', 'slug');
-            }])
-            ->get()
-            ->map(function($bogo) {
-                $bogo->get_products_count = Product::whereIn('id', json_decode($bogo->get_product_ids))->count();
-                return $bogo;
-            });
+
+        $newProducts = Product::where('status', 1)
+            ->where('is_new_arrival', 1)
+            ->orderByDesc('id')
+            ->whereDoesntHave('specialOfferDetails')
+            ->whereDoesntHave('flashSellDetails')
+            ->with('stock', 'category')
+            ->select('id', 'name', 'feature_image', 'price', 'slug', 'category_id')
+            ->take(12)
+            ->get();
+
+        $popularProducts = Product::where('status', 1)
+            ->where('is_popular', 1)
+            ->orderByDesc('id')
+            ->whereDoesntHave('specialOfferDetails')
+            ->whereDoesntHave('flashSellDetails')
+            ->with('stock', 'category')
+            ->select('id', 'name', 'feature_image', 'price', 'slug', 'category_id')
+            ->take(12)
+            ->get();
+
+        $featuredProducts = Product::where('status', 1)
+            ->where('is_featured', 1)
+            ->orderByDesc('id')
+            ->whereDoesntHave('specialOfferDetails')
+            ->whereDoesntHave('flashSellDetails')
+            ->with('stock', 'category')
+            ->select('id', 'name', 'feature_image', 'price', 'slug', 'category_id')
+            ->take(12)
+            ->get();
+
+        // $buyOneGetOneProducts = BuyOneGetOne::where('status', 1)
+        //     ->with(['product' => function($query) {
+        //         $query->select('id', 'name', 'feature_image', 'price', 'slug');
+        //     }])
+        //     ->get()
+        //     ->map(function($bogo) {
+        //         $bogo->get_products_count = Product::whereIn('id', json_decode($bogo->get_product_ids))->count();
+        //         return $bogo;
+        //     });
 
         $bundleProducts = BundleProduct::select('id', 'name', 'feature_image', 'price', 'slug', 'product_ids')
             ->get()
@@ -132,11 +163,11 @@ class FrontendController extends Controller
         $companyDesign = CompanyDetails::value('design');
 
         if (in_array($companyDesign, ['2', '3', '4'])) {
-            return view('frontend.index2', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns', 'mostViewedProducts'));
+            return view('frontend.index2', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns', 'mostViewedProducts', 'newProducts', 'popularProducts', 'featuredProducts'));
         } elseif ($companyDesign == '5') {
-            return view('frontend.index5', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns', 'mostViewedProducts'));
+            return view('frontend.index5', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns', 'mostViewedProducts', 'newProducts', 'popularProducts', 'featuredProducts'));
         } else {
-            return view('frontend.index', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'buyOneGetOneProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns', 'mostViewedProducts'));
+            return view('frontend.index', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns', 'mostViewedProducts', 'newProducts', 'popularProducts', 'featuredProducts'));
         }
 
     }

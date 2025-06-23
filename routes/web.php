@@ -110,6 +110,8 @@ Route::post('/checkout', [FrontendController::class, 'checkout'])->name('checkou
 
 Route::post('/place-order', [OrderController::class, 'placeOrder'])->name('place.order');
 
+Route::get('/resume-order', [OrderController::class, 'resumeOrderFlow'])->name('stripe.resumeOrderFlow');
+
 Route::get('payment/success', [OrderController::class, 'paymentSuccess'])->name('payment.success');
 Route::get('payment/cancel', [OrderController::class, 'paymentCancel'])->name('payment.cancel');
 

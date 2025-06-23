@@ -27,7 +27,7 @@ class Product extends Model
 
     public function category()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Category::class, 'category_id');
     }
 
     public function subCategory()
@@ -161,5 +161,36 @@ class Product extends Model
     }
 
     protected $appends = ['is_zip'];
+
+    // public function getAvailableStockAttribute()
+    // {
+    //     return $this->stock()
+    //         ->where('quantity', '>', 0)
+    //         ->orderByDesc('id')
+    //         ->get();
+    // }
+
+    public function getAvailableStockAttribute()
+    {
+        $stock = $this->relationLoaded('stock') ? $this->stock : $this->stock()->first();
+
+        return ($stock && $stock->quantity > 0) ? collect([$stock]) : collect();
+    }
+
+    public function getSellingPriceAttribute()
+    {
+        return $this->available_stock->first()->selling_price ?? $this->price;
+    }
+
+    public function getAvailableColorsAttribute()
+    {
+        return $this->available_stock->pluck('color')->unique()->values();
+    }
+
+    public function getAvailableSizesAttribute()
+    {
+        return $this->available_stock->pluck('size')->unique()->values();
+    }
+
     
 }

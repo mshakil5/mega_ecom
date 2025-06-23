@@ -185,10 +185,10 @@
 
 </header>
 
-<div class="mt-3" id="searchSection">
+<div class="" id="searchSection">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <div class="row search-products align-items-center py-3 px-xl-5">
+            <div class="row search-products align-items-center px-xl-5">
             </div>
         </div>
     </div>

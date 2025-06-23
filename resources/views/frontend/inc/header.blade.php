@@ -165,6 +165,7 @@
                         <a href="{{ route('frontend.shop') }}">Shop</a>
                     </li>
 
+                    @if (count($brands) > 0)
                     <li class="dropdown">
                         <a class="sf-with-ul">Brands</a>
 
@@ -183,7 +184,9 @@
                             @endforeach
                         </ul>
                     </li>
+                    @endif
 
+                    @if(count($sub_categories) > 0)
                     <li class="dropdown">
                         <a class="sf-with-ul">More Products</a>
 
@@ -202,6 +205,7 @@
                             @endforeach
                         </ul>
                     </li>
+                    @endif
                     
                     <li class="{{ request()->routeIs('frontend.about') ? 'active' : '' }} d-none">
                         <a href="{{ route('frontend.about') }}">About Us</a>
@@ -223,7 +227,7 @@
 <div class="mt-1" id="searchSection">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <div class="row search-products align-items-center py-3 px-xl-5">
+            <div class="row search-products align-items-center px-xl-5">
             </div>
         </div>
     </div>

@@ -474,6 +474,118 @@
         @endif
         <!-- Trending Products End -->
 
+        <!-- Featured advertisements start-->
+        <div class="trending-products">
+            @foreach($advertisements as $advertisement)
+                @if($advertisement->type == 'recent')
+                    <div class="cta cta-border" style="background-image: url('{{ asset('images/ads/' . $advertisement->image) }}');">
+                        <div class="row justify-content-center">
+                            <div class="col-md-12">
+                                <div class="cta-content">
+                                    <div class="cta-text text-right text-white">
+                                    </div>
+                                    <a href="{{ $advertisement->link }}" class="btn btn-primary btn-round" target="_blank">
+                                        <span>Shop Now</span><i class="icon-long-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            @endforeach
+        </div>
+        <!-- Recent advertisements end-->
+
+        <!-- Recent Products Start -->
+        @if($section_status->recent_products == 1 && $recentProducts->count() > 0)
+        <div class="trending-products">
+            <div class="heading heading-flex mb-3">
+                <div class="heading-left">
+                    <h2 class="title">Recent Products</h2>
+                </div>
+            </div>
+
+            <div class="owl-carousel owl-full carousel-equal-height carousel-with-shadow" data-toggle="owl" 
+                data-owl-options='{
+                    "nav": true, 
+                    "dots": false,
+                    "margin": 20,
+                    "loop": true,
+                    "responsive": {
+                        "0": {
+                            "items":2
+                        },
+                        "480": {
+                            "items":2
+                        },
+                        "768": {
+                            "items":3
+                        },
+                        "992": {
+                            "items":4
+                        }
+                    }
+                }'>
+                @if ($recentProducts->count() > 0)
+                    @foreach($recentProducts as $product)
+                    <div class="product product-2">
+                        <figure class="product-media">
+                            <a href="{{ route('product.show', $product->slug) }}">
+                                <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image">
+                            </a>
+                            @if ($product->stock && $product->stock->quantity > 0)
+
+                                @php
+                                    $filteredStock = $product->stock()
+                                        ->where('quantity', '>', 0)
+                                        ->latest()
+                                        ->select('id', 'selling_price', 'color', 'size', 'quantity')
+                                        ->get();
+
+                                    $sellingPrice = $filteredStock->first()->selling_price ?? 0; 
+                                    $colors = $filteredStock->pluck('color')->unique();
+                                    $sizes = $filteredStock->pluck('size')->unique();
+                                @endphp
+                                <div class="product-action-vertical">
+                                    <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}">
+                                        <span>Add to wishlist</span>
+                                    </a>
+                                </div>
+                                <div class="product-action">
+                                    <a href="#" class="btn-product btn-cart" title="Add to cart"
+                                     data-product-id="{{ $product->id }}" 
+                                     data-offer-id="0" 
+                                     data-price="{{ $sellingPrice ?? $product->price }}" 
+                                     data-toggle="modal" data-target="#quickAddToCartModal" 
+                                     data-image ="{{ asset('images/products/' . $product->feature_image) }}" 
+                                     data-stock="{{ $product->stock->sum('quantity') }}"
+                                     data-colors="{{ $colors->toJson() }}"
+                                     data-sizes="{{ $sizes->toJson() }}">
+                                        <span>add to cart</span>
+                                    </a>
+                                </div>
+                            @else
+                                <span class="product-label label-out-stock">Out of stock</span>
+                            @endif
+                        </figure>
+
+                        <div class="product-body">
+                            <div class="product-cat">
+                                <a href="{{ route('category.show', $category->slug) }}">{{ $category->name }}</a>
+                            </div>
+                            <h3 class="product-title"><a href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></h3>
+                            <div class="product-price">
+                            {{ $currency }}{{ number_format($sellingPrice ?? $product->price, 2) }}
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                @endif
+            </div>
+        </div>
+        @endif
+        <!-- Recent Products End -->
+
         <!-- Most Viewed Products Start -->
         @if($section_status->most_viewed_products == 1 && $mostViewedProducts->count() > 0)
         <div class="trending-products">
@@ -600,7 +712,7 @@
                 <div class="row">
 
                     <!-- Buy One Get One Start -->
-                    @if($section_status->buy_one_get_one == 1 && count($buyOneGetOneProducts) > 0)
+                    {{-- @if($section_status->buy_one_get_one == 1 && count($buyOneGetOneProducts) > 0)
                     <div class="col-12">
                         <div class="widget widget-deals">
                             <h4 class="widget-title"><span>Buy One Get One</span></h4>
@@ -631,7 +743,7 @@
                             </div>
                         </div>
                     </div>
-                    @endif
+                    @endif --}}
                     <!-- Buy One Get One End -->
 
                     <!-- Bundle Products Start -->

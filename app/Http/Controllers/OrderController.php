@@ -37,25 +37,42 @@ use App\Mail\OrderStatusChangedMail;
 use App\Models\Coupon;
 use App\Models\CouponUsage;
 use App\Mail\AdminNotificationMail;
+use Stripe\Checkout\Session;
 
 class OrderController extends Controller
 {
     public function placeOrder(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'surname' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'required|string|max:20',
-            'house_number' => 'required|string|max:255',
-            'street_name' => 'required|string|max:255',
-            'town' => 'required|string|max:255',
-            'postcode' => 'required|string|max:20',
-            'note' => 'nullable|string|max:255',
-            'payment_method' => 'required',
-            'order_summary.*.quantity' => 'required|numeric|min:1',
-            'order_summary.*.size' => 'nullable|string|max:255',
-            'order_summary.*.color' => 'nullable|string|max:255',
+          'name' => 'nullable|string|max:255',
+          'company_name' => 'nullable|string|max:255',
+          // 'surname' => 'nullable|string|max:255',
+          'email' => 'nullable|email|max:255',
+          'phone' => 'nullable|string|max:20',
+          // 'house_number' => 'nullable|string|max:255',
+          // 'street_name' => 'nullable|string|max:255',
+          'address_first_line' => 'nullable|string|max:255',
+          'address_second_line' => 'nullable|string|max:255',
+          'address_third_line' => 'nullable|string|max:255',
+          'town' => 'nullable|string|max:255',
+          'postcode' => 'nullable|string|max:20',
+          'billing_name' => 'nullable|string|max:255',
+          'billing_company_name' => 'nullable|string|max:255',
+          // 'billing_surname' => 'nullable|string|max:255',
+          'billing_email' => 'nullable|email|max:255',
+          'billing_phone' => 'nullable|string|max:20',
+          // 'billing_house_number' => 'nullable|string|max:255',
+          // 'billing_street_name' => 'nullable|string|max:255',
+          'billing_address_first_line' => 'nullable|string|max:255',
+          'billing_address_second_line' => 'nullable|string|max:255',
+          'billing_address_third_line' => 'nullable|string|max:255',
+          'billing_town' => 'nullable|string|max:255',
+          'billing_postcode' => 'nullable|string|max:20',
+          'note' => 'nullable|string|max:255',
+          'payment_method' => 'required',
+          'order_summary.*.quantity' => 'required|numeric|min:1',
+          'order_summary.*.size' => 'nullable|string|max:255',
+          'order_summary.*.color' => 'nullable|string|max:255',
         ], [
             'name.required' => 'Please enter your name.',
             'surname.required' => 'Please enter your last name.',
@@ -68,9 +85,9 @@ class OrderController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'errors' => $validator->errors()
-            ], 422);
+          return response()->json([
+            'errors' => $validator->errors()
+          ], 422);
         }
 
         $formData = $request->all();
@@ -455,22 +472,70 @@ class OrderController extends Controller
         // $fixedFee = 0.20;
         // $amt = $netAmount;
 
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        // Stripe::setApiKey(env('STRIPE_SECRET'));
 
+        session([
+            'payment_data' => [
+                'formData' => $formData,
+                'netAmount' => $netAmount,
+            ]
+        ]);
+
+
+        Stripe::setApiKey(config('services.stripe.secret'));
         try {
-            $paymentIntent = PaymentIntent::create([
-                'amount' => $totalamt * 100,
-                'currency' => 'GBP',
-                'payment_method' =>  $formData['payment_method_id'],
-                'description' => 'Order payment',
-                'confirm' => false,
-                'confirmation_method' => 'automatic',
+            $session = Session::create([
+                'payment_method_types' => ['card'],
+                'line_items' => [[
+                    'price_data' => [
+                        'currency' => 'GBP',
+                        'product_data' => ['name' => 'Order Payment'],
+                        'unit_amount' => intval($netAmount * 100),
+                    ],
+                    'quantity' => 1,
+                ]],
+                'mode' => 'payment',
+                'success_url' => route('stripe.resumeOrderFlow'),
+                'cancel_url' => route('payment.cancel'),
             ]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
 
-        $pdfUrl = null;
+        return response()->json([
+            'success' => true,
+            'redirectUrl' => $session->url,
+        ]);
+
+        // try {
+        //     $paymentIntent = PaymentIntent::create([
+        //         'amount' => $totalamt * 100,
+        //         'currency' => 'GBP',
+        //         'payment_method' =>  $formData['payment_method_id'],
+        //         'description' => 'Order payment',
+        //         'confirm' => false,
+        //         'confirmation_method' => 'automatic',
+        //     ]);
+        // } catch (\Exception $e) {
+        //     return response()->json(['error' => $e->getMessage()], 500);
+        // }
+
+
+
+        // return response()->json([
+        //     'success' => true,
+        //     'client_secret' => $paymentIntent->client_secret,
+        //     'redirectUrl' => route('order.success', ['pdfUrl' => $pdfUrl])
+        // ]);
+    }
+
+    public function resumeOrderFlow(Request $request)
+    {
+          $paymentData = session('payment_data');
+          
+          $formData = $paymentData['formData'];
+          $netAmount = $paymentData['netAmount'];
+          $pdfUrl = null;
 
         DB::transaction(function () use ($formData, &$pdfUrl) {
             $subtotal = 0.00;
@@ -608,7 +673,7 @@ class OrderController extends Controller
             $encoded_order_id = base64_encode($order->id);
             $pdfUrl = route('generate-pdf', ['encoded_order_id' => $encoded_order_id]);
 
-            $this->sendOrderEmail($order, $pdfUrl);
+            // $this->sendOrderEmail($order, $pdfUrl);
 
             if ($discountAmount > 0 && isset($formData['coupon_id'])) {
                 $couponUsage = new CouponUsage();
@@ -739,11 +804,9 @@ class OrderController extends Controller
             }
         });
 
-        return response()->json([
-            'success' => true,
-            'client_secret' => $paymentIntent->client_secret,
-            'redirectUrl' => route('order.success', ['pdfUrl' => $pdfUrl])
-        ]);
+        session()->forget('payment_data');
+
+        return view('frontend.order.success', compact('pdfUrl'));
     }
 
     protected function getPayPalCredentials()

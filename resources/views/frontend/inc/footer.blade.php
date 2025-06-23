@@ -3,7 +3,7 @@
         <div class="container">
             <div class="row">
                 <!-- Get In Touch Section -->
-                <div class="col-sm-6 col-lg-3">
+                <div class="col-6 col-lg-3">
                     <div class="widget widget-about">
                         <img src="{{ asset('images/company/' . $company->company_logo) }}" alt="Footer Logo" width="105" height="25">
                         <p>{{ $company->footer_content }}</p>
@@ -16,7 +16,7 @@
                 </div>
 
                 <!-- Useful Links Section -->
-                <div class="col-sm-6 col-lg-3">
+                <div class="col-6 col-lg-3">
                     <div class="widget">
                         <h4 class="widget-title">Useful Links</h4>
                         <ul class="widget-list">
@@ -32,7 +32,7 @@
                 </div>
 
                 <!-- Categories Section -->
-                <div class="col-sm-6 col-lg-3">
+                <div class="col-6 col-lg-3">
                     <div class="widget">
                         <h4 class="widget-title">Categories</h4>
                         <ul class="widget-list">
@@ -44,7 +44,7 @@
                 </div>
 
                 <!-- My Account Section -->
-                <div class="col-sm-6 col-lg-3">
+                <div class="col-6 col-lg-3">
                     <div class="widget">
                         <h4 class="widget-title">My Account</h4>
                         <ul class="widget-list">

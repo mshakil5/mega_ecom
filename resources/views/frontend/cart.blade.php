@@ -60,12 +60,12 @@
                                         <td class="product-col" style="padding: 5px;">
                                             <div class="product">
                                                 <figure class="product-media">
-                                                    <a href="#">
+                                                    <a href="{{ route('product.show', $entity->slug) }}">
                                                         <x-image-with-loader src="{{ asset('/images/' . ($isBundle ? 'bundle_product' : 'products') . '/' . $entity->feature_image) }}" alt="{{ $entity->name }}"/>
                                                     </a>
                                                 </figure>
                                                 <h3 class="product-title">
-                                                    <a>{{ $entity->name }}</a>
+                                                    <a href="{{ route('product.show', $entity->slug) }}">{{ $entity->name }}</a>
                                                     @if(!empty($item['size']))
                                                         <p style="font-size: 14px;"> <b>Size: </b>{{ $item['size'] }}</p>
                                                     @endif
@@ -76,7 +76,7 @@
                                                 </h3>
                                             </div>
                                         </td>
-                                        <td class="price-col">
+                                        <td class="price-col fw-bold">
                                             {{ $currency }}{{ number_format($price, 2) }}
                                         </td>
                                         <td class="quantity-col">
@@ -106,8 +106,8 @@
                             <tbody>
                     
                                 <tr class="summary-total">
-                                    <td>Total:</td>
-                                    <td id="total">{{$currency}} 0.00</td>
+                                    <td style="font-weight: 500;">Total:</td>
+                                    <td id="total" style="font-weight: 500;">{{$currency}} 0.00</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -152,7 +152,7 @@
             $('#order-summary').show();
         }
 
-        $('#total').text(currencySymbol + ' ' + total.toFixed(2));
+        $('#total').text(currencySymbol + total.toFixed(2));
     }
 
     function updateLocalStorage(productId, newQuantity) {

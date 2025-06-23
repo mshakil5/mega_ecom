@@ -592,7 +592,7 @@
     <!-- Flash Sell End -->
 
     <!-- Buy One Get One Start -->
-    @if($section_status->buy_one_get_one == 1 && count($buyOneGetOneProducts) > 0)
+    {{-- @if($section_status->buy_one_get_one == 1 && count($buyOneGetOneProducts) > 0)
     <div class="container for-you">
         <h2 class="title text-center mb-4">Buy One Get One</h2>
         <div class="products">
@@ -623,7 +623,7 @@
         </div>
     </div>
     <div class="mb-2"></div>
-    @endif
+    @endif --}}
     <!-- Buy One Get One End -->
 
     <!-- Bundle Products Start -->

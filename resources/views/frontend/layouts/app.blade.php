@@ -25,15 +25,6 @@
         }])
         ->get();
 
-        $brands = \App\Models\Brand::where('status', 1)
-        ->select('id', 'name')
-        ->with(['products' => function($query) {
-            $query->select('id', 'brand_id', 'name', 'slug')
-                ->orderBy('watch', 'desc')
-                ->limit(20);
-        }])
-        ->get();
-
         $sub_categories = \App\Models\SubCategory::where('status', 1)
         ->select('id', 'name')
         ->with(['products' => function($query) {

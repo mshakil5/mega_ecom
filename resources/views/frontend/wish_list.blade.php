@@ -78,7 +78,7 @@
                                 @endphp
                                 <small>({{ round($discountPercentage, 0) }}% off)</small>
                             @else
-                                {{ $currency }} {{ number_format($product->price, 2) }}
+                                {{ $currency }}{{ number_format($product->price, 2) }}
                             @endif
                         </div>
                     </div>

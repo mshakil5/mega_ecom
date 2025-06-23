@@ -43,7 +43,16 @@
                     <strong>Name:</strong> {{ $order->user->name ?? '' }}<br>
                     <strong>Email:</strong> {{ $order->user->email ?? $order->email }}<br>
                     <strong>Phone:</strong> {{ $order->user->phone ?? $order->phone }}<br>
-                    <strong>Address:</strong> {!! $order->user?->address ?? '' !!}
+                    @if ($order->user?->address)
+                      <strong>Address:</strong> {!! $order->user?->address ?? '' !!}
+                    @else
+                      <strong>Address:</strong>
+                      {{ $order->address ?? $order->house_number ?? '' }}
+                      {{ $order->street_name ?? '' }}
+                      {{ $order->town ?? '' }}
+                      {{ $order->postcode ?? '' }}
+                    @endif
+
                 </address>
                 
                 

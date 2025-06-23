@@ -68,7 +68,12 @@
             // console.log(JSON.parse(localStorage.getItem('cart')));
 
             toastr.success("Added to cart", "");
-            $('#quickAddToCartModal').modal('hide');
+            setTimeout(() => {
+                $('#quickAddToCartModal').hide(300);
+                $('body').removeClass('modal-open').css('overflow', '');
+                $('.modal-backdrop.fade').remove();
+            }, 100);
+
         });
 
         $('#quickAddToCartModal').on('hidden.bs.modal', function() {

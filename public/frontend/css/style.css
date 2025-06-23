@@ -158,7 +158,7 @@ h6,
 .h6 {
     font-weight: 500;
     line-height: 1.1;
-    margin-bottom: 1.4rem;
+    /* margin-bottom: 1.4rem; */
     color: #333;
     letter-spacing: -.03em
 }
@@ -6686,7 +6686,7 @@ p {
 }
 
 .tab-pane {
-    padding: 1.4rem 2.2rem
+    /* padding: 1.4rem 2.2rem */
 }
 
 .tab-pane p:last-child {
@@ -9307,12 +9307,12 @@ p {
     outline: none !important
 }
 
-.banner img {
+/* .banner img {
     display: block;
     max-width: none;
     width: 100%;
     height: auto
-}
+} */
 
 .banner.banner-menu img {
     height: 100%
@@ -9347,7 +9347,7 @@ p {
     font-weight: 500;
     font-size: 2rem;
     line-height: 1.3;
-    margin-bottom: 1.5rem;
+    /* margin-bottom: 1.5rem; */
     letter-spacing: -.03em
 }
 
@@ -10580,8 +10580,6 @@ small.form-text {
 @media screen and (min-width: 992px) {
     .cta-border {
         text-align: left;
-        padding-left: 0;
-        padding-right: 0
     }
 
     .cta-border .cta-content {
@@ -11213,7 +11211,20 @@ small.form-text {
 
 .intro-slider-container,
 .intro-slide {
-    background-color: #cccccc
+    background-color: #cccccc;
+    background-size: cover;
+    background-position: center;
+    height: 450px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .intro-slide,
+    .intro-slider-container {
+        height: 200px;
+    }
 }
 
 .intro-slider-container,
@@ -11225,7 +11236,7 @@ small.form-text {
 .intro-slide .slide-image:before {
     display: block;
     content: '';
-    width: 100%
+    /* width: 100% */
 }
 
 .slider-container-1:before,
@@ -16293,11 +16304,13 @@ button:focus {
 }
 
 .table.table-cart .price-col {
-    width: 120px
+    width: 120px;
+    font-weight: 500;
 }
 
 .table.table-cart .total-col {
-    width: 80px
+    width: 80px;
+    font-weight: 500;
 }
 
 .table.table-cart .quantity-col {
@@ -19944,7 +19957,19 @@ input.largerRadiobox:checked + .largerRadiobox-label {
 
 @media (max-width: 575.98px) {
     .mobile-margin {
-        margin-bottom: 140px;
+        /* margin-bottom: 140px; */
+    }
+}
+
+.category-img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+@media (max-width: 767px) {
+    .category-img {
+        height: 150px;
     }
 }
 
