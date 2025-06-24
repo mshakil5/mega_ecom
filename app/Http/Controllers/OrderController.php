@@ -673,7 +673,7 @@ class OrderController extends Controller
             $encoded_order_id = base64_encode($order->id);
             $pdfUrl = route('generate-pdf', ['encoded_order_id' => $encoded_order_id]);
 
-            // $this->sendOrderEmail($order, $pdfUrl);
+            $this->sendOrderEmail($order, $pdfUrl);
 
             if ($discountAmount > 0 && isset($formData['coupon_id'])) {
                 $couponUsage = new CouponUsage();
