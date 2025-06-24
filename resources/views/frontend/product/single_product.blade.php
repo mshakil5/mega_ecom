@@ -6,7 +6,7 @@
     <div class="container">
         <div class="product-details-top">
             <div class="row">
-                <div class="col-md-6">
+                {{-- <div class="col-md-6 d-none">
                     <div class="product-gallery product-gallery-vertical">
                         <div class="row">
                             <figure class="product-main-image">
@@ -20,6 +20,39 @@
                                     </a>
                                 @endforeach
                             </div>
+                        </div>
+                    </div>
+                </div> --}}
+
+                <div class="col-md-6">
+                    <div class="product-gallery-area">
+                        <!-- Main Image -->
+                        <div class="product-main-image mb-3">
+                            <img id="main-product-image" 
+                                src="{{ asset('/images/products/' . $product->feature_image) }}" 
+                                alt="{{ $product->name }}" 
+                                class="img-fluid w-100">
+                        </div>
+
+                        <!-- Thumbnail Slider -->
+                        <div class="product-thumbnail-slider">
+                            <div class="thumbnail-item">
+                                <img src="{{ asset('/images/products/' . $product->feature_image) }}" 
+                                    alt="Thumbnail" 
+                                    class="img-fluid"
+                                    data-large="{{ asset('/images/products/' . $product->feature_image) }}">
+                            </div>
+                            
+                            @foreach($product->colors as $color)
+                                @if($color->image)
+                                    <div class="thumbnail-item color-thumbnail" data-color="{{ $color->color }}">
+                                        <img src="{{ asset($color->image) }}" 
+                                            alt="{{ $color->color }}" 
+                                            class="img-fluid"
+                                            data-large="{{ asset($color->image) }}">
+                                    </div>
+                                @endif
+                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -56,7 +89,7 @@
                                 @endphp
                                 <small>({{ round($discountPercentage, 0) }}% off)</small>
                             @else
-                                {{ $currency }} {{ $sellingPrice ?? $regularPrice }}
+                                {{ $currency }}{{ number_format($sellingPrice ?? $regularPrice, 2) }}
                             @endif
                         </div>
 
@@ -121,7 +154,7 @@
                                             <input type="radio" class="custom-control-input" id="color-{{ $index }}" name="color" value="{{ $color }}" style="display: none;">
                                             <button type="button" 
                                                 class="color-option" 
-                                                style="background-color: {{ $color }}; width: 70px; height: 55px;" 
+                                                style="background-color: {{ $color }}; width: 66px; height: 45px;" 
                                                 data-color="{{ $color }}"
                                                 onclick="selectColor(this, 'color-{{ $index }}', false)">
                                             </button>
@@ -357,11 +390,137 @@
         display: flex;
         gap: 10px;
     }
+
+    .product-gallery-area {
+        position: relative;
+    }
+    
+    .product-main-image {
+        border: 1px solid #eee;
+        padding: 10px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+    
+    .product-main-image img {
+        max-height: 500px;
+        object-fit: contain;
+    }
+    
+    .product-thumbnail-slider {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+    
+    .thumbnail-item {
+        flex: 0 0 80px;
+        height: 80px;
+        border: 1px solid #ddd;
+        padding: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .thumbnail-item:hover {
+        border-color: #333;
+    }
+    
+    .thumbnail-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    @media (max-width: 767px) {
+        .product-main-image img {
+            max-height: 300px;
+        }
+        
+        .thumbnail-item {
+            flex: 0 0 60px;
+            height: 60px;
+        }
+    }
 </style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
 
 @endsection
 
 @section('script')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Initialize thumbnail slider
+        $('.thumbnail-item').on('click', function() {
+            const largeImage = $(this).find('img').data('large');
+            $('#main-product-image').attr('src', largeImage);
+            
+            // Update active state
+            $('.thumbnail-item').removeClass('active');
+            $(this).addClass('active');
+        });
+        
+        // Set first thumbnail as active by default
+        $('.thumbnail-item:first').addClass('active');
+        
+        // For color selection - update main image when color is selected
+        $(document).on('click', '.color-option', function() {
+            const colorImage = $(this).data('image');
+            if (colorImage) {
+                $('#main-product-image').attr('src', colorImage);
+            }
+        });
+        
+        // Initialize thumbnail slider scrolling for mobile
+        if ($(window).width() < 768) {
+            $('.product-thumbnail-slider').addClass('mobile-slider');
+        }
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        if ($(window).width() < 768) {
+            $('.product-thumbnail-slider').slick({
+                dots: false,
+                arrows: true,
+                infinite: false,
+                speed: 300,
+                slidesToShow: 4,
+                slidesToScroll: 1,
+                responsive: [
+                    {
+                        breakpoint: 480,
+                        settings: {
+                            slidesToShow: 3,
+                            slidesToScroll: 1
+                        }
+                    }
+                ]
+            });
+        }
+        
+        $('.thumbnail-item').on('click', function() {
+            const largeImage = $(this).find('img').data('large');
+            $('#main-product-image').attr('src', largeImage);
+            
+            $('.thumbnail-item').removeClass('active');
+            $(this).addClass('active');
+        });
+        
+        $('.thumbnail-item:first').addClass('active');
+        
+        $(document).on('click', '.color-option', function() {
+            const colorImage = $(this).data('image');
+            if (colorImage) {
+                $('#main-product-image').attr('src', colorImage);
+            }
+        });
+    });
+</script>
 
 <script>
     $(document).ready(function () {
@@ -398,7 +557,7 @@
                     });
 
                     var price = response.selling_price;
-                    $('#productPrice').html('{{ $currency }} ' + price); 
+                    $('#productPrice').html('{{ $currency }}' + parseFloat(price).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
 
                     $('.add-to-cart').attr('data-price', price);
 
