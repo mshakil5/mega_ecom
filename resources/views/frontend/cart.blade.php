@@ -17,17 +17,6 @@
                 <div class="col-lg-9">
                     <div class="card" style="border: 1px dashed #ddd; border-radius: 5px; padding: 20px;">
                         <table class="table table-cart table-mobile">
-                            <thead class="d-none">
-                                <tr>
-                                    <th>Product</th>
-                                    <th>Price</th>
-                                    <!-- <th>Size</th>
-                                    <th>Color</th> -->
-                                    <th>Quantity</th>
-                                    <th>Total</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
                             <tbody>
                                 @foreach ($cart as $item)
                                     @php
@@ -37,6 +26,7 @@
                                         $isSupplier = isset($item['supplierId']);
                                         $entity = $isBundle ? \App\Models\BundleProduct::find($item['bundleId']) : \App\Models\Product::find($item['productId']);
                                         $price = $item['price'];
+                                        $typeName = isset($item['typeId']) ? \App\Models\Type::find($item['typeId'])->name ?? null : null;
 
                                         if ($isBundle) {
                                             $bundle = \App\Models\BundleProduct::find($item['bundleId']);
@@ -72,6 +62,10 @@
 
                                                     @if(!empty($item['color']))
                                                         <p style="font-size: 14px;"> <b>Color: </b>{{ $item['color'] }}</p>
+                                                    @endif
+
+                                                    @if(!empty($item['typeId']))
+                                                        <p style="font-size: 14px;"> <b>Type: </b>{{ $typeName }}</p>
                                                     @endif
                                                 </h3>
                                             </div>

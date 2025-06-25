@@ -394,7 +394,7 @@ class FrontendController extends Controller
         $wishlist = json_decode($wishlistJson, true);
  
         $productIds = array_column($wishlist, 'productId');
-        $products = Product::whereIn('id', $productIds)->get();
+        $products = Product::whereIn('id', $productIds)->with('stock')->get();
 
         foreach ($products as $product) {
             foreach ($wishlist as $item) {

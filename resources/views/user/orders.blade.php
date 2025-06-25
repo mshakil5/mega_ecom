@@ -10,8 +10,8 @@
                 <table id="ordersTable" class="table table-borderless table-hover text-center mb-0">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Phone</th>
+                            <th>Order Date</th>
+                            <th>Invoice No.</th>
                             <th>Total</th>
                             <th>Payment Method</th>
                             <!-- <th>Invoice</th> -->
@@ -22,8 +22,10 @@
                     <tbody class="align-middle">
                         @forelse ($orders as $order)
                         <tr>
-                            <td>{{ $order->name }} {{ $order->surname }}</td>
-                            <td>{{ $order->phone }}</td>
+                            <td>{{ \Carbon\Carbon::parse($order->purchase_date)->format('d-m-Y') }}</td>
+                            <td>
+                                <a href="{{ route('generate-pdf', ['encoded_order_id' => base64_encode($order->id)]) }}" class="view" target="_blank">#{{ $order->invoice}}</a>
+                            </td>
                             <td>{{ number_format($order->net_amount, 2) }}</td>
                             <td>
                                 @if($order->payment_method === 'paypal')
@@ -134,9 +136,6 @@
 
 <script>
     $(document).ready(function() {
-        $('#ordersTable').DataTable({
-            "order": []
-        });
 
         $(document).on('click', '.btn-cancel', function() {
             var orderId = $(this).data('order-id');

@@ -186,277 +186,13 @@ class OrderController extends Controller
         $netAmount = $subtotal - $discountAmount + $vat_amount + $shippingAmount;
 
         if ($formData['payment_method'] === 'paypal') {
-            return $this->initiatePayPalPayment($netAmount, $formData);
-        }elseif ($formData['payment_method'] === 'stripe') {
-            return $this->initiateStripePayment($netAmount, $formData);
-        }else {
-            DB::transaction(function () use ($formData, &$pdfUrl) {
-                $subtotal = 0.00;
-    
-                $order = new Order();
-                if (auth()->check()) {
-                    $order->user_id = auth()->user()->id;
-                }
-                $order->invoice = random_int(100000, 999999);
-                $order->purchase_date = date('Y-m-d');
-                $order->name = $formData['name'] ?? null;
-                $order->surname = $formData['surname'] ?? null;
-                $order->email = $formData['email'] ?? null;
-                $order->phone = $formData['phone'] ?? null;
-                $order->house_number = $formData['house_number'] ?? null;
-                $order->street_name = $formData['street_name'] ?? null;
-                $order->town = $formData['town'] ?? null;
-                $order->postcode = $formData['postcode'] ?? null;
-                $order->note = $formData['note'] ?? null;
-                $order->payment_method = $formData['payment_method'] ?? null;
-                $order->shipping_amount = $formData['shipping'] ?? 0;
-                $order->status = 1;
-                $order->admin_notify = 1;
-                $order->order_type = 0;
-    
-                foreach ($formData['order_summary'] as $item) {
-                    $isBundle = isset($item['bundleId']);
-                    $entity = $isBundle ? BundleProduct::findOrFail($item['bundleId']) : Product::findOrFail($item['productId']);
-    
-                    if ($isBundle) {
-                        $bundlePrice = $entity->price ?? 0;
-                        $totalPrice = (float) $item['quantity'] * $bundlePrice;
-                        $order->bundle_product_id = $entity->id;
-                        $entity->quantity -= $item['quantity'];
-                        $entity->save();
-                    } else {
-                        if (isset($item['supplierId']) && $item['supplierId'] !== null) {
-                            $supplierStock = SupplierStock::where('product_id', $item['productId'])
-                                ->where('supplier_id', $item['supplierId'])
-                                ->first();
-    
-                            if ($supplierStock) {
-                                $totalPrice = (float) $item['quantity'] * (float) $supplierStock->price;
-                                $supplierStock->quantity -= $item['quantity'];
-                                $supplierStock->save();
-                            }
-                        } elseif (isset($item['campaignId']) && $item['campaignId'] !== null) {
-                            $campaign = CampaignRequestProduct::where('product_id', $item['productId'])
-                                ->first();
-    
-                            if ($campaign) {
-                                $totalPrice = (float) $item['quantity'] * (float) $campaign->campaign_price;
-                                $campaign->quantity -= $item['quantity'];
-                                $campaign->save();
-                            }
-                        } else if (isset($item['bogoId']) && $item['bogoId'] !== null) {
-                            $buyOneGetOne = BuyOneGetOne::where('product_id', $item['productId'])
-                                ->first();
-    
-                            if ($buyOneGetOne) {
-                                $totalPrice = (float) $item['quantity'] * (float) $buyOneGetOne->price;
-                                $buyOneGetOne->quantity -= $item['quantity'];
-                                $buyOneGetOne->save();
-                            }
-                        } else {
-                            if (isset($item['offerId']) && $item['offerId'] == 1) {
-                                $specialOfferDetail = SpecialOfferDetails::where('product_id', $item['productId'])
-                                    ->where('status', 1)
-                                    ->first();
-    
-                                if ($specialOfferDetail) {
-                                    $totalPrice = (float) $item['quantity'] * (float) $specialOfferDetail->offer_price;
-                                } else {
-                                    $sellingPrice = Product::find($item['productId'])->stock()
-                                        ->where('quantity', '>', 0)
-                                        ->where('size', $item['size'])
-                                        ->where('color', $item['color'])
-                                        ->orderBy('id', 'desc')
-                                        ->value('selling_price');
-                                    $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
-                                }
-                            } elseif (isset($item['offerId']) && $item['offerId'] == 2) {
-                                $flashSellDetail = FlashSellDetails::where('product_id', $item['productId'])
-                                    ->where('status', 1)
-                                    ->first();
-    
-                                if ($flashSellDetail) {
-                                    $totalPrice = (float) $item['quantity'] * (float) $flashSellDetail->flash_sell_price;
-                                } else {
-                                    $sellingPrice = Product::find($item['productId'])->stock()
-                                        ->where('quantity', '>', 0)
-                                        ->where('size', $item['size'])
-                                        ->where('color', $item['color'])
-                                        ->orderBy('id', 'desc')
-                                        ->value('selling_price');
-    
-                                    $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
-                                }
-                            } else {
-                                $sellingPrice = Product::find($item['productId'])->stock()
-                                    ->where('quantity', '>', 0)
-                                    ->where('size', $item['size'])
-                                    ->where('color', $item['color'])
-                                    ->orderBy('id', 'desc')
-                                    ->value('selling_price');
-                                    $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
-                            }
-                        }
-                    }
-    
-                    $subtotal += $totalPrice;
-                }
-    
-                $discountPercentage = $formData['discount_percentage'] ?? null;
-                $discountAmount = $formData['discount_amount'] ?? null;
-    
-                if ($discountPercentage !== null) {
-                    $discountPercent = (float) $discountPercentage;
-                    $discountAmount = ($subtotal * $discountPercent) / 100;
-                } elseif ($discountAmount === null) {
-                    $discountAmount = 0.00;
-                }
-                
-                $order->discount_amount = $discountAmount;
-                $order->subtotal_amount = $subtotal;
-                $order->vat_percent = 5;
-                $order->vat_amount = ($subtotal * 5) / 100;
-                $order->net_amount = $subtotal + $order->vat_amount + $order->shipping_amount - $discountAmount;
-    
-                if (auth()->check()) { 
-                    $order->created_by = auth()->user()->id;
-                }
-    
-                $order->save();
-    
-                $encoded_order_id = base64_encode($order->id);
-                $pdfUrl = route('generate-pdf', ['encoded_order_id' => $encoded_order_id]);
-
-                $this->sendOrderEmail($order, $pdfUrl);
-
-                if ($discountAmount > 0 && isset($formData['coupon_id'])) {
-                    $couponUsage = new CouponUsage();
-                    $couponUsage->coupon_id = $formData['coupon_id'];
-                    $couponUsage->order_id = $order->id;
-                
-                    if (auth()->check()) {
-                        $couponUsage->user_id = auth()->user()->id;
-                    } else {
-                        $couponUsage->guest_name = $formData['name'] ?? null;
-                        $couponUsage->guest_email = $formData['email'] ?? null;
-                        $couponUsage->guest_phone = $formData['phone'] ?? null;
-                    }
-                
-                    $couponUsage->save();
-    
-                    Coupon::where('id', $formData['coupon_id'])->increment('times_used', 1);
-                }
-    
-                if (isset($formData['order_summary']) && is_array($formData['order_summary'])) {
-                    foreach ($formData['order_summary'] as $item) {
-                        $isBundle = isset($item['bundleId']);
-                        $entity = $isBundle ? BundleProduct::findOrFail($item['bundleId']) : Product::findOrFail($item['productId']);
-    
-                        $totalPrice = 0;
-                        $orderDetail = new OrderDetails();
-                        $orderDetail->order_id = $order->id;
-                        $orderDetail->product_id = $isBundle ? null : $item['productId'];
-                        $orderDetail->quantity = $item['quantity'];
-                        $orderDetail->size = $item['size'] ?? null;
-                        $orderDetail->color = $item['color'] ?? null;
-    
-                        if ($isBundle) {
-                            $bundlePrice = $entity->price ?? 0;
-                            $totalPrice = (float) $item['quantity'] * $bundlePrice;
-                            $orderDetail->price_per_unit = $bundlePrice;
-                            $orderDetail->total_price = $totalPrice;
-                            $orderDetail->bundle_product_ids = $entity->product_ids;
-                        } else {
-                            if (isset($item['supplierId']) && $item['supplierId'] !== null) {
-                                $supplierStock = SupplierStock::where('product_id', $item['productId'])
-                                    ->where('supplier_id', $item['supplierId'])
-                                    ->first();
-    
-                                if ($supplierStock) {
-                                    $totalPrice = (float) $item['quantity'] * (float) $supplierStock->price;
-                                    // $supplierStock->quantity -= $item['quantity'];
-                                    $supplierStock->save();
-                                }
-                                $orderDetail->supplier_id = $item['supplierId'];
-    
-                            } elseif (isset($item['campaignId']) && $item['campaignId'] !== null) {
-                                $campaign = CampaignRequestProduct::where('product_id', $item['productId'])
-                                    ->first();
-    
-                                if ($campaign) {
-                                    $totalPrice = (float) $item['quantity'] * (float) $campaign->campaign_price;
-                                    // $campaign->quantity -= $item['quantity'];
-                                    $campaign->save();
-                                }
-                                $orderDetail->campaign_request_product_id = $item['campaignId'];
-                            } else if (isset($item['bogoId']) && $item['bogoId'] !== null) {
-                                $buyOneGetOne = BuyOneGetOne::where('product_id', $item['productId'])
-                                    ->first();
-    
-                                if ($buyOneGetOne) {
-                                    $totalPrice = (float) $item['quantity'] * (float) $buyOneGetOne->price;
-                                    $buyOneGetOne->quantity -= $item['quantity'];
-                                    $buyOneGetOne->save();
-                                }
-                                $orderDetail->buy_one_get_ones_id  = $item['bogoId'];
-    
-                            } else {
-                                if (isset($item['offerId']) && $item['offerId'] == 1) {
-                                    $specialOfferDetail = SpecialOfferDetails::where('product_id', $item['productId'])
-                                        ->where('status', 1)
-                                        ->first();
-    
-                                    if ($specialOfferDetail) {
-                                        $totalPrice = (float) $item['quantity'] * (float) $specialOfferDetail->offer_price;
-                                    } else {
-                                        $sellingPrice = Product::find($item['productId'])->stock()
-                                            ->where('quantity', '>', 0)
-                                            ->where('size', $item['size'])
-                                            ->where('color', $item['color'])
-                                            ->orderBy('id', 'desc')
-                                            ->value('selling_price');
-                                        $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
-                                    }
-                                    $orderDetail->supplier_id = $item['supplierId'];
-    
-                                } elseif (isset($item['offerId']) && $item['offerId'] == 2) {
-                                    $flashSellDetail = FlashSellDetails::where('product_id', $item['productId'])
-                                        ->where('status', 1)
-                                        ->first();
-    
-                                    if ($flashSellDetail) {
-                                        $totalPrice = (float) $item['quantity'] * (float) $flashSellDetail->flash_sell_price;
-                                    } else {
-                                        $sellingPrice = Product::find($item['productId'])->stock()
-                                            ->where('quantity', '>', 0)
-                                            ->where('size', $item['size'])
-                                            ->where('color', $item['color'])
-                                            ->orderBy('id', 'desc')
-                                            ->value('selling_price');
-                                        $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
-                                    }
-                                } else {
-                                    $sellingPrice = Product::find($item['productId'])->stock()
-                                        ->where('quantity', '>', 0)
-                                        ->where('size', $item['size'])
-                                        ->where('color', $item['color'])
-                                        ->orderBy('id', 'desc')
-                                        ->value('selling_price');
-                                    $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
-                                }
-                                // if ($entity->stock) {
-                                //     $entity->stock->quantity -= $item['quantity'];
-                                //     $entity->stock->save();
-                                // }
-                            }
-                            $orderDetail->price_per_unit = $totalPrice / $item['quantity'];
-                            $orderDetail->total_price = $totalPrice;
-                        }
-    
-                        $orderDetail->save();
-                    }
-                }
-            });
+            return $this->initiatePayPalPayment($formData, $discountAmount, $subtotal, $vat_percent, $vat_amount, $shippingAmount, $netAmount);
+        } elseif ($formData['payment_method'] === 'stripe') {
+            return $this->initiateStripePayment($formData, $discountAmount, $subtotal, $vat_percent, $vat_amount, $shippingAmount, $netAmount);
+        } elseif ($formData['payment_method'] === 'cashOnDelivery') {
+            $order = $this->createOrder($formData, $discountAmount, $subtotal, $vat_percent, $vat_amount, $shippingAmount, $netAmount);
+            $this->sendOrderEmail($order);
+            $pdfUrl = route('generate-pdf', ['encoded_order_id' => base64_encode($order->id)]);
         }
 
         return response()->json([
@@ -465,22 +201,189 @@ class OrderController extends Controller
         ]);
     }
 
-    private function initiateStripePayment($netAmount, $formData)
+    protected function createOrder($formData, $discountAmount, $subtotal, $vat_percent, $vat_amount, $shippingAmount, $netAmount)
     {
-        $totalamt = $netAmount;
-        // $stripecommission = $totalamt * 1.5 / 100;
-        // $fixedFee = 0.20;
-        // $amt = $netAmount;
+      return DB::transaction(function () use ($formData, $discountAmount, $subtotal, $vat_percent, $vat_amount, $shippingAmount, $netAmount) {
 
-        // Stripe::setApiKey(env('STRIPE_SECRET'));
+        $order = new Order();
+        if (auth()->check()) {
+            $order->user_id = auth()->user()->id;
+        }
+        $order->invoice = random_int(100000, 999999);
+        $order->purchase_date = date('Y-m-d');
+        $order->name = $formData['name'] ?? null;
+        $order->surname = $formData['surname'] ?? null;
+        $order->email = $formData['email'] ?? null;
+        $order->phone = $formData['phone'] ?? null;
+        $order->house_number = $formData['house_number'] ?? null;
+        $order->street_name = $formData['street_name'] ?? null;
+        $order->town = $formData['town'] ?? null;
+        $order->postcode = $formData['postcode'] ?? null;
+        $order->note = $formData['note'] ?? null;
+        $order->payment_method = $formData['payment_method'] ?? null;
+        $order->shipping_amount = $formData['shipping'] ?? 0;
+        $order->status = 1;
+        $order->admin_notify = 1;
+        $order->order_type = 0;
+        $order->discount_amount = $discountAmount;
+        $order->subtotal_amount = $subtotal;
+        $order->vat_percent = $vat_percent;
+        $order->vat_amount = $vat_amount;
+        $order->net_amount = $netAmount;
+        if (auth()->check()) { 
+            $order->created_by = auth()->user()->id;
+        }
 
+        $order->save();
+
+        if ($discountAmount > 0 && isset($formData['coupon_id'])) {
+            $couponUsage = new CouponUsage();
+            $couponUsage->coupon_id = $formData['coupon_id'];
+            $couponUsage->order_id = $order->id;
+        
+            if (auth()->check()) {
+                $couponUsage->user_id = auth()->user()->id;
+            } else {
+                $couponUsage->guest_name = $formData['name'] ?? null;
+                $couponUsage->guest_email = $formData['email'] ?? null;
+                $couponUsage->guest_phone = $formData['phone'] ?? null;
+            }
+        
+            $couponUsage->save();
+
+            Coupon::where('id', $formData['coupon_id'])->increment('times_used', 1);
+        }
+
+        if (isset($formData['order_summary']) && is_array($formData['order_summary'])) {
+            foreach ($formData['order_summary'] as $item) {
+                $isBundle = isset($item['bundleId']);
+                $entity = $isBundle ? BundleProduct::findOrFail($item['bundleId']) : Product::findOrFail($item['productId']);
+
+                $totalPrice = 0;
+                $orderDetail = new OrderDetails();
+                $orderDetail->order_id = $order->id;
+                $orderDetail->product_id = $isBundle ? null : $item['productId'];
+                $orderDetail->quantity = $item['quantity'];
+                $orderDetail->size = $item['size'] ?? null;
+                $orderDetail->color = $item['color'] ?? null;
+                $orderDetail->type_id = $item['typeId'] ?? null;
+
+                if ($isBundle) {
+                    $bundlePrice = $entity->price ?? 0;
+                    $totalPrice = (float) $item['quantity'] * $bundlePrice;
+                    $orderDetail->price_per_unit = $bundlePrice;
+                    $orderDetail->total_price = $totalPrice;
+                    $orderDetail->bundle_product_ids = $entity->product_ids;
+                } else {
+                    if (isset($item['supplierId']) && $item['supplierId'] !== null) {
+                        $supplierStock = SupplierStock::where('product_id', $item['productId'])
+                            ->where('supplier_id', $item['supplierId'])
+                            ->first();
+
+                        if ($supplierStock) {
+                            $totalPrice = (float) $item['quantity'] * (float) $supplierStock->price;
+                            // $supplierStock->quantity -= $item['quantity'];
+                            $supplierStock->save();
+                        }
+                        $orderDetail->supplier_id = $item['supplierId'];
+
+                    } elseif (isset($item['campaignId']) && $item['campaignId'] !== null) {
+                        $campaign = CampaignRequestProduct::where('product_id', $item['productId'])
+                            ->first();
+
+                        if ($campaign) {
+                            $totalPrice = (float) $item['quantity'] * (float) $campaign->campaign_price;
+                            // $campaign->quantity -= $item['quantity'];
+                            $campaign->save();
+                        }
+                        $orderDetail->campaign_request_product_id = $item['campaignId'];
+                    } else if (isset($item['bogoId']) && $item['bogoId'] !== null) {
+                        $buyOneGetOne = BuyOneGetOne::where('product_id', $item['productId'])
+                            ->first();
+
+                        if ($buyOneGetOne) {
+                            $totalPrice = (float) $item['quantity'] * (float) $buyOneGetOne->price;
+                            $buyOneGetOne->quantity -= $item['quantity'];
+                            $buyOneGetOne->save();
+                        }
+                        $orderDetail->buy_one_get_ones_id  = $item['bogoId'];
+
+                    } else {
+                        if (isset($item['offerId']) && $item['offerId'] == 1) {
+                            $specialOfferDetail = SpecialOfferDetails::where('product_id', $item['productId'])
+                                ->where('status', 1)
+                                ->first();
+
+                            if ($specialOfferDetail) {
+                                $totalPrice = (float) $item['quantity'] * (float) $specialOfferDetail->offer_price;
+                            } else {
+                                $sellingPrice = Product::find($item['productId'])->stock()
+                                    ->where('quantity', '>', 0)
+                                    ->where('size', $item['size'])
+                                    ->where('color', $item['color'])
+                                    ->orderBy('id', 'desc')
+                                    ->value('selling_price');
+                                $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
+                            }
+                            $orderDetail->supplier_id = $item['supplierId'];
+
+                        } elseif (isset($item['offerId']) && $item['offerId'] == 2) {
+                            $flashSellDetail = FlashSellDetails::where('product_id', $item['productId'])
+                                ->where('status', 1)
+                                ->first();
+
+                            if ($flashSellDetail) {
+                                $totalPrice = (float) $item['quantity'] * (float) $flashSellDetail->flash_sell_price;
+                            } else {
+                                $sellingPrice = Product::find($item['productId'])->stock()
+                                    ->where('quantity', '>', 0)
+                                    ->where('size', $item['size'])
+                                    ->where('color', $item['color'])
+                                    ->orderBy('id', 'desc')
+                                    ->value('selling_price');
+                                $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
+                            }
+                        } else {
+                            $sellingPrice = Product::find($item['productId'])->stock()
+                                ->where('quantity', '>', 0)
+                                ->where('size', $item['size'])
+                                ->where('color', $item['color'])
+                                ->where('type_id', $item['typeId'])
+                                ->orderBy('id', 'desc')
+                                ->value('selling_price');
+                            $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
+                        }
+                        // if ($entity->stock) {
+                        //     $entity->stock->quantity -= $item['quantity'];
+                        //     $entity->stock->save();
+                        // }
+                    }
+                    $orderDetail->price_per_unit = $totalPrice / $item['quantity'];
+                    $orderDetail->total_price = $totalPrice;
+                }
+
+                $orderDetail->save();
+            }
+        }
+
+        return $order;
+
+      });
+    }
+
+    private function initiateStripePayment($formData, $discountAmount, $subtotal, $vat_percent, $vat_amount, $shippingAmount, $netAmount)
+    {
         session([
             'payment_data' => [
                 'formData' => $formData,
+                'discountAmount' => $discountAmount,
+                'subtotal' => $subtotal,
+                'vat_percent' => $vat_percent,
+                'vat_amount' => $vat_amount,
+                'shippingAmount' => $shippingAmount,
                 'netAmount' => $netAmount,
             ]
         ]);
-
 
         Stripe::setApiKey(config('services.stripe.secret'));
         try {
@@ -506,303 +409,25 @@ class OrderController extends Controller
             'success' => true,
             'redirectUrl' => $session->url,
         ]);
-
-        // try {
-        //     $paymentIntent = PaymentIntent::create([
-        //         'amount' => $totalamt * 100,
-        //         'currency' => 'GBP',
-        //         'payment_method' =>  $formData['payment_method_id'],
-        //         'description' => 'Order payment',
-        //         'confirm' => false,
-        //         'confirmation_method' => 'automatic',
-        //     ]);
-        // } catch (\Exception $e) {
-        //     return response()->json(['error' => $e->getMessage()], 500);
-        // }
-
-
-
-        // return response()->json([
-        //     'success' => true,
-        //     'client_secret' => $paymentIntent->client_secret,
-        //     'redirectUrl' => route('order.success', ['pdfUrl' => $pdfUrl])
-        // ]);
     }
 
     public function resumeOrderFlow(Request $request)
     {
-          $paymentData = session('payment_data');
-          
-          $formData = $paymentData['formData'];
-          $netAmount = $paymentData['netAmount'];
-          $pdfUrl = null;
+        $paymentData = session('payment_data');
+        
+        $formData = $paymentData['formData'];
+        $discountAmount = $paymentData['discountAmount'];
+        $subtotal = $paymentData['subtotal'];
+        $vat_percent = $paymentData['vat_percent'];
+        $vat_amount = $paymentData['vat_amount'];
+        $shippingAmount = $paymentData['shippingAmount'];
+        $netAmount = $paymentData['netAmount'];
 
-        DB::transaction(function () use ($formData, &$pdfUrl) {
-            $subtotal = 0.00;
+        $pdfUrl = null;
+        $order = $this->createOrder($formData, $discountAmount, $subtotal, $vat_percent, $vat_amount, $shippingAmount, $netAmount);
 
-            $order = new Order();
-            if (auth()->check()) {
-                $order->user_id = auth()->user()->id;
-            }
-            $order->invoice = random_int(100000, 999999);
-            $order->purchase_date = date('Y-m-d');
-            $order->name = $formData['name'] ?? null;
-            $order->surname = $formData['surname'] ?? null;
-            $order->email = $formData['email'] ?? null;
-            $order->phone = $formData['phone'] ?? null;
-            $order->house_number = $formData['house_number'] ?? null;
-            $order->street_name = $formData['street_name'] ?? null;
-            $order->town = $formData['town'] ?? null;
-            $order->postcode = $formData['postcode'] ?? null;
-            $order->note = $formData['note'] ?? null;
-            $order->payment_method = $formData['payment_method'] ?? null;
-            $order->shipping_amount = $formData['shipping'] ?? 0;
-            $order->status = 1;
-            $order->admin_notify = 1;
-            $order->order_type = 0;
-
-            foreach ($formData['order_summary'] as $item) {
-                $isBundle = isset($item['bundleId']);
-                $entity = $isBundle ? BundleProduct::findOrFail($item['bundleId']) : Product::findOrFail($item['productId']);
-
-                if ($isBundle) {
-                    $bundlePrice = $entity->price ?? 0;
-                    $totalPrice = (float) $item['quantity'] * $bundlePrice;
-                    $order->bundle_product_id = $entity->id;
-                    $entity->quantity -= $item['quantity'];
-                    $entity->save();
-                } else {
-                    if (isset($item['supplierId']) && $item['supplierId'] !== null) {
-                        $supplierStock = SupplierStock::where('product_id', $item['productId'])
-                            ->where('supplier_id', $item['supplierId'])
-                            ->first();
-
-                        if ($supplierStock) {
-                            $totalPrice = (float) $item['quantity'] * (float) $supplierStock->price;
-                            $supplierStock->quantity -= $item['quantity'];
-                            $supplierStock->save();
-                        }
-                    } elseif (isset($item['campaignId']) && $item['campaignId'] !== null) {
-                        $campaign = CampaignRequestProduct::where('product_id', $item['productId'])
-                            ->first();
-
-                        if ($campaign) {
-                            $totalPrice = (float) $item['quantity'] * (float) $campaign->campaign_price;
-                            $campaign->quantity -= $item['quantity'];
-                            $campaign->save();
-                        }
-                    } else if (isset($item['bogoId']) && $item['bogoId'] !== null) {
-                        $buyOneGetOne = BuyOneGetOne::where('product_id', $item['productId'])
-                            ->first();
-
-                        if ($buyOneGetOne) {
-                            $totalPrice = (float) $item['quantity'] * (float) $buyOneGetOne->price;
-                            $buyOneGetOne->quantity -= $item['quantity'];
-                            $buyOneGetOne->save();
-                        }
-                    } else {
-                        if (isset($item['offerId']) && $item['offerId'] == 1) {
-                            $specialOfferDetail = SpecialOfferDetails::where('product_id', $item['productId'])
-                                ->where('status', 1)
-                                ->first();
-
-                            if ($specialOfferDetail) {
-                                $totalPrice = (float) $item['quantity'] * (float) $specialOfferDetail->offer_price;
-                            } else {
-                                $sellingPrice = Product::find($item['productId'])->stock()
-                                    ->where('quantity', '>', 0)
-                                    ->where('size', $item['size'])
-                                    ->where('color', $item['color'])
-                                    ->orderBy('id', 'desc')
-                                    ->value('selling_price');
-                                $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
-                            }
-                        } elseif (isset($item['offerId']) && $item['offerId'] == 2) {
-                            $flashSellDetail = FlashSellDetails::where('product_id', $item['productId'])
-                                ->where('status', 1)
-                                ->first();
-
-                            if ($flashSellDetail) {
-                                $totalPrice = (float) $item['quantity'] * (float) $flashSellDetail->flash_sell_price;
-                            } else {
-                                $sellingPrice = Product::find($item['productId'])->stock()
-                                    ->where('quantity', '>', 0)
-                                    ->where('size', $item['size'])
-                                    ->where('color', $item['color'])
-                                    ->orderBy('id', 'desc')
-                                    ->value('selling_price');
-                                $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
-                            }
-                        } else {
-                            $sellingPrice = Product::find($item['productId'])->stock()
-                                ->where('quantity', '>', 0)
-                                ->where('size', $item['size'])
-                                ->where('color', $item['color'])
-                                ->orderBy('id', 'desc')
-                                ->value('selling_price');
-                                $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
-                        }
-                    }
-                }
-
-                $subtotal += $totalPrice;
-            }
-
-            $discountPercentage = $formData['discount_percentage'] ?? null;
-            $discountAmount = $formData['discount_amount'] ?? null;
-
-            if ($discountPercentage !== null) {
-                $discountPercent = (float) $discountPercentage;
-                $discountAmount = ($subtotal * $discountPercent) / 100;
-            } elseif ($discountAmount === null) {
-                $discountAmount = 0.00;
-            }
-            
-            $order->discount_amount = $discountAmount;
-            $order->subtotal_amount = $subtotal;
-            $order->vat_percent = 5;
-            $order->vat_amount = ($subtotal * 5) / 100;
-            $order->net_amount = $subtotal + $order->vat_amount + $order->shipping_amount - $discountAmount;
-
-            if (auth()->check()) { 
-                $order->created_by = auth()->user()->id;
-            }
-
-            $order->save();
-
-            $encoded_order_id = base64_encode($order->id);
-            $pdfUrl = route('generate-pdf', ['encoded_order_id' => $encoded_order_id]);
-
-            $this->sendOrderEmail($order, $pdfUrl);
-
-            if ($discountAmount > 0 && isset($formData['coupon_id'])) {
-                $couponUsage = new CouponUsage();
-                $couponUsage->coupon_id = $formData['coupon_id'];
-                $couponUsage->order_id = $order->id;
-            
-                if (auth()->check()) {
-                    $couponUsage->user_id = auth()->user()->id;
-                } else {
-                    $couponUsage->guest_name = $formData['name'] ?? null;
-                    $couponUsage->guest_email = $formData['email'] ?? null;
-                    $couponUsage->guest_phone = $formData['phone'] ?? null;
-                }
-            
-                $couponUsage->save();
-
-                Coupon::where('id', $formData['coupon_id'])->increment('times_used', 1);
-            }
-
-            if (isset($formData['order_summary']) && is_array($formData['order_summary'])) {
-                foreach ($formData['order_summary'] as $item) {
-                    $isBundle = isset($item['bundleId']);
-                    $entity = $isBundle ? BundleProduct::findOrFail($item['bundleId']) : Product::findOrFail($item['productId']);
-
-                    $totalPrice = 0;
-                    $orderDetail = new OrderDetails();
-                    $orderDetail->order_id = $order->id;
-                    $orderDetail->product_id = $isBundle ? null : $item['productId'];
-                    $orderDetail->quantity = $item['quantity'];
-                    $orderDetail->size = $item['size'] ?? null;
-                    $orderDetail->color = $item['color'] ?? null;
-
-                    if ($isBundle) {
-                        $bundlePrice = $entity->price ?? 0;
-                        $totalPrice = (float) $item['quantity'] * $bundlePrice;
-                        $orderDetail->price_per_unit = $bundlePrice;
-                        $orderDetail->total_price = $totalPrice;
-                        $orderDetail->bundle_product_ids = $entity->product_ids;
-                    } else {
-                        if (isset($item['supplierId']) && $item['supplierId'] !== null) {
-                            $supplierStock = SupplierStock::where('product_id', $item['productId'])
-                                ->where('supplier_id', $item['supplierId'])
-                                ->first();
-
-                            if ($supplierStock) {
-                                $totalPrice = (float) $item['quantity'] * (float) $supplierStock->price;
-                                // $supplierStock->quantity -= $item['quantity'];
-                                $supplierStock->save();
-                            }
-                            $orderDetail->supplier_id = $item['supplierId'];
-
-                        } elseif (isset($item['campaignId']) && $item['campaignId'] !== null) {
-                            $campaign = CampaignRequestProduct::where('product_id', $item['productId'])
-                                ->first();
-
-                            if ($campaign) {
-                                $totalPrice = (float) $item['quantity'] * (float) $campaign->campaign_price;
-                                // $campaign->quantity -= $item['quantity'];
-                                $campaign->save();
-                            }
-                            $orderDetail->campaign_request_product_id = $item['campaignId'];
-                        } else if (isset($item['bogoId']) && $item['bogoId'] !== null) {
-                            $buyOneGetOne = BuyOneGetOne::where('product_id', $item['productId'])
-                                ->first();
-
-                            if ($buyOneGetOne) {
-                                $totalPrice = (float) $item['quantity'] * (float) $buyOneGetOne->price;
-                                $buyOneGetOne->quantity -= $item['quantity'];
-                                $buyOneGetOne->save();
-                            }
-                            $orderDetail->buy_one_get_ones_id  = $item['bogoId'];
-
-                        } else {
-                            if (isset($item['offerId']) && $item['offerId'] == 1) {
-                                $specialOfferDetail = SpecialOfferDetails::where('product_id', $item['productId'])
-                                    ->where('status', 1)
-                                    ->first();
-
-                                if ($specialOfferDetail) {
-                                    $totalPrice = (float) $item['quantity'] * (float) $specialOfferDetail->offer_price;
-                                } else {
-                                    $sellingPrice = Product::find($item['productId'])->stock()
-                                        ->where('quantity', '>', 0)
-                                        ->where('size', $item['size'])
-                                        ->where('color', $item['color'])
-                                        ->orderBy('id', 'desc')
-                                        ->value('selling_price');
-                                    $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
-                                }
-                                $orderDetail->supplier_id = $item['supplierId'];
-
-                            } elseif (isset($item['offerId']) && $item['offerId'] == 2) {
-                                $flashSellDetail = FlashSellDetails::where('product_id', $item['productId'])
-                                    ->where('status', 1)
-                                    ->first();
-
-                                if ($flashSellDetail) {
-                                    $totalPrice = (float) $item['quantity'] * (float) $flashSellDetail->flash_sell_price;
-                                } else {
-                                    $sellingPrice = Product::find($item['productId'])->stock()
-                                        ->where('quantity', '>', 0)
-                                        ->where('size', $item['size'])
-                                        ->where('color', $item['color'])
-                                        ->orderBy('id', 'desc')
-                                        ->value('selling_price');
-                                    $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
-                                }
-                            } else {
-                                $sellingPrice = Product::find($item['productId'])->stock()
-                                        ->where('quantity', '>', 0)
-                                        ->where('size', $item['size'])
-                                        ->where('color', $item['color'])
-                                        ->orderBy('id', 'desc')
-                                        ->value('selling_price');
-                                    $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
-                            }
-                            // if ($entity->stock) {
-                            //     $entity->stock->quantity -= $item['quantity'];
-                            //     $entity->stock->save();
-                            // }
-                        }
-                        $orderDetail->price_per_unit = $totalPrice / $item['quantity'];
-                        $orderDetail->total_price = $totalPrice;
-                    }
-
-                    $orderDetail->save();
-                }
-            }
-        });
+        $pdfUrl = route('generate-pdf', ['encoded_order_id' => base64_encode($order->id)]);
+        $this->sendOrderEmail($order);
 
         session()->forget('payment_data');
 
@@ -816,7 +441,7 @@ class OrderController extends Controller
             ->first();
     }
 
-    protected function initiatePayPalPayment($netAmount, $formData)
+    protected function initiatePayPalPayment($formData, $discountAmount, $subtotal, $vat_percent, $vat_amount, $shippingAmount, $netAmount)
     {
         $payPalCredentials = $this->getPayPalCredentials();
 
@@ -839,6 +464,11 @@ class OrderController extends Controller
 
             if ($response->isRedirect()) {
                 session()->put('order_data', $formData);
+                session()->put('order_discount_amount', $discountAmount);
+                session()->put('order_subtotal', $subtotal);
+                session()->put('order_vat_percent', $vat_percent);
+                session()->put('order_vat_amount', $vat_amount);
+                session()->put('order_shipping_amount', $shippingAmount);
                 session()->put('order_net_amount', $netAmount);
                 return response()->json(['redirectUrl' => $response->getRedirectUrl()]);
             } else {
@@ -855,289 +485,32 @@ class OrderController extends Controller
     public function paymentSuccess(Request $request)
     {
         $formData = session('order_data');
-        DB::transaction(function () use ($formData, &$pdfUrl) {
-            $subtotal = 0.00;
+        $discountAmount = session('order_discount_amount');
+        $subtotal = session('order_subtotal');
+        $vatPercent = session('order_vat_percent');
+        $vatAmount = session('order_vat_amount');
+        $shippingAmount = session('order_shipping_amount');
+        $netAmount = session('order_net_amount');
+        $order = $this->createOrder($formData, $discountAmount, $subtotal, $vatPercent, $vatAmount, $shippingAmount, $netAmount);
+        $pdfUrl = route('generate-pdf', ['encoded_order_id' => base64_encode($order->id)]);
 
-            $order = new Order();
-            if (auth()->check()) {
-                $order->user_id = auth()->user()->id;
-            }
-            $order->invoice = random_int(100000, 999999);
-            $order->purchase_date = date('Y-m-d');
-            $order->name = $formData['name'] ?? null;
-            $order->surname = $formData['surname'] ?? null;
-            $order->email = $formData['email'] ?? null;
-            $order->phone = $formData['phone'] ?? null;
-            $order->house_number = $formData['house_number'] ?? null;
-            $order->street_name = $formData['street_name'] ?? null;
-            $order->town = $formData['town'] ?? null;
-            $order->postcode = $formData['postcode'] ?? null;
-            $order->note = $formData['note'] ?? null;
-            $order->payment_method = $formData['payment_method'] ?? null;
-            $order->shipping_amount = $formData['shipping'] ?? 0.00;
-            $order->status = 1;
-            $order->admin_notify = 1;
-            $order->order_type = 0;
+        $this->sendOrderEmail($order);
+        session()->forget('order_data', 'order_discount_amount', 'order_subtotal', 'order_vat_percent', 'order_vat_amount', 'order_shipping_amount', 'order_net_amount');
 
-            if (isset($formData['order_summary']) && is_array($formData['order_summary'])) {
-            foreach ($formData['order_summary'] as $item) {
-                $isBundle = isset($item['bundleId']);
-                $entity = $isBundle ? BundleProduct::findOrFail($item['bundleId']) : Product::findOrFail($item['productId']);
-
-                if ($isBundle) {
-                    $bundlePrice = $entity->price ?? 0;
-                    $totalPrice = (float) $item['quantity'] * $bundlePrice;
-                    $order->bundle_product_id = $entity->id;
-                    $entity->quantity -= $item['quantity'];
-                    $entity->save();
-                } else {
-                    if (isset($item['supplierId']) && $item['supplierId'] !== null) {
-                        $supplierStock = SupplierStock::where('product_id', $item['productId'])
-                            ->where('supplier_id', $item['supplierId'])
-                            ->first();
-
-                        if ($supplierStock) {
-                            $totalPrice = (float) $item['quantity'] * (float) $supplierStock->price;
-                            $supplierStock->quantity -= $item['quantity'];
-                            $supplierStock->save();
-                        }
-                    } elseif (isset($item['campaignId']) && $item['campaignId'] !== null) {
-                        $campaign = CampaignRequestProduct::where('product_id', $item['productId'])
-                            ->first();
-
-                        if ($campaign) {
-                            $totalPrice = (float) $item['quantity'] * (float) $campaign->campaign_price;
-                            $campaign->quantity -= $item['quantity'];
-                            $campaign->save();
-                        }
-                    } else if (isset($item['bogoId']) && $item['bogoId'] !== null) {
-                        $buyOneGetOne = BuyOneGetOne::where('product_id', $item['productId'])
-                            ->first();
-
-                        if ($buyOneGetOne) {
-                            $totalPrice = (float) $item['quantity'] * (float) $buyOneGetOne->price;
-                            $buyOneGetOne->quantity -= $item['quantity'];
-                            $buyOneGetOne->save();
-                        }
-                    } else {
-                        if (isset($item['offerId']) && $item['offerId'] == 1) {
-                            $specialOfferDetail = SpecialOfferDetails::where('product_id', $item['productId'])
-                                ->where('status', 1)
-                                ->first();
-
-                            if ($specialOfferDetail) {
-                                $totalPrice = (float) $item['quantity'] * (float) $specialOfferDetail->offer_price;
-                            } else {
-                                $sellingPrice = Product::find($item['productId'])->stock()
-                                    ->where('quantity', '>', 0)
-                                    ->where('size', $item['size'])
-                                    ->where('color', $item['color'])
-                                    ->orderBy('id', 'desc')
-                                    ->value('selling_price');
-                                    $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
-                            }
-                        } elseif (isset($item['offerId']) && $item['offerId'] == 2) {
-                            $flashSellDetail = FlashSellDetails::where('product_id', $item['productId'])
-                                ->where('status', 1)
-                                ->first();
-
-                            if ($flashSellDetail) {
-                                $totalPrice = (float) $item['quantity'] * (float) $flashSellDetail->flash_sell_price;
-                            } else {
-                                $sellingPrice = Product::find($item['productId'])->stock()
-                                    ->where('quantity', '>', 0)
-                                    ->where('size', $item['size'])
-                                    ->where('color', $item['color'])
-                                    ->orderBy('id', 'desc')
-                                    ->value('selling_price');
-                                $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
-                            }
-                        } else {
-                            $sellingPrice = Product::find($item['productId'])->stock()
-                                ->where('quantity', '>', 0)
-                                ->where('size', $item['size'])
-                                ->where('color', $item['color'])
-                                ->orderBy('id', 'desc')
-                                ->value('selling_price');
-                            $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
-                        }
-                    }
-                }
-
-                $subtotal += $totalPrice;
-            }
-            }
-
-            $discountPercentage = $formData['discount_percentage'] ?? null;
-            $discountAmount = $formData['discount_amount'] ?? null;
-
-            if ($discountPercentage !== null) {
-                $discountPercent = (float) $discountPercentage;
-                $discountAmount = ($subtotal * $discountPercent) / 100;
-            } elseif ($discountAmount === null) {
-                $discountAmount = 0.00;
-            }
-            
-            $order->discount_amount = $discountAmount;
-            $order->subtotal_amount = $subtotal;
-            $order->vat_percent = 5;
-            $order->vat_amount = ($subtotal * 5) / 100;
-            $order->net_amount = $subtotal + $order->vat_amount + $order->shipping_amount - $discountAmount;
-
-            if (auth()->check()) { 
-                $order->created_by = auth()->user()->id;
-            }
-
-            $order->save();
-
-            $encoded_order_id = base64_encode($order->id);
-            $pdfUrl = route('generate-pdf', ['encoded_order_id' => $encoded_order_id]);
-
-            $this->sendOrderEmail($order, $pdfUrl);
-
-            if ($discountAmount > 0 && isset($formData['coupon_id'])) {
-                $couponUsage = new CouponUsage();
-                $couponUsage->coupon_id = $formData['coupon_id'];
-                $couponUsage->order_id = $order->id;
-            
-                if (auth()->check()) {
-                    $couponUsage->user_id = auth()->user()->id;
-                } else {
-                    $couponUsage->guest_name = $formData['name'] ?? null;
-                    $couponUsage->guest_email = $formData['email'] ?? null;
-                    $couponUsage->guest_phone = $formData['phone'] ?? null;
-                }
-            
-                $couponUsage->save();
-
-                Coupon::where('id', $formData['coupon_id'])->increment('times_used', 1);
-            }
-
-            if (isset($formData['order_summary']) && is_array($formData['order_summary'])) {
-                foreach ($formData['order_summary'] as $item) {
-                    $isBundle = isset($item['bundleId']);
-                    $entity = $isBundle ? BundleProduct::findOrFail($item['bundleId']) : Product::findOrFail($item['productId']);
-
-                    $totalPrice = 0;
-                    $orderDetail = new OrderDetails();
-                    $orderDetail->order_id = $order->id;
-                    $orderDetail->product_id = $isBundle ? null : $item['productId'];
-                    $orderDetail->quantity = $item['quantity'];
-                    $orderDetail->size = $item['size'] ?? null;
-                    $orderDetail->color = $item['color'] ?? null;
-
-                    if ($isBundle) {
-                        $bundlePrice = $entity->price ?? 0;
-                        $totalPrice = (float) $item['quantity'] * $bundlePrice;
-                        $orderDetail->price_per_unit = $bundlePrice;
-                        $orderDetail->total_price = $totalPrice;
-                        $orderDetail->bundle_product_ids = $entity->product_ids;
-                    } else {
-                        if (isset($item['supplierId']) && $item['supplierId'] !== null) {
-                            $supplierStock = SupplierStock::where('product_id', $item['productId'])
-                                ->where('supplier_id', $item['supplierId'])
-                                ->first();
-
-                            if ($supplierStock) {
-                                $totalPrice = (float) $item['quantity'] * (float) $supplierStock->price;
-                                // $supplierStock->quantity -= $item['quantity'];
-                                $supplierStock->save();
-                            }
-                            $orderDetail->supplier_id = $item['supplierId'];
-
-                        } elseif (isset($item['campaignId']) && $item['campaignId'] !== null) {
-                            $campaign = CampaignRequestProduct::where('product_id', $item['productId'])
-                                ->first();
-
-                            if ($campaign) {
-                                $totalPrice = (float) $item['quantity'] * (float) $campaign->campaign_price;
-                                // $campaign->quantity -= $item['quantity'];
-                                $campaign->save();
-                            }
-                            $orderDetail->campaign_request_product_id = $item['campaignId'];
-                        } else if (isset($item['bogoId']) && $item['bogoId'] !== null) {
-                            $buyOneGetOne = BuyOneGetOne::where('product_id', $item['productId'])
-                                ->first();
-
-                            if ($buyOneGetOne) {
-                                $totalPrice = (float) $item['quantity'] * (float) $buyOneGetOne->price;
-                                $buyOneGetOne->quantity -= $item['quantity'];
-                                $buyOneGetOne->save();
-                            }
-                            $orderDetail->buy_one_get_ones_id  = $item['bogoId'];
-
-                        } else {
-                            if (isset($item['offerId']) && $item['offerId'] == 1) {
-                                $specialOfferDetail = SpecialOfferDetails::where('product_id', $item['productId'])
-                                    ->where('status', 1)
-                                    ->first();
-
-                                if ($specialOfferDetail) {
-                                    $totalPrice = (float) $item['quantity'] * (float) $specialOfferDetail->offer_price;
-                                } else {
-                                    $sellingPrice = Product::find($item['productId'])->stock()
-                                        ->where('quantity', '>', 0)
-                                        ->where('size', $item['size'])
-                                        ->where('color', $item['color'])
-                                        ->orderBy('id', 'desc')
-                                        ->value('selling_price');
-                                    $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
-                                }
-                                $orderDetail->supplier_id = $item['supplierId'];
-
-                            } elseif (isset($item['offerId']) && $item['offerId'] == 2) {
-                                $flashSellDetail = FlashSellDetails::where('product_id', $item['productId'])
-                                    ->where('status', 1)
-                                    ->first();
-
-                                if ($flashSellDetail) {
-                                    $totalPrice = (float) $item['quantity'] * (float) $flashSellDetail->flash_sell_price;
-                                } else {
-                                    $sellingPrice = Product::find($item['productId'])->stock()
-                                        ->where('quantity', '>', 0)
-                                        ->where('size', $item['size'])
-                                        ->where('color', $item['color'])
-                                        ->orderBy('id', 'desc')
-                                        ->value('selling_price');
-                                    $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
-                                }
-                            } else {
-                                $sellingPrice = Product::find($item['productId'])->stock()
-                                    ->where('quantity', '>', 0)
-                                    ->where('size', $item['size'])
-                                    ->where('color', $item['color'])
-                                    ->orderBy('id', 'desc')
-                                    ->value('selling_price');
-                                $totalPrice = (float) $item['quantity'] * (float) ($sellingPrice ?? $entity->price);
-                            }
-                            // if ($entity->stock) {
-                            //     $entity->stock->quantity -= $item['quantity'];
-                            //     $entity->stock->save();
-                            // }
-                        }
-                        $orderDetail->price_per_unit = $totalPrice / $item['quantity'];
-                        $orderDetail->total_price = $totalPrice;
-                    }
-
-                    $orderDetail->save();
-                }
-            }
-        });
-
-        session()->forget('order_data');
-
-        // return redirect($pdfUrl);
         return view('frontend.order.success', compact('pdfUrl'));
     }
 
-    protected function sendOrderEmail($order, $pdfUrl)
+    protected function sendOrderEmail($order)
     {
+        $encoded_order_id = base64_encode($order->id);
+        $pdfUrl = route('generate-pdf', ['encoded_order_id' => $encoded_order_id]);
+
         Mail::to($order->email)->send(new OrderConfirmation($order, $pdfUrl));
 
-        // $contactEmails = ContactEmail::where('status', 1)->pluck('email');
-        // foreach ($contactEmails as $email) {
-        //     Mail::to($email)->send(new OrderConfirmation($order, $pdfUrl));
-        // }
+        $contactEmails = ContactEmail::where('status', 1)->pluck('email');
+        foreach ($contactEmails as $email) {
+            Mail::to($email)->send(new OrderConfirmation($order, $pdfUrl));
+        }
     }
 
     public function paymentCancel()

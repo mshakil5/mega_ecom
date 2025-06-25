@@ -60,6 +60,7 @@
                                     <th>Quantity</th>
                                     <th>Size</th>
                                     <th>Color</th>
+                                    <th>Type</th>
                                     <th>Per Unit</th>
                                     <th>Total Price</th>
                                 </tr>
@@ -70,10 +71,11 @@
                                     <td>
                                         <img src="{{ asset('/images/products/' . $orderDetail->product->feature_image) }}" alt="{{ $orderDetail->product->name }}" style="width: 100px; height: auto;">
                                     </td>
-                                    <td>{{ $orderDetail->product->name }}</td>
-                                    <td>{{ $orderDetail->quantity }}</td>
+                                    <td>{{ Str::limit($orderDetail->product->name, 40) }}</td>
+                                    <td class="text-center">{{ $orderDetail->quantity }}</td>
                                     <td>{{ $orderDetail->size }}</td>
                                     <td>{{ $orderDetail->color }}</td>
+                                    <td>{{ $orderDetail->type->name }}</td>
                                     <td>{{ number_format($orderDetail->price_per_unit, 2) }}</td>
                                     <td>{{ number_format($orderDetail->total_price, 2) }}</td>
                                 </tr>

@@ -244,6 +244,7 @@
 
                                             $itemTotal = 0;
                                             $price = $item['price'];
+                                            $typeName = isset($item['typeId']) ? \App\Models\Type::find($item['typeId'])->name ?? null : null;
 
                                             if (!$isBundle && $entity) {
                                                     $itemTotal = $price * $item['quantity'];
@@ -281,9 +282,14 @@
                                                         @if(!empty($item['color']) || !empty($item['size']))
                                                             <div style="font-size: 16px; margin-top: 5px;" class="text-left">           
                                                                 <span>
-                                                                    {{ $item['color'] ?? '' }} 
-                                                                    @if(!empty($item['color']) && !empty($item['size'])) | @endif 
+                                                                    {{ $item['color'] ?? '' }}
+                                                                    @if(!empty($item['color']) && !empty($item['size']))
+                                                                        |
+                                                                    @endif
                                                                     {{ $item['size'] ?? '' }}
+                                                                    @if(!empty($typeName))
+                                                                        | {{ $typeName }}
+                                                                    @endif
                                                                 </span>
                                                             </div>
                                                         @endif
