@@ -64,17 +64,11 @@
 
                         <div class="product-price" id="productPrice">
 
-                                @php
-                                    $filteredStock = $product->stock()
-                                        ->where('quantity', '>', 0)
-                                        ->latest()
-                                        ->select('id', 'selling_price', 'color', 'size', 'quantity')
-                                        ->get();
-
-                                    $sellingPrice = $filteredStock->first()->selling_price ?? 0; 
-                                    $availableColors = $filteredStock->pluck('color')->unique();
-                                    $sizes = $filteredStock->pluck('size')->unique();
-                                @endphp
+                            @php
+                                $sellingPrice = $product->selling_price;
+                                $colors = $product->available_colors;
+                                $sizes = $product->available_sizes;
+                            @endphp
 
                             @if(isset($offerPrice) && $offerPrice !== null)
                                 {{ $currency }} <del>{{ $oldOfferPrice }}</del> {{ $offerPrice }}
@@ -131,7 +125,7 @@
                         <div class="details-filter-row details-row-size">
                             <label>Color:</label>
                             <div class="product-nav product-nav-thumbs">
-                                @foreach($availableColors as $index => $color)
+                                @foreach($colors as $index => $color)
                                     @php
                                         $colorId = \App\Models\Color::where('color', $color)->value('id'); 
                                         $colorImage = $product->colors->firstWhere('color_id', $colorId);
@@ -154,7 +148,7 @@
                                             <input type="radio" class="custom-control-input" id="color-{{ $index }}" name="color" value="{{ $color }}" style="display: none;">
                                             <button type="button" 
                                                 class="color-option" 
-                                                style="background-color: {{ $color }}; width: 66px; height: 45px;" 
+                                                style="background-color: {{ $color }}; width: 66px; height: 55px;" 
                                                 data-color="{{ $color }}"
                                                 onclick="selectColor(this, 'color-{{ $index }}', false)">
                                             </button>
@@ -170,8 +164,15 @@
                                 
                             </form>
                         </div>
+                        
+                        <div class="details-filter-row details-row-size">
+                            <label for="type">Type:</label>
+                            <form id="typeForm">
+                                <!-- Types will be loaded here dynamically -->
+                            </form>
+                        </div>
 
-                        @if(!$product->stock || $product->stock->quantity <= 0)
+                        @if (!$product->is_in_stock)
                             <div class="text-danger mt-2 mb-2">
                                 This product is currently out of stock.
                             </div>
@@ -180,7 +181,7 @@
                         <div class="details-filter-row details-row-size d-flex align-items-center">
                             <label for="qty" class="mr-2">Qty:</label>
                             <div class="product-details-quantity">
-                                <input type="number" id="qty" class="form-control quantity-input" value="1" min="1" max="{{ $product->stock && $product->stock->quantity !== null ? $product->stock->sum('quantity') : '' }}" step="1" data-decimals="0" required>
+                                <input type="number" id="qty" class="form-control quantity-input" value="1" min="1" max="{{ $product->stock->sum('quantity') }}" step="1" data-decimals="0" required>
                             </div>
                             <div class="product-details-action col-auto pt-3">
                                 <a href="#" 
@@ -188,7 +189,7 @@
                                 data-product-id="{{ $product->id }}" 
                                 data-offer-id="0" 
                                 data-price="{{ $sellingPrice ?? $product->price }}"
-                                @if(!$product->stock || $product->stock->quantity <= 0)
+                                @if(!$product->is_in_stock)
                                 style="pointer-events: none; opacity: 0.5;" 
                                 title="Out of stock"
                                 @endif>
@@ -292,6 +293,7 @@
             </div>
         </div>
 
+        @if ($relatedProducts->count() > 0)
         <h2 class="title text-center mb-4">You May Also Like</h2>
 
         <div class="owl-carousel owl-simple carousel-equal-height carousel-with-shadow" data-toggle="owl" 
@@ -320,51 +322,47 @@
                     }
                 }
             }'>
-            @if ($relatedProducts->count() > 0)
-                @foreach($relatedProducts as $product)
-                <div class="product product-2">
-                    <figure class="product-media">
-                        <a href="{{ route('product.show', $product->slug) }}">
-                            <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image">
-                        </a>
 
-                        @if ($product->stock && $product->stock->quantity > 0)
-                            <div class="product-action-vertical">
-                                <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $product->price }}"></a>
-                            </div>
+            @foreach($relatedProducts as $product)
+            <div class="product product-2">
+                <figure class="product-media">
+                    <a href="{{ route('product.show', $product->slug) }}">
+                        <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image">
+                    </a>
 
-                            @php
-                                $filteredStock = $product->stock()
-                                    ->where('quantity', '>', 0)
-                                    ->latest()
-                                    ->select('id', 'selling_price', 'color', 'size', 'quantity')
-                                    ->get();
-
-                                $sellingPrice = $filteredStock->first()->selling_price ?? 0; 
-                                $colors = $filteredStock->pluck('color')->unique();
-                                $sizes = $filteredStock->pluck('size')->unique();
-                            @endphp
-
-                            <div class="product-action">
-                                <a href="#" class="btn-product btn-cart" title="Add to cart" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}"data-toggle="modal" data-target="#quickAddToCartModal" 
-                                data-image ="{{ asset('images/products/' . $product->feature_image) }}" data-stock="{{ $product->stock->sum('quantity') }}"
-                                data-colors="{{ $colors->toJson() }}" data-sizes="{{ $sizes->toJson() }}"><span>add to cart</span></a>
-                            </div>
-                        @else
-                            <span class="product-label label-out-stock">Out of stock</span>
-                        @endif
-                    </figure>
-
-                    <div class="product-body">
-                        <h3 class="product-title"><a href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></h3>
-                        <div class="product-price">
-                            {{ $currency }}{{ number_format($sellingPrice ?? $product->price, 2) }}
+                    @if ($product->is_in_stock)
+                        <div class="product-action-vertical">
+                            <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $product->price }}"></a>
                         </div>
+
+                        @php
+                            $sellingPrice = $product->selling_price;
+                            $colors = $product->available_colors;
+                            $sizes = $product->available_sizes;
+                        @endphp
+
+                        <div class="product-action">
+                            <a href="#" class="btn-product btn-cart" title="Add to cart" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}"data-toggle="modal" data-target="#quickAddToCartModal" 
+                            data-image ="{{ asset('images/products/' . $product->feature_image) }}" data-stock="{{ $product->stock->sum('quantity') }}"
+                            data-colors="{{ $colors->toJson() }}"
+                            data-sizes="{{ $sizes->toJson() }}"
+                            data-name="{{ $product->name }}"><span>add to cart</span></a>
+                        </div>
+                    @else
+                        <span class="product-label label-out-stock">Out of stock</span>
+                    @endif
+                </figure>
+
+                <div class="product-body">
+                    <h3 class="product-title"><a href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></h3>
+                    <div class="product-price">
+                        {{ $currency }}{{ number_format($sellingPrice ?? $product->price, 2) }}
                     </div>
                 </div>
-                @endforeach
-            @endif
+            </div>
+            @endforeach
         </div>
+        @endif
     </div>
 </div>
 
@@ -442,6 +440,46 @@
             flex: 0 0 60px;
             height: 60px;
         }
+    }
+    .custom-control-input.largerRadiobox {
+        position: absolute;
+        opacity: 0;
+        height: 0;
+        width: 0;
+    }
+
+    .custom-control.custom-radio .custom-control-input.largerRadiobox ~ .custom-control-label::before,
+    .custom-control.custom-radio .custom-control-input.largerRadiobox ~ .custom-control-label::after {
+        display: none !important;
+    }
+
+    .custom-control-label.largerRadiobox-label {
+        display: inline-block;
+        width: 70px;
+        height: 50px;
+        line-height: 45px;
+        text-align: center;
+        padding: 0;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
+    .custom-control-input.largerRadiobox:checked + .custom-control-label.largerRadiobox-label {
+        background-color: #333;
+        color: white;
+        border-color: #333;
+    }
+
+    .custom-control-label.largerRadiobox-label:hover {
+        border-color: #888;
+    }
+
+    .custom-control-label.largerRadiobox-label {
+        font-size: 26px;
+        font-weight: 500;
     }
 </style>
 
@@ -533,7 +571,7 @@
 
             var productId = $('#product-id').val();
             var modal = $('#quickAddToCartModal');
-            console.log(selectedColor, productId);
+            // console.log(selectedColor, productId);
 
             $.ajax({
                 url: '/get-sizes',
@@ -544,7 +582,7 @@
                     color: selectedColor, 
                 },
                 success: function (response) {
-                    console.log(response);
+                    // console.log(response);
                     var sizeForm = $('#sizeForm');
                     sizeForm.empty(); 
                     response.sizes.forEach(function (size, index) {
@@ -571,6 +609,72 @@
                 },
             });
         });
+
+        $(document).on('change', 'input[name="size"]', function() {
+            var selectedSize = $(this).val();
+            var selectedColor = $('input[name="color"]:checked').val();
+            var productId = $('#product-id').val();
+
+            if (!selectedColor || !selectedSize) {
+                $('#typeForm').empty();
+                return;
+            }
+
+            $.ajax({
+                url: '/get-types',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    product_id: productId,
+                    color: selectedColor,
+                    size: selectedSize,
+                },
+                success: function(response) {
+                    let typeForm = $('#typeForm');
+                    typeForm.empty();
+                    
+                    if (response.types && response.types.length > 0) {
+                        response.types.forEach((type, index) => {
+                            typeForm.append(`
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <input type="radio" 
+                                          class="custom-control-input largerRadiobox" 
+                                          id="type-${index}" 
+                                          name="type" 
+                                          value="${type.id}" 
+                                          data-price="${type.price}"
+                                          ${index === 0 ? 'checked' : ''}>
+                                    <label class="custom-control-label largerRadiobox-label" 
+                                          for="type-${index}">${type.name}</label>
+                                </div>
+                            `);
+                        });
+
+                        let firstType = response.types[0];
+                        updateProductPrice(firstType.price);
+                        $('.add-to-cart').data('price', firstType.price);
+                        $('.add-to-cart').data('type-id', firstType.id);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching types:', xhr.responseText);
+                }
+            });
+        });
+
+        $(document).on('change', '.type-input', function() {
+            let price = $(this).data('price');
+            let typeId = $(this).val();
+            updateProductPrice(price);
+            $('.add-to-cart').data('price', price);
+            $('.add-to-cart').data('type-id', typeId);
+        });
+
+        function updateProductPrice(price) {
+            $('#productPrice').html('{{ $currency }}' + parseFloat(price).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
+        }
+
+
     });
 </script>
 

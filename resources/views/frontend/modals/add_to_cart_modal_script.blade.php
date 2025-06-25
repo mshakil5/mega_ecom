@@ -120,6 +120,7 @@
                         let firstType = response.types[0];
                         modal.find('#productPrice').text('{{ $currency }}' + firstType.price);
                         modal.find('.add-to-cart').data('price', firstType.price);
+                        modal.find('.add-to-cart').data('type-id', firstType.id);
                     }
                 }
             });
@@ -142,6 +143,7 @@
             modal.find('#sizeForm').empty();
             modal.find('#typeForm').empty();
             modal.find('#qty').attr('max', '').val(1);
+            modal.find('.add-to-cart').removeData();
         });
     });
 </script>
