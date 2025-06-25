@@ -2,9 +2,11 @@
     $(document).ready(function () {
         $('#quickAddToCartModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget);
+            var modal = $(this);
             var productId = button.data('product-id');
             var modal = $(this);
 
+            modal.find('#modalProductName').text(button.data('name'));
             modal.find('#modalProductImage').attr('src', button.data('image'));
             modal.find('#productPrice').text('{{ $currency }}' + button.data('price'));
             modal.find('.add-to-cart').data('product-id', productId);
@@ -39,13 +41,18 @@
 
         $(document).on('change', '.color-input', function () {
             var selectedColor = $(this).val();
-            var productId = $('#quickAddToCartModal').find('.add-to-cart').data('product-id');
             var modal = $('#quickAddToCartModal');
+            var productId = modal.find('.add-to-cart').data('product-id');
 
-            // console.log(selectedColor, productId);
-            if (!productId) {
+            if (!productId || !selectedColor) {
+                modal.find('#sizeForm').empty();
+                modal.find('#typeForm').empty();
                 return;
             }
+
+            modal.find('#sizeForm').empty();
+            modal.find('#typeForm').empty();
+            modal.find('#productPrice').text('{{ $currency }}' + modal.find('.add-to-cart').data('price'));
 
             $.ajax({
                 url: '/get-sizes',
@@ -56,9 +63,7 @@
                     color: selectedColor,
                 },
                 success: function (response) {
-                    // console.log(response);
-                    var sizeForm = modal.find('#sizeForm');
-                    sizeForm.empty();
+                    let sizeForm = modal.find('#sizeForm');
                     response.sizes.forEach(function (size, index) {
                         sizeForm.append(`
                             <div class="custom-control custom-radio custom-control-inline">
@@ -68,16 +73,65 @@
                         `);
                     });
 
-                    var price = response.price;
-                    $('.add-to-cart').attr('data-price', price);
                     modal.find('#qty').attr('max', response.max_quantity).val(1);
                     modal.find('.add-to-cart').data('price', response.selling_price);
                     modal.find('#productPrice').text('{{ $currency }}' + response.selling_price);
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error fetching sizes:', xhr.responseText);
-                },
+                }
             });
+        });
+
+        $(document).on('change', '.size-input', function () {
+            var modal = $('#quickAddToCartModal');
+            var productId = modal.find('.add-to-cart').data('product-id');
+            var selectedColor = modal.find('input[name="color"]:checked').val();
+            var selectedSize = $(this).val();
+
+            if (!productId || !selectedColor || !selectedSize) {
+                modal.find('#typeForm').empty();
+                return;
+            }
+
+            modal.find('#typeForm').empty();
+
+            $.ajax({
+                url: '/get-types',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    product_id: productId,
+                    color: selectedColor,
+                    size: selectedSize,
+                },
+                success: function(response) {
+                    let typeForm = modal.find('#typeForm');
+                    if (response.types && response.types.length > 0) {
+                        response.types.forEach((type, index) => {
+                            typeForm.append(`
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <input type="radio" class="custom-control-input type-input" 
+                                          id="type-${index}" name="type" 
+                                          value="${type.id}" data-price="${type.price}"
+                                          ${index === 0 ? 'checked' : ''}>
+                                    <label class="custom-control-label" for="type-${index}">${type.name}</label>
+                                </div>
+                            `);
+                        });
+
+                        let firstType = response.types[0];
+                        modal.find('#productPrice').text('{{ $currency }}' + firstType.price);
+                        modal.find('.add-to-cart').data('price', firstType.price);
+                    }
+                }
+            });
+        });
+
+        $(document).on('change', '.type-input', function () {
+            let price = $(this).data('price');
+            let typeId = $(this).val();
+            let modal = $('#quickAddToCartModal');
+            modal.find('#productPrice').text('{{ $currency }}' + price);
+            modal.find('.add-to-cart').data('price', price);
+            modal.find('.add-to-cart').data('type-id', typeId);
         });
 
         $('#quickAddToCartModal').on('hidden.bs.modal', function () {
@@ -86,6 +140,7 @@
             modal.find('#productPrice').text('');
             modal.find('#colorForm').empty();
             modal.find('#sizeForm').empty();
+            modal.find('#typeForm').empty();
             modal.find('#qty').attr('max', '').val(1);
         });
     });

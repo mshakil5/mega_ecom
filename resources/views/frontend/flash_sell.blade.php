@@ -51,7 +51,8 @@
                                     data-toggle="modal" data-target="#quickAddToCartModal" 
                                     data-image ="{{ asset('images/products/' . $detail->product->feature_image) }}" data-stock="{{ $detail->product->stock->quantity }}"
                                     data-colors="{{ $colors->toJson() }}"
-                                    data-sizes="{{ $sizes->toJson() }}">
+                                    data-sizes="{{ $sizes->toJson() }}"
+                                    data-name="{{ $detail->product->name }}">
                                         <span>add to cart</span>
                                     </a>
                                 </div>

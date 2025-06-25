@@ -16,6 +16,7 @@
             var supplierId = $(this).data('supplier-id') || null;
             var bogoId = $(this).data('bogo-id') || null;
             var bundleId = $(this).data('bundle-id') || null;
+            var typeId = $(this).data('type-id') || null;
 
             var selectedColor = $('input[name="color"]:checked').val(); 
             var selectedSize = $('input[name="size"]:checked').val();
@@ -41,7 +42,8 @@
                        item.offerId === offerId && 
                        item.bogoId === bogoId && 
                        item.supplierId === supplierId &&
-                       item.campaignId === campaignId;
+                       item.campaignId === campaignId &&
+                       item.typeId === typeId;
             });
 
             if (existingItem) {
@@ -57,7 +59,8 @@
                     supplierId: supplierId,
                     bogoId: bogoId,
                     bundleId: bundleId,
-                    campaignId: campaignId
+                    campaignId: campaignId,
+                    typeId: typeId
                 };
                 cart.push(cartItem);
             }

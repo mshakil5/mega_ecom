@@ -98,19 +98,17 @@
                                         <td>{{ $detail->product_color ?? '' }}</td>
                                         <td>{{ $detail->type->name ?? '' }}</td>
                                         @php
-                                            $filteredStock = $detail->product->stock
-                                                ? $detail->product->stock
-                                                    ->where('product_id', $detail->product_id)
-                                                    ->where('size', $detail->product_size)
-                                                    ->where('color', $detail->product_color)
-                                                    ->where('zip', $detail->zip)
-                                                    ->where('type_id', $detail->type_id)
-                                                    ->where('quantity', '>', 0)
-                                                    ->orderBy('id', 'desc')
-                                                : collect();
+                                          $filteredStock = \App\Models\Stock::where('product_id', $detail->product_id)
+                                              ->where('size', $detail->product_size)
+                                              ->where('color', $detail->product_color)
+                                              ->where('zip', $detail->zip)
+                                              ->where('type_id', $detail->type_id)
+                                              ->where('quantity', '>', 0)
+                                              ->orderByDesc('id')
+                                              ->get();
 
-                                            $currentStock = $filteredStock->sum('quantity');
-                                            $currentSellingPrice = $filteredStock->first()->selling_price ?? 0;
+                                          $currentStock = $filteredStock->sum('quantity');
+                                          $currentSellingPrice = $filteredStock->first()->selling_price ?? 0;
                                         @endphp
                                         <td>{{ number_format($currentStock, 0) }}</td>
                                         <td>{{ $detail->quantity }}</td>

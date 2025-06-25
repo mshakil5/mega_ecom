@@ -92,19 +92,21 @@
                                         <td>{{ $detail->color ?? '' }}</td>
                                         <td>{{ $detail->type->name ?? '' }}</td>
                                         @php
-                                            $filteredStock = $detail->purchaseHistory->product->stock ? $detail->purchaseHistory->product->stock
-                                            ->where('product_id', $detail->purchaseHistory->product_id)
-                                            ->where('size', $detail->purchaseHistory->product_size)
-                                            ->where('color', $detail->purchaseHistory->product_color)
-                                            ->where('zip', $detail->product->isZip())
-                                            ->where('type_id', $detail->type_id)
-                                            ->where('quantity', '>', 0)
-                                            ->orderBy('id', 'desc')
-                                            : collect();
+                                          $filteredStock = $detail->purchaseHistory->product->stock
+                                              ? $detail->purchaseHistory->product->stock
+                                                  ->where('product_id', $detail->purchaseHistory->product_id)
+                                                  ->where('size', $detail->purchaseHistory->product_size)
+                                                  ->where('color', $detail->purchaseHistory->product_color)
+                                                  ->where('zip', $detail->product->isZip())
+                                                  ->where('type_id', $detail->type_id)
+                                                  ->where('quantity', '>', 0)
+                                                  ->sortByDesc('id') // ✅ fixed here
+                                              : collect();
 
-                                            $currentStock = number_format ($filteredStock->sum('quantity'), 0);
-                                            $currentSellingPrice = $filteredStock->first()->selling_price ?? 0;
+                                          $currentStock = number_format($filteredStock->sum('quantity'), 0);
+                                          $currentSellingPrice = $filteredStock->first()->selling_price ?? 0;
                                         @endphp
+
                                         <td>{{ $currentStock }}</td>
                                         <td>{{ $detail->purchaseHistory->quantity }}</td>
                                         <td>

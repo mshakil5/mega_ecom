@@ -298,7 +298,8 @@
                                                         data-image="{{ asset('images/products/') }}/${product.feature_image}" 
                                                         data-stock="${product.total_stock}"
                                                         data-colors='${JSON.stringify(product.colors)}' 
-                                                        data-sizes='${JSON.stringify(product.sizes)}'>
+                                                        data-sizes='${JSON.stringify(product.sizes)}'
+                                                        data-name="${product.name}">
                                                             <span>Add to cart</span>
                                                         </a>
                                                     </div>
@@ -309,7 +310,7 @@
                                                     <a href="{{ route('product.show', '') }}/${product.slug}">${product.name}</a>
                                                 </h3>
                                                 <div class="product-price">
-                                                    {{ $currency }} ${parseFloat(product.price).toFixed(2)}
+                                                    {{ $currency }}${parseFloat(product.price).toFixed(2)}
                                                 </div>
                                             </div>
                                         </div>

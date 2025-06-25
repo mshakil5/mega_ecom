@@ -151,7 +151,8 @@ class FrontendController extends Controller
         $categories = Category::where('status', 1)
             ->with(['products' => function ($query) {
                 $query->select('id', 'category_id', 'name', 'price', 'slug', 'feature_image', 'watch')
-                    ->orderBy('watch', 'desc');
+                    ->orderBy('watch', 'desc')
+                    ->with('stock');
             }])
             ->select('id', 'name', 'image', 'slug')
             ->orderBy('id', 'asc')
@@ -202,6 +203,10 @@ class FrontendController extends Controller
         $category = Category::where('slug', $slug)->firstOrFail();
 
         $products = Product::where('category_id', $category->id)
+                            ->where('status', 1)
+                            ->whereDoesntHave('specialOfferDetails')
+                            ->whereDoesntHave('flashSellDetails')
+                            ->with('stock')
                             ->select('id', 'category_id', 'name', 'feature_image', 'price', 'slug')
                             ->paginate(20);
         
@@ -218,6 +223,10 @@ class FrontendController extends Controller
         $sub_category = SubCategory::where('slug', $slug)->firstOrFail();
 
         $products = Product::where('sub_category_id', $sub_category->id)
+                            ->where('status', 1)
+                            ->whereDoesntHave('specialOfferDetails')    
+                            ->whereDoesntHave('flashSellDetails')
+                            ->with('stock')
                             ->select('id', 'sub_category_id', 'name', 'feature_image', 'price', 'slug')
                             ->paginate(20);
 
@@ -690,27 +699,20 @@ class FrontendController extends Controller
     public function filter(Request $request)
     {
         $startPrice = $request->input('start_price');
-        $endPrice = $request->input('end_price');
+        $endPrice   = $request->input('end_price');
         $categoryId = $request->input('category');
-        $brandId = $request->input('brand');
-        $size = $request->input('size');
-        $color = $request->input('color');
-
-
-        // $productsQuery = Product::select('products.id', 'products.name', 'products.price', 'products.slug', 'products.feature_image')
-        //                         ->where('products.status', 1)
-        //                         ->leftJoin('stocks', 'products.id', '=', 'stocks.product_id')
-        //                         // ->whereDoesntHave('specialOfferDetails')
-        //                         // ->whereDoesntHave('flashSellDetails')
-        //                         ->orderByRaw('COALESCE(stocks.quantity, 0) DESC')  //treating NULL stock values as 0
-        //                         ->with('stock');
+        $brandId    = $request->input('brand');
+        $size       = $request->input('size');
+        $color      = $request->input('color');
 
         $productsQuery = Product::select(
             'products.id',
             'products.name',
-            'products.price',
             'products.slug',
             'products.feature_image',
+            'products.price',
+            'products.category_id',
+            'products.brand_id',
             \DB::raw('COALESCE(SUM(stocks.quantity), 0) as total_stock')
         )
         ->leftJoin('stocks', 'products.id', '=', 'stocks.product_id')
@@ -718,43 +720,41 @@ class FrontendController extends Controller
         ->where('stocks.quantity', '>', 0)
         ->whereDoesntHave('specialOfferDetails')
         ->whereDoesntHave('flashSellDetails')
-        ->groupBy('products.id', 'products.name', 'products.price', 'products.slug', 'products.feature_image')
-        ->orderByRaw('COALESCE(SUM(stocks.quantity), 0) DESC');
-    
+        ->groupBy('products.id', 'products.name', 'products.slug', 'products.feature_image', 'products.price', 'products.category_id', 'products.brand_id')
+        ->orderByDesc(\DB::raw('COALESCE(SUM(stocks.quantity), 0)'));
+
+        // Filters
         if (!empty($startPrice) && !empty($endPrice)) {
             $productsQuery->whereBetween('stocks.selling_price', [$startPrice, $endPrice]);
         }
-    
         if (!empty($categoryId)) {
-            $productsQuery->where('category_id', $categoryId);
+            $productsQuery->where('products.category_id', $categoryId);
         }
-
         if (!empty($brandId)) {
-            $productsQuery->where('brand_id', $brandId);
+            $productsQuery->where('products.brand_id', $brandId);
         }
-
         if (!empty($size)) {
             $productsQuery->where('stocks.size', $size);
         }
-
         if (!empty($color)) {
             $productsQuery->where('stocks.color', $color);
         }
 
-        $products = $productsQuery->get()->map(function ($product) {
+        $products = $productsQuery->with([
+            'stock' => function ($q) {
+                $q->where('quantity', '>', 0)
+                  ->select('id', 'product_id', 'selling_price', 'color', 'size', 'quantity')
+                  ->orderByDesc('id');
+            }
+        ])->get();
 
-            $latestStock = $product->stock()
-                ->where('quantity', '>', 0)
-                ->orderBy('id', 'desc')
-                ->select('id', 'selling_price', 'color', 'size', 'quantity')
-                ->get();
+        foreach ($products as $product) {
+            $filteredStock = $product->stock;
 
-            $product->price =  $latestStock->first()->selling_price ?? $product->price;
-            $product->colors = $latestStock->pluck('color')->unique();
-            $product->sizes = $latestStock->pluck('size')->unique();
-
-            return $product;
-        });
+            $product->price  = $filteredStock->first()->selling_price ?? $product->price;
+            $product->colors = $filteredStock->pluck('color')->unique()->values();
+            $product->sizes  = $filteredStock->pluck('size')->unique()->values();
+        }
 
         return response()->json(['products' => $products]);
     }
@@ -874,21 +874,12 @@ class FrontendController extends Controller
         $productStocks = Stock::where('product_id', $request->product_id)
             ->where('color', $request->color)
             ->where('quantity', '>', 0)
-            ->where('warehouse_id', function ($query) use ($request) {
-                $query->select('warehouse_id')
-                    ->from('stocks')
-                    ->where('product_id', $request->product_id)
-                    ->where('color', $request->color)
-                    ->where('quantity', '>', 0)
-                    ->limit(1);
-            })
             ->latest()
             ->select(['size', 'quantity', 'selling_price'])
             ->get();
 
         $sizes = $productStocks->pluck('size')->toArray();
         $maxQuantity = $productStocks->sum('quantity');
-
         $latestSellingPrice = optional($productStocks->first())->selling_price;
 
         return response()->json([
@@ -897,4 +888,35 @@ class FrontendController extends Controller
             'selling_price' => $latestSellingPrice,
         ]);
     }
+
+    public function getTypes(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'color' => 'required|string',
+            'size' => 'required|string',
+        ]);
+
+        $productStocks = Stock::with('type')
+            ->where('product_id', $request->product_id)
+            ->where('color', $request->color)
+            ->where('size', $request->size)
+            ->where('quantity', '>', 0)
+            ->get();
+
+        $types = $productStocks->filter(fn($stock) => $stock->type)
+            ->unique('type_id')
+            ->map(function ($stock) {
+                return [
+                    'id' => $stock->type->id,
+                    'name' => $stock->type->name,
+                    'price' => $stock->selling_price,
+                ];
+            })->values();
+
+        return response()->json([
+            'types' => $types,
+        ]);
+    }
+
 }

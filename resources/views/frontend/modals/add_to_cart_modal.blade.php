@@ -7,6 +7,7 @@
                 </button>
 
                 <img id="modalProductImage" src="" alt="" class="product-image mb-1" style="max-width: 300px; height: auto; display: block; margin: 0 auto;">
+                <h5 id="modalProductName" class="text-start my-2"></h5>
                 
                 <div class="product-price mb-1" style="margin: 0; padding: 0; color: black;">
                     <strong>Price:</strong>&nbsp;&nbsp;<span id="productPrice" style="font-weight: bold; color: black;"></span>
@@ -20,6 +21,11 @@
                 <div class="details-filter-row details-row-size">
                     <label for="size">Size:</label>
                     <form id="sizeForm" class="size-options"></form>
+                </div>
+
+                <div class="details-filter-row details-row-size">
+                    <label for="type">Type:</label>
+                    <form id="typeForm"></form>
                 </div>
 
                 <div class="details-filter-row details-row-size">

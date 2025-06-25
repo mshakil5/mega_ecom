@@ -125,6 +125,7 @@ Route::post('/products/filter', [FrontendController::class, 'filter']);
 Route::get('/suppliers-shop/{slug}', [FrontendController::class, 'supplierPage'])->name('supplier.show');
 
 Route::post('/get-sizes', [FrontendController::class, 'getSizes'])->name('get-sizes');
+Route::post('/get-types', [FrontendController::class, 'getTypes']);
 
 // Search supplier products
 Route::get('/search/supplier-products', [FrontendController::class, 'searchSupplierProducts'])->name('search.supplier.products');

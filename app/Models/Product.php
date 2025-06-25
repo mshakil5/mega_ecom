@@ -67,7 +67,7 @@ class Product extends Model
 
     public function stock()
     {
-        return $this->hasOne(Stock::class);
+        return $this->hasMany(Stock::class);
     }
 
     public function stockhistory()
@@ -172,9 +172,11 @@ class Product extends Model
 
     public function getAvailableStockAttribute()
     {
-        $stock = $this->relationLoaded('stock') ? $this->stock : $this->stock()->first();
+        if ($this->relationLoaded('stock')) {
+            return $this->stock->where('quantity', '>', 0)->values();
+        }
 
-        return ($stock && $stock->quantity > 0) ? collect([$stock]) : collect();
+        return collect();
     }
 
     public function getSellingPriceAttribute()
@@ -190,6 +192,15 @@ class Product extends Model
     public function getAvailableSizesAttribute()
     {
         return $this->available_stock->pluck('size')->unique()->values();
+    }
+
+    public function getIsInStockAttribute()
+    {
+        if ($this->relationLoaded('stock')) {
+            return $this->stock->where('quantity', '>', 0)->isNotEmpty();
+        }
+        
+        return $this->stock()->where('quantity', '>', 0)->exists();
     }
 
     

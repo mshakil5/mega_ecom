@@ -155,18 +155,12 @@
                                 <a href="{{ route('product.show', $product->slug) }}">
                                     <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image">
                                 </a>
-                                @if ($product->stock && $product->stock->quantity > 0)
+                                @if ($product->is_in_stock)
 
                                     @php
-                                        $filteredStock = $product->stock()
-                                            ->where('quantity', '>', 0)
-                                            ->latest()
-                                            ->select('id', 'selling_price', 'color', 'size', 'quantity')
-                                            ->get();
-
-                                        $sellingPrice = $filteredStock->first()->selling_price ?? 0; 
-                                        $colors = $filteredStock->pluck('color')->unique();
-                                        $sizes = $filteredStock->pluck('size')->unique();
+                                        $sellingPrice = $product->selling_price;
+                                        $colors = $product->available_colors;
+                                        $sizes = $product->available_sizes;
                                     @endphp
 
                                     <div class="product-action-vertical">
@@ -187,7 +181,8 @@
                                         data-image ="{{ asset('images/products/' . $product->feature_image) }}" 
                                         data-stock="{{ $product->stock->sum('quantity') }}"
                                         data-colors="{{ $colors->toJson() }}"
-                                        data-sizes="{{ $sizes->toJson() }}">
+                                        data-sizes="{{ $sizes->toJson() }}"
+                                        data-name="{{ $product->name }}">
                                             <span>add to cart</span>
                                         </a>
                                     </div>
@@ -273,18 +268,12 @@
                         <a href="{{ route('product.show', $product->slug) }}">
                             <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image">
                         </a>
-                        @if ($product->stock && $product->stock->quantity > 0)
+                        @if ($product->is_in_stock)
 
                             @php
-                                $filteredStock = $product->stock()
-                                    ->where('quantity', '>', 0)
-                                    ->latest()
-                                    ->select('id', 'selling_price', 'color', 'size', 'quantity')
-                                    ->get();
-
-                                $sellingPrice = $filteredStock->first()->selling_price ?? 0; 
-                                $colors = $filteredStock->pluck('color')->unique();
-                                $sizes = $filteredStock->pluck('size')->unique();
+                                $sellingPrice = $product->selling_price;
+                                $colors = $product->available_colors;
+                                $sizes = $product->available_sizes;
                             @endphp
                             <div class="product-action-vertical">
                                 <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}">
@@ -300,7 +289,8 @@
                                     data-image ="{{ asset('images/products/' . $product->feature_image) }}" 
                                     data-stock="{{ $product->stock->sum('quantity') }}"
                                     data-colors="{{ $colors->toJson() }}"
-                                    data-sizes="{{ $sizes->toJson() }}">
+                                    data-sizes="{{ $sizes->toJson() }}"
+                                    data-name="{{ $product->name }}">
                                     <span>add to cart</span>
                                 </a>
                             </div>
@@ -412,18 +402,12 @@
                             <a href="{{ route('product.show', $product->slug) }}">
                                 <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image">
                             </a>
-                            @if ($product->stock && $product->stock->quantity > 0)
+                            @if ($product->is_in_stock)
 
                                 @php
-                                    $filteredStock = $product->stock()
-                                        ->where('quantity', '>', 0)
-                                        ->latest()
-                                        ->select('id', 'selling_price', 'color', 'size', 'quantity')
-                                        ->get();
-
-                                    $sellingPrice = $filteredStock->first()->selling_price ?? 0; 
-                                    $colors = $filteredStock->pluck('color')->unique();
-                                    $sizes = $filteredStock->pluck('size')->unique();
+                                    $sellingPrice = $product->selling_price;
+                                    $colors = $product->available_colors;
+                                    $sizes = $product->available_sizes;
                                 @endphp
                                 <div class="product-action-vertical">
                                     <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}">
@@ -439,7 +423,8 @@
                                      data-image ="{{ asset('images/products/' . $product->feature_image) }}" 
                                      data-stock="{{ $product->stock->sum('quantity') }}"
                                      data-colors="{{ $colors->toJson() }}"
-                                     data-sizes="{{ $sizes->toJson() }}">
+                                     data-sizes="{{ $sizes->toJson() }}"
+                                     data-name="{{ $product->name }}">
                                         <span>add to cart</span>
                                     </a>
                                 </div>
@@ -504,18 +489,12 @@
                             <a href="{{ route('product.show', $product->slug) }}">
                                 <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image">
                             </a>
-                            @if ($product->stock && $product->stock->quantity > 0)
+                            @if ($product->is_in_stock)
 
                                 @php
-                                    $filteredStock = $product->stock()
-                                        ->where('quantity', '>', 0)
-                                        ->latest()
-                                        ->select('id', 'selling_price', 'color', 'size', 'quantity')
-                                        ->get();
-
-                                    $sellingPrice = $filteredStock->first()->selling_price ?? 0; 
-                                    $colors = $filteredStock->pluck('color')->unique();
-                                    $sizes = $filteredStock->pluck('size')->unique();
+                                    $sellingPrice = $product->selling_price;
+                                    $colors = $product->available_colors;
+                                    $sizes = $product->available_sizes;
                                 @endphp
                                 <div class="product-action-vertical">
                                     <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}">
@@ -531,7 +510,8 @@
                                      data-image ="{{ asset('images/products/' . $product->feature_image) }}" 
                                      data-stock="{{ $product->stock->sum('quantity') }}"
                                      data-colors="{{ $colors->toJson() }}"
-                                     data-sizes="{{ $sizes->toJson() }}">
+                                     data-sizes="{{ $sizes->toJson() }}"
+                                     data-name="{{ $product->name }}">
                                         <span>add to cart</span>
                                     </a>
                                 </div>
