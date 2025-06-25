@@ -185,7 +185,7 @@
                                 <div class="form-row dynamic-row">
                                     <div class="form-group col-md-5">
                                         <label for="color_id">Select Color
-                                          <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
+                                          <span class="badge badge-success d-none" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
                                         </label>
                                         <select class="form-control" name="color_id[]"  id="color_id_1">
                                             <option value="">Choose Color</option>

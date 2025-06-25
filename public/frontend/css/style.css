@@ -19973,4 +19973,14 @@ input.largerRadiobox:checked + .largerRadiobox-label {
     }
 }
 
+.cookie-btn {
+    background-color: black;
+    color: #fff !important;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+
 /*# sourceMappingURL=style.css.map */
