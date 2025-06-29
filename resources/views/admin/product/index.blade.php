@@ -12,6 +12,9 @@
                     </div>
                     <div class="card-body">
                         <table id="example1" class="table table-bordered table-striped">
+                          <a href="{{ route('products.export') }}" class="btn btn-success mb-2">
+                              <i class="fa fa-download"></i> Export Excel
+                          </a>
                             <thead>
                                 <tr>
                                     <th>Sl</th>

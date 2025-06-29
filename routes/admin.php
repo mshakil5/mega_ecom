@@ -229,6 +229,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/product-price-status', [ProductController::class, 'updatePriceStatus'])->name('product-price.update-status');
     Route::get('/product-price/{id}', [ProductController::class, 'deletePrice']);
 
+    Route::get('/export-products', [ProductController::class, 'exportToExcel'])->name('products.export');
+
     // Slider crud
     Route::get('/slider', [SliderController::class, 'getSlider'])->name('allslider');
     Route::post('/slider', [SliderController::class, 'sliderStore']);

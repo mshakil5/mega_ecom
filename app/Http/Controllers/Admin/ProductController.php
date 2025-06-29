@@ -22,6 +22,10 @@ use App\Models\ProductColor;
 use App\Models\ProductPrice;
 use App\Models\ProductReview;
 use App\Models\Type;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\URL;
+use App\Models\Stock;
 
 class ProductController extends Controller
 {
@@ -536,4 +540,48 @@ class ProductController extends Controller
         return response()->json(['success' => true]);
     }
 
+    public function exportToExcel()
+    {
+        $products = Product::with(['category', 'subCategory', 'types'])->get();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->setCellValue('A1', 'Sl');
+        $sheet->setCellValue('B1', 'Code');
+        $sheet->setCellValue('C1', 'Name');
+        $sheet->setCellValue('D1', 'Price');
+        $sheet->setCellValue('E1', 'Category');
+        $sheet->setCellValue('F1', 'Sub-category');
+        $sheet->setCellValue('G1', 'Types');
+
+        $row = 2;
+        $sl = 1;
+
+        foreach ($products as $product) {
+            $types = $product->types->pluck('name')->implode(', ');
+            $sellingPrice = Stock::where('product_id', $product->id)->orderByDesc('id')->value('selling_price');
+
+            $sheet->setCellValue('A' . $row, $sl++);
+            $sheet->setCellValue('B' . $row, $product->product_code);
+            $sheet->setCellValue('C' . $row, $product->name);
+            $sheet->setCellValue('D' . $row, $sellingPrice);
+            $sheet->setCellValue('E' . $row, $product->category->name ?? '');
+            $sheet->setCellValue('F' . $row, $product->subCategory->name ?? '');
+            $sheet->setCellValue('G' . $row, $types);
+
+            $row++;
+        }
+        
+        foreach (range('A', 'G') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $fileName = 'products_export.xlsx';
+
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, $fileName);
+    }
 }
