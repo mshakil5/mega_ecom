@@ -231,6 +231,12 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::get('/export-products', [ProductController::class, 'exportToExcel'])->name('products.export');
 
+    Route::get('/upload-product', [ProductController::class, 'uploadProduct'])->name('product.upload');
+
+    Route::get('/product-template', [ProductController::class, 'downloadTemplate'])->name('product.template');
+
+    Route::post('/upload-product', [ProductController::class, 'uploadProductStore'])->name('product.upload.store');
+
     // Slider crud
     Route::get('/slider', [SliderController::class, 'getSlider'])->name('allslider');
     Route::post('/slider', [SliderController::class, 'sliderStore']);

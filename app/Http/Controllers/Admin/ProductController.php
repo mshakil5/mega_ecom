@@ -26,6 +26,8 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Illuminate\Support\Facades\URL;
 use App\Models\Stock;
+use App\Imports\ProductUploadImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductController extends Controller
 {
@@ -578,10 +580,47 @@ class ProductController extends Controller
         }
 
         $writer = new Xlsx($spreadsheet);
-        $fileName = 'products_export.xlsx';
+        $fileName = 'products_' . date('Ymd_His') . '.xlsx';
 
         return response()->streamDownload(function () use ($writer) {
             $writer->save('php://output');
         }, $fileName);
+    }
+
+    public function uploadProduct()
+    {
+        return view('admin.product.upload');
+    }
+
+    public function downloadTemplate()
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->fromArray([
+            ['Name', 'Season(System will make its code)', 'Category', 'Sub-category', 'Types (comma separated)', 'Short Description', 'Long Description']
+        ], null, 'A1');
+
+        foreach (range('A', 'G') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $fileName = 'product_template.xlsx';
+
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, $fileName);
+    }
+
+    public function uploadProductStore(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv',
+        ]);
+
+        Excel::import(new ProductUploadImport, $request->file('file'));
+
+        return back()->with('success', 'Products imported successfully!');
     }
 }
