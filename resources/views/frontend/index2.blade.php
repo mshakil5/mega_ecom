@@ -3,7 +3,7 @@
 @section('content')
 
     <!-- Intro Slider Start-->
-    @if($section_status->slider == 1)
+    @if($section_status->slider == 1 && count($sliders) > 0)
     <div class="intro-section mt-1">
         <div class="container mobile-margin">
             <!-- Full-width Slider Row -->

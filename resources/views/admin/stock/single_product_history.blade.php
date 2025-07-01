@@ -29,7 +29,7 @@
 <section class="content">
     <div class="container-fluid">
 
-        <div class="row">
+        <div class="row d-none">
             <div class="col-12">
                 <div class="card card-secondary">
                     <div class="card-header">

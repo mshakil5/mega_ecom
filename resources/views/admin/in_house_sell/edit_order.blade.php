@@ -871,6 +871,7 @@
         $('#size, #color').change(function() {
             var selectedProduct = $('#product_id').find(':selected');
             var selectedProductId = $('#product_id').val();
+            var typeId = $('#type_id').val() || '';
             var warehouseId = $('#warehouse_id').val() || '';
             var pricePerUnit = selectedProduct.data('price');
             var groundPrice = selectedProduct.data('ground-price');
@@ -903,6 +904,7 @@
                 data: {
                     product_id: selectedProduct.val(),
                     warehouse_id: warehouseId,
+                    type_id: typeId,
                     size: selectedSize,
                     color: selectedColor,
                     _token: '{{ csrf_token() }}'
