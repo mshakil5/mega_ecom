@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\URL;
 use App\Models\Stock;
 use App\Imports\ProductUploadImport;
 use Maatwebsite\Excel\Facades\Excel;
+use Image;
 
 class ProductController extends Controller
 {
@@ -46,9 +47,8 @@ class ProductController extends Controller
         $categories = Category::select('id', 'name')->orderby('id','DESC')->get();
         $subCategories = SubCategory::select('id', 'name', 'category_id')->orderby('id','DESC')->get();
         $sizes = Size::select('id', 'size')->orderby('id','DESC')->get();
-        $colors = Color::select('id', 'color', 'color_code')->orderby('id','DESC')->get();
         $types = Type::select('id', 'name')->where('status', 1)->orderby('id','DESC')->get();
-        return view('admin.product.create', compact('brands', 'product_models', 'groups', 'units', 'categories', 'subCategories', 'sizes', 'colors', 'types'));
+        return view('admin.product.create', compact('brands', 'product_models', 'groups', 'units', 'categories', 'subCategories', 'sizes', 'types'));
     }
 
     public function productEdit($id)
@@ -193,17 +193,23 @@ class ProductController extends Controller
             'product_model_id' => 'nullable|exists:product_models,id',
             'unit_id' => 'nullable|exists:units,id',
             'group_id' => 'nullable|exists:groups,id',
-            'feature_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'feature_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             // 'color_id' => 'nullable|array',
             // 'color_id.*' => 'exists:colors,id',
-            'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
+            'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120'
         ]);
 
         $imagePath = null;
         if ($request->hasFile('feature_image')) {
             $image = $request->file('feature_image');
-            $randomName = mt_rand(10000000, 99999999) . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('images/products'), $randomName);
+            $randomName = mt_rand(10000000, 99999999) . '.webp';
+            $destination = public_path('images/products/');
+
+            if (!file_exists($destination)) {
+                mkdir($destination, 0755, true);
+            }
+
+            Image::make($image)->encode('webp', 50)->save($destination . $randomName);
             $imagePath = $randomName;
         }
 
@@ -264,8 +270,17 @@ class ProductController extends Controller
 
                 if ($request->hasFile('image.' . $key)) {
                     $colorImage = $request->file('image.' . $key);
-                    $randomName = mt_rand(10000000, 99999999) . '.' . $colorImage->getClientOriginalExtension();
-                    $colorImage->move(public_path('images/products'), $randomName);
+                    $randomName = mt_rand(10000000, 99999999) . '.webp';
+                    $destinationPath = public_path('images/products/');
+
+                    if (!file_exists($destinationPath)) {
+                        mkdir($destinationPath, 0755, true);
+                    }
+
+                    Image::make($colorImage)
+                        ->encode('webp', 30)
+                        ->save($destinationPath . $randomName);
+
                     $productColor->image = '/images/products/' . $randomName;
                 }
 
@@ -315,10 +330,10 @@ class ProductController extends Controller
             'product_model_id' => 'nullable|exists:product_models,id',
             'unit_id' => 'nullable|exists:units,id',
             'group_id' => 'nullable|exists:groups,id',
-            'feature_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'feature_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             // 'color_id' => 'nullable|array',
             // 'color_id.*' => 'exists:colors,id',
-            'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
+            'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120'
         ]);
 
         $product = Product::find($request->id);
@@ -327,13 +342,22 @@ class ProductController extends Controller
             if ($product->feature_image) {
                 $oldImagePath = public_path('images/products/' . $product->feature_image);
                 if (file_exists($oldImagePath)) {
-                    unlink($oldImagePath); 
+                    unlink($oldImagePath);
                 }
             }
 
             $image = $request->file('feature_image');
-            $randomName = mt_rand(10000000, 99999999) . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('images/products'), $randomName);
+            $randomName = mt_rand(10000000, 99999999) . '.webp';
+            $destinationPath = public_path('images/products/');
+
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0755, true);
+            }
+
+            Image::make($image)
+                ->encode('webp', 50)
+                ->save($destinationPath . $randomName);
+
             $product->feature_image = $randomName;
         }
 
@@ -392,15 +416,24 @@ class ProductController extends Controller
                         }
         
                         $colorImage = $request->file('image.' . $key);
-                        $randomName = mt_rand(10000000, 99999999) . '.' . $colorImage->getClientOriginalExtension();
-                        $colorImage->move(public_path('images/products'), $randomName);
+                        $randomName = mt_rand(10000000, 99999999) . '.webp';
+                        $destinationPath = public_path('images/products/');
+
+                        if (!file_exists($destinationPath)) {
+                            mkdir($destinationPath, 0755, true);
+                        }
+
+                        Image::make($colorImage)
+                            ->encode('webp', 30)
+                            ->save($destinationPath . $randomName);
+
                         $productColor->image = '/images/products/' . $randomName;
                     }
-        
+
                     $productColor->save();
                 }
             }
-        
+
             foreach ($updatedColorIds as $key => $newColorId) {
                 if (!in_array($newColorId, $previousColorIds)) {
                     $existingColor = $existingColors->where('color_id', $newColorId)->first();
@@ -412,8 +445,17 @@ class ProductController extends Controller
         
                         if ($request->hasFile('image.' . $key)) {
                             $colorImage = $request->file('image.' . $key);
-                            $randomName = mt_rand(10000000, 99999999) . '.' . $colorImage->getClientOriginalExtension();
-                            $colorImage->move(public_path('images/products'), $randomName);
+                            $randomName = mt_rand(10000000, 99999999) . '.webp';
+                            $destinationPath = public_path('images/products/');
+
+                            if (!file_exists($destinationPath)) {
+                                mkdir($destinationPath, 0755, true);
+                            }
+
+                            Image::make($colorImage)
+                                ->encode('webp', 30)
+                                ->save($destinationPath . $randomName);
+
                             $productColor->image = '/images/products/' . $randomName;
                         }
         
@@ -428,11 +470,11 @@ class ProductController extends Controller
                     if ($productColor->image && file_exists(public_path($productColor->image))) {
                         unlink(public_path($productColor->image));
                     }
-                    
+
                     $productColor->delete();
                 }
             }
-        }       
+        }
 
         return response()->json(['message' => 'Product updated successfully!', 'product' => $product], 200);
     }
@@ -623,4 +665,11 @@ class ProductController extends Controller
 
         return back()->with('success', 'Products imported successfully!');
     }
+
+    public function getColors()
+    {
+        $colors = Color::select('id', 'color', 'color_code')->where('status', 1)->orderBy('id', 'DESC')->get();
+        return response()->json($colors);
+    }
+
 }

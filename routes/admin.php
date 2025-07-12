@@ -209,6 +209,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::delete('/product', [ProductController::class, 'productDelete']);
     Route::get('/product-details/{id}', [ProductController::class, 'showProductDetails'])->name('product.show.admin');
 
+    Route::get('/get-colors', [ProductController::class, 'getColors'])->name('get.colors');
+
     Route::get('/products/{product}/reviews', [ProductController::class, 'productReviews'])->name('product.reviews.show');
 
     Route::post('/review-status', [ProductController::class, 'changeReviewStatus'])->name('admin.review.status');

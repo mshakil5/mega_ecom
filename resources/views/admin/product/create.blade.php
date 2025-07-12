@@ -192,14 +192,8 @@
                             <div class="form-row">
                                 <div class="form-group col-md-5">
                                     <label for="color_id">Select Color</label>
-                                    <span class="badge badge-success d-none" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
+                                    <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
                                     <select class="form-control" name="color_id[]" id="color_id_1">
-                                        <option value="">Choose Color</option>
-                                        @foreach($colors as $color)
-                                        <option value="{{ $color->id }}" style="background-color: {{ $color->color_code }};">
-                                            {{ $color->color }} ({{ $color->color_code }})
-                                        </option>
-                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="form-group col-md-5">
@@ -279,41 +273,58 @@
     });
 </script>
 
+<script>
+
+$(document).ready(function() {
+    loadColorOptions('color_id_1');
+});
+
+  function loadColorOptions(selectId) {
+    $.ajax({
+        url: "{{ route('get.colors') }}",
+        method: 'GET',
+        success: function(colors) {
+            let options = `<option value="">Choose Color</option>`;
+            colors.forEach(function(color) {
+                options += `<option value="${color.id}" style="background-color:${color.color_code}">${color.color} (${color.color_code})</option>`;
+            });
+            $(`#${selectId}`).html(options);
+        }
+    });
+}
+</script>
+
 <!-- Dynamic Row Script -->
 <script>
     $(document).ready(function() {
         var rowIndex = 2;
 
         $(document).on('click', '.add-row', function() {
-            let newRow = `
-            <div class="form-row dynamic-row">
+            let rowIndex = $('.form-row').length + 1;
+            let html = `
+            <div class="form-row">
                 <div class="form-group col-md-5">
                     <label for="color_id_${rowIndex}">Select Color</label>
                     <select class="form-control" name="color_id[]" id="color_id_${rowIndex}">
-                        <option value="">Choose Color</option>
-                        @foreach($colors as $color)
-                        <option value="{{ $color->id }}" style="background-color: {{ $color->color_code }};">
-                            {{ $color->color }} ({{ $color->color_code }})
-                        </option>
-                        @endforeach
+                        <option>Loading...</option>
                     </select>
                 </div>
                 <div class="form-group col-md-5">
-                    <label for="image_${rowIndex}">Select Image</label>
-                    <input type="file" class="form-control" name="image[]" accept="image/*" id="image_${rowIndex}">
+                    <label for="image">Select Image</label>
+                    <input type="file" class="form-control" name="image[]" accept="image/*">
                 </div>
                 <div class="form-group col-md-1">
                     <label>Action</label>
                     <button type="button" class="btn btn-danger remove-row"><i class="fas fa-minus"></i></button>
                 </div>
             </div>`;
-
-            $('#dynamic-rows').append(newRow);
-            rowIndex++;
+            
+            $('.form-row:last').after(html);
+            loadColorOptions(`color_id_${rowIndex}`);
         });
 
         $(document).on('click', '.remove-row', function() {
-            $(this).closest('.dynamic-row').remove();
+            $(this).closest('.form-row').remove();
         });
     });
 </script>

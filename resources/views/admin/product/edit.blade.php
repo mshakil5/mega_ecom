@@ -185,15 +185,10 @@
                                 <div class="form-row dynamic-row">
                                     <div class="form-group col-md-5">
                                         <label for="color_id">Select Color
-                                          <span class="badge badge-success d-none" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
+                                          <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
                                         </label>
                                         <select class="form-control" name="color_id[]"  id="color_id_1">
                                             <option value="">Choose Color</option>
-                                            @foreach($colors as $color)
-                                                <option value="{{ $color->id }}" style="background-color: {{ $color->color_code }};">
-                                                    {{ $color->color }} ({{ $color->color_code }})
-                                                </option>
-                                            @endforeach
                                         </select>
                                     </div>
                                     <div class="form-group col-md-5">
@@ -211,10 +206,13 @@
                                     <input type="hidden" name="previous_color_ids[]" value="{{ $entry->id }}" id="previous_color_id_{{ $entry->id }}">
                                         <div class="form-group col-md-5">
                                             <label for="color_id">Select Color</label>
-                                            <span class="badge badge-success d-none" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
-                                            <select class="form-control" name="color_id[]" id="color_id">
+                                            @if ($key == 0)
+                                            <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#addColorModal">Add New</span>
+                                             @endif
+                                            <select class="form-control" name="color_id[]">
                                                 <option value="">Choose Color</option>
                                                 @foreach($colors as $color)
+
                                                     <option value="{{ $color->id }}" style="background-color: {{ $color->color_code }};" {{ $color->id == $entry->color_id ? 'selected' : '' }}>
                                                         {{ $color->color }} ({{ $color->color_code }})
                                                     </option>
@@ -265,6 +263,27 @@
 @include('admin.inc.modal.product_modal_script')
 @include('admin.inc.modal.product_type_script')
 
+<script>
+
+  $(document).ready(function() {
+      loadColorOptions('color_id_1');
+  });
+
+  function loadColorOptions(selectId) {
+    $.ajax({
+        url: "{{ route('get.colors') }}",
+        method: 'GET',
+        success: function(colors) {
+            let options = `<option value="">Choose Color</option>`;
+            colors.forEach(function(color) {
+                options += `<option value="${color.id}" style="background-color:${color.color_code}">${color.color} (${color.color_code})</option>`;
+            });
+            $(`#${selectId}`).html(options);
+        }
+    });
+  }
+</script>
+
 <!-- Category Wise Subcategory and Product Code Check Start -->
 <script>
     $(document).ready(function() {
@@ -305,17 +324,13 @@
         });
 
         $(document).on('click', '.add-row', function() {
-            let newRow = `
-            <div class="form-row dynamic-row">
+            let rowIndex = $('.form-row').length + 1;
+            let html = `
+            <div class="form-row">
                 <div class="form-group col-md-5">
-                    <label for="color_id">Select Color</label>
-                    <select class="form-control" name="color_id[]">
-                        <option value="">Choose Color</option>
-                        @foreach($colors as $color)
-                            <option value="{{ $color->id }}" style="background-color: {{ $color->color_code }};">
-                                {{ $color->color }} ({{ $color->color_code }})
-                            </option>
-                        @endforeach
+                    <label for="color_id_${rowIndex}">Select Color</label>
+                    <select class="form-control" name="color_id[]" id="color_id_${rowIndex}">
+                        <option>Loading...</option>
                     </select>
                 </div>
                 <div class="form-group col-md-5">
@@ -327,13 +342,14 @@
                     <button type="button" class="btn btn-danger remove-row"><i class="fas fa-minus"></i></button>
                 </div>
             </div>`;
-
-            $('#dynamic-rows').append(newRow);
+            
+            $('.form-row:last').after(html);
+            loadColorOptions(`color_id_${rowIndex}`);
         });
 
         $(document).on('click', '.remove-row', function() {
-            $(this).closest('.dynamic-row').remove();
-            $(this).closest('.dynamic-row').prev('input[type="hidden"]').remove();
+            $(this).closest('.form-row').remove();
+            $(this).closest('.form-row').prev('input[type="hidden"]').remove();
         });
     });
 </script>
@@ -389,7 +405,7 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(response) {
-                    console.log(response);
+                    // console.log(response);
                     swal({
                         text: "Updated successfully",
                         icon: "success",
