@@ -640,10 +640,10 @@ class ProductController extends Controller
         $sheet = $spreadsheet->getActiveSheet();
 
         $sheet->fromArray([
-            ['Name', 'Season(System will make its code)', 'Category', 'Sub-category', 'Types (comma separated)', 'Short Description', 'Long Description']
+            ['Name', 'Season(System will make its code)', 'Category', 'Sub-category', 'Types (comma separated)', 'Short Description', 'Long Description', 'Image']
         ], null, 'A1');
 
-        foreach (range('A', 'G') as $col) {
+        foreach (range('A', 'H') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 

@@ -38,8 +38,15 @@ class ProductUploadImport implements OnEachRow, WithHeadingRow
             $next = $latest ? intval(substr($latest->product_code, -5)) + 1 : 1;
             $productCode = "STL-{$season}-" . date('Y') . '-' . str_pad($next, 5, '0', STR_PAD_LEFT);
 
-            $category = Category::firstOrCreate(['name' => $data['category']]);
-            $subcategory = SubCategory::firstOrCreate(['name' => $data['sub_category'] ?? '']);
+            $category = Category::firstOrCreate(
+                ['name' => $data['category']],
+                ['slug' => Str::slug($data['category'])]
+            );
+
+            $subcategory = SubCategory::firstOrCreate(
+                ['name' => $data['sub_category'] ?? ''],
+                ['slug' => Str::slug($data['sub_category'] ?? '')]
+            );
 
             $product = Product::create([
                 'name' => $data['name'],
@@ -50,6 +57,7 @@ class ProductUploadImport implements OnEachRow, WithHeadingRow
                 'short_description' => $data['short_description'] ?? '',
                 'long_description' => $data['long_description'] ?? '',
                 'created_by' => auth()->id(),
+                'feature_image' => $data['image'] ?? '',
             ]);
 
             $typeNames = array_filter(array_map('trim', explode(',', $data['types_comma_separated'] ?? '')));
@@ -57,7 +65,12 @@ class ProductUploadImport implements OnEachRow, WithHeadingRow
 
             foreach ($typeNames as $typeName) {
                 if (!$typeName) continue;
-                $type = Type::firstOrCreate(['name' => $typeName]);
+
+                $type = Type::firstOrCreate(
+                    ['name' => $typeName],
+                    ['slug' => Str::slug($typeName)]
+                );
+
                 $typeIds[] = $type->id;
             }
 
