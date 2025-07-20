@@ -6,6 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use Illuminate\Support\Str;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\HeadingRowImport;
 
 class CategoryController extends Controller
 {
@@ -163,5 +167,52 @@ class CategoryController extends Controller
         ]);
     }
 
+    public function template()
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->fromArray([
+            ['Name']
+        ], null, 'A1');
+
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+
+        $writer = new Xlsx($spreadsheet);
+        $fileName = 'category_template.xlsx';
+
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, $fileName);
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv',
+        ]);
+
+        $rows = Excel::toArray([], $request->file('file'))[0];
+
+        unset($rows[0]);
+
+        foreach ($rows as $row) {
+            $name = $row[0] ?? null;
+            if (!$name) continue;
+
+            $slug = Str::slug($name);
+            $count = Category::where('slug', 'like', "$slug%")->count();
+            $uniqueSlug = $count ? "{$slug}-" . ($count + 1) : $slug;
+
+            Category::firstOrCreate(
+                ['name' => $name],
+                [
+                    'slug' => $uniqueSlug,
+                    'status' => 0,
+                ]
+            );
+        }
+
+        return back()->with('success', 'Categories imported successfully!');
+    }
 
 }

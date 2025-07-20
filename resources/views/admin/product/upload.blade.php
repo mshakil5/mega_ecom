@@ -25,7 +25,7 @@
                             <a href="{{ route('product.template') }}" class="btn btn-tool">
                                 <i class="fas fa-download"></i>
                             </a>
-                      </div>
+                        </div>
                     </div>
                     
                     <div class="card-body">

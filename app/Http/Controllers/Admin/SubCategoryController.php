@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 use App\Models\SubCategory;
 use App\Models\Category;
 use Illuminate\Support\Str;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\HeadingRowImport;
 
 class SubCategoryController extends Controller
 {
@@ -155,6 +159,68 @@ class SubCategoryController extends Controller
             'name' => $subcategory->name,
             'category_id' => $subcategory->category_id,
         ]);
+    }
+
+    public function template()
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->fromArray([
+            ['Category', 'SubCategory']
+        ], null, 'A1');
+
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+
+        $writer = new Xlsx($spreadsheet);
+        $fileName = 'category_subcategory_template.xlsx';
+
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, $fileName);
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv',
+        ]);
+
+        $rows = Excel::toArray([], $request->file('file'))[0];
+
+        unset($rows[0]);
+
+        foreach ($rows as $row) {
+            $categoryName = trim($row[0] ?? null);
+            $subCategoryName = trim($row[1] ?? null);
+
+            if (!$categoryName || !$subCategoryName) continue;
+
+            $category = Category::firstOrCreate(
+                ['name' => $categoryName],
+                [
+                    'slug' => Str::slug($categoryName),
+                    'status' => 0,
+                ]
+            );
+
+            $subCategory = SubCategory::where('name', $subCategoryName)
+                ->where('category_id', $category->id)
+                ->first();
+
+            if (!$subCategory) {
+                SubCategory::create([
+                    'category_id' => $category->id,
+                    'name' => $subCategoryName,
+                    'slug' => Str::slug($subCategoryName),
+                    'created_by' => auth()->id(),
+                    'status' => 0,
+                ]);
+            }
+        }
+
+        return back()->with('success', 'Categories and Subcategories imported successfully!');
     }
 
 }

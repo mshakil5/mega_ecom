@@ -155,4 +155,47 @@ class TypeController extends Controller
             return response()->json(['success' => false, 'message' => 'Failed to delete.'], 500);
         }
     }
+
+    public function template()
+    {
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->fromArray([['Type']], null, 'A1');
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $fileName = 'type_template.xlsx';
+
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, $fileName);
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv',
+        ]);
+
+        $rows = \Maatwebsite\Excel\Facades\Excel::toArray([], $request->file('file'))[0];
+        unset($rows[0]);
+
+        foreach ($rows as $row) {
+            $typeName = trim($row[0] ?? '');
+            if (!$typeName) continue;
+
+            if (!\App\Models\Type::whereRaw('LOWER(name) = ?', [strtolower($typeName)])->exists()) {
+                \App\Models\Type::create([
+                    'name' => $typeName,
+                    'slug' => \Illuminate\Support\Str::slug($typeName),
+                    'status' => 0,
+                    'created_by' => auth()->id(),
+                ]);
+            }
+        }
+
+        return back()->with('success', 'Types imported successfully!');
+    }
+
 }

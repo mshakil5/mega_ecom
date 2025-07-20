@@ -158,5 +158,46 @@ class ColorController extends Controller
         return response()->json(['success' => true, 'data' => $color]);
     }
 
+    public function template()
+    {
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->fromArray([['Color']], null, 'A1');
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $fileName = 'color_template.xlsx';
+
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, $fileName);
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv',
+        ]);
+
+        $rows = \Maatwebsite\Excel\Facades\Excel::toArray([], $request->file('file'))[0];
+        unset($rows[0]);
+
+        foreach ($rows as $row) {
+            $colorName = trim($row[0] ?? '');
+
+            if (!$colorName) continue;
+
+            if (\App\Models\Color::where('color', $colorName)->exists()) continue;
+
+            \App\Models\Color::create([
+                'color' => $colorName,
+                'created_by' => auth()->id(),
+                'status' => 0
+            ]);
+        }
+
+        return back()->with('success', 'Colors imported successfully!');
+    }
 
 }

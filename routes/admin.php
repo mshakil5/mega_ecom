@@ -152,6 +152,9 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::post('types/quick-add-product', [TypeController::class, 'quickAddWithProduct'])->name('types.quickAddWithProduct');
 
+    Route::get('/type-template', [TypeController::class, 'template'])->name('type.template');
+    Route::post('/type-import', [TypeController::class, 'import'])->name('type.upload');
+
     // Color crud
     Route::get('/color', [ColorController::class, 'index'])->name('allcolor');
     Route::post('/color', [ColorController::class, 'store']);
@@ -163,6 +166,9 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::post('/color/store', [ColorController::class, 'storeColor'])->name('color.store');
 
+    Route::get('/color-template', [ColorController::class, 'template'])->name('color.template');
+    Route::post('/color-import', [ColorController::class, 'import'])->name('color.upload');
+
     // Size crud
     Route::get('/size', [SizeController::class, 'index'])->name('allsize');
     Route::post('/size', [SizeController::class, 'store']);
@@ -173,6 +179,9 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/size-status', [SizeController::class, 'toggleStatus']);
 
     Route::post('/size/store', [SizeController::class, 'storeSize'])->name('size.store');
+
+    Route::get('/size-template', [SizeController::class, 'template'])->name('size.template');
+    Route::post('/size-import', [SizeController::class, 'import'])->name('size.upload');
 
     // company information
     Route::get('/company-details', [CompanyDetailsController::class, 'index'])->name('admin.companyDetail');
@@ -189,6 +198,9 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::post('/categories/store', [CategoryController::class, 'store'])->name('category.store');
 
+    Route::get('/category-template', [CategoryController::class, 'template'])->name('category.template');
+    Route::post('/category-import', [CategoryController::class, 'import'])->name('category.upload');
+
     // Sub-Category crud
     Route::get('/sub-category', [SubCategoryController::class, 'getSubCategory'])->name('allsubcategory');
     Route::post('/sub-category', [SubCategoryController::class, 'subCategoryStore']);
@@ -199,6 +211,9 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/sub-category-status', [SubCategoryController::class, 'toggleStatus']);
 
     Route::post('/sub-categories/store', [SubCategoryController::class, 'store'])->name('subcategory.store');
+
+    Route::get('/sub-category-template', [SubCategoryController::class, 'template'])->name('subcategory.template');
+    Route::post('/sub-category-import', [SubCategoryController::class, 'import'])->name('subcategory.upload');
 
     // Product crud
     Route::get('/product', [ProductController::class, 'getProduct'])->name('allproduct');

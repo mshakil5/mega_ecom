@@ -5,9 +5,52 @@
 <!-- Main content -->
 <section class="content" id="newBtnSection">
     <div class="container-fluid">
+
+       @if (session('success'))
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+              {{ session('success') }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+      @endif
+
+      @if ($errors->any())
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <ul class="mb-0">
+                  @foreach ($errors->all() as $error)
+                      <li>{{ $error }}</li>
+                  @endforeach
+              </ul>
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+      @endif
+
+
       <div class="row">
         <div class="col-2">
             <button type="button" class="btn btn-secondary my-3" id="newBtn">Add new</button>
+        </div>
+
+        <div class="col-10">
+          <div class="row my-3 text-right">
+            <div class="col-5">
+              <a href="{{ route('type.template') }}" class="btn btn-secondary">
+                  <i class="fas fa-download"></i> Template
+              </a>
+            </div>
+            <div class="col-2">
+
+            </div>
+            <div class="col-5">  
+            <form action="{{ route('type.upload') }}" method="POST" enctype="multipart/form-data" class="d-flex align-items-center">
+                @csrf
+                <input type="file" name="file" class="form-control-file mr-2" required>
+                <button type="submit" class="btn btn-secondary">Import</button>
+            </form>
+          </div>
         </div>
       </div>
     </div>

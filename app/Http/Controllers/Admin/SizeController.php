@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Size;
 use Illuminate\Http\Request;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\HeadingRowImport;
 
 class SizeController extends Controller
 {
@@ -154,5 +158,46 @@ class SizeController extends Controller
         return response()->json(['success' => true, 'data' => $size]);
     }
 
+    public function template()
+    {
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->fromArray([['Size']], null, 'A1');
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $fileName = 'size_template.xlsx';
+
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, $fileName);
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv',
+        ]);
+
+        $rows = \Maatwebsite\Excel\Facades\Excel::toArray([], $request->file('file'))[0];
+        unset($rows[0]);
+
+        foreach ($rows as $row) {
+            $size = trim($row[0] ?? '');
+
+            if (!$size) continue;
+
+            if (\App\Models\Size::where('size', $size)->exists()) continue;
+
+            \App\Models\Size::create([
+                'size' => $size,
+                'created_by' => auth()->id(),
+                'status' => 0
+            ]);
+        }
+
+        return back()->with('success', 'Sizes imported successfully!');
+    }
 
 }
