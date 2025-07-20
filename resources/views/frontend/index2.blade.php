@@ -90,16 +90,14 @@
                 <div class="product product-2">
                     <figure class="product-media">
                         <a href="{{ route('product.show', $product->slug) }}">
-                            <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image">
+                            <x-image-with-loader src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image" />
                         </a>
+                        @php
+                            $sellingPrice = $product->selling_price;
+                            $colors = $product->available_colors;
+                            $sizes = $product->available_sizes;
+                        @endphp
                         @if ($product->is_in_stock)
-
-                            @php
-                                $sellingPrice = $product->selling_price;
-                                $colors = $product->available_colors;
-                                $sizes = $product->available_sizes;
-                            @endphp
-
                             <div class="product-action-vertical">
                                 <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}">
                                     <span>Add to wishlist</span>
@@ -151,7 +149,7 @@
             <div class="col-12 col-md-6">
                 <div class="banner">
                     <a href="{{ route('category.show', $category->slug) }}">
-                        <img src="{{ asset('images/category/' . $category->image) }}" alt="{{ $category->name }}" class="category-img">
+                        <x-image-with-loader src="{{ asset('images/category/' . $category->image) }}" alt="{{ $category->name }}" class="category-img" />
                     </a>
                     <div class="banner-content" style="background: rgba(0, 0, 0, 0.5); padding: 10px; border-radius: 10px;">
                         <h4 class="banner-title text-center">
@@ -175,7 +173,7 @@
                 <div class="col-md-6 col-lg-4">
                     <div class="banner banner-overlay banner-overlay-light">
                         <a href="{{ route('special-offers.show', $specialOffer->slug) }}">
-                            <img src="{{ asset('images/special_offer/' . $specialOffer->offer_image) }}" alt="Banner" style="height: 300px; object-fit: cover;">
+                            <x-image-with-loader src="{{ asset('images/special_offer/' . $specialOffer->offer_image) }}" alt="Banner" style="height: 300px; object-fit: cover;" />
                         </a>
                         <div class="banner-content" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
                             <h4 class="banner-subtitle">
@@ -249,15 +247,14 @@
                         <div class="product product-2">
                             <figure class="product-media">
                                 <a href="{{ route('product.show', $product->slug) }}">
-                                    <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image">
+                                    <x-image-with-loader src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image" />
                                 </a>
+                                @php
+                                    $sellingPrice = $product->selling_price;
+                                    $colors = $product->available_colors;
+                                    $sizes = $product->available_sizes;
+                                @endphp
                                 @if ($product->is_in_stock)
-
-                                    @php
-                                        $sellingPrice = $product->selling_price;
-                                        $colors = $product->available_colors;
-                                        $sizes = $product->available_sizes;
-                                    @endphp
                                     <div class="product-action-vertical">
                                         <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" 
                                         title="Add to wishlist" 
@@ -362,15 +359,14 @@
                 <div class="product product-2">
                     <figure class="product-media">
                         <a href="{{ route('product.show', $product->slug) }}">
-                            <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image">
+                          <x-image-with-loader src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image" />
                         </a>
+                          @php
+                            $sellingPrice = $product->selling_price;
+                            $colors = $product->available_colors;
+                            $sizes = $product->available_sizes;
+                        @endphp
                         @if ($product->is_in_stock)
-
-                            @php
-                                $sellingPrice = $product->selling_price;
-                                $colors = $product->available_colors;
-                                $sizes = $product->available_sizes;
-                            @endphp
 
                             <div class="product-action-vertical">
                                 <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}">
@@ -422,7 +418,7 @@
             <div class="col-md-6 col-lg-4">
                 <div class="banner banner-overlay banner-overlay-light">
                     <a href="{{ route('campaign.details.frontend', $campaign->slug) }}">
-                        <img src="{{ asset('images/campaign_banner/' . $campaign->banner_image) }}" alt="{{ $campaign->title }}" style="height: 300px; object-fit: cover;">
+                        <x-image-with-loader src="{{ asset('images/campaign_banner/' . $campaign->banner_image) }}" alt="{{ $campaign->title }}" style="height: 300px; object-fit: cover;" />
                     </a>
 
                     <div class="banner-content" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
@@ -475,16 +471,15 @@
                 <div class="product product-2">
                     <figure class="product-media">
                         <a href="{{ route('product.show', $product->slug) }}">
-                            <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image">
+                            <x-image-with-loader src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image" />
                         </a>
+                          @php
+                            $sellingPrice = $product->selling_price;
+                            $colors = $product->available_colors;
+                            $sizes = $product->available_sizes;
+                        @endphp
+
                         @if ($product->is_in_stock)
-
-                            @php
-                                $sellingPrice = $product->selling_price;
-                                $colors = $product->available_colors;
-                                $sizes = $product->available_sizes;
-                            @endphp
-
                             <div class="product-action-vertical">
                                 <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}">
                                     <span>Add to wishlist</span>
@@ -585,15 +580,14 @@
                 <div class="product product-2">
                     <figure class="product-media">
                         <a href="{{ route('product.show', $product->slug) }}">
-                            <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image">
+                            <x-image-with-loader src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image" />
                         </a>
+                        @php
+                            $sellingPrice = $product->selling_price;
+                            $colors = $product->available_colors;
+                            $sizes = $product->available_sizes;
+                        @endphp
                         @if ($product->is_in_stock)
-
-                            @php
-                                $sellingPrice = $product->selling_price;
-                                $colors = $product->available_colors;
-                                $sizes = $product->available_sizes;
-                            @endphp
 
                             <div class="product-action-vertical">
                                 <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}">
@@ -672,16 +666,15 @@
                 <div class="product product-2">
                     <figure class="product-media">
                         <a href="{{ route('product.show', $product->slug) }}">
-                            <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image">
+                            <x-image-with-loader src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image" />
                         </a>
+                        @php
+                            $sellingPrice = $product->selling_price;
+                            $colors = $product->available_colors;
+                            $sizes = $product->available_sizes;
+                        @endphp
+
                         @if ($product->is_in_stock)
-
-                            @php
-                                $sellingPrice = $product->selling_price;
-                                $colors = $product->available_colors;
-                                $sizes = $product->available_sizes;
-                            @endphp
-
                             <div class="product-action-vertical">
                                 <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}">
                                     <span>Add to wishlist</span>
@@ -758,16 +751,16 @@
                 <div class="product product-2">
                     <figure class="product-media">
                         <a href="{{ route('product.show', $product->slug) }}">
-                            <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image">
+                            <x-image-with-loader src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image" />
                         </a>
+                        
+                        @php
+                            $sellingPrice = $product->selling_price;
+                            $colors = $product->available_colors;
+                            $sizes = $product->available_sizes;
+                        @endphp
+
                         @if ($product->is_in_stock)
-
-                            @php
-                                $sellingPrice = $product->selling_price;
-                                $colors = $product->available_colors;
-                                $sizes = $product->available_sizes;
-                            @endphp
-
                             <div class="product-action-vertical">
                                 <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}">
                                     <span>Add to wishlist</span>
@@ -817,7 +810,7 @@
                 <div class="col-md-6 col-lg-4">
                     <div class="banner banner-overlay banner-overlay-light">
                         <a href="{{ route('flash-sells.show', $flashSell->slug) }}">
-                            <img src="{{ asset('images/flash_sell/' . $flashSell->flash_sell_image) }}" alt="Banner" style="height: 300px; object-fit: cover;">
+                            <x-image-with-loader src="{{ asset('images/flash_sell/' . $flashSell->flash_sell_image) }}" alt="Banner" style="height: 300px; object-fit: cover;" />
                         </a>
                         <div class="banner-content" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
                             <h4 class="banner-subtitle">
@@ -885,7 +878,7 @@
                         <div class="product product-2">
                             <figure class="product-media">
                                 <a href="{{ route('bundle_product.show', $bundle->slug) }}">
-                                    <img src="{{ asset('images/bundle_product/' . $bundle->feature_image) }}" alt="{{ $bundle->name }}" class="product-image">
+                                    <x-image-with-loader src="{{ asset('images/bundle_product/' . $bundle->feature_image) }}" alt="{{ $bundle->name }}" class="product-image" />
                                 </a>
                             </figure>
                             <div class="product-body">
@@ -940,7 +933,7 @@
                     <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-4 d-flex justify-content-center">
                         <a href="{{ route('supplier.show', $supplier->slug) }}" class="cat-block text-center d-block">
                             <figure class="mb-3">
-                                <img src="{{ asset('/images/supplier/' . $supplier->image) }}" alt="{{ $supplier->name }}" class="img-fluid rounded" style="max-width: 100%; height: auto; object-fit: cover;">
+                                <x-image-with-loader src="{{ asset('/images/supplier/' . $supplier->image) }}" alt="{{ $supplier->name }}" class="img-fluid rounded" style="max-width: 100%; height: auto; object-fit: cover;" />
                             </figure>
                             <h3 class="h5">{{ $supplier->name }}</h3>
                         </a>

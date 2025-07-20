@@ -15,6 +15,10 @@ class BundleProductController extends Controller
     public function getBundleProduct()
     {
         $products = Product::select('id', 'name', 'price')->get();
+        $products = $products->filter(function ($product) {
+            return $product->is_in_stock;
+        });
+
         $bundleProducts = BundleProduct::all();
         return view('admin.bundle_product.index', compact('bundleProducts', 'products'));
     }

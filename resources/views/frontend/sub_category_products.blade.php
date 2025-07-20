@@ -13,13 +13,13 @@
                             <a href="{{ route('product.show', $product->slug) }}">
                                 <x-image-with-loader src="{{ asset('/images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image" />
                             </a>
-
+                            @php
+                                $sellingPrice = $product->selling_price;
+                                $colors = $product->available_colors;
+                                $sizes = $product->available_sizes;
+                            @endphp
                             @if ($product->is_in_stock)
-                                @php
-                                    $sellingPrice = $product->selling_price;
-                                    $colors = $product->available_colors;
-                                    $sizes = $product->available_sizes;
-                                @endphp
+
                                 <div class="product-action-vertical">
                                     <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $sellingPrice ?? $product->price }}"> <span>Add to wishlist</span> </a>
                                 </div>

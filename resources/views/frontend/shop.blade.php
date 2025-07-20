@@ -327,6 +327,10 @@
             });
         }
 
+        if (minPrice === maxPrice) {
+            maxPrice = minPrice + 1;
+        }
+        
         if (priceSlider) {
             noUiSlider.create(priceSlider, {
                 start: [minPrice, maxPrice],

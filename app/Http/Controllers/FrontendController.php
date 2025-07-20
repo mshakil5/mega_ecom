@@ -58,7 +58,7 @@ class FrontendController extends Controller
             ->whereDate('end_date', '>=', now())
             ->latest()
             ->get();
-        $trendingProducts = Product::where('status', 1)
+        $trendingProducts = Product::where('active_status', 1)
             ->where('is_trending', 1)
             ->orderByDesc('id')
             ->whereDoesntHave('specialOfferDetails')
@@ -68,7 +68,7 @@ class FrontendController extends Controller
             ->take(12)
             ->get();
 
-        $mostViewedProducts = Product::where('status', 1)
+        $mostViewedProducts = Product::where('active_status', 1)
             ->where('is_recent', 1)
             ->orderByDesc('watch')
             ->whereDoesntHave('specialOfferDetails')
@@ -78,7 +78,7 @@ class FrontendController extends Controller
             ->take(12)
             ->get();
 
-        $recentProducts = Product::where('status', 1)
+        $recentProducts = Product::where('active_status', 1)
             ->where('is_recent', 1)
             ->orderByDesc('id')
             ->whereDoesntHave('specialOfferDetails')
@@ -88,7 +88,7 @@ class FrontendController extends Controller
             ->take(12)
             ->get();
 
-        $newProducts = Product::where('status', 1)
+        $newProducts = Product::where('active_status', 1)
             ->where('is_new_arrival', 1)
             ->orderByDesc('id')
             ->whereDoesntHave('specialOfferDetails')
@@ -98,7 +98,7 @@ class FrontendController extends Controller
             ->take(12)
             ->get();
 
-        $popularProducts = Product::where('status', 1)
+        $popularProducts = Product::where('active_status', 1)
             ->where('is_popular', 1)
             ->orderByDesc('id')
             ->whereDoesntHave('specialOfferDetails')
@@ -108,7 +108,7 @@ class FrontendController extends Controller
             ->take(12)
             ->get();
 
-        $featuredProducts = Product::where('status', 1)
+        $featuredProducts = Product::where('active_status', 1)
             ->where('is_featured', 1)
             ->orderByDesc('id')
             ->whereDoesntHave('specialOfferDetails')
@@ -150,9 +150,10 @@ class FrontendController extends Controller
 
         $categories = Category::where('status', 1)
             ->with(['products' => function ($query) {
-                $query->select('id', 'category_id', 'name', 'price', 'slug', 'feature_image', 'watch')
-                    ->orderBy('watch', 'desc')
-                    ->with('stock');
+                $query->where('active_status', 1)
+                      ->select('id', 'category_id', 'name', 'price', 'slug', 'feature_image', 'watch')
+                      ->orderBy('watch', 'desc')
+                      ->with('stock');
             }])
             ->select('id', 'name', 'image', 'slug')
             ->orderBy('id', 'asc')
@@ -180,7 +181,7 @@ class FrontendController extends Controller
         $perPage = 6;
 
         $query = Product::where('category_id', $categoryId)
-                        ->where('status', 1)
+                        ->where('active_status', 1)
                         ->whereDoesntHave('specialOfferDetails')
                         ->whereDoesntHave('flashSellDetails')
                         ->select('id', 'name', 'feature_image', 'price', 'slug')
@@ -203,7 +204,7 @@ class FrontendController extends Controller
         $category = Category::where('slug', $slug)->firstOrFail();
 
         $products = Product::where('category_id', $category->id)
-                            ->where('status', 1)
+                            ->where('active_status', 1)
                             ->whereDoesntHave('specialOfferDetails')
                             ->whereDoesntHave('flashSellDetails')
                             ->with('stock')
@@ -223,7 +224,7 @@ class FrontendController extends Controller
         $sub_category = SubCategory::where('slug', $slug)->firstOrFail();
 
         $products = Product::where('sub_category_id', $sub_category->id)
-                            ->where('status', 1)
+                            ->where('active_status', 1)
                             ->whereDoesntHave('specialOfferDetails')    
                             ->whereDoesntHave('flashSellDetails')
                             ->with('stock')
@@ -279,7 +280,7 @@ class FrontendController extends Controller
         $sizeGuide = CompanyDetails::value('size_guide');
 
         $relatedProducts = RelatedProduct::where('product_id', $product->id)
-            ->where('status', 1)
+            ->where('active_status', 1)
             ->first();
 
         if ($relatedProducts && $relatedProducts->related_product_ids) {
@@ -447,7 +448,7 @@ class FrontendController extends Controller
     {
         $query = $request->input('query');
         $products = Product::where('name', 'LIKE', "%$query%")
-                            ->where('status', 1)
+                            ->where('active_status', 1)
                             ->whereDoesntHave('specialOfferDetails')
                             ->whereDoesntHave('flashSellDetails')
                             ->orderBy('id', 'desc')
@@ -716,7 +717,7 @@ class FrontendController extends Controller
             \DB::raw('COALESCE(SUM(stocks.quantity), 0) as total_stock')
         )
         ->leftJoin('stocks', 'products.id', '=', 'stocks.product_id')
-        ->where('products.status', 1)
+        ->where('products.active_status', 1)
         ->where('stocks.quantity', '>', 0)
         ->whereDoesntHave('specialOfferDetails')
         ->whereDoesntHave('flashSellDetails')

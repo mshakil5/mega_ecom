@@ -137,7 +137,7 @@
             var itemId = $(this).data('id');
 
             $.ajax({
-                url: '/admin/toggle-active',
+                url: '/admin/c',
                 method: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}',
@@ -277,10 +277,13 @@
                     },
                     success: function(response) {
                         if (response.success) {
-                            swal({
-                                text: "Deleted successfully",
-                                icon: "success",
-                            });
+                          swal({
+                              text: "Deleted successfully",
+                              icon: "success",
+                          }).then(() => {
+                              location.reload();
+                          });
+
                         } else {
                             swal({
                                 text: response.message,
