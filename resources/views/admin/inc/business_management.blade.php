@@ -92,13 +92,13 @@
                         <p>Related Product</p>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item d-none">
                     <a href="{{ route('allbundleproduct') }}" class="nav-link {{ (request()->is('admin/bundle-product*')) ? 'active' : '' }}">
                         <i class="fas fa-boxes nav-icon"></i>
                         <p>Bundle Product</p>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item d-none">
                     <a href="{{ route('allbogoproduct') }}" class="nav-link {{ (request()->is('admin/bogo-product*')) ? 'active' : '' }}">
                         <i class="fas fa-gift nav-icon"></i>
                         <p>Buy One Get One</p>
@@ -333,7 +333,7 @@
         
 
         <!-- Promotion & Advertisement -->
-        <li class="nav-item dropdown {{ request()->is('admin/campaign*') ? 'menu-open' : '' }} {{ request()->is('admin/create-special-offer*') || request()->is('admin/special-offers*') || request()->is('admin/special-offer-history*') ? 'menu-open' : '' }} {{ request()->is('admin/create-flash-sell*') || request()->is('admin/flash-sells') || request()->is('admin/flash-sell-history*') || request()->routeIs('flash-sell.edit') ? 'menu-open' : '' }}">
+        <li class="nav-item dropdown d-none {{ request()->is('admin/campaign*') ? 'menu-open' : '' }} {{ request()->is('admin/create-special-offer*') || request()->is('admin/special-offers*') || request()->is('admin/special-offer-history*') ? 'menu-open' : '' }} {{ request()->is('admin/create-flash-sell*') || request()->is('admin/flash-sells') || request()->is('admin/flash-sell-history*') || request()->routeIs('flash-sell.edit') ? 'menu-open' : '' }}">
             <a href="#" class="nav-link dropdown-toggle {{ request()->is('admin/campaign*') ? 'active' : '' }} {{ request()->is('admin/create-special-offer*') || request()->is('admin/special-offers*') || request()->is('admin/special-offer-history*') ? 'active' : '' }} {{ request()->is('admin/create-flash-sell*') || request()->is('admin/flash-sells') || request()->is('admin/flash-sell-history*') || request()->routeIs('flash-sell.edit') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-bolt"></i>
                 <p>

@@ -80,7 +80,7 @@
                                 @foreach($relatedProducts as $relatedProduct)
                                 <tr>
                                     <td>{{ $relatedProduct->id }}</td>
-                                    <td>{{ $relatedProduct->product->name }}</td>
+                                    <td>{{ $relatedProduct->product->name ?? 'Product not found' }}</td>
                                     <td>
                                         @foreach(json_decode($relatedProduct->related_product_ids) as $productId)
                                             @php
