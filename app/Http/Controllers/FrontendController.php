@@ -280,7 +280,7 @@ class FrontendController extends Controller
         $sizeGuide = CompanyDetails::value('size_guide');
 
         $relatedProducts = RelatedProduct::where('product_id', $product->id)
-            ->where('active_status', 1)
+            ->where('status', 1)
             ->first();
 
         if ($relatedProducts && $relatedProducts->related_product_ids) {

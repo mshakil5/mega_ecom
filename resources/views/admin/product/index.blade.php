@@ -137,7 +137,7 @@
             var itemId = $(this).data('id');
 
             $.ajax({
-                url: '/admin/c',
+                url: '/admin/toggle-active',
                 method: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}',
