@@ -7,7 +7,28 @@ use Illuminate\Database\Eloquent\Model;
 
 class CouponUsage extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity, SoftDeletes;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->logExcept(['updated_at']);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($model) {
+            if (auth()->check()) {
+                $model->deleted_by = auth()->id();
+                $model->save();
+            }
+        });
+    }
 
 
     public function coupon()

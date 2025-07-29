@@ -51,131 +51,6 @@ class ProductController extends Controller
         return view('admin.product.create', compact('brands', 'product_models', 'groups', 'units', 'categories', 'subCategories', 'sizes', 'types'));
     }
 
-    public function productEdit($id)
-    {
-        $product = Product::withoutGlobalScopes()->with('colors', 'sizes', 'types')->findOrFail($id);
-        $brands = Brand::select('id', 'name')->orderby('id','DESC')->get();
-        $product_models = ProductModel::select('id', 'name')->orderby('id','DESC')->get();
-        $groups = Group::select('id', 'name')->orderby('id','DESC')->get();
-        $units = Unit::select('id', 'name')->orderby('id','DESC')->get();
-        $categories = Category::select('id', 'name')->orderby('id','DESC')->get();
-        $subCategories = SubCategory::select('id', 'name')->orderby('id','DESC')->get();
-        $sizes = Size::select('id', 'size')->orderby('id','DESC')->get();
-        $colors = Color::select('id', 'color', 'color_code')->orderby('id','DESC')->get();
-        $types = Type::select('id', 'name')->where('status', 1)->orderby('id','DESC')->get();
-        return view('admin.product.edit', compact('product', 'brands', 'product_models', 'groups', 'units', 'categories', 'subCategories', 'sizes', 'colors', 'types'));
-    }
-
-    public function productDelete(Request $request)
-    {
-        $id = $request->input('id');
-        
-        $product = Product::withoutGlobalScopes()->find($request->id);
-    
-        if (!$product) {
-            return response()->json(['success' => false, 'message' => 'Product not found.']);
-        }
-    
-        $isInOrderDetails = $product->orderDetails()->exists();
-        $isInPurchaseHistories = $product->purchaseHistories()->exists();
-    
-        if ($isInOrderDetails || $isInPurchaseHistories) {
-            $product->status = 2; 
-            $product->save();
-            return response()->json(['success' => false, 'message' => 'Product is associated with orders or purchases. Status updated to 2.']);
-        }
-    
-        if ($product->feature_image && file_exists(public_path('images/products/' . $product->feature_image))) {
-            unlink(public_path('images/products/' . $product->feature_image));
-        }
-    
-        foreach ($product->colors as $color) {
-            if ($color->image && file_exists(public_path($color->image))) {
-                unlink(public_path($color->image));
-            }
-            $color->delete();
-        }
-
-        $product->delete();
-    
-        return response()->json(['success' => true, 'message' => 'Product and images deleted successfully.']);
-    }
-
-    public function toggleActive(Request $request)
-    {
-        $request->validate([
-            'id' => 'required|exists:products,id',
-            'active_status' => 'required|boolean',
-        ]);
-
-        $product = Product::find($request->id);
-        $product->active_status = $request->active_status;
-        $product->save();
-
-        return response()->json(['message' => 'Active status updated successfully!']);
-    }
-
-    public function toggleFeatured(Request $request)
-    {
-        $request->validate([
-            'id' => 'required',
-            'is_featured' => 'required|boolean'
-        ]);
-
-        $product = Product::find($request->id);
-        $product->is_featured = $request->is_featured;
-        $product->save();
-        return response()->json(['message' => 'Featured status updated successfully!']);
-    }
-
-    public function toggleRecent(Request $request)
-    {
-        $request->validate([
-            'id' => 'required',
-            'is_recent' => 'required|boolean'
-        ]);
-
-        $product = Product::find($request->id);
-        $product->is_recent = $request->is_recent;
-        $product->save();
-        return response()->json(['message' => 'Recent status updated successfully!']);
-    }
-
-    public function togglePopular(Request $request)
-    {
-        $request->validate([
-            'id' => 'required',
-            'is_popular' => 'required|boolean'
-        ]);
-
-        $product = Product::find($request->id);
-        $product->is_popular = $request->is_popular;
-        $product->save();
-
-        return response()->json(['message' => 'Popular status updated successfully!']);
-    }
-
-    public function toggleTrending(Request $request)
-    {
-        $request->validate([
-            'id' => 'required',
-            'is_trending' => 'required|boolean'
-        ]);
-
-        $product = Product::find($request->id);
-        $product->is_trending = $request->is_trending;
-        $product->save();
-
-        return response()->json(['message' => 'Trending status updated successfully!']);
-    }
-
-    public function showProductDetails($id)
-    {
-        $currency = CompanyDetails::value('currency');
-        $product = Product::with(['colors.color', 'sizes', 'category', 'subCategory', 'brand', 'productModel', 'group', 'unit'])->findOrFail($id);
-        return view('admin.product.details', compact('product', 'currency'));
-    }
-
     public function store(Request $request)
     {
         $request->validate([
@@ -193,7 +68,7 @@ class ProductController extends Controller
             'product_model_id' => 'nullable|exists:product_models,id',
             'unit_id' => 'nullable|exists:units,id',
             'group_id' => 'nullable|exists:groups,id',
-            'feature_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'feature_image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             // 'color_id' => 'nullable|array',
             // 'color_id.*' => 'exists:colors,id',
             'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120'
@@ -296,20 +171,19 @@ class ProductController extends Controller
         return response()->json(['message' => 'Product created successfully!', 'product' => $product], 201);
     }
 
-    public function checkProductCode(Request $request)
+    public function productEdit($id)
     {
-        $productCode = $request->product_code;
-        $productId = $request->product_id;
-    
-        if ($productId) {
-            $exists = Product::where('product_code', $productCode)
-                            ->where('id', '!=', $productId)
-                            ->exists();
-        } else {
-            $exists = Product::where('product_code', $productCode)->exists();
-        }
-    
-        return response()->json(['exists' => $exists]);
+        $product = Product::withoutGlobalScopes()->with('colors', 'sizes', 'types')->findOrFail($id);
+        $brands = Brand::select('id', 'name')->orderby('id','DESC')->get();
+        $product_models = ProductModel::select('id', 'name')->orderby('id','DESC')->get();
+        $groups = Group::select('id', 'name')->orderby('id','DESC')->get();
+        $units = Unit::select('id', 'name')->orderby('id','DESC')->get();
+        $categories = Category::select('id', 'name')->orderby('id','DESC')->get();
+        $subCategories = SubCategory::select('id', 'name')->orderby('id','DESC')->get();
+        $sizes = Size::select('id', 'size')->orderby('id','DESC')->get();
+        $colors = Color::select('id', 'color', 'color_code')->orderby('id','DESC')->get();
+        $types = Type::select('id', 'name')->where('status', 1)->orderby('id','DESC')->get();
+        return view('admin.product.edit', compact('product', 'brands', 'product_models', 'groups', 'units', 'categories', 'subCategories', 'sizes', 'colors', 'types'));
     }
 
     public function update(Request $request)
@@ -477,6 +351,132 @@ class ProductController extends Controller
         }
 
         return response()->json(['message' => 'Product updated successfully!', 'product' => $product], 200);
+    }
+
+    public function productDelete(Request $request)
+    {
+        $id = $request->input('id');
+        
+        $product = Product::withoutGlobalScopes()->find($request->id);
+    
+        if (!$product) {
+            return response()->json(['success' => false, 'message' => 'Product not found.']);
+        }
+    
+        $isInOrderDetails = $product->orderDetails()->exists();
+        $isInPurchaseHistories = $product->purchaseHistories()->exists();
+    
+        if ($isInOrderDetails || $isInPurchaseHistories) {
+            $product->status = 2; 
+            $product->save();
+            return response()->json(['success' => false, 'message' => 'Product is associated with orders or purchases. Status updated to 2.']);
+        }
+    
+        if ($product->feature_image && file_exists(public_path('images/products/' . $product->feature_image))) {
+            unlink(public_path('images/products/' . $product->feature_image));
+        }
+    
+        foreach ($product->colors as $color) {
+            if ($color->image && file_exists(public_path($color->image))) {
+                unlink(public_path($color->image));
+            }
+            $color->delete();
+        }
+
+        $product->delete();
+    
+        return response()->json(['success' => true, 'message' => 'Product and images deleted successfully.']);
+    }
+
+    public function toggleActive(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:products,id',
+            'active_status' => 'required|boolean',
+        ]);
+
+        $product = Product::find($request->id);
+        $product->active_status = $request->active_status;
+        $product->save();
+
+        return response()->json(['message' => 'Active status updated successfully!']);
+    }
+
+    public function toggleFeatured(Request $request)
+    {
+        $request->validate([
+            'id' => 'required',
+            'is_featured' => 'required|boolean'
+        ]);
+
+        $product = Product::find($request->id);
+        $product->is_featured = $request->is_featured;
+        $product->save();
+        return response()->json(['message' => 'Featured status updated successfully!']);
+    }
+
+    public function toggleRecent(Request $request)
+    {
+        $request->validate([
+            'id' => 'required',
+            'is_recent' => 'required|boolean'
+        ]);
+
+        $product = Product::find($request->id);
+        $product->is_recent = $request->is_recent;
+        $product->save();
+        return response()->json(['message' => 'Recent status updated successfully!']);
+    }
+
+    public function togglePopular(Request $request)
+    {
+        $request->validate([
+            'id' => 'required',
+            'is_popular' => 'required|boolean'
+        ]);
+
+        $product = Product::find($request->id);
+        $product->is_popular = $request->is_popular;
+        $product->save();
+
+        return response()->json(['message' => 'Popular status updated successfully!']);
+    }
+
+    public function toggleTrending(Request $request)
+    {
+        $request->validate([
+            'id' => 'required',
+            'is_trending' => 'required|boolean'
+        ]);
+
+        $product = Product::find($request->id);
+        $product->is_trending = $request->is_trending;
+        $product->save();
+
+        return response()->json(['message' => 'Trending status updated successfully!']);
+    }
+
+    public function showProductDetails($id)
+    {
+        $currency = CompanyDetails::value('currency');
+        $product = Product::with(['colors.color', 'sizes', 'category', 'subCategory', 'brand', 'productModel', 'group', 'unit'])->findOrFail($id);
+        return view('admin.product.details', compact('product', 'currency'));
+    }
+
+    public function checkProductCode(Request $request)
+    {
+        $productCode = $request->product_code;
+        $productId = $request->product_id;
+    
+        if ($productId) {
+            $exists = Product::where('product_code', $productCode)
+                            ->where('id', '!=', $productId)
+                            ->exists();
+        } else {
+            $exists = Product::where('product_code', $productCode)->exists();
+        }
+    
+        return response()->json(['exists' => $exists]);
     }
 
     public function showProductPrices($productId)

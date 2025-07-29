@@ -21,26 +21,29 @@
             <div class="col-md-10">
                 <div class="card card-secondary">
                     <div class="card-header">
-                        <h3 class="card-title" id="cardTitle">Add New Bundle Product<span style="color: red;">*</span></h3>
+                        <h3 class="card-title" id="cardTitle">Add new data</h3>
                     </div>
                     <div class="card-body">
                         <div class="ermsg" style="color: red;"></div>
                         <form id="createThisForm">
                             <input type="hidden" class="form-control" id="codeid" name="codeid">
-                            <div class="form-row">
-                                <div class="form-group col-md-6">
+                            <div class="row">
+                                <div class="form-group col-md-12">
                                     <label for="name">Name<span style="color: red;">*</span></label>
                                     <input type="text" class="form-control" id="name" name="name" placeholder="Enter bundle product name">
                                 </div>
-                                <div class="form-group col-md-6">
-                                    <label for="product_ids">Products <span style="color: red;">*</span></label>
-                                    <select class="form-control select2" id="product_ids" name="product_ids[]" multiple="multiple" data-placeholder="Select products">
-                                        @foreach($products as $product)
-                                        <option value="{{ $product->id }}">{{ $product->name }}</option>
-                                        @endforeach
-                                    </select>
+
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <label for="warehouse_id">Warehouse <span class="text-danger">*</span></label>
+                                        <select name="warehouse_id" id="warehouse_id" class="form-control">
+                                            <option value="">Select</option>
+                                            @foreach ($warehouses as $warehouse)
+                                            <option value="{{$warehouse->id}}">{{$warehouse->name}}-{{$warehouse->location}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
 
                             <div class="form-row">
                                 <div class="form-group col-md-6">
@@ -102,7 +105,7 @@
     </div>
 </section>
 
-<section class="content mt-3" id="contentContainer">
+<section class="content" id="contentContainer">
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12">

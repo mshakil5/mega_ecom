@@ -81,9 +81,9 @@
                                     <div class="col-lg-2 text-end" style="flex: 2; text-align: right;">
                                         <p style="font-size: 12px; margin : 5px;text-align: right;line-height: 10px;">Invoice No: {{ $purchase->invoice }}</p>
                                         <p style="font-size: 12px; margin : 5px;text-align: right;line-height: 10px;">Date: {{ \Carbon\Carbon::parse($purchase->purchase_date)->format('d/m/Y') }}</p>
-                                        <p style="font-size: 12px; margin : 5px;text-align: right;line-height: 10px;">Payment Type: 
+                                        {{-- <p style="font-size: 12px; margin : 5px;text-align: right;line-height: 10px;">Payment Type: 
                                         {{ ucfirst($purchase->purchase_type) }}
-                                        </p>
+                                        </p> --}}
                                     </div>
                                 </td>
                             </tr>

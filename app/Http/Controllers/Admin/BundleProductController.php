@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\BundleProductImage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use App\Models\Warehouse;
 
 class BundleProductController extends Controller
 {
@@ -18,9 +19,9 @@ class BundleProductController extends Controller
         $products = $products->filter(function ($product) {
             return $product->is_in_stock;
         });
-
+        $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
         $bundleProducts = BundleProduct::all();
-        return view('admin.bundle_product.index', compact('bundleProducts', 'products'));
+        return view('admin.bundle_product.index', compact('bundleProducts', 'products', 'warehouses'));
     }
 
     public function bundleProductStore(Request $request)
