@@ -258,7 +258,7 @@
                     size: selectedSize
                 },
                 success: function(response) {
-                    console.log(response);
+                    // console.log(response.products);
                     var products = response.products;
                     var productListHtml = '';
 

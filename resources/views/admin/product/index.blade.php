@@ -44,7 +44,7 @@
                                     <td>{{ $data->product_code }}</td>
                                     <td>{{ $data->name }}</td>
                                     <td>
-                                    <img src="{{ asset('images/products/' . $data->feature_image) }}" alt="Product Image" style="width: 50px; height: 50px; object-fit: cover;">
+                                    <x-image-with-loader :src="asset('images/products/' . $data->feature_image)" alt="Product Image" style="width: 50px; height: 50px; object-fit: cover;" />
                                 </td>
                                     <td>
                                         {{ number_format($price ? $price->selling_price : 0, 2) }}
