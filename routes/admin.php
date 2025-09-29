@@ -57,6 +57,7 @@ use App\Http\Controllers\Admin\ShipmentController;
 use App\Http\Controllers\Admin\StockTransferRequestController;
 use App\Http\Controllers\Admin\FAQController;
 use App\Http\Controllers\Admin\TypeController;
+use App\Http\Controllers\Admin\WholesaleController;
 
 Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], function(){
   
@@ -475,6 +476,14 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     //Quotation
     Route::post('/make-quotation', [InHouseSellController::class, 'makeQuotationStore'])->name('make.quotation.store');
     Route::get('/quotations', [InHouseSellController::class, 'allquotations'])->name('allquotations');
+
+    //Whole Sell
+    Route::get('/whole-sale', [WholesaleController::class, 'create'])->name('whole-sale');
+    Route::post('/whole-sale', [WholesaleController::class, 'store']);
+
+    Route::get('/whole-sale-list', [WholesaleController::class, 'index'])->name('whole-sale.list');
+
+    Route::post('/get-product-rows', [WholesaleController::class, 'getProductRows'])->name('admin.getProductRows');
 
     //Delivery Man crud
     Route::get('/deliveryman', [DeliveryManController::class, 'getDeliveryMan'])->name('alldeliverymen');

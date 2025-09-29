@@ -127,7 +127,7 @@
                                     <!-- <th>Price</th>
                                     <th>Image</th> -->
                                     <th>Status</th>
-                                    <th>Action</th>
+                                    {{-- <th>Action</th> --}}
                                 </tr>
                             </thead>
                             <tbody>
@@ -148,14 +148,14 @@
                                             <label class="custom-control-label" for="customSwitchStatus{{ $data->id }}"></label>
                                         </div>
                                     </td>
-                                    <td>
+                                    {{-- <td>
                                         <a id="EditBtn" rid="{{ $data->id }}">
                                             <i class="fa fa-edit" style="color: #2196f3; font-size:16px;"></i>
                                         </a>
                                         <a id="deleteBtn" rid="{{ $data->id }}">
                                             <i class="fa fa-trash-o" style="color: red; font-size:16px;"></i>
                                         </a>
-                                    </td>
+                                    </td> --}}
                                 </tr>
                                 @endforeach
                             </tbody>

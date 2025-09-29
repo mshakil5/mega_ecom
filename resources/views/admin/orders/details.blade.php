@@ -100,7 +100,12 @@
                     @endif
                     <br>
                         <strong>Order Type:</strong> 
-                        {{ $order->order_type === 1 ? 'In House' : ($order->order_type === 2 ? 'Quotation' : 'Frontend') }}
+                        {{ 
+                          $order->order_type === 1 ? 'In House' : 
+                          ($order->order_type === 2 ? 'Quotation' : 
+                          ($order->order_type === 3 ? 'Wholesale' : 'Frontend')) 
+                      }}
+
                     <br>
                 <div class="d-none"> <strong>Note:</strong> {!! $order->note !!} </div>
                 @endif

@@ -184,8 +184,8 @@
 
         
         <!-- Sales -->
-        <li class="nav-item dropdown {{ request()->is('admin/*order*') || request()->routeIs('allcustomer') || request()->routeIs('customer.transactions') || request()->is('admin/quotation*') || request()->is('admin/in-house-sell*') && !request()->is('admin/all-inhouse-orders') ? 'menu-open' : '' }}">
-            <a href="#" class="nav-link dropdown-toggle {{ request()->is('admin/*order*') || request()->routeIs('allcustomer') || request()->routeIs('customer.transactions') || request()->is('admin/in-house-sell*') || request()->is('admin/quotation*') && !request()->is('admin/all-inhouse-orders') ? 'active' : '' }}">
+        <li class="nav-item dropdown {{ request()->is('admin/*order*') || request()->routeIs('allcustomer') || request()->routeIs('customer.transactions') || request()->is('admin/quotation*') || Route::is('whole-sale') || Route::is('whole-sale.list')  || request()->is('admin/in-house-sell*') && !request()->is('admin/all-inhouse-orders') ? 'menu-open' : '' }}">
+            <a href="#" class="nav-link dropdown-toggle {{ request()->is('admin/*order*') || request()->routeIs('allcustomer') || request()->routeIs('customer.transactions') || request()->is('admin/in-house-sell*') || request()->is('admin/quotation*') || Route::is('whole-sale') || Route::is('whole-sale.list') && !request()->is('admin/all-inhouse-orders') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-truck"></i>
                 <p>
                     Sales <i class="fas fa-angle-left right"></i>
@@ -224,6 +224,20 @@
                     <a href="{{ route('allquotations') }}" class="nav-link {{ (request()->is('admin/quotations*')) ? 'active' : '' }}">
                         <i class="fas fa-box nav-icon"></i>
                         <p>Quotation list</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('whole-sale') }}" class="nav-link {{ Route::is('whole-sale') ? 'active' : '' }}">
+                        <i class="fas fa-truck-loading nav-icon"></i>
+                        <p>Whole Sale</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('whole-sale.list') }}" class="nav-link {{ Route::is('whole-sale.list') ? 'active' : '' }}">
+                        <i class="fas fa-people-carry nav-icon"></i>
+                        <p>Wholesale Sales List</p>
                     </a>
                 </li>
 
