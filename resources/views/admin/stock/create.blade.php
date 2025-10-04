@@ -585,7 +585,7 @@
                 var totalPrice = $(this).find('td:eq(7)').text();
                 var totalPriceWithVat = $(this).find('td:eq(8)').text();
                 var zipValue = $(this).find('input[name="zip[]"]').val() || 0;
-                var typeId = $(this).find('input[name="product_type_id[]"]').val() || '';
+                var typeId = $(this).find('input[name="product_type_id[]"]').val() || null;
 
                 selectedProducts.push({
                     product_id: productId,

@@ -483,6 +483,9 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::get('/whole-sale-list', [WholesaleController::class, 'index'])->name('whole-sale.list');
 
+    Route::get('/whole-sale/{id}/edit', [WholesaleController::class, 'edit'])->name('whole-sale.edit');
+    Route::put('/whole-sale/{id}', [WholesaleController::class, 'update'])->name('whole-sale.update');
+
     Route::post('/get-product-rows', [WholesaleController::class, 'getProductRows'])->name('admin.getProductRows');
 
     //Delivery Man crud

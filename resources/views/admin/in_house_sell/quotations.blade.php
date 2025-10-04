@@ -63,6 +63,11 @@
                                         <a href="{{ route('orders.download-pdf', ['encoded_order_id' => base64_encode($order->id)]) }}" class="btn btn-warning btn-round btn-shadow" target="_blank">
                                             <i class="fas fa-download"></i> Download Quotation
                                         </a>
+                                        @elseif ($order->order_type === 3)
+                                        <a href="{{ route('whole-sale.edit', $order->id) }}" 
+                                          class="btn btn-info btn-round btn-shadow">
+                                            <i class="fas fa-edit"></i> Edit Order
+                                        </a>
                                         @endif
                                     </td>
                                 </tr>

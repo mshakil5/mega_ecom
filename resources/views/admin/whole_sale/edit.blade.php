@@ -8,16 +8,18 @@
             <div class="col-md-12">
                 <div class="card card-secondary">
                     <div class="card-header">
-                        <h3 class="card-title" id="cardTitle">Whole Sale</h3>
+                        <h3 class="card-title" id="cardTitle">Edit {{ $order->invoice }}</h3>
                     </div>
                     <div class="card-body">
                         <form id="saleForm">
                             @csrf
+                            @method('PUT')
                             <div class="row">
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="purchase_date">Selling Date <span class="text-danger">*</span></label>
-                                        <input type="date" class="form-control" id="purchase_date" name="purchase_date" placeholder="Enter date" value="{{ now()->format('Y-m-d') }}">
+                                        <input type="date" class="form-control" id="purchase_date" name="purchase_date" 
+                                            value="{{ $order->purchase_date }}">
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
@@ -28,9 +30,11 @@
                                           </span>
                                         </label>
                                         <select class="form-control" id="user_id" name="user_id">
-                                            <option value="" >Select...</option>
+                                            <option value="">Select...</option>
                                             @foreach($customers as $customer)
-                                                <option value="{{ $customer->id }}">{{ $customer->name }}</option>
+                                                <option value="{{ $customer->id }}" {{ $order->user_id == $customer->id ? 'selected' : '' }}>
+                                                    {{ $customer->name }}
+                                                </option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -42,44 +46,36 @@
                                         <select name="warehouse_id" id="warehouse_id" class="form-control">
                                             <option value="">Select</option>
                                             @foreach ($warehouses as $warehouse)
-                                            <option value="{{$warehouse->id}}">{{$warehouse->name}}-{{$warehouse->location}}</option>
+                                            <option value="{{$warehouse->id}}" {{ $order->warehouse_id == $warehouse->id ? 'selected' : '' }}>
+                                                {{$warehouse->name}}-{{$warehouse->location}}
+                                            </option>
                                             @endforeach
                                         </select>
                                     </div>
-                                </div>
-                                <div class="form-group col-sm-2">
-                                    <label for="">Invoice<span style="color: red;">*</span></label>
-                                    <select class="form-control" id="invoice" name="invoice">
-                                        <option value="">Select Season, system will create code based on Season</option>
-                                        <option value="All">All Season</option>
-                                        <option value="Spring">Spring</option>
-                                        <option value="Summer">Summer</option>
-                                        <option value="Autumn">Autumn</option>
-                                        <option value="Winter">Winter</option>
-                                    </select>
-                                    <small class="text-muted">Example: <span>STL-Season-Year-XXXXX</span></small>
                                 </div>
 
                                 <div class="col-sm-2 d-none">
                                     <div class="form-group">
                                         <label for="purchase_type">Transaction Type <span class="text-danger">*</span></label>
                                         <select class="form-control" id="payment_method" name="payment_method">
-                                            <option value="Credit" selected>Credit</option>
-                                            <option value="Cash">Cash</option>
-                                            <option value="Bank">Bank</option>
+                                            <option value="Credit" {{ $order->payment_method == 'Credit' ? 'selected' : '' }}>Credit</option>
+                                            <option value="Cash" {{ $order->payment_method == 'Cash' ? 'selected' : '' }}>Cash</option>
+                                            <option value="Bank" {{ $order->payment_method == 'Bank' ? 'selected' : '' }}>Bank</option>
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-sm-2">
+                                <div class="col-sm-3">
                                     <div class="form-group">
                                         <label for="ref">Ref</label>
-                                        <input type="text" class="form-control" id="ref" name="ref" placeholder="Enter reference">
+                                        <input type="text" class="form-control" id="ref" name="ref" 
+                                            value="{{ $order->ref }}" placeholder="Enter reference">
                                     </div>
                                 </div>
-                                <div class="col-sm-2">
+                                <div class="col-sm-3">
                                     <div class="form-group">
                                         <label for="remarks">Remarks</label>
-                                        <textarea class="form-control" id="remarks" name="remarks" rows="1" placeholder="Enter remarks"></textarea>
+                                        <textarea class="form-control" id="remarks" name="remarks" rows="1" 
+                                            placeholder="Enter remarks">{{ $order->remarks }}</textarea>
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
@@ -119,8 +115,9 @@
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
-                                        <label for="type_id">Estimated  Selling Price<span class="text-danger">*</span></label>
-                                        <input type="number" class="form-control" id="estimated_selling_price" name="estimated_selling_price" placeholder="Enter estimated selling price" value="0" min="0">
+                                        <label for="type_id">Estimated Selling Price<span class="text-danger">*</span></label>
+                                        <input type="number" class="form-control" id="estimated_selling_price" name="estimated_selling_price" 
+                                            placeholder="Enter estimated selling price" min="0" value="{{ $order->subtotal_amount }}">
                                 </div>
                                 <div class="col-sm-12 mt-1">
                                     <h5>Product List:</h5>
@@ -141,7 +138,38 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            
+                                            @foreach($order->orderDetails as $detail)
+                                            <tr data-product-id="{{ $detail->product_id }}" data-type-id="{{ $detail->type_id }}">
+                                                <td>
+                                                    {{ $detail->product->product_code }} - {{ $detail->product->name }} <br>
+                                                    <span>Margin: <strong>0%</strong></span> <br>
+                                                    <span>Ground Price: <strong>0.00</strong></span> <br>
+                                                    <span>Min Price: <strong>0.00</strong> (<strong>0%</strong>)</span>
+                                                    <input type="hidden" name="product_id[]" value="{{ $detail->product_id }}">
+                                                    <input type="hidden" name="product_name[]" value="{{ $detail->product->name }}">
+                                                </td>
+                                                <td>
+                                                    <input type="hidden" name="quantity[]" class="quantity" value="{{ $detail->quantity }}">
+                                                    <input type="number" class="form-control quantity_display" value="{{ $detail->quantity }}" disabled />
+                                                </td>
+                                                <td>{{ $detail->size }}</td>
+                                                <td>{{ $detail->color }}</td>
+                                                <td>
+                                                    @if($detail->type_id)
+                                                        {{ $detail->type->name ?? '' }}
+                                                        <input type="hidden" name="product_type_id[]" value="{{ $detail->type_id }}">
+                                                    @else
+                                                        <input type="hidden" name="product_type_id[]" value="">
+                                                    @endif
+                                                </td>
+                                                <td><input type="number" step="0.01" class="form-control price_per_unit" value="{{ $detail->price_per_unit }}" /></td>
+                                                <td><input type="number" step="0.01" class="form-control vat_percent" value="{{ $detail->vat_percent }}" /></td>
+                                                <td>{{ $detail->total_vat }}</td>
+                                                <td class="cell-total-price">{{ $detail->total_price }}</td>
+                                                <td class="cell-total-price-vat">{{ $detail->total_price_with_vat }}</td>
+                                                <td><button type="button" class="btn btn-sm btn-danger remove-product">Remove</button></td>
+                                            </tr>
+                                            @endforeach
                                         </tbody>
                                     </table>
                                 </div>
@@ -153,7 +181,8 @@
                                                     <span>Item Total Amount:</span>
                                                 </div>
                                                 <div class="col-sm-6">
-                                                    <input type="text" class="form-control" id="item_total_amount" readonly>
+                                                    <input type="text" class="form-control" id="item_total_amount" readonly 
+                                                        value="{{ $order->subtotal_amount }}">
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
@@ -161,7 +190,8 @@
                                                     <span>Vat Amount:</span>
                                                 </div>
                                                 <div class="col-sm-6">
-                                                    <input type="number" step="0.01" class="form-control" id="vat" name="vat" readonly>
+                                                    <input type="number" step="0.01" class="form-control" id="vat" name="vat" readonly
+                                                        value="{{ $order->vat_amount }}">
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
@@ -169,7 +199,8 @@
                                                     <span>Discount Amount:</span>
                                                 </div>
                                                 <div class="col-sm-6">
-                                                    <input type="number" step="0.01" class="form-control" id="discount" name="discount">
+                                                    <input type="number" step="0.01" class="form-control" id="discount" name="discount"
+                                                        value="{{ $order->discount_amount }}">
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
@@ -177,16 +208,23 @@
                                                     <span>Net Amount:</span>
                                                 </div>
                                                 <div class="col-sm-6">
-                                                    <input type="text" class="form-control" id="net_amount" readonly>
+                                                    <input type="text" class="form-control" id="net_amount" readonly
+                                                        value="{{ $order->net_amount }}">
                                                 </div>
                                             </div>
+                                            
+                                            @php
+                                                $cashPayment = $order->transactions->where('payment_type', 'Cash')->where('transaction_type', 'Received')->first();
+                                                $bankPayment = $order->transactions->where('payment_type', 'Bank')->where('transaction_type', 'Received')->first();
+                                            @endphp
                                             
                                             <div class="row mb-3">
                                                 <div class="col-sm-6 d-flex align-items-center justify-content-end">
                                                     <span>Cash Payment:</span>
                                                 </div>
                                                 <div class="col-sm-6">
-                                                    <input type="number" class="form-control" id="cash_payment" name="cash_payment">
+                                                    <input type="number" class="form-control" id="cash_payment" name="cash_payment"
+                                                        value="{{ $cashPayment->amount ?? 0 }}">
                                                     <span class="errmsg text-danger"></span>
                                                 </div>
                                             </div>
@@ -196,7 +234,8 @@
                                                     <span>Bank Payment:</span>
                                                 </div>
                                                 <div class="col-sm-6">
-                                                    <input type="text" class="form-control" id="bank_payment" name="bank_payment">
+                                                    <input type="text" class="form-control" id="bank_payment" name="bank_payment"
+                                                        value="{{ $bankPayment->amount ?? 0 }}">
                                                     <span class="errmsg text-danger"></span>
                                                 </div>
                                             </div>
@@ -205,7 +244,8 @@
                                 </div>
                             </div>
                             <div class="card-footer">
-                                <button id="addBtn" class="btn btn-success" value="Create"><i class="fas fa-cart-plus"></i> Make Order</button>
+                                <button id="updateBtn" class="btn btn-success" value="Update"><i class="fas fa-save"></i> Update Order</button>
+                                <a href="{{ route('whole-sale.list') }}" class="btn btn-secondary">Cancel</a>
                                 <div id="loader" style="display: none;">
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                     Loading...
@@ -227,15 +267,24 @@
 
 <script>
     $(document).ready(function() {
+        // Initialize with existing data
+        updateSummary();
 
         $(document).on('change', '#product_id', function () {
             var productId = $('#product_id').val();
             var warehouseId = $('#warehouse_id').val();
 
-            if (!warehouseId) {
-                alert('Please select a warehouse first.');
-                return;
-            }
+        if (!warehouseId) {
+            swal({
+                text: "Please select a warehouse first.",
+                icon: "warning",
+                button: {
+                    text: "OK",
+                    className: "swal-button--confirm"
+                }
+            });
+            return;
+        }
 
             if (!productId) return;
 
@@ -271,7 +320,17 @@
                             }
                         });
 
-                        if (exists) return;
+                        if (exists) {
+                            swal({
+                                text: "This product already exists in the table.",
+                                icon: "warning",
+                                button: {
+                                    text: "OK",
+                                    className: "swal-button--confirm"
+                                }
+                            })
+                            return;
+                        }
 
                         var unitPrice = parseFloat(item.selling_price) || 0;
                         var groundPrice = parseFloat(item.ground_price) || 0;
@@ -420,23 +479,25 @@
                     $('.errmsg').text(paymentType + ' is greater than Net Amount');
                     $('#cash_payment').val('0.00');
                     $('#bank_payment').val('0.00');
+                } else {
+                    $('.errmsg').text('');
                 }
             } else {
                 $('.errmsg').text('Please enter valid numbers.');
             }
         }
 
-        $('#addBtn').on('click', function(e) {
+        $('#updateBtn').on('click', function(e) {
             e.preventDefault();
 
             $('#loader').show();
 
             let formData = {
                 _token: $('input[name=_token]').val(),
+                _method: 'PUT',
                 purchase_date: $('#purchase_date').val(),
                 user_id: $('#user_id').val(),
                 warehouse_id: $('#warehouse_id').val(),
-                invoice: $('#invoice').val(),
                 payment_method: $('#payment_method').val(),
                 ref: $('#ref').val(),
                 remarks: $('#remarks').val(),
@@ -444,7 +505,6 @@
                 vat: parseFloat($('#vat').val()) || 0,
                 cash_payment: parseFloat($('#cash_payment').val()) || 0,
                 bank_payment: parseFloat($('#bank_payment').val()) || 0,
-                order_type: 3,
                 products: []
             };
 
@@ -467,32 +527,39 @@
             });
 
             if (formData.products.length === 0) {
-                alert('Please add at least one product');
+                swal ({
+                    title: "Error!",
+                    text: "Please add at least one product.", 
+                    type: "error"
+                })
                 $('#loader').hide();
                 return;
             }
 
             $.ajax({
-                url: '/admin/whole-sale',
+                url: '/admin/whole-sale/{{ $order->id }}',
                 method: 'POST',
                 data: { ...formData, products: JSON.stringify(formData.products) },
                 success: function(response) {
                     $('#loader').hide();
                     swal({
                         title: "Success!",
-                        text: "Whole Sale Created Successfully",
+                        text: "Whole Sale Updated Successfully", 
                         type: "success"
                     });
                     // if(response.pdf_url){
                     //     window.open(response.pdf_url, '_blank');
                     // }
-                    $('#saleForm')[0].reset();
-                    $('#productTable tbody').empty();
+                    window.location.href = "{{ route('whole-sale.list') }}";
                 },
                 error: function(xhr) {
                     $('#loader').hide();
                     let err = xhr.responseJSON?.message || 'Something went wrong';
-                    alert(err);
+                    swal({
+                        title: "Error!",
+                        text: err, 
+                        type: "error"
+                    });
                 }
             });
 
@@ -519,7 +586,6 @@
                 processData: false,
                 contentType: false,
                 success: function(response) {
-                    // console.log(response);
                     $('#user_id').append(`<option value="${response.id}" selected>${$('#name').val()} ${$('#surname').val() || ''}</option>`);
                     $('#newWholeSalerForm')[0].reset();
                     $('#newWholeSalerModal').modal('hide');
@@ -542,7 +608,6 @@
                             className: "swal-button--error"
                         }
                     })
-                    // console.error(xhr.responseText);
                 }
             });
         });

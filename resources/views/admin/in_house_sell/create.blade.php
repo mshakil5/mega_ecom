@@ -583,7 +583,7 @@
                 var productColor = $(this).find('td:eq(3)').text();
                 var totalPrice = (quantity * unitPrice).toFixed(2);
                 var zipValue = $(this).find('input[name="zip[]"]').val() || 0;
-                var typeId = $(this).find('input[name="product_type_id[]"]').val() || '';
+                var typeId = $(this).find('input[name="product_type_id[]"]').val() || null;
 
                 products.push({
                     product_id: productId,
@@ -682,7 +682,7 @@
                 var productColor = $(this).find('td:eq(3)').text();
                 var totalPrice = (quantity * unitPrice).toFixed(2);
                 var zipValue = $(this).find('input[name="zip[]"]').val() || 0;
-                var typeId = $(this).find('input[name="product_type_id[]"]').val() || '';
+                var typeId = $(this).find('input[name="product_type_id[]"]').val() || null;
 
                 products.push({
                     product_id: productId,
