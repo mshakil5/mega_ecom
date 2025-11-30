@@ -511,6 +511,7 @@ class StockController extends Controller
         }
         
         foreach ($request->products as $product) {
+            $vatAmntPerUnit = $product['unit_price'] * ($product['vat_percent'] / 100);
             $purchaseHistory = new PurchaseHistory();
             $purchaseHistory->purchase_id = $purchase->id;
             $purchaseHistory->product_id = $product['product_id'];
@@ -522,10 +523,10 @@ class StockController extends Controller
             $purchaseHistory->zip = $product['zip'];
             $purchaseHistory->purchase_price = $product['unit_price'];
             $purchaseHistory->vat_percent = $product['vat_percent'];
-            $purchaseHistory->vat_amount_per_unit = $product['vat_amount'] / $product['quantity'];
+            $purchaseHistory->vat_amount_per_unit = $vatAmntPerUnit;
             $purchaseHistory->total_vat = $purchaseHistory->vat_amount_per_unit * $product['quantity'];
             $purchaseHistory->total_amount = $product['unit_price'] * $product['quantity'];
-            $purchaseHistory->total_amount_with_vat = $product['total_price_with_vat'];
+            $purchaseHistory->total_amount_with_vat = $purchaseHistory->total_amount + $purchaseHistory->total_vat;
             if ($request->warehouse_id) {
                 $purchaseHistory->remaining_product_quantity = 0;
                 $purchaseHistory->transferred_product_quantity = $product['quantity'];
@@ -543,58 +544,6 @@ class StockController extends Controller
                 $existingProduct->save();
             }
 
-            // if ($request->warehouse_id) {
-            //     $stock = Stock::where('product_id', $product['product_id'])
-            //           ->where('size', $product['product_size'])
-            //           ->where('color', $product['product_color'])
-            //           ->where('warehouse_id', $request->warehouse_id)
-            //           ->first();
-            //     if ($stock) {
-            //         $stock->quantity += $product['quantity'];
-            //         $stock->updated_by = Auth::user()->id;
-            //         $stock->save();
-            //     } else {
-            //         $newStock = new Stock();
-            //         $newStock->warehouse_id = $request->warehouse_id;
-            //         $newStock->product_id = $product['product_id'];
-            //         $newStock->quantity = $product['quantity'];
-            //         $newStock->size = $product['product_size'];
-            //         $newStock->color = $product['product_color'];
-            //         $newStock->created_by = Auth::user()->id;
-            //         $newStock->save();
-            //     }
-            //     // calculate every additional cost per product
-            //     $additionalCost = $purchase->direct_cost + $purchase->cnf_cost + $purchase->cost_a + $purchase->cost_b + $purchase->other_cost;
-            //     $qty = $purchaseHistory->quantity - $purchaseHistory->missing_product_quantity;
-            //     $countItem = Purchase::withCount('purchaseHistory')->where('id', $purchaseHistory->purchase_id)->first();
-            //     $additionalCostPerProduct = $additionalCost/$countItem->purchase_history_count;
-            //     $additionalCostPerUnit = $additionalCostPerProduct/$qty;
-            //     // calculate every additional cost per product
-
-            //     $warehouseId = $request->warehouse_id;
-            //     $stockhistory = new StockHistory();
-            //     $stockhistory->product_id = $purchaseHistory->product_id;
-            //     $stockhistory->purchase_id = $purchaseHistory->purchase_id;
-            //     if ($stock) {
-            //         $stockhistory->stock_id = $stock->id;
-            //     } else {
-            //         $stockhistory->stock_id = $newStock->id;
-            //     }
-                
-            //     $stockhistory->warehouse_id = $warehouseId;
-            //     $stockhistory->selling_qty = 0;
-            //     $stockhistory->quantity = $product['quantity'];
-            //     $stockhistory->available_qty = $product['quantity'];
-            //     $stockhistory->size = $purchaseHistory->product_size;
-            //     $stockhistory->color = $purchaseHistory->product_color;
-            //     $stockhistory->date = date('Y-m-d');
-            //     $stockhistory->stockid = date('mds').$warehouseId.str_pad($purchaseHistory->id, 4, '0', STR_PAD_LEFT);
-
-            //     $stockhistory->purchase_price = $purchaseHistory->purchase_price + $additionalCostPerUnit;
-            //     $stockhistory->selling_price = $stockhistory->purchase_price + $stockhistory->purchase_price * .2;
-            //     $stockhistory->created_by = Auth::user()->id;
-            //     $stockhistory->save();
-            // }
         }
 
         $suppliertran = new Transaction();

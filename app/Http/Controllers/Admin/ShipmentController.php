@@ -32,6 +32,7 @@ class ShipmentController extends Controller
             ->orderBy('purchase_id', 'asc')
             ->get();
 
+
         $warehouses = Warehouse::select('id', 'name','location')->where('status', 1)->get();
 
         $expenses = ChartOfAccount::where('account_head', 'Expenses')->where('sub_account_head', 'Cost Of Good Sold')->select('id', 'account_name')->get();

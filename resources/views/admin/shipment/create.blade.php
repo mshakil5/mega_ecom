@@ -84,7 +84,7 @@
                                             <input type="hidden" value="{{ $detail->id }}" class="purchase_history_id">
                                             <input type="hidden" value="{{ $detail->product_size }}" class="product_size">
                                             <input type="hidden" value="{{ $detail->product_color }}" class="product_color">
-                                            <input type="hidden" value="{{ $detail->purchase_price }}" class="purchase_price">
+                                            <input type="hidden" value="{{  $detail->purchase_price + $detail->vat_amount_per_unit  }}" class="purchase_price">
                                             <input type="hidden" value="{{ $detail->type_id }}" class="type_id">
                                         </td>
                                         <td>
