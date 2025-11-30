@@ -615,34 +615,39 @@
 
         let totalProfit = 0;
 
-        tableRows.each(function() {
-            const purchasePrice = parseFloat($(this).find('.purchase_price').val()) || 0;
-            const totalSharedCosts = parseFloat($('#total_additional_cost').val()) || 0;
-            const totalQuantityInPcs = parseInt($('#totalQuantityInPcs').val()) || 0;
+            tableRows.each(function() {
+                const unitWithVat = parseFloat($(this).find('.purchase_price').val()) || 0;
+                const shippedQty = parseFloat($(this).find('.shipped_quantity').val()) || 0;
+                const saleableQty = parseFloat($(this).find('.saleable_quantity').val()) || 0; 
+                const totalSharedCosts = parseFloat($('#total_additional_cost').val()) || 0;
+                const totalQuantityInPcs = parseInt($('#totalQuantityInPcs').val()) || 0;
 
-            let groundCostPerUnit;
+                const purchasePrice = (saleableQty > 0) ? (shippedQty * unitWithVat) / saleableQty : unitWithVat;
+                console.log(purchasePrice);
 
-            if (totalQuantityInPcs > 0) {
-                groundCostPerUnit = purchasePrice + (totalSharedCosts / totalQuantityInPcs);
-            } else {
-                groundCostPerUnit = purchasePrice;
-            }
+                let groundCostPerUnit;
 
-            $(this).find('.ground_cost').text(groundCostPerUnit.toFixed(2));
+                if (totalQuantityInPcs > 0) {
+                    groundCostPerUnit = purchasePrice + (totalSharedCosts / totalQuantityInPcs);
+                } else {
+                    groundCostPerUnit = purchasePrice;
+                }
 
-            const profitMargin = parseFloat($(this).find('.profit_margin').val()) || 0;
-            const saleableQuantity = parseFloat($(this).find('.saleable_quantity').val()) || 0;
-            const considerableMargin = parseFloat($(this).find('.considerable_margin').val()) || 0;
+                $(this).find('.ground_cost').text(groundCostPerUnit.toFixed(2));
 
-            const sellingPrice = groundCostPerUnit * (1 + profitMargin / 100);
-            const profitAmount = (sellingPrice - groundCostPerUnit) * saleableQuantity;
-            const considerablePrice = groundCostPerUnit * (1 + considerableMargin / 100);
+                const profitMargin = parseFloat($(this).find('.profit_margin').val()) || 0;
+                const saleableQuantity = parseFloat($(this).find('.saleable_quantity').val()) || 0;
+                const considerableMargin = parseFloat($(this).find('.considerable_margin').val()) || 0;
 
-            $(this).find('.selling_price').text(sellingPrice.toFixed(2));
-            $(this).find('.considerable_price').text(considerablePrice.toFixed(2));
+                const sellingPrice = groundCostPerUnit * (1 + profitMargin / 100);
+                const profitAmount = (sellingPrice - groundCostPerUnit) * saleableQuantity;
+                const considerablePrice = groundCostPerUnit * (1 + considerableMargin / 100);
 
-            totalProfit += profitAmount;
-        });
+                $(this).find('.selling_price').text(sellingPrice.toFixed(2));
+                $(this).find('.considerable_price').text(considerablePrice.toFixed(2));
+
+                totalProfit += profitAmount;
+            });
 
         $('#total_profit').val(totalProfit.toFixed(2));
     }
@@ -884,9 +889,14 @@
             let totalProfit = 0;
 
             tableRows.each(function() {
-                const purchasePrice = parseFloat($(this).find('.purchase_price').val()) || 0;
+                const unitWithVat = parseFloat($(this).find('.purchase_price').val()) || 0;
+                const shippedQty = parseFloat($(this).find('.shipped_quantity').val()) || 0;
+                const saleableQty = parseFloat($(this).find('.saleable_quantity').val()) || 0; 
                 const totalSharedCosts = parseFloat($('#total_additional_cost').val()) || 0;
                 const totalQuantityInPcs = parseInt($('#totalQuantityInPcs').val()) || 0;
+
+                const purchasePrice = (saleableQty > 0) ? (shippedQty * unitWithVat) / saleableQty : unitWithVat;
+                console.log(purchasePrice);
 
                 let groundCostPerUnit;
 

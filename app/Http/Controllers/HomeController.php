@@ -86,7 +86,7 @@ class HomeController extends Controller
     {
       $tables = [
         'ads',
-        'branches',
+        // 'branches',
         'bundle_products',
         'bundle_product_images',
         'buy_one_get_ones',
@@ -96,14 +96,14 @@ class HomeController extends Controller
         'campaign_request_products',
         'cancelled_orders',
         'categories',
-        'chart_of_accounts',
+        // 'chart_of_accounts',
         'colors',
         'contacts',
         'coupons',
         'coupon_usages',
         'delivery_charges',
         'delivery_men',
-        'equity_holders',
+        // 'equity_holders',
         'faq_questions',
         'flash_sells',
         'flash_sell_details',
@@ -144,7 +144,7 @@ class HomeController extends Controller
         'transactions',
         'types',
         'units',
-        'warehouses',
+        // 'warehouses',
       ];
 
       Schema::disableForeignKeyConstraints();
