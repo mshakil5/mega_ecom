@@ -52,6 +52,7 @@ use App\Http\Controllers\Admin\WareHouseController;
 use App\Http\Controllers\Admin\CashFlowController;
 use App\Http\Controllers\Admin\DaybookController;
 use App\Http\Controllers\Admin\DeliveryChargeController;
+use App\Http\Controllers\Admin\DirectPurchaseController;
 use App\Http\Controllers\Admin\ShippingController;
 use App\Http\Controllers\Admin\ShipmentController;
 use App\Http\Controllers\Admin\StockTransferRequestController;
@@ -351,6 +352,9 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::put('/shipment-received/{id}', [ShipmentController::class, 'shipmentReceived'])->name('admin.shipment.received');
 
     Route::get('/shipment/sample-products', [ShipmentController::class, 'showSampleProducts'])->name('shipment.sample_products');
+
+    // direct stock
+    Route::get('/direct-purchase-stock', [DirectPurchaseController::class, 'purchase'])->name('directPurchase');
     
     Route::get('/missing-purchase-product/{id}', [StockController::class, 'missingProduct'])->name('missingProduct');
     Route::get('/transfer-to-warehouse/{id}', [WarehouseController::class, 'transfer'])->name('transferToWarehouse');
