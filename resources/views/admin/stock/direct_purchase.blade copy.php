@@ -18,7 +18,7 @@
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="purchase_date">Purchase Date <span class="text-danger">*</span></label>
-                                        <input type="date" class="form-control" id="purchase_date" name="purchase_date" value="{{ date('Y-m-d') }}">
+                                        <input type="date" class="form-control" id="purchase_date" name="purchase_date" placeholder="Enter purchase date">
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
@@ -138,37 +138,26 @@
                                 </div>
                                 <div class="col-sm-12 mt-1">
                                     <h2>Product List:</h2>
-                                    
-                                    <div class="table-responsive" style="max-height: 550px; overflow-y: auto; overflow-x: auto;">
-
-                                        <table class="table table-bordered" id="productTable">
-                                            <thead>
-                                                <tr>
-                                                    <th>Product</th>
-                                                    <th>Quantity</th>
-                                                    <th>Size</th>
-                                                    <th>Color</th>
-                                                    <th>Type</th>
-                                                    <th>Unit Price</th>
-                                                    <th>VAT %</th>
-                                                    <th>VAT Amount</th>
-                                                    <th>Total Price</th>
-                                                    <th>Total Price with VAT</th>
-                                                    <th>Damaged</th>           
-                                                    <th>Sample</th>           
-                                                    <th>Saleable</th>  
-                                                    <th>Cost per Item</th>  
-                                                    <th>Margin(%)</th>
-                                                    <th>Selling Price</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                
-                                            </tbody>
-                                        </table>
-
-                                    </div>
+                                    <table class="table table-bordered" id="productTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Product</th>
+                                                <th>Quantity</th>
+                                                <th>Size</th>
+                                                <th>Color</th>
+                                                <th>Type</th>
+                                                <th>Unit Price</th>
+                                                <th>VAT %</th>
+                                                <th>VAT Amount</th>
+                                                <th>Total Price</th>
+                                                <th>Total Price with VAT</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            
+                                        </tbody>
+                                    </table>
                                 </div>
                                 
                                 <div class="col-sm-6 mt-4 mb-5">
@@ -231,7 +220,7 @@
                                         <div id="expense-container">
                                             <div class="row mt-1 expense-row" id="row-default">
                                                 <div class="col-sm-12 d-flex align-items-center">
-                                                    <select class="form-control expense-type" style="width: 200px;" >
+                                                    <select class="form-control expense-type" style="width: 200px;" onchange="checkDuplicateExpense(this)">
                                                         <option value="" selected>Select Expense</option>
                                                         @foreach($expenses as $expense)
                                                             <option value="{{ $expense->id }}">{{ $expense->account_name }}</option>
@@ -283,6 +272,12 @@
                                         <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Net Amount:</span>
                                             <input type="text" class="form-control" id="net_amount" readonly style="width: 100px; margin-left: auto;">
+                                        </div>
+                                    </div>
+                                    <div class="row justify-content-end mt-1 d-none">
+                                        <div class="col-sm-6 d-flex align-items-center">
+                                            <span class="">Paid Amount:</span>
+                                            <input type="number" step="0.01" class="form-control" id="paid_amount" name="paid_amount" style="width: 100px; margin-left: auto;">
                                         </div>
                                     </div>
                                     <div class="row justify-content-end mt-1">
@@ -384,9 +379,7 @@
     var expensesList = @json($expenses);
 </script>
 
-
 <script>
-    $(document).ready(function() {
     const addedExpenses = new Set();
 
     function calculateTotalAdditionalCost() {
@@ -404,10 +397,12 @@
         const expenseDropdown = generateDropdownOptions();
         const uniqueId = Date.now();
 
+        console.log(uniqueId);
+
         const row = `
             <div class="row mt-1 expense-row" id="row-${uniqueId}">
                 <div class="col-sm-12 d-flex align-items-center">
-                    <select class="form-control expense-type" style="width: 200px;">
+                    <select class="form-control expense-type" style="width: 200px;" onchange="checkDuplicateExpense(this)">
                         <option value="" selected>Select Expense</option>
                         ${expenseDropdown}
                     </select>
@@ -465,6 +460,7 @@
 
         rowElement.remove();
         calculateTotalAdditionalCost();
+        updateCalculations();
     });
 
     $(document).on('click', '.add-expense', function () {
@@ -473,64 +469,129 @@
 
     $(document).on('input', '.expense-amount', function() {
         calculateTotalAdditionalCost();
+        updateCalculations();
         updateSummary();
     });
 
+    function updateCalculations() {
+        const tableRows = $('#purchaseData tr');
+        let totalPurchaseCost = 0;
+        let totalQuantity = 0;
+        let totalMissingQuantity = 0;
+
+        tableRows.each(function () {
+            const purchasePrice = parseFloat($(this).find('.purchase_price').val());
+            let maxQuantity = parseInt($(this).find('.max-quantity').val()) || 0;
+
+            let shippedQuantity = parseInt($(this).find('.shipped_quantity').val()) || 0;
+            let missingQuantity = parseInt($(this).find('.missing_quantity').val()) || 0;
+            let sampleQuantity = parseInt($(this).find('.sample_quantity').val()) || 0;
+
+            if (missingQuantity + sampleQuantity > shippedQuantity) {
+                const availableQuantity = shippedQuantity - (missingQuantity + sampleQuantity);
+                if (availableQuantity < 0) {
+                    sampleQuantity = 0;
+                    missingQuantity = 0;
+                } else {
+                    sampleQuantity = Math.min(sampleQuantity, availableQuantity);
+                    missingQuantity = Math.min(missingQuantity, availableQuantity - sampleQuantity);
+                }
+            }
+
+            const saleableQuantity = shippedQuantity - missingQuantity - sampleQuantity;
+            $(this).find('.saleable_quantity').val(saleableQuantity);
+
+            const remainingQuantity = maxQuantity - shippedQuantity;
+            $(this).find('.remaining_quantity').val(remainingQuantity < 0 ? 0 : remainingQuantity);
+
+            const productTotal = purchasePrice * shippedQuantity;
+
+            totalPurchaseCost += productTotal;
+            totalQuantity += saleableQuantity;
+            totalMissingQuantity += missingQuantity;
+        });
+
+        $('#totalQuantity').text(totalQuantity);
+        $('#totalQuantityInPcs').val(totalQuantity);
+        $('#totalMissingQuantity').text(totalMissingQuantity);
+
+        const totalCostOfShipment = parseFloat($('#total_cost_of_the_shipment').val()) || 0;
+
+        if (totalQuantity > 0) {
+            const costPerPiece = totalCostOfShipment / totalQuantity;
+            $('#costPerPieces').val(costPerPiece.toFixed(2));
+        } else {
+            $('#costPerPieces').val('0.00');
+        }
+
+        const totalSharedCosts = parseFloat($('#total_additional_cost').val()) || 0;
+
+        const totalShipmentCost = totalPurchaseCost + totalSharedCosts;
+        $('#direct_cost').val(totalPurchaseCost.toFixed(2));
+
+        let totalProfit = 0;
+
+            tableRows.each(function() {
+                const unitWithVat = parseFloat($(this).find('.purchase_price').val()) || 0;
+                const shippedQty = parseFloat($(this).find('.shipped_quantity').val()) || 0;
+                const saleableQty = parseFloat($(this).find('.saleable_quantity').val()) || 0; 
+                const totalSharedCosts = parseFloat($('#total_additional_cost').val()) || 0;
+                const totalQuantityInPcs = parseInt($('#totalQuantityInPcs').val()) || 0;
+
+                const purchasePrice = (saleableQty > 0) ? (shippedQty * unitWithVat) / saleableQty : unitWithVat;
+                console.log(purchasePrice);
+
+                let groundCostPerUnit;
+
+                if (totalQuantityInPcs > 0) {
+                    groundCostPerUnit = purchasePrice + (totalSharedCosts / totalQuantityInPcs);
+                } else {
+                    groundCostPerUnit = purchasePrice;
+                }
+
+                $(this).find('.ground_cost').text(groundCostPerUnit.toFixed(2));
+
+                const profitMargin = parseFloat($(this).find('.profit_margin').val()) || 0;
+                const saleableQuantity = parseFloat($(this).find('.saleable_quantity').val()) || 0;
+                const considerableMargin = parseFloat($(this).find('.considerable_margin').val()) || 0;
+
+                const sellingPrice = groundCostPerUnit * (1 + profitMargin / 100);
+                const profitAmount = (sellingPrice - groundCostPerUnit) * saleableQuantity;
+                const considerablePrice = groundCostPerUnit * (1 + considerableMargin / 100);
+
+                $(this).find('.selling_price').text(sellingPrice.toFixed(2));
+                $(this).find('.considerable_price').text(considerablePrice.toFixed(2));
+
+                totalProfit += profitAmount;
+            });
+
+        $('#total_profit').val(totalProfit.toFixed(2));
+    }
+</script>
 
 
 
+
+<script>
+    $(document).ready(function() {
         function updateSummary() {
             var itemTotalAmount = 0;
             var totalVatAmount = 0;
-            var totalPayment = 0;
-            var totalQuantity = 0;
-            var totalsaleableQty = 0;
-            
-            var additional_cost = parseFloat($('#total_additional_cost').val()) || 0;
-            
-            $('#productTable tbody tr').each(function() {
-                totalsaleableQty += parseFloat($(this).find('input.saleable_quantity').val()) || 0;
-            });
-            
-            var additionalCostPerItem = (additional_cost / totalsaleableQty).toFixed(2);
 
             $('#productTable tbody tr').each(function() {
-                var profit_margin = parseFloat($(this).find('input.profit_margin').val()) || 0;
-                var selling_price_per_unit = parseFloat($(this).find('input.selling_price_per_unit').val()) || 0;
-
                 var quantity = parseFloat($(this).find('input.quantity').val()) || 0;
                 var unitPrice = parseFloat($(this).find('input.unit_price').val()) || 0;
                 var totalPrice = (quantity * unitPrice).toFixed(2);
                 var vatPercent = parseFloat($(this).find('input.vat_percent').val()) || 0;
                 var vatAmount = (totalPrice * vatPercent / 100).toFixed(2);
-                var vatAmountPerItem = (unitPrice * vatPercent / 100).toFixed(2);
                 var totalPriceWithVat = (parseFloat(totalPrice) + parseFloat(vatAmount)).toFixed(2);
 
-                
-                var missingQty = parseFloat($(this).find('.missing_quantity').val()) || 0;
-                var sampleQty = parseFloat($(this).find('.sample_quantity').val()) || 0;
-                var saleableQty = parseFloat($(this).find('.saleable_quantity').val()) || 0; 
-
-                $(this).find('td:eq(7)').text(vatAmount);
                 $(this).find('td:eq(8)').text(totalPrice);
                 $(this).find('td:eq(9)').text(totalPriceWithVat);
-
-                var saleableQty = parseInt(quantity - missingQty - sampleQty);
+                $(this).find('td:eq(7)').text(vatAmount);
 
                 itemTotalAmount += parseFloat(totalPrice) || 0;
                 totalVatAmount += parseFloat(vatAmount) || 0;
-                totalQuantity += parseFloat(quantity) || 0;
-                
-                var costPerItem = (totalPriceWithVat / saleableQty).toFixed(2);
-
-                var nettotal_perItem = parseFloat(additionalCostPerItem) + parseFloat(costPerItem);
-
-                console.log(additionalCostPerItem);
-
-                $(this).find('td.saleable_quantity_td input').val(saleableQty);
-                $(this).find('td.ground_cost_per_item').text(nettotal_perItem.toFixed(2));
-
-            
             });
 
             $('#item_total_amount').val(itemTotalAmount.toFixed(2) || '0.00');
@@ -556,42 +617,20 @@
                 }
             });
 
+            // add other cost
+            var additional_cost = parseFloat($('#total_additional_cost').val()) || 0;
+            console.log(additional_cost );
+            // add other cost
 
             var discount = parseFloat($('#discount').val()) || 0;
             var netAmount = itemTotalAmount + totalVatAmount - discount + additional_cost;
             $('#total_vat_amount').val(totalVatAmount.toFixed(2) || '0.00');
             $('#net_amount').val(netAmount.toFixed(2) || '0.00');
 
-            var dueAmount = netAmount - totalPayment;
+            var paidAmount = parseFloat($('#paid_amount').val()) || 0;
+            var dueAmount = isNaN(paidAmount) ? netAmount : netAmount - paidAmount;
             $('#due_amount').val(dueAmount.toFixed(2) || '0.00');
         }
-
-        // Auto update selling_price_per_unit and profit_margin
-        $(document).on('input', '.profit_margin, .selling_price_per_unit', function () {
-            var row = $(this).closest('tr');
-            var groundCost = parseFloat(row.find('.ground_cost_per_item').text()) || 0;
-
-            var profitMarginInput = row.find('.profit_margin');
-            var sellingPriceInput = row.find('.selling_price_per_unit');
-
-            var profitMargin = parseFloat(profitMarginInput.val()) || 0;
-            var sellingPrice = parseFloat(sellingPriceInput.val()) || 0;
-
-            // If user changes profit_margin → update selling price
-            if ($(this).hasClass('profit_margin')) {
-                var newSellingPrice = groundCost + (groundCost * profitMargin / 100);
-                sellingPriceInput.val(newSellingPrice.toFixed(2));
-            }
-
-            // If user changes selling_price_per_unit → update margin
-            if ($(this).hasClass('selling_price_per_unit')) {
-                if (groundCost > 0) {
-                    var newMargin = ((sellingPrice - groundCost) / groundCost) * 100;
-                    profitMarginInput.val(newMargin.toFixed(2));
-                }
-            }
-        });
-
 
         updateSummary();
 
@@ -665,13 +704,7 @@
                                 <td><input type="number" step="0.01" class="form-control vat_percent" value="${vatPercent}" /></td>
                                 <td>${vatAmount}</td>
                                 <td>${totalPrice}</td>
-                                <td>${totalPriceWithVat}</td>         
-                                <td><input type="number" value="0" max="${quantity}" min="0" class="form-control missing_quantity"/></td>
-                                <td><input type="number" value="0" max="${quantity}" min="0" class="form-control sample_quantity"/></td>
-                                <td class="saleable_quantity_td"><input type="number" value="" max="" min="0" class="form-control saleable_quantity" readonly/></td>
-                                <td class="ground_cost_per_item">0</td>
-                                <td><input type="number" value="30" min="1" class="form-control profit_margin" /></td>
-                                <td><input type="number"  min="0" class="form-control selling_price_per_unit" /></td>
+                                <td>${totalPriceWithVat}</td>
                                 <td><button type="button" class="btn btn-sm btn-danger remove-product">Remove</button></td>
                               </tr>`;
 
@@ -692,26 +725,26 @@
             $('#product_id').val(null).trigger('change');
         });
 
-        $(document).on('input', '#productTable input.quantity, #productTable input.unit_price, #productTable input.vat_percent, #productTable input.missing_quantity, #productTable input.sample_quantity, #productTable input.profit_margin, #productTable input.selling_price_per_unit', function() {
+        $(document).on('input', '#productTable input.quantity, #productTable input.unit_price, #productTable input.vat_percent', function() {
             updateSummary();
         });
 
+        $('#paid_amount').on('input', function() {
+            var paidAmount = parseFloat($(this).val()) || 0;
+            var netAmount = parseFloat($('#net_amount').val()) || 0;
+            var dueAmount = isNaN(paidAmount) ? netAmount : netAmount - paidAmount;
+            $('#due_amount').val(dueAmount.toFixed(2) || '0.00');
+        });
 
+        $(document).on('input', '#productTable input.quantity, #productTable input.unit_price, #productTable input.vat_percent', function() {
+            updateSummary();
+        });
 
         $('#discount').on('input', function() {
             updateSummary();
         });
 
-        $(document).on("change", ".expense-type", function () {
-            checkDuplicateExpense(this);
-        });
 
-
-
-
-
-
-        //  data store 
         $('#addBtn').on('click', function(e) {
             e.preventDefault();
 
@@ -736,6 +769,7 @@
 
             formData.total_vat_amount = $('#total_vat_amount').val();
             formData.net_amount = $('#net_amount').val();
+            formData.paid_amount = $('#paid_amount').val();
             formData.bank_payment = $('#bank_payment').val();
             formData.cash_payment = $('#cash_payment').val();
             formData.due_amount = $('#due_amount').val();
@@ -852,5 +886,10 @@
     });
 </script>
 
+<script>
+    window.onload = function() {
+        document.getElementById("purchase_date").value = new Date().toISOString().split('T')[0];
+    };
+</script>
 
 @endsection

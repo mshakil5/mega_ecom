@@ -143,12 +143,12 @@
                     <input type="hidden" id="shipment_id" name="shipment_id">
                     <div class="form-group">
                         <label for="shipping_id">Shipping ID <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="shipping_id" name="shipping_id" placeholder="Enter Shipping ID" required>
+                        <input type="text" class="form-control" id="shipping_id" name="shipping_id" value="{{$shippingId}}" readonly>
                         <div id="shipping_id_error"></div>
                     </div>
                     <div class="form-group">
-                        <label for="shipping_name">Shipping Name <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="shipping_name" name="shipping_name" placeholder="Enter Shipping Name" required>
+                        <label for="shipping_name">Shipping Name </label>
+                        <input type="text" class="form-control" id="shipping_name" name="shipping_name" placeholder="Enter Shipping Name">
                     </div>
                     <div class="form-group">
                         <label for="shipping_date">Shipping Date <span class="text-danger">*</span></label>
