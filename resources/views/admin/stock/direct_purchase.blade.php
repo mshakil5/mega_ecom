@@ -717,63 +717,123 @@
 
             $(this).attr('disabled', true);
             $('#loader').show();
+
+            // helper to safely get value if element exists
+            function getValIfExists(selector) {
+                var $el = $(selector);
+                if ($el.length) {
+                    return $el.val();
+                }
+                return null;
+            }
+
             var formData = {};
             var selectedProducts = [];
 
-            formData.season = $('#season').val();
-            formData.invoice = $('#invoice').val();
-            formData.purchase_date = $('#purchase_date').val();
-            formData.supplier_id = $('#supplier_id').val();
-            formData.warehouse_id = $('#warehouse_id').val();
-            formData.vat_reg = $('#vat_reg').val();
-            formData.purchase_type = $('#purchase_type').val();
-            formData.ref = $('#ref').val();
-            formData.remarks = $('#remarks').val();
-
-            formData.total_amount = $('#item_total_amount').val();
-            formData.discount = $('#discount').val();
-
-
-            formData.total_vat_amount = $('#total_vat_amount').val();
-            formData.net_amount = $('#net_amount').val();
-            formData.bank_payment = $('#bank_payment').val();
-            formData.cash_payment = $('#cash_payment').val();
-            formData.due_amount = $('#due_amount').val();
+            formData.season = getValIfExists('#season');
+            formData.invoice = getValIfExists('#invoice');
+            formData.purchase_date = getValIfExists('#purchase_date');
+            formData.supplier_id = getValIfExists('#supplier_id');
+            formData.warehouse_id = getValIfExists('#warehouse_id');
+            formData.total_amount = getValIfExists('#item_total_amount');
+            formData.discount = getValIfExists('#discount');
+            formData.total_vat_amount = getValIfExists('#total_vat_amount');
+            formData.net_amount = getValIfExists('#net_amount');
+            formData.bank_payment = getValIfExists('#bank_payment');
+            formData.cash_payment = getValIfExists('#cash_payment');
+            formData.due_amount = getValIfExists('#due_amount');
+            formData.total_additional_cost = getValIfExists('#total_additional_cost');
 
             $('#productTable tbody tr').each(function() {
-                var productId = $(this).data('product-id');
-                var quantity = $(this).find('input.quantity').val();
-                var unitPrice = $(this).find('input.unit_price').val();
-                var productSize = $(this).find('td:eq(2)').text(); 
-                var productColor = $(this).find('td:eq(3)').text();
-                var vatPercent = $(this).find('input.vat_percent').val();
-                var vatAmount = $(this).find('td:eq(6)').text();
-                var totalPrice = $(this).find('td:eq(7)').text();
-                var totalPriceWithVat = $(this).find('td:eq(8)').text();
-                var zipValue = $(this).find('input[name="zip[]"]').val() || 0;
-                var typeId = $(this).find('input[name="product_type_id[]"]').val() || null;
+                var $row = $(this);
+                var productId = $row.data('product-id');
+                if (!productId) return; 
+
+                var missing_quantity = $row.find('input.missing_quantity').val() || 0;
+                var sample_quantity = $row.find('input.sample_quantity').val() || 0;
+                var quantity = $row.find('input.quantity').val() || 0;
+                var unitPrice = $row.find('input.unit_price').val() || 0;
+                var profit_margin = $row.find('input.profit_margin').val() || 0;
+
+                var productSize = $row.find('td').eq(2).text().trim() || $row.data('size') || '';
+                var productColor = $row.find('td').eq(3).text().trim() || $row.data('color') || '';
+
+                var vatPercent = $row.find('input.vat_percent').val();
+                var vatAmount = $row.find('td').eq(8).text().trim() || $row.find('td').eq(7).text().trim() || $row.find('input.vat_amount').val() || 0;
+                var totalPrice = $row.find('td').eq(9).text().trim() || $row.find('td').eq(8).text().trim() || 0;
+                var totalPriceWithVat = $row.find('td').eq(10).text().trim() || 0;
+
+                var zipValue = null;
+                var $zipInput = $row.find('input[name="zip[]"]');
+                if ($zipInput.length) {
+                    zipValue = $zipInput.val();
+                } else if ($row.data('zip') !== undefined) {
+                    zipValue = $row.data('zip');
+                }
+
+                var typeId = null;
+                var $typeInput = $row.find('input[name="product_type_id[]"]');
+                if ($typeInput.length) {
+                    typeId = $typeInput.val();
+                } else if ($row.data('type-id') !== undefined) {
+                    typeId = $row.data('type-id');
+                }
+
+                var groundCostPerItem = parseFloat($row.find('.ground_cost_per_item').text()) || 0;
+                var sellingPricePerUnit = parseFloat($row.find('input.selling_price_per_unit').val()) || 0;
 
                 selectedProducts.push({
                     product_id: productId,
-                    quantity: quantity,
+                    quantity: parseFloat(quantity) || 0,
+                    missing_quantity: parseFloat(missing_quantity) || 0,
+                    sample_quantity: parseFloat(sample_quantity) || 0,
                     product_size: productSize,
                     product_color: productColor,
-                    unit_price: unitPrice,
-                    vat_percent: vatPercent,
-                    vat_amount: vatAmount,
-                    total_price: totalPrice,
-                    total_price_with_vat: totalPriceWithVat,
+                    unit_price: parseFloat(unitPrice) || 0,
+                    profit_margin: parseFloat(profit_margin) || 0,
+                    vat_percent: vatPercent !== undefined ? vatPercent : null,
+                    vat_amount: parseFloat(vatAmount) || 0,
+                    total_price: parseFloat(totalPrice) || 0,
+                    total_price_with_vat: parseFloat(totalPriceWithVat) || 0,
                     zip: zipValue,
-                    type_id: typeId
+                    type_id: typeId,
+                    ground_cost_per_item: groundCostPerItem,
+                    selling_price_per_unit: sellingPricePerUnit
                 });
             });
 
-            var finalData = { ...formData, products: selectedProducts };
+            // Collect additional expenses if present
+            var expenses = [];
+            $('#expense-container .expense-row').each(function() {
+                var $r = $(this);
+                var expenseId = $r.find('.expense-type').val();
+                if (!expenseId) return; 
+
+                var paymentType = $r.find('.payment-type').val() || null;
+                var amount = parseFloat($r.find('.expense-amount').val()) || 0;
+                var description = $r.find('.expense-description').val() || '';
+                var note = $r.find('.expense-note').val() || '';
+
+                expenses.push({
+                    expense_id: expenseId,
+                    payment_type: paymentType,
+                    amount: amount,
+                    description: description,
+                    note: note
+                });
+            });
+
+            var finalData = {
+                ...formData,
+                products: selectedProducts,
+                expenses: expenses,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            };
             // console.log(finalData);
             // return;
 
             $.ajax({
-                url: '/admin/add-stock',
+                url: '/admin/add-direct-stock',
                 method: 'POST',
                 data: finalData,
                 dataType: 'json',

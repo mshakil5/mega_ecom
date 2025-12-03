@@ -71,7 +71,7 @@
 
                                 <div class="form-group col-sm-2">
                                     <label for="invoice">Invoice<span style="color: red;">*</span></label>
-                                    <input type="text" class="form-control" id="invoice" name="invoice">
+                                    <input type="text" class="form-control" id="invoice" name="invoice" value="{{ $invoiceId }}">
                                     <small class="text-muted">Example: <span id="productCodePreview">STL-Season-Year-XXXXX</span></small>
                                     <span id="invoice-error" class="text-danger" style="display: none;">Invoice already exists</span>
                                 </div>
@@ -200,41 +200,6 @@
                                 
                                 <div class="col-sm-6 mt-4 mb-5">
 
-                                    <div class="row d-none">
-                                        <div class="col-sm-6 d-flex align-items-center">
-                                            <span class="">Direct cost:</span>
-                                            <input type="number" class="form-control" id="direct_cost" style="width: 100px; margin-left: auto;" min="0">
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="row mt-1 d-none">
-                                        <div class="col-sm-6 d-flex align-items-center">
-                                            <span class="">CNF cost:</span>
-                                            <input type="number" class="form-control" id="cnf_cost" style="width: 100px; margin-left: auto;" min="0">
-                                        </div>
-                                    </div>
-
-                                    
-                                    <div class="row mt-1 d-none">
-                                        <div class="col-sm-6 d-flex align-items-center">
-                                            <span class="">Title need:</span>
-                                            <input type="number" class="form-control" id="cost_a" style="width: 100px; margin-left: auto;" min="0">
-                                        </div>
-                                    </div>
-
-                                    <div class="row mt-1 d-none">
-                                        <div class="col-sm-6 d-flex align-items-center">
-                                            <span class="">Title need:</span>
-                                            <input type="number" class="form-control" id="cost_b" style="width: 100px; margin-left: auto;" min="0">
-                                        </div>
-                                    </div>
-
-                                    <div class="row mt-1 d-none">
-                                        <div class="col-sm-6 d-flex align-items-center">
-                                            <span class="">Others cost:</span>
-                                            <input type="number" class="form-control" id="other_cost" style="width: 100px; margin-left: auto;" min="0">
-                                        </div>
-                                    </div>
                                     
                                 </div>
 
@@ -403,16 +368,9 @@
                 }
             });
 
-            // add other cost
-            var direct_cost = parseFloat($('#direct_cost').val()) || 0;
-            var cnf_cost = parseFloat($('#cnf_cost').val()) || 0;
-            var cost_b = parseFloat($('#cost_b').val()) || 0;
-            var cost_a = parseFloat($('#cost_a').val()) || 0;
-            var other_cost = parseFloat($('#other_cost').val()) || 0;
-            // add other cost
 
             var discount = parseFloat($('#discount').val()) || 0;
-            var netAmount = itemTotalAmount + totalVatAmount - discount + direct_cost + cost_b + cnf_cost + cost_a + other_cost;
+            var netAmount = itemTotalAmount + totalVatAmount - discount;
             $('#total_vat_amount').val(totalVatAmount.toFixed(2) || '0.00');
             $('#net_amount').val(netAmount.toFixed(2) || '0.00');
 
@@ -533,11 +491,6 @@
             updateSummary();
         });
 
-        
-
-        $(document).on('input', '#direct_cost, #cost_a, #cost_b, #cnf_cost, #other_cost', function() {
-            updateSummary();
-        });
 
 
         $('#addBtn').on('click', function(e) {
@@ -561,11 +514,6 @@
             formData.total_amount = $('#item_total_amount').val();
             formData.discount = $('#discount').val();
 
-            formData.direct_cost = $('#direct_cost').val();
-            formData.cost_a = $('#cost_a').val();
-            formData.cost_b = $('#cost_b').val();
-            formData.cnf_cost = $('#cnf_cost').val();
-            formData.other_cost = $('#other_cost').val();
 
             formData.total_vat_amount = $('#total_vat_amount').val();
             formData.net_amount = $('#net_amount').val();

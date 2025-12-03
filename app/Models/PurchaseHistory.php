@@ -11,6 +11,8 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class PurchaseHistory extends Model
 {
     use HasFactory, LogsActivity, SoftDeletes;
+    
+    protected $guarded = [];
 
     public function getActivitylogOptions(): LogOptions
     {

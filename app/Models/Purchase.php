@@ -12,6 +12,8 @@ class Purchase extends Model
 {
     use HasFactory, LogsActivity, SoftDeletes;
 
+    protected $guarded = [];
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
