@@ -523,7 +523,7 @@
                 
                 var costPerItem = (totalPriceWithVat / saleableQty).toFixed(2);
 
-                var nettotal_perItem = parseFloat(additionalCostPerItem) + parseFloat(costPerItem);
+                var nettotal_perItem = parseFloat(additionalCostPerItem) + parseFloat(costPerItem) || unitPrice;
 
                 console.log(additionalCostPerItem);
 
@@ -617,6 +617,7 @@
             var totalPrice = (quantity * unitPrice).toFixed(2);
             var vatAmount = (totalPrice * vatPercent / 100).toFixed(2);
             var totalPriceWithVat = (parseFloat(totalPrice) + parseFloat(vatAmount)).toFixed(2);
+            var selling_price_per_unit = parseFloat(unitPrice) + ( parseFloat(unitPrice) * 30 / 100);
 
             var isZipProduct = selectedProduct.data('is-zip') == 1;
             var zipValue = isZipProduct ? $('#zip_option').val() : null;
@@ -669,9 +670,9 @@
                                 <td><input type="number" value="0" max="${quantity}" min="0" class="form-control missing_quantity"/></td>
                                 <td><input type="number" value="0" max="${quantity}" min="0" class="form-control sample_quantity"/></td>
                                 <td class="saleable_quantity_td"><input type="number" value="" max="" min="0" class="form-control saleable_quantity" readonly/></td>
-                                <td class="ground_cost_per_item">0</td>
+                                <td class="ground_cost_per_item"><input type="number" step="0.01" class="form-control" value="${unitPrice}" /></td>
                                 <td><input type="number" value="30" min="1" class="form-control profit_margin" /></td>
-                                <td><input type="number"  min="0" class="form-control selling_price_per_unit" /></td>
+                                <td><input type="number"  min="0" class="form-control selling_price_per_unit" value="${selling_price_per_unit}" /></td>
                                 <td><button type="button" class="btn btn-sm btn-danger remove-product">Remove</button></td>
                               </tr>`;
 

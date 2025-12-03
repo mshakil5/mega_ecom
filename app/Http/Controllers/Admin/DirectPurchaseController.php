@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\PurchaseHistory;
 use Illuminate\Support\Facades\DB;
 use App\Models\Size;
+use App\Models\SystemLose;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
 
@@ -118,27 +119,41 @@ class DirectPurchaseController extends Controller
                 $totalVat   = $vatPerUnit * $item['quantity'];
                 $totalPrice = $item['unit_price'] * $item['quantity'];
 
-                PurchaseHistory::create([
-                    'purchase_id'               => $purchase->id,
-                    'product_id'                => $item['product_id'],
-                    'type_id'                   => $item['type_id'] ?? null,
-                    'quantity'                  => $item['quantity'],
-                    'product_size'              => $item['product_size'],
-                    'product_color'             => $item['product_color'],
-                    'purchase_price'            => $item['unit_price'],
-                    'vat_percent'               => $item['vat_percent'] ?? 0,
-                    'vat_amount_per_unit'       => $vatPerUnit,
-                    'total_vat'                 => $totalVat,
-                    'total_amount'              => $totalPrice,
-                    'total_amount_with_vat'     => $totalPrice + $totalVat,
-                    'remaining_product_quantity'=> $request->warehouse_id ? 0 : $item['quantity'],
-                    'transferred_product_quantity'=> $request->warehouse_id ? $item['quantity'] : 0,
-                    'created_by'                => Auth::id(),
-                ]);
+                    PurchaseHistory::create([
+                        'purchase_id'               => $purchase->id,
+                        'product_id'                => $item['product_id'],
+                        'type_id'                   => $item['type_id'] ?? null,
+                        'quantity'                  => $item['quantity'],
+                        'product_size'              => $item['product_size'],
+                        'product_color'             => $item['product_color'],
+                        'purchase_price'            => $item['unit_price'],
+                        'vat_percent'               => $item['vat_percent'] ?? 0,
+                        'vat_amount_per_unit'       => $vatPerUnit,
+                        'total_vat'                 => $totalVat,
+                        'total_amount'              => $totalPrice,
+                        'total_amount_with_vat'     => $totalPrice + $totalVat,
+                        'remaining_product_quantity'=> $request->warehouse_id ? 0 : $item['quantity'],
+                        'transferred_product_quantity'=> $request->warehouse_id ? $item['quantity'] : 0,
+                        'created_by'                => Auth::id(),
+                    ]);
 
                 // Update product latest price
                 Product::where('id', $item['product_id'])
                     ->update(['price' => $item['unit_price']]);
+
+                    if (!empty($item['missing_quantity']) && $item['missing_quantity'] > 0) {
+                        SystemLose::create([
+                            'product_id' => $item['product_id'],
+                            'purchase_id' => $purchase->id,
+                            'warehouse_id' => $request->warehouse_id,
+                            'quantity' => $item['missing_quantity'],
+                            'size' => $item['size'],
+                            'color' => $item['color'],
+                            'type_id' => $item['type_id'] ?? null,
+                            'reason' => 'Damaged from purchase',
+                            'created_by' => auth()->id()
+                        ]);
+                    }
             }
 
             /** ---------------------------
@@ -156,6 +171,7 @@ class DirectPurchaseController extends Controller
                 'vat_amount'     => $validated['total_vat_amount'],
                 'discount'       => $validated['discount'] ?? 0,
                 'at_amount'      => $validated['net_amount'],
+                'created_by'      => auth()->id(),
             ]);
 
             $mainTransaction->update([
@@ -186,6 +202,29 @@ class DirectPurchaseController extends Controller
                     'Bank',
                     $request->bank_payment
                 );
+            }
+
+
+            $expenses = $request->input('expenses');
+
+            foreach ($expenses as $expense) {
+                $transaction = new Transaction();
+                $transaction->date = $validated['purchase_date'];
+                $transaction->table_type = 'Expenses';
+                $transaction->purchase_id = $purchase->id;
+                $transaction->supplier_id = $validated['supplier_id'];
+                $transaction->amount = $expense['amount'];
+                $transaction->at_amount = $expense['amount'];
+                $transaction->payment_type = $expense['payment_type'];
+                $transaction->chart_of_account_id = $expense['expense_id'];
+                $transaction->expense_id = $expense['expense_id'];
+                $transaction->description = $expense['description'];
+                $transaction->note = $expense['note'];
+                $transaction->transaction_type = 'Current';
+                $transaction->created_by = auth()->id();
+                $transaction->save();
+                $transaction->tran_id = 'EX' . date('ymd') . str_pad($transaction->id, 4, '0', STR_PAD_LEFT);
+                $transaction->save();
             }
 
             DB::commit();
@@ -221,6 +260,7 @@ class DirectPurchaseController extends Controller
             'transaction_type'=> 'Current',
             'amount'          => $amount,
             'at_amount'       => $amount,
+            'created_by'      => auth()->id(),
         ]);
 
         $trx->update([

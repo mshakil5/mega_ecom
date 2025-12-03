@@ -39,8 +39,6 @@ class ShippingController extends Controller
         }
 
         $shippingId = 'ST-' . date('ymd') . '-' . str_pad(Shipping::count() + 1, 4, '0', STR_PAD_LEFT);
-
-        // ensure generated shipping id is unique (sequential per day)
         $prefix = 'ST-' . date('ymd') . '-';
         $lastShippingId = Shipping::where('shipping_id', 'like', $prefix . '%')
             ->orderBy('id', 'desc')
@@ -49,8 +47,7 @@ class ShippingController extends Controller
         $lastSeq = $lastShippingId ? (int) substr($lastShippingId, strlen($prefix)) : 0;
         $nextSeq = $lastSeq + 1;
         $shippingId = $prefix . str_pad($nextSeq, 4, '0', STR_PAD_LEFT);
-
-        // safety loop in case of race condition
+        
         while (Shipping::where('shipping_id', $shippingId)->exists()) {
             $nextSeq++;
             $shippingId = $prefix . str_pad($nextSeq, 4, '0', STR_PAD_LEFT);
