@@ -134,7 +134,8 @@
                                             <input type="number" value="30" min="1" class="form-control profit_margin" />
                                         </td>
                                         <td>{{ number_format($currentSellingPrice, 2) }}</td>
-                                        <td class="selling_price"></td>
+                                        <td class="selling_price selling_price_per_unit_td"> <input type="number"  min="0" class="form-control selling_price_per_unit" value="" /></td>
+                                        
                                         <td>
                                             <input type="number" value="10" min="1" class="form-control considerable_margin" />
                                         </td>
@@ -163,7 +164,7 @@
 
                                         <div class="row mt-2">
                                             <div class="col-sm-12 d-flex align-items-center">
-                                                <span>Target Budget:</span>
+                                                <span>Target Costing Budget:</span>
                                                 <input type="number" class="form-control" id="target_budget" style="width: 100px; margin-left: auto;" min="0">
                                             </div>
                                         </div>
@@ -643,7 +644,7 @@
                 const profitAmount = (sellingPrice - groundCostPerUnit) * saleableQuantity;
                 const considerablePrice = groundCostPerUnit * (1 + considerableMargin / 100);
 
-                $(this).find('.selling_price').text(sellingPrice.toFixed(2));
+                $(this).find('.selling_price_per_unit').val(sellingPrice.toFixed(2));
                 $(this).find('.considerable_price').text(considerablePrice.toFixed(2));
 
                 totalProfit += profitAmount;
@@ -651,6 +652,32 @@
 
         $('#total_profit').val(totalProfit.toFixed(2));
     }
+
+            // Auto update selling_price_per_unit and profit_margin
+        $(document).on('input', '.profit_margin, .selling_price_per_unit', function () {
+            var row = $(this).closest('tr');
+            var groundCost = parseFloat(row.find('.ground_cost').text()) || 0;
+
+            var profitMarginInput = row.find('.profit_margin');
+            var sellingPriceInput = row.find('.selling_price_per_unit');
+
+            var profitMargin = parseFloat(profitMarginInput.val()) || 0;
+            var sellingPrice = parseFloat(sellingPriceInput.val()) || 0;
+
+            // If user changes profit_margin → update selling price
+            if ($(this).hasClass('profit_margin')) {
+                var newSellingPrice = groundCost + (groundCost * profitMargin / 100);
+                sellingPriceInput.val(newSellingPrice.toFixed(2));
+            }
+
+            // If user changes selling_price_per_unit → update margin
+            if ($(this).hasClass('selling_price_per_unit')) {
+                if (groundCost > 0) {
+                    var newMargin = ((sellingPrice - groundCost) / groundCost) * 100;
+                    profitMarginInput.val(newMargin.toFixed(2));
+                }
+            }
+        });
 
 </script>
 
@@ -916,7 +943,7 @@
                 const profitAmount = (sellingPrice - groundCostPerUnit) * saleableQuantity;
                 const considerablePrice = groundCostPerUnit * (1 + considerableMargin / 100);
 
-                $(this).find('.selling_price').text(sellingPrice.toFixed(2));
+                $(this).find('.selling_price_per_unit').val(sellingPrice.toFixed(2));
                 $(this).find('.considerable_price').text(considerablePrice.toFixed(2));
 
                 totalProfit += profitAmount;
@@ -924,6 +951,32 @@
 
             $('#total_profit').val(totalProfit.toFixed(2));
         }
+
+                    // Auto update selling_price_per_unit and profit_margin
+        $(document).on('input', '.profit_margin, .selling_price_per_unit', function () {
+            var row = $(this).closest('tr');
+            var groundCost = parseFloat(row.find('.ground_cost').text()) || 0;
+
+            var profitMarginInput = row.find('.profit_margin');
+            var sellingPriceInput = row.find('.selling_price_per_unit');
+
+            var profitMargin = parseFloat(profitMarginInput.val()) || 0;
+            var sellingPrice = parseFloat(sellingPriceInput.val()) || 0;
+
+            // If user changes profit_margin → update selling price
+            if ($(this).hasClass('profit_margin')) {
+                var newSellingPrice = groundCost + (groundCost * profitMargin / 100);
+                sellingPriceInput.val(newSellingPrice.toFixed(2));
+            }
+
+            // If user changes selling_price_per_unit → update margin
+            if ($(this).hasClass('selling_price_per_unit')) {
+                if (groundCost > 0) {
+                    var newMargin = ((sellingPrice - groundCost) / groundCost) * 100;
+                    profitMarginInput.val(newMargin.toFixed(2));
+                }
+            }
+        });
 
         $(document).on('input', '.shipped_quantity, .missing_quantity, .profit_margin, .considerable_margin, .sample_quantity, .saleable_quantity', function() {
             updateCalculations();

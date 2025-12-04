@@ -64,7 +64,7 @@
                             </div>
                             <i class="fa fa-truck px-4" style="font-size: 24px; color: red; margin-left: auto;"></i>
                         </label>
-                        <label class="option" id="delivery-pickup" onclick="showSection('pickup', this)">
+                        <label class="option d-none" id="delivery-pickup" onclick="showSection('pickup', this)">
                             <div>
                                 <input type="radio" name="shipping" class="customRadioButton" style="width: 7%">
                                 <span>Pickup In Store</span>
@@ -390,7 +390,7 @@
                                         <label class="custom-control-label" for="stripe">Stripe</label>
                                     </div>
                                 </div>
-                                <div class="form-group mb-2">
+                                <div class="form-group mb-2 d-none">
                                     <div class="custom-control custom-radio">
                                         <input type="radio" class="custom-control-input" name="payment_method" id="cashOnDelivery" value="cashOnDelivery">
                                         <label class="custom-control-label" for="cashOnDelivery">Cash On Delivery</label>

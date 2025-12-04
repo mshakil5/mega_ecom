@@ -522,13 +522,12 @@
                 totalQuantity += parseFloat(quantity) || 0;
                 
                 var costPerItem = (totalPriceWithVat / saleableQty).toFixed(2);
-
                 var nettotal_perItem = parseFloat(additionalCostPerItem) + parseFloat(costPerItem) || unitPrice;
-
-                console.log(additionalCostPerItem);
+                var new_selling_price_per_unit = nettotal_perItem + ( nettotal_perItem * profit_margin / 100);
 
                 $(this).find('td.saleable_quantity_td input').val(saleableQty);
                 $(this).find('td.ground_cost_per_item').text(nettotal_perItem.toFixed(2));
+                $(this).find('td.selling_price_per_unit_td input').val(new_selling_price_per_unit.toFixed(2));
 
             
             });
@@ -672,7 +671,7 @@
                                 <td class="saleable_quantity_td"><input type="number" value="" max="" min="0" class="form-control saleable_quantity" readonly/></td>
                                 <td class="ground_cost_per_item"><input type="number" step="0.01" class="form-control" value="${unitPrice}" /></td>
                                 <td><input type="number" value="30" min="1" class="form-control profit_margin" /></td>
-                                <td><input type="number"  min="0" class="form-control selling_price_per_unit" value="${selling_price_per_unit}" /></td>
+                                <td class="selling_price_per_unit_td"><input type="number"  min="0" class="form-control selling_price_per_unit" value="${selling_price_per_unit}" /></td>
                                 <td><button type="button" class="btn btn-sm btn-danger remove-product">Remove</button></td>
                               </tr>`;
 

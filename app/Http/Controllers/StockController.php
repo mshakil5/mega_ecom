@@ -85,9 +85,12 @@ class StockController extends Controller
                   });
         }
 
-        $data = $query->orderBy('id', 'DESC')->get();
+        $data = $query->orderBy('id', 'DESC');
+
+        $totalQuantity = $data->sum('quantity');
 
         return DataTables::of($data)
+            ->with('total_quantity', $totalQuantity)
             ->addColumn('sl', function ($row) {
                 static $i = 1;
                 return $i++;
@@ -135,8 +138,7 @@ class StockController extends Controller
         $data = Stock::selectRaw('product_id, size, color, type_id, SUM(quantity) as total_quantity')
             ->groupBy('product_id', 'size', 'color', 'type_id')
             ->with(['product', 'type'])
-            ->orderByDesc('product_id')
-            ->get();
+            ->orderByDesc('product_id');
     
         return DataTables::of($data)
 
@@ -877,6 +879,7 @@ class StockController extends Controller
                 ->havingRaw('SUM(shipped_quantity) = 0')
                 ->where('quantity', '>', 0);
         })
+        ->where('direct_purchase', 0)
         ->orderBy('id', 'DESC')
         ->get();
 

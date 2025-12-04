@@ -20,6 +20,13 @@
                     <div class="card-body">
                         <div class="tab-content" id="custom-tabs-one-tabContent">
                             <div class="tab-pane fade active show" id="custom-tabs-one-profile" role="tabpanel" aria-labelledby="custom-tabs-one-profile-tab">
+
+                                <div class="col-12">
+                                    <div class="callout callout-info text-bold">
+                                        Total Quantity : <span id="totalStock"></span>
+                                    </div>
+                                </div>
+
                                 <form action="#" method="GET">
                                     <div class="row mb-3">
                                         <div class="col-md-4">
@@ -774,6 +781,13 @@
                     return parseFloat(a) + parseFloat(b);
                 }, 0);
                 $('#total-quantity').html(total);
+            }
+        });
+
+        table.on('xhr.dt', function(e, settings, json, xhr){
+            if (json && json.total_quantity !== undefined) {
+                $('#totalStock').text(Number(json.total_quantity).toLocaleString());
+
             }
         });
 

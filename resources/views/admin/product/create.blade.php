@@ -159,7 +159,7 @@
                                 </div>
                                 <!-- Feature Image part end -->
 
-                                <div class="form-group col-md-1">
+                                <div class="form-group col-md-1 d-none">
                                     <label for="is_whole_sale">Whole Sale</label>
                                     <input type="checkbox" class="form-control" id="is_whole_sale" name="is_whole_sale" value="1" checked>
                                 </div>

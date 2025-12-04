@@ -17,7 +17,7 @@
 
                 <div class="">
                     <div class="card-header bg-info text-white text-center">
-                        <h1 class="mb-0">Left Over Garments Costing Sheet SapphireTradeLinks</h1>
+                        <h1 class="mb-0">Cost Sheet SapphireTradeLinks</h1>
                     </div>
                     <div class="card-body">
                         <div class="mb-4 d-flex">

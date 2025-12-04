@@ -209,14 +209,14 @@
                 <li class="nav-item">
                     <a href="{{ route('inhousesell') }}" class="nav-link {{ (request()->is('admin/in-house-sell*')) ? 'active' : '' }}">
                         <i class="fas fa-store nav-icon"></i>
-                        <p>In House Sale</p>
+                        <p>Other Platform Sale</p>
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="{{ route('getinhouseorder') }}" class="nav-link {{ (request()->is('admin/all-inhouse-orders*')) ? 'active' : '' }}">
                         <i class="fas fa-industry nav-icon"></i>
-                        <p>In House Sales List</p>
+                        <p>Other Platform Sales List</p>
                     </a>
                 </li>
 

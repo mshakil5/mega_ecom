@@ -11,6 +11,7 @@ use App\Models\Purchase;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Auth;
 use App\Models\PurchaseHistory;
+use App\Models\SampleProduct;
 use Illuminate\Support\Facades\DB;
 use App\Models\Size;
 use App\Models\SystemLose;
@@ -44,11 +45,17 @@ class DirectPurchaseController extends Controller
             'due_amount'               => 'required|numeric',
             'cash_payment'             => 'nullable|numeric',
             'bank_payment'             => 'nullable|numeric',
-            'warehouse_id'             => 'nullable|exists:warehouses,id',
+            'warehouse_id'             => 'required|exists:warehouses,id',
 
             'products'                             => 'required|array',
             'products.*.product_id'                => 'required|exists:products,id',
             'products.*.quantity'                  => 'required|numeric|min:1',
+
+            'products.*.sample_quantity'           => 'nullable|numeric',
+            'products.*.missing_quantity'          => 'nullable|numeric',
+            'products.*.profit_margin'             => 'nullable|numeric',
+            'products.*.selling_price_per_unit'    => 'nullable|numeric',
+
             'products.*.product_size'              => 'nullable|string',
             'products.*.product_color'             => 'nullable|string',
             'products.*.type_id'                   => 'nullable|exists:types,id',
@@ -57,6 +64,12 @@ class DirectPurchaseController extends Controller
             'products.*.vat_amount'                => 'nullable|numeric',
             'products.*.total_price_with_vat'      => 'required|numeric',
             'products.*.zip'                       => 'nullable|string',
+
+            'expenses.*.expense_id'           => 'required|numeric',
+            'expenses.*.payment_type'         => 'nullable|string',
+            'expenses.*.amount'               => 'required|numeric',
+            'expenses.*.description'          => 'nullable|string',
+            'expenses.*.note'                 => 'nullable|string',
         ]);
 
         DB::beginTransaction();
@@ -107,6 +120,7 @@ class DirectPurchaseController extends Controller
                 'other_cost'       => ($request->total_additional_cost ?? 0),
                 'due_amount'       => $validated['net_amount'] - (($request->cash_payment ?? 0) + ($request->bank_payment ?? 0)),
                 'status'           => $request->warehouse_id ? 4 : 1,
+                'direct_purchase'  => 1,
                 'created_by'       => Auth::id(),
             ]);
 
@@ -147,10 +161,23 @@ class DirectPurchaseController extends Controller
                             'purchase_id' => $purchase->id,
                             'warehouse_id' => $request->warehouse_id,
                             'quantity' => $item['missing_quantity'],
-                            'size' => $item['size'],
-                            'color' => $item['color'],
+                            'size' => $item['product_size'],
+                            'color' => $item['product_color'],
                             'type_id' => $item['type_id'] ?? null,
                             'reason' => 'Damaged from purchase',
+                            'created_by' => auth()->id()
+                        ]);
+                    }
+
+                    if (!empty($item['sample_quantity']) && $item['sample_quantity'] > 0) {
+                        SampleProduct::create([
+                            'product_id' => $item['product_id'],
+                            'purchase_id' => $purchase->id,
+                            'warehouse_id' => $request->warehouse_id,
+                            'quantity' => $item['sample_quantity'],
+                            'size' => $item['product_size'],
+                            'color' => $item['product_color'],
+                            'reason' => 'Sample quantity create from purchase',
                             'created_by' => auth()->id()
                         ]);
                     }
