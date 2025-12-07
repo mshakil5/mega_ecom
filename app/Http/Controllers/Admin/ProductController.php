@@ -191,7 +191,7 @@ class ProductController extends Controller
         $request->validate([
             'id' => 'required|exists:products,id',
             'name' => 'required|string|max:255',
-            'product_code' => 'required|string|max:255|unique:products,product_code,' . $request->id,
+            'product_code' => 'required|string|max:255|unique:products,product_code,' . $request->id . ',id,deleted_at,NULL',
             'price' => 'nullable|numeric',
             'size_ids' => 'nullable|array',
             'size_ids.*' => 'exists:sizes,id',

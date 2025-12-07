@@ -34,7 +34,8 @@ use App\Models\StockHistory;
 use App\Models\Size;
 use App\Models\ProductReview;
 use App\Models\FaqQuestion;
-    use Illuminate\Support\Facades\Cache;
+use App\Models\ProductPrice;
+use Illuminate\Support\Facades\Cache;
 
 class FrontendController extends Controller
 {
@@ -217,6 +218,7 @@ class FrontendController extends Controller
     public function showProduct($slug, $offerId = null)
     {
         $product = Product::where('slug', $slug)->with(['colors.color', 'stockhistory', 'stock', 'reviews'])->firstOrFail();
+
         $supplierPrice = null;
 
         $product->watch = $product->watch + 1;
@@ -256,6 +258,7 @@ class FrontendController extends Controller
         $currency = CompanyDetails::value('currency');
         $sizeGuide = CompanyDetails::value('size_guide');
 
+
         $relatedProducts = RelatedProduct::where('product_id', $product->id)
             ->where('status', 1)
             ->first();
@@ -280,6 +283,18 @@ class FrontendController extends Controller
         }
 
         return view('frontend.product.single_product', compact('product', 'relatedProducts', 'title', 'regularPrice', 'offerPrice', 'flashSellPrice', 'offerId', 'currency', 'oldOfferPrice', 'OldFlashSellPrice', 'sizeGuide'));
+    }
+
+    public function showProduct2($slug)
+    {
+        $product = Product::where('slug', $slug)->firstOrFail();
+        $product->increment('watch');
+        $prices = ProductPrice::where('product_id', $product->id)
+          ->where('status', 1)
+          ->get()
+          ->groupBy('category');
+        $relatedProducts = Product::where('category_id', $product->category_id)->where('id', '!=', $product->id)->take(5)->get();
+        return view('frontend.product.single_product', compact('product', 'relatedProducts', 'prices'));
     }
 
     public function bogoShowProduct($slug)

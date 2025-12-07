@@ -13,14 +13,16 @@ return new class extends Migration
     {
         Schema::create('product_prices', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('product_id')->nullable();
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+            $table->foreignId('product_id')->nullable()->constrained('products')->onDelete('cascade');
+            $table->enum('category', ['Blank pricing', 'Print', 'Embroidery', 'High stitch count'])->nullable();
+            $table->string('min_max_qty')->nullable();
             $table->integer('min_quantity')->nullable();
             $table->integer('max_quantity')->nullable();
+            $table->integer('discount_percent')->nullable(); 
             $table->double('price', 8, 2)->nullable();
             $table->boolean('status')->default(1);
-            $table->string('created_by')->nullable();
-            $table->string('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
         });
     }

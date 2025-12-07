@@ -54,4 +54,15 @@ class Stock extends Model
     {
         return $this->belongsTo(Type::class, 'type_id');
     }
+
+
+    public function color()
+    {
+        return $this->belongsTo(ProductColor::class);
+    }
+
+    public function size()
+    {
+        return $this->belongsTo(ProductSize::class);
+    }
 }

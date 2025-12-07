@@ -55,6 +55,8 @@
     <!-- Google Font (Inter) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
+    <link rel="stylesheet" href="{{ asset('frontend/css/toastr.min.css') }}">
+
     <!-- Project CSS -->
     <link rel="stylesheet" href="{{ asset('frontend/v2/css/style.css') }}">
 
@@ -76,5 +78,46 @@
 
     <!-- Project main JS -->
     <script src="{{ asset('frontend/v2/js/main.js') }}" defer></script>
+
+    <script src="{{ asset('frontend/js/toastr.min.js')}}"></script>
+
+    <script>
+        toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "toast-top-center",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+    </script>
+
+    @yield('script')
+
+    @include('frontend.partials.wishlist_script')
+    @include('frontend.partials.add_to_cart_script')
+    @include('frontend.partials.search_script')
+    @include('frontend.modals.add_to_cart_modal_script')
+    
+    @if(session('session_clear'))
+        <script>
+            localStorage.removeItem('wishlist');
+            localStorage.removeItem('cart');
+            @php
+                session()->forget('session_clear');
+            @endphp
+        </script>
+    @endif
+
+
 </body>
 </html>

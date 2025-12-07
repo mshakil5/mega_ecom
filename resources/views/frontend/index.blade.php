@@ -102,7 +102,7 @@
                 <div class="col-12 col-lg-8">
                     <div class="row g-3">
                         @foreach ($recentProducts as $product)
-                            <div class="col-6 col-md-4 col-lg-3 mb-4">
+                            <div class="col-6 col-md-4 col-lg-3 mb-4 product-item-card">
                                 <a href="{{ route('product.show', $product->slug) }}" class="card bg-white product-card text-decoration-none text-dark">
 
                                     <div class="product-image-container">
