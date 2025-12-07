@@ -227,5 +227,23 @@ class Product extends Model
         return $this->stock()->where('quantity', '>', 0)->exists();
     }
 
+    public function scopeActive($query)
+    {
+        return $query->where('active_status', 1);
+    }
+
+    public function scopeWithoutOffers($query)
+    {
+        return $query->whereDoesntHave('specialOfferDetails')
+                    ->whereDoesntHave('flashSellDetails');
+    }
+
+    public function scopeCommonSelect($query)
+    {
+        return $query->select('id', 'name', 'feature_image', 'price', 'slug', 'category_id')
+                    ->with('stock', 'category');
+    }
+
+
     
 }

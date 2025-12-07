@@ -1,27 +1,50 @@
-<header class="header header-intro-clearance header-4">
-    <div class="header-top">
-        <div class="container">
-            <div class="header-left">
-                <a href="tel:{{ $company->phone1 }}"><i class="icon-phone"></i>{{ $company->phone1 }}</a>
+
+{{-- <div class="mt-1" id="searchSection">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="row search-products align-items-center px-xl-5">
             </div>
+        </div>
+    </div>
+</div> --}}
 
-            <div class="header-right">
 
-                <ul class="top-menu">
-                    <li>
-                        <a href="#">
+
+
+    <!-- Top small bar (hidden on small screens) -->
+    <div class="top-bar bg-dark text-white d-none d-lg-block">
+        <div class="container-fluid h-100">
+            <div class="row h-100 align-items-center justify-content-between">
+                <div class="col-auto p-0">
+                    <button class="btn btn-link text-uppercase fw-bold">
+                        <i class="fas fa-bolt me-2"></i>EXCLUSIVE FALL COLLECTION
+                    </button>
+                </div>
+
+                <div class="col-auto p-0">
+                    <a href="#" class="btn btn-link"><i class="fas fa-briefcase me-1"></i> Corporate Sales</a>
+                    <a href="#" class="btn btn-link"><i class="fas fa-store me-1"></i> Store Locations</a>
+                </div>
+
+                <div class="col-auto p-0 d-flex align-items-center">
+                    <a href="#" class="btn btn-link"><i class="fas fa-circle-info me-1"></i> About Us</a>
+                    <div class="dropdown account-dropdown">
+                        <button class="btn btn-link dropdown-toggle" type="button" id="accountDropdownMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle me-1"></i> 
+                            
                             @if(Auth::check())
                             {{ auth()->user()->name }}
                             @elseif(Auth::guard('supplier')->check())
                             {{ Auth::guard('supplier')->user()->name }}
                             @else
-                            Log In / Register
+                            Account
                             @endif
-                        </a>
-                        <ul>
-                            <li>
-                                @if(Auth::check())
-                                    <a href="
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdownMenu">
+
+                            @if(Auth::check())
+                                <li>
+                                    <a class="dropdown-item"  href="
                                         @if(auth()->user()->is_type == '1')
                                             {{ route('admin.dashboard') }}
                                         @elseif(auth()->user()->is_type == '0')
@@ -30,205 +53,158 @@
                                     ">
                                         {{ auth()->user()->name }}
                                     </a>
+                                </li>
                                 @elseif(Auth::guard('supplier')->check())
-                                    <a href="{{ route('supplier.dashboard') }}">
+                                <li>
+                                    <a class="dropdown-item"  href="{{ route('supplier.dashboard') }}">
                                         {{ Auth::guard('supplier')->user()->name }}
                                     </a>
-                                @else
-                                    <div class="header-dropdown">
-                                        <a>
-                                            Log In / Register
-                                        </a>
-                                        <div class="header-menu">
-                                            <ul>
-                                                <li><a href="{{ route('login') }}">Log In</a></li>
-                                                <li><a href="{{ route('register') }}">Register</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                @endif
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-
-        </div>
-    </div>
-
-    <div class="header-middle">
-        <div class="container">
-            <div class="header-left">
-                <button class="mobile-menu-toggler">
-                    <span class="sr-only">Toggle mobile menu</span>
-                    <i class="icon-bars"></i>
-                </button>
-                
-                <a href="{{ route('frontend.homepage') }}" class="logo">
-                    <img src="{{ asset('images/company/' . $company->company_logo) }}" alt="{{ $company->company_name }}" width="105" height="25">
-                </a>
-            </div>
-
-            <div class="header-center">
-                <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
-                    <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
-                    <form id="search-form" class="position-relative">
-                        <div class="header-search-wrapper search-wrapper-wide">
-                            <label for="search-input" class="sr-only">Search</label>
-                            <button class="btn btn-primary search-icon" type="button" id="search-icon"><i class="icon-search"></i></button>
-                            <input type="search" class="form-control search-input" id="search-input" placeholder="Search product ..." required>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <div class="header-right">
-
-                <div class="wishlist">
-                    <a href="{{ route('wishlist.index') }}" class="wishlistBtn" title="Wishlist">
-                        <div class="icon">
-                            <i class="icon-heart-o"></i>
-                            <span class="wishlist-count badge wishlistCount">0</span>
-                        </div>
-                    </a>
-                </div>
-
-                <div class="dropdown cart-dropdown">
-                    <a href="{{ route('cart.index') }}" class="dropdown-toggle cartBtn" title="Cart">
-                        <div class="icon">
-                            <i class="icon-shopping-cart"></i>
-                            <span class="cart-count cartCount">0</span>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="header-bottom sticky-header">
-        <div class="container">
-            <div class="header-left">
-                <div class="dropdown category-dropdown">
-                <a class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" title="Browse Categories">
-                    Browse Categories <i class="icon-angle-down"></i>
-                </a>
-
-                <div class="dropdown-menu">
-                    <nav class="side-nav">
-                        <ul class="menu-vertical sf-arrows">
-                            @foreach($categories as $category)
-                                <li>
-                                    <a href="{{ route('category.show', $category->slug) }}">{{ $category->name }}</a>
-                                    @if(count($category->subcategories) > 0)
-                                        <ul>
-                                            @foreach($category->subcategories as $subcategory)
-                                                <li><a href="{{ route('subcategory.show', $subcategory->slug) }}">{{ $subcategory->name }}</a></li>
-                                            @endforeach
-                                        </ul>
-                                    @endif
                                 </li>
-                            @endforeach
+                                @else
+
+                                    <li><a class="dropdown-item" href="{{ route('login') }}"><i class="fas fa-right-to-bracket me-2"></i> Sign In</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('register') }}"><i class="fas fa-user-plus me-2"></i> Sign Up</a></li>
+
+                                                
+                                @endif
                         </ul>
-                    </nav>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="header-center">
-            <nav class="main-nav">
-                <ul class="menu sf-arrows">
-                    <li class="megamenu-container {{ request()->is('/') ? 'active' : '' }}">
-                        <a href="{{ route('frontend.homepage') }}">Home</a>
-                    </li>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm" id="main-navbar">
+        <div class="container">
+            <a class="navbar-brand fw-bolder fs-3" href="{{ route('frontend.homepage') }}">
+                <img src="{{ asset('images/company/' . $company->company_logo) }}" alt="{{ $company->company_name }}" width="105" height="25">
+            </a>
 
-                    <li class="dropdown">
-                        <a class="sf-with-ul">Products</a>
+            
 
-                        <ul>
-                            @foreach($categories as $category)
-                                @if($category->products->count() > 0)
-                                    <li>
-                                        <a href="{{ route('category.show', $category->slug) }}" class="sf-with-ul">{{ $category->name }}</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-                                        <ul>
-                                            @foreach($category->products as $product)
-                                                <li><a href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></li>
-                                            @endforeach
-                                        </ul>
-                                    </li>
-                                @endif
-                            @endforeach
+            <div class="collapse navbar-collapse" id="mainNav">
+                
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 align-items-center">
+                    <li class="nav-item mega-dropdown dropdown me-5" id="shopDropdown">
+                        <button class="btn btn-outline-dark dropdown-toggle text-dark fw-bold" type="button" id="shopMegaMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-shop me-1"></i> SHOP
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="shopMegaMenu">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
+                                        <h6 class="dropdown-header">MEN'S FASHION</h6>
+                                        <a class="dropdown-item" href="#">T-Shirts & Polos</a>
+                                        <a class="dropdown-item" href="#">Casual Shirts</a>
+                                        <a class="dropdown-item" href="#">Jeans & Trousers</a>
+                                        <a class="dropdown-item" href="#">Jackets & Hoodies</a>
+                                        <a class="dropdown-item" href="#">Sports Wear</a>
+                                    </div>
+                                    <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
+                                        <h6 class="dropdown-header">WOMEN'S WEAR</h6>
+                                        <a class="dropdown-item" href="#">Tops & Tunics</a>
+                                        <a class="dropdown-item" href="#">Dresses</a>
+                                        <a class="dropdown-item" href="#">Denim Collection</a>
+                                        <a class="dropdown-item" href="#">Winter Outerwear</a>
+                                        <a class="dropdown-item" href="#">Saree & Ethnic</a>
+                                    </div>
+                                    <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
+                                        <h6 class="dropdown-header">KIDS & BABY</h6>
+                                        <a class="dropdown-item" href="#">Boys' Apparel</a>
+                                        <a class="dropdown-item" href="#">Girls' Apparel</a>
+                                        <a class="dropdown-item" href="#">Baby Essentials</a>
+                                        <h6 class="dropdown-header mt-3">ACCESSORIES</h6>
+                                        <a class="dropdown-item" href="#">Watches & Jewelry</a>
+                                        <a class="dropdown-item" href="#">Bags & Backpacks</a>
+                                    </div>
+                                    <div class="col-lg-3 col-md-6">
+                                        <h6 class="dropdown-header">FEATURED</h6>
+                                        <img src="https://placehold.co/300x200/212529/ffffff?text=NEW+ARRIVALS" class="img-fluid rounded shadow-sm" alt="New Arrivals Promo">
+                                        <a href="#" class="btn btn-dark btn-sm mt-2 w-100">Shop New Collection</a>
+                                    </div>
+                                </div>
+                            </div>
                         </ul>
                     </li>
 
-                    <li class="{{ request()->routeIs('frontend.shop') ? 'active' : '' }}">
-                        <a href="{{ route('frontend.shop') }}">Shop</a>
-                    </li>
+                    <li class="nav-item search-container">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search Products by Titles or Tags" aria-label="Search" id="search-input">
+                            <button class="btn btn-outline-secondary" type="button"><i class="fas fa-search"></i></button>
+                        </div>
 
-                    @if (count($brands) > 0)
-                    <li class="dropdown">
-                        <a class="sf-with-ul">Brands</a>
-
-                        <ul>
-                            @foreach($brands as $brand)
-                                @if($brand->products->count() > 0)
-                                    <li>
-                                        <a class="sf-with-ul">{{ $brand->name }}</a>
-                                        <ul>
-                                            @foreach($brand->products as $product)
-                                                <li><a href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></li>
-                                            @endforeach
-                                        </ul>
-                                    </li>
-                                @endif
-                            @endforeach
-                        </ul>
-                    </li>
-                    @endif
-
-                    @if(count($sub_categories) > 0)
-                    <li class="dropdown">
-                        <a class="sf-with-ul">More Products</a>
-
-                        <ul>
-                            @foreach($sub_categories as $sub_category)
-                                @if($sub_category->products->count() > 0)
-                                    <li>
-                                        <a class="sf-with-ul">{{ $sub_category->name }}</a>
-                                        <ul>
-                                            @foreach($sub_category->products as $product)
-                                                <li><a href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></li>
-                                            @endforeach
-                                        </ul>
-                                    </li>
-                                @endif
-                            @endforeach
-                        </ul>
-                    </li>
-                    @endif
-                    
-                    <li class="{{ request()->routeIs('frontend.about') ? 'active' : '' }} d-none">
-                        <a href="{{ route('frontend.about') }}">About Us</a>
-                    </li>
-                    <li class="{{ request()->routeIs('frontend.contact') ? 'active' : '' }} d-none">
-                        <a href="{{ route('frontend.contact') }}">Contact Us</a>
+                        <!-- Search results dropdown (injected from static markup) -->
+                        <div class="search-results-dropdown rounded" id="search-results" aria-hidden="true">
+                            <a href="#" class="search-product-item">
+                                <img src="https://placehold.co/40x40/343a40/ffffff?text=JKT" class="search-product-image" alt="Denim Jacket">
+                                <div class="search-product-info">
+                                    <p>Denim Jacket <span class="badge bg-secondary ms-1">Men</span></p>
+                                    <p class="price">$45.00</p>
+                                </div>
+                            </a>
+                            <a href="#" class="search-product-item">
+                                <img src="https://placehold.co/40x40/dc3545/ffffff?text=TSH" class="search-product-image" alt="Premium T-Shirt">
+                                <div class="search-product-info">
+                                    <p>Premium Cotton T-Shirt</p>
+                                    <p class="price">$19.99</p>
+                                </div>
+                            </a>
+                            <a href="#" class="search-product-item">
+                                <img src="https://placehold.co/40x40/6c757d/ffffff?text=Bag" class="search-product-image" alt="Leather Backpack">
+                                <div class="search-product-info">
+                                    <p>Leather Backpack</p>
+                                    <p class="price">$89.50</p>
+                                </div>
+                            </a>
+                            <a href="#" class="search-product-item">
+                                <img src="https://placehold.co/40x40/0d6efd/ffffff?text=WCH" class="search-product-image" alt="Smart Watch">
+                                <div class="search-product-info">
+                                    <p>Smart Watch Series</p>
+                                    <p class="price">$120.00</p>
+                                </div>
+                            </a>
+                            <div class="dropdown-item text-center text-secondary small pt-2">Type more to refine results...</div>
+                        </div>
                     </li>
                 </ul>
-            </nav>
-        </div>
 
-        <div class="header-right d-none">
-            <i class="la la-lightbulb-o"></i><p>Clearance<span class="highlight">&nbsp;Up to 30% Off</span></p>
-        </div>
-    </div>
-    
-</header>
 
-<div class="mt-1" id="searchSection">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="row search-products align-items-center px-xl-5">
+                <div class="d-flex align-items-center ms-auto">
+                    <div class="dropdown me-3" id="wishlistDropdown">
+                        <button class="btn btn-outline-dark position-relative" type="button" aria-expanded="false" data-bs-toggle="dropdown">
+                            
+                                <i class="fas fa-heart"></i>
+                                <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle wishlistCount">0</span>
+                                
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end mini-wishlist p-0" aria-labelledby="wishlistDropdown">
+                            <li class="p-3"><h6 class="dropdown-header text-center mb-0">My Wishlist (5 Items)</h6></li>
+                            <li class="cart-item d-flex justify-content-between align-items-center"><div><p class="mb-0 fw-bold">Denim Jacket</p><small class="text-muted">In Stock</small></div><button type="button" class="btn btn-sm btn-outline-success"><i class="fas fa-cart-plus"></i></button></li>
+                            <li class="cart-item d-flex justify-content-between align-items-center"><div><p class="mb-0 fw-bold">Summer Dress</p><small class="text-muted">Low Stock</small></div><button type="button" class="btn btn-sm btn-outline-success"><i class="fas fa-cart-plus"></i></button></li>
+                            <li><hr class="dropdown-divider my-0"></li>
+                            <li class="p-3"><a href="{{ route('wishlist.index') }}" class="btn btn-outline-dark w-100 wishlistBtn">View Full Wishlist</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="dropdown" id="cartDropdown">
+                        <button class="btn btn-outline-dark position-relative " type="button" aria-expanded="false" data-bs-toggle="dropdown">
+                            
+                            <i class="fas fa-cart-shopping"></i>
+                            <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle cartCount">0</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end mini-cart p-0" aria-labelledby="cartDropdown">
+                            <li class="cart-item d-flex justify-content-between align-items-center"><div><p class="mb-0 fw-bold">Denim Jacket</p><small class="text-muted">1 x $45.00</small></div><button type="button" class="btn btn-sm btn-outline-danger"><i class="fas fa-times"></i></button></li>
+                            <li class="cart-item d-flex justify-content-between align-items-center"><div><p class="mb-0 fw-bold">Black Hoodie</p><small class="text-muted">2 x $30.00</small></div><button type="button" class="btn btn-sm btn-outline-danger"><i class="fas fa-times"></i></button></li>
+                            <li><hr class="dropdown-divider my-0"></li>
+                            <li class="p-3"><div class="d-flex justify-content-between fw-bold mb-2"><span>Total:</span><span>$105.00</span></div><a href="{{ route('cart.index') }}" class="btn btn-dark w-100 cartBtn">Checkout</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
+    </nav>

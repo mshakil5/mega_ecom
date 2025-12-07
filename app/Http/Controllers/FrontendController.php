@@ -34,145 +34,122 @@ use App\Models\StockHistory;
 use App\Models\Size;
 use App\Models\ProductReview;
 use App\Models\FaqQuestion;
+    use Illuminate\Support\Facades\Cache;
 
 class FrontendController extends Controller
 {
+    
+
+
+
     public function index()
     {
         $currency = CompanyDetails::value('currency');
-        $specialOffers = SpecialOffer::select('offer_image', 'offer_name', 'offer_title', 'slug')
-            ->where('status', 1)
-            ->whereDate('start_date', '<=', now())
-            ->whereDate('end_date', '>=', now())
-            ->latest()
-            ->get();
-        $flashSells = FlashSell::select('flash_sell_image', 'flash_sell_name', 'flash_sell_title', 'slug')
-            ->where('status', 1)
-            ->whereDate('start_date', '<=', now())
-            ->whereDate('end_date', '>=', now())
-            ->latest()
-            ->get();
-
-        $campaigns = Campaign::select('banner_image', 'title', 'slug')
-            ->whereDate('start_date', '<=', now())
-            ->whereDate('end_date', '>=', now())
-            ->latest()
-            ->get();
-        $trendingProducts = Product::where('active_status', 1)
-            ->where('is_trending', 1)
-            ->orderByDesc('id')
-            ->whereDoesntHave('specialOfferDetails')
-            ->whereDoesntHave('flashSellDetails')
-            ->with('stock', 'category')
-            ->select('id', 'name', 'feature_image', 'slug', 'price', 'category_id')
-            ->take(12)
-            ->get();
-
-        $mostViewedProducts = Product::where('active_status', 1)
-            ->where('is_recent', 1)
-            ->orderByDesc('watch')
-            ->whereDoesntHave('specialOfferDetails')
-            ->whereDoesntHave('flashSellDetails')
-            ->with('stock', 'category')
-            ->select('id', 'name', 'feature_image', 'price', 'slug', 'category_id')
-            ->take(12)
-            ->get();
-
-        $recentProducts = Product::where('active_status', 1)
-            ->where('is_recent', 1)
-            ->orderByDesc('id')
-            ->whereDoesntHave('specialOfferDetails')
-            ->whereDoesntHave('flashSellDetails')
-            ->with('stock', 'category')
-            ->select('id', 'name', 'feature_image', 'price', 'slug', 'category_id')
-            ->take(12)
-            ->get();
-
-        $newProducts = Product::where('active_status', 1)
-            ->where('is_new_arrival', 1)
-            ->orderByDesc('id')
-            ->whereDoesntHave('specialOfferDetails')
-            ->whereDoesntHave('flashSellDetails')
-            ->with('stock', 'category')
-            ->select('id', 'name', 'feature_image', 'price', 'slug', 'category_id')
-            ->take(12)
-            ->get();
-
-        $popularProducts = Product::where('active_status', 1)
-            ->where('is_popular', 1)
-            ->orderByDesc('id')
-            ->whereDoesntHave('specialOfferDetails')
-            ->whereDoesntHave('flashSellDetails')
-            ->with('stock', 'category')
-            ->select('id', 'name', 'feature_image', 'price', 'slug', 'category_id')
-            ->take(12)
-            ->get();
-
-        $featuredProducts = Product::where('active_status', 1)
-            ->where('is_featured', 1)
-            ->orderByDesc('id')
-            ->whereDoesntHave('specialOfferDetails')
-            ->whereDoesntHave('flashSellDetails')
-            ->with('stock', 'category')
-            ->select('id', 'name', 'feature_image', 'price', 'slug', 'category_id')
-            ->take(12)
-            ->get();
-
-        // $buyOneGetOneProducts = BuyOneGetOne::where('status', 1)
-        //     ->with(['product' => function($query) {
-        //         $query->select('id', 'name', 'feature_image', 'price', 'slug');
-        //     }])
-        //     ->get()
-        //     ->map(function($bogo) {
-        //         $bogo->get_products_count = Product::whereIn('id', json_decode($bogo->get_product_ids))->count();
-        //         return $bogo;
-        //     });
-
-        $bundleProducts = BundleProduct::select('id', 'name', 'feature_image', 'price', 'slug', 'product_ids')
-            ->get()
-            ->map(function($bundle) {
-                $bundle->product_ids_count = json_decode($bundle->product_ids, true) ? count(json_decode($bundle->product_ids, true)) : 0;
-                return $bundle;
-            });
-
         $section_status = SectionStatus::first();
-        $advertisements = Ad::where('status', 1)->select('type', 'link', 'image')->get();
 
-        $suppliers = Supplier::where('status', 1)
-                        ->orderBy('id', 'desc')
-                        ->select('id', 'name', 'image', 'slug')
-                        ->get();
+        $specialOffers = Cache::remember('home_special_offers', 600, function () {
+            return SpecialOffer::select('offer_image', 'offer_name', 'offer_title', 'slug')
+                ->where('status', 1)
+                ->whereDate('start_date', '<=', now())
+                ->whereDate('end_date', '>=', now())
+                ->latest()
+                ->get();
+        });
 
-        $sliders = Slider::orderBy('id', 'asc')
-                 ->where('status', 1)
-                 ->select('title', 'sub_title', 'image', 'link')
-                 ->get();
+        $flashSells = Cache::remember('home_flash_sells', 600, function () {
+            return FlashSell::select('flash_sell_image', 'flash_sell_name', 'flash_sell_title', 'slug')
+                ->where('status', 1)
+                ->whereDate('start_date', '<=', now())
+                ->whereDate('end_date', '>=', now())
+                ->latest()
+                ->get();
+        });
 
-        $categories = Category::where('status', 1)
-            ->with(['products' => function ($query) {
-                $query->where('active_status', 1)
-                      ->select('id', 'category_id', 'name', 'price', 'slug', 'feature_image', 'watch')
-                      ->orderBy('watch', 'desc')
-                      ->with('stock');
-            }])
-            ->select('id', 'name', 'image', 'slug')
-            ->orderBy('id', 'asc')
-            ->get()
-            ->each(function ($category) {
-                $category->setRelation('products', $category->products->take(6));
-            });
+        $campaigns = Cache::remember('home_campaigns', 600, function () {
+            return Campaign::select('banner_image', 'title', 'slug')
+                ->whereDate('start_date', '<=', now())
+                ->whereDate('end_date', '>=', now())
+                ->latest()
+                ->get();
+        });
 
-        $companyDesign = CompanyDetails::value('design');
+        $getProducts = function ($flagColumn, $orderByColumn = 'id') {
+            return Product::active()
+                ->where($flagColumn, 1)
+                ->withoutOffers()
+                ->commonSelect()
+                ->orderByDesc($orderByColumn)
+                ->take(7)
+                ->get();
+        };
 
-        if (in_array($companyDesign, ['2', '3', '4'])) {
-            return view('frontend.index2', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns', 'mostViewedProducts', 'newProducts', 'popularProducts', 'featuredProducts'));
-        } elseif ($companyDesign == '5') {
-            return view('frontend.index5', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns', 'mostViewedProducts', 'newProducts', 'popularProducts', 'featuredProducts'));
-        } else {
-            return view('frontend.index', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts', 'bundleProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'campaigns', 'mostViewedProducts', 'newProducts', 'popularProducts', 'featuredProducts'));
-        }
+        $trendingProducts     = Cache::remember('home_trending_products', 600, fn() => $getProducts('is_trending'));
+        $recentProducts       = Cache::remember('home_recent_products', 600, fn() => $getProducts('is_recent', 'id'));
+        $mostViewedProducts   = Cache::remember('home_most_viewed_products', 600, fn() => $getProducts('is_recent', 'watch'));
+        $newProducts          = Cache::remember('home_new_products', 600, fn() => $getProducts('is_new_arrival'));
+        $popularProducts      = Cache::remember('home_popular_products', 600, fn() => $getProducts('is_popular'));
+        $featuredProducts     = Cache::remember('home_featured_products', 600, fn() => $getProducts('is_featured'));
 
+        $sliders = Cache::remember('home_sliders', 600, function () {
+            return Slider::where('status', 1)
+                ->orderBy('id', 'asc')
+                ->select('title', 'sub_title', 'image', 'link')
+                ->get();
+        });
+
+        $advertisements = Cache::remember('home_ads', 600, function () {
+            return Ad::where('status', 1)
+                ->select('type', 'link', 'image')
+                ->get();
+        });
+
+        $categories = Cache::remember('home_categories', 600, function () {
+            return Category::where('status', 1)
+                ->select('id', 'name', 'image', 'slug')
+                ->orderBy('id')
+                ->with(['products' => function ($query) {
+                    $query->active()
+                        ->withoutOffers()
+                        ->select('id', 'category_id', 'name', 'price', 'slug', 'feature_image', 'watch')
+                        ->orderByDesc('watch')
+                        ->with('stock')
+                        ->take(6);
+                }])
+                ->get();
+        });
+
+
+        return view('frontend.index', compact(
+            'currency',
+            'specialOffers',
+            'flashSells',
+            'campaigns',
+            'trendingProducts',
+            'recentProducts',
+            'mostViewedProducts',
+            'newProducts',
+            'popularProducts',
+            'featuredProducts',
+            'section_status',
+            'advertisements',
+            'sliders',
+            'categories'
+        ));
     }
+
+    public function index2() { 
+
+        $currency = CompanyDetails::value('currency'); $specialOffers = SpecialOffer::select('offer_image', 'offer_name', 'offer_title', 'slug') ->where('status', 1) ->whereDate('start_date', '<=', now()) ->whereDate('end_date', '>=', now()) ->latest() ->get(); $flashSells = FlashSell::select('flash_sell_image', 'flash_sell_name', 'flash_sell_title', 'slug') ->where('status', 1) ->whereDate('start_date', '<=', now()) ->whereDate('end_date', '>=', now()) ->latest() ->get(); $campaigns = Campaign::select('banner_image', 'title', 'slug') ->whereDate('start_date', '<=', now()) ->whereDate('end_date', '>=', now()) ->latest() ->get(); $trendingProducts = Product::where('active_status', 1) ->where('is_trending', 1) ->orderByDesc('id') ->whereDoesntHave('specialOfferDetails') ->whereDoesntHave('flashSellDetails') ->with('stock', 'category') ->select('id', 'name', 'feature_image', 'slug', 'price', 'category_id') ->take(12) ->get(); $mostViewedProducts = Product::where('active_status', 1) ->where('is_recent', 1) ->orderByDesc('watch') ->whereDoesntHave('specialOfferDetails') ->whereDoesntHave('flashSellDetails') ->with('stock', 'category') ->select('id', 'name', 'feature_image', 'price', 'slug', 'category_id') ->take(12) ->get(); 
+
+        $recentProducts = Product::where('active_status', 1) ->where('is_recent', 1) ->orderByDesc('id')->with('stock', 'category') ->select('id', 'name', 'feature_image', 'price', 'slug', 'category_id')->count(); 
+
+        dd( $recentProducts );
+        
+        $newProducts = Product::where('active_status', 1) ->where('is_new_arrival', 1) ->orderByDesc('id') ->whereDoesntHave('specialOfferDetails') ->whereDoesntHave('flashSellDetails') ->with('stock', 'category') ->select('id', 'name', 'feature_image', 'price', 'slug', 'category_id') ->take(12) ->get(); $popularProducts = Product::where('active_status', 1) ->where('is_popular', 1) ->orderByDesc('id') ->whereDoesntHave('specialOfferDetails') ->whereDoesntHave('flashSellDetails') ->with('stock', 'category') ->select('id', 'name', 'feature_image', 'price', 'slug', 'category_id') ->take(12) ->get(); $featuredProducts = Product::where('active_status', 1) ->where('is_featured', 1) ->orderByDesc('id') ->whereDoesntHave('specialOfferDetails') ->whereDoesntHave('flashSellDetails') ->with('stock', 'category') ->select('id', 'name', 'feature_image', 'price', 'slug', 'category_id') ->take(12) ->get(); $section_status = SectionStatus::first(); $advertisements = Ad::where('status', 1)->select('type', 'link', 'image')->get(); $sliders = Slider::orderBy('id', 'asc') ->where('status', 1) ->select('title', 'sub_title', 'image', 'link') ->get(); $categories = Category::where('status', 1) ->with(['products' => function ($query) { $query->where('active_status', 1) ->select('id', 'category_id', 'name', 'price', 'slug', 'feature_image', 'watch') ->orderBy('watch', 'desc') ->with('stock'); }]) ->select('id', 'name', 'image', 'slug') ->orderBy('id', 'asc') ->get() ->each(function ($category) { $category->setRelation('products', $category->products->take(6)); }); return view('frontend.index', compact('specialOffers', 'flashSells', 'trendingProducts', 'currency', 'recentProducts',  'section_status', 'advertisements', 'sliders', 'categories', 'campaigns', 'mostViewedProducts', 'newProducts', 'popularProducts', 'featuredProducts')); 
+    }
+
+
+
 
     public function getCategoryProducts(Request $request)
     {
