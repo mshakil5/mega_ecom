@@ -244,6 +244,11 @@ class Product extends Model
                     ->with('stock', 'category');
     }
 
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class);
+    }
+
 
     
 }

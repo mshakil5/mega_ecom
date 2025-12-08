@@ -130,7 +130,7 @@ $(function () {
             let qty = parseInt($(this).val());
             if (qty > 0) {
                 sizes.push({
-                    size_id: $(this).data('variant-id'),  // FIXED
+                    stock_id: $(this).data('variant-id'),  // FIXED
                     size: $(this).data('size'),
                     ean: $(this).data('ean') || null,
                     quantity: qty

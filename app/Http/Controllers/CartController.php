@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Color;
+use App\Models\Guideline;
 use App\Models\Product;
+use App\Models\ProductSize;
 use App\Models\Size;
+use App\Models\Stock;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
@@ -26,20 +30,11 @@ class CartController extends Controller
         if (!is_array($cart)) $cart = [];
 
         foreach ($request->sizes as $size) {
-            $key = $request->product_id . '_' . ($request->color_id ?? 0) . '_' . $size['size_id'];
+            $sizeName = Stock::where('id', $size['stock_id'])->first();
+            $key = $request->product_id . '_' . ($request->color_id ?? 0) . '_' . $sizeName->size . '_' . $size['stock_id'];
 
             // $product = Product::findOrFail($request->color_id);
             $product = Product::findOrFail($request->product_id);
-
-
-            // $productImage = $product->images()
-            // ->where([
-            //     ['image_type', '=', 'front'],
-            //     ['color_id', '=', $request->color_id],
-            // ])
-            // ->latest('id')
-            // ->value('image_path') ?? $request->product_image;
-
 
 
             if(isset($cart[$key]) && is_array($cart[$key])) {
@@ -48,7 +43,8 @@ class CartController extends Controller
                 $cart[$key] = [
                     'product_id' => $request->product_id,
                     'color_id' => $request->color_id,
-                    'size_id' => $size['size_id'],
+                    'sizeName' => $sizeName->size,
+                    'stock_id' => $size['stock_id'],
                     'quantity' => $size['quantity'],
                     'product_name' => $request->product_name,
                     'product_image' => $request->product_image ?? null,
@@ -72,17 +68,16 @@ class CartController extends Controller
         $productId = intval(base64_decode($encodedId));
         $cart = session()->get('cart', []);
 
-        dd($cart);
 
         // Group by size_id for this product
         $sizeWiseData = collect($cart)
             ->where('product_id', (string)$productId)
-            ->groupBy('size_id')
+            ->groupBy('stock_id')
             ->map(function ($items, $sizeId) {
-                $sizeName = Size::find($sizeId)?->name ?? 'N/A';
+                $sizeName = Stock::find($sizeId)?->size ?? 'N/A';
                 $qty = collect($items)->sum('quantity');
                 return [
-                    'size_id' => $sizeId,
+                    'stock_id' => $sizeId,
                     'size_name' => $sizeName,
                     'quantity' => $qty,
                 ];
@@ -90,18 +85,13 @@ class CartController extends Controller
             ->values()
             ->toArray();
 
+
         // Total qty
         $totalQty = collect($sizeWiseData)->sum('quantity');
 
         $product = Product::with(['colors'])->findOrFail($productId);
-        $sizes = collect($cart)
-            ->where('product_id', (string)$productId)
-            ->pluck('size_id')
-            ->unique()
-            ->values()
-            ->toArray();
 
-        $sizeNames = Size::whereIn('id', $sizes)->pluck('name')->toArray();
+
 
         $colors = collect($cart)
             ->where('product_id', (string)$productId)
@@ -110,19 +100,18 @@ class CartController extends Controller
             ->values()
             ->toArray();
 
+
         // get first color id
         $firstColorId = $colors[0] ?? null;
 
         $colorName = null;
 
         if ($firstColorId) {
-            $colorName = Color::where('id', $firstColorId)->value('name');
+            $colorName = Color::where('id', $firstColorId)->value('color');
         }
 
 
-        $totalQty = collect($cart)
-        ->where('product_id', (string)$productId)
-        ->sum(function($item) { return (int)$item['quantity']; });
+
         $guidelines = Guideline::latest()->get();
 
 

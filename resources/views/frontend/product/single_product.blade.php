@@ -81,7 +81,7 @@
                             // robust color id resolution: prefer related color model id, fallback to pivot id or index
                             $colorId = $c->color->id ?? $c->id ?? $index;
                             $colorName  = $c->color->color ?? 'N/A';
-                            $colorCode  = $c->color->color_code ?? '#ccc';
+                            $colorCode  = $c->color->color_code ?? 'N/A';
                             $colorImage = $c->image ? asset($c->image) : null;
                         @endphp
 
