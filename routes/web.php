@@ -13,7 +13,8 @@ use App\Http\Controllers\Supplier\SupplierController;
 use App\Http\Controllers\Supplier\StockController;
 use App\Http\Controllers\Supplier\CampaignController;
 use App\Http\Controllers\Auth\LoginController;
-  
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CustomiserController;
 
 // cache clear
 Route::get('/clear', function() {
@@ -126,6 +127,17 @@ Route::get('/suppliers-shop/{slug}', [FrontendController::class, 'supplierPage']
 
 Route::post('/get-sizes', [FrontendController::class, 'getSizes'])->name('get-sizes');
 Route::post('/get-types', [FrontendController::class, 'getTypes']);
+
+
+Route::get('/cart/count', [CartController::class, 'getCount'])->name('cart.getCount');
+Route::post('/cart/add-session', [CartController::class, 'addToSession'])->name('cart.addSession');
+
+
+// product customization start
+Route::get('/customize', [CartController::class, 'customize'])->name('customize.index');
+Route::post('/customiser/add-to-session', [CustomiserController::class, 'addToSession'])
+    ->name('customiser.add_to_session');
+// product customization end
 
 // Search supplier products
 Route::get('/search/supplier-products', [FrontendController::class, 'searchSupplierProducts'])->name('search.supplier.products');

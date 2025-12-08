@@ -78,28 +78,41 @@
                 <div class="color-options">
                     @foreach ($product->colors as $index => $c)
                         @php
+                            // robust color id resolution: prefer related color model id, fallback to pivot id or index
+                            $colorId = $c->color->id ?? $c->id ?? $index;
                             $colorName  = $c->color->color ?? 'N/A';
                             $colorCode  = $c->color->color_code ?? '#ccc';
                             $colorImage = $c->image ? asset($c->image) : null;
                         @endphp
 
+                        {{-- radio input (name="color" — single choice) --}}
+                        <input type="radio"
+                            name="color"
+                            id="color-{{ $colorId }}"
+                            value="{{ $colorId }}"
+                            class="d-none color-radio">
+
+                            {{-- <input type="radio" name="color" class="d-none color-radio" value="{{ $c->id }}"> --}}
+
+
+                        {{-- button controlling selection (keeps same look) --}}
                         <button type="button"
                                 class="color-option"
-                                data-color="{{ $colorName }}"
+                                data-color-id="{{ $colorId }}"
                                 data-image="{{ $colorImage }}"
-                                onclick="selectColor(this)"
-                        >
-                            {{-- If image exists, show image --}}
+                                data-color-name="{{ $colorName }}"
+                                onclick="selectColor(this, 'color-{{ $colorId }}')">
+
                             @if ($colorImage)
                                 <img src="{{ $colorImage }}" alt="{{ $colorName }}">
                             @else
-                                {{-- Otherwise show color swatch --}}
                                 <span class="color-swatch" style="background-color: {{ $colorCode }}"></span>
                             @endif
 
                             <span class="color-label">{{ $colorName }}</span>
                         </button>
                     @endforeach
+
                 </div>
             </div>
 
@@ -130,9 +143,9 @@
                                     value="0"
                                     min="0"
                                     class="qty-input"
-                                    data-slug="{{ $product->slug }}"
                                     data-size="{{ $size }}"
                                     data-ean="{{ $variant->ean ?? '' }}"
+                                    data-variant-id="{{ $variant->id }}"
                                 >
 
                                 <button type="button" class="minus-btn">−</button>
@@ -181,20 +194,6 @@
 @section('script')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
 
-<script>
-    document.querySelectorAll('.plus-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const input = btn.nextElementSibling;
-            input.value = parseInt(input.value || 0) + 1;
-        });
-    });
-    document.querySelectorAll('.minus-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const input = btn.previousElementSibling;
-            if (parseInt(input.value) > 0) input.value = parseInt(input.value) - 1;
-        });
-    });
-</script>
 <script>
 $(document).ready(function () {
 
@@ -274,9 +273,9 @@ $(document).ready(function () {
 
 });
 </script>
-
 <script>
-    function selectColor(element, radioId, hasImage = true) {
+    function selectColor(element, radioId = null, hasImage = true) {
+
         document.querySelectorAll('.color-option').forEach(option => {
             option.classList.remove('active');
         });
@@ -285,14 +284,19 @@ $(document).ready(function () {
 
         if (hasImage) {
             const newImage = element.getAttribute('data-image');
-            document.querySelector('.product-main-image img').src = newImage;
+            const mainImage = document.getElementById('main-product-image');
+
+            if (mainImage && newImage) {
+                mainImage.src = newImage;
+            }
         }
 
-        const radioButton = document.getElementById(radioId);
-        if (radioButton) {
-            radioButton.checked = true;
+        if (radioId) {
+            const radioButton = document.getElementById(radioId);
+            if (radioButton) radioButton.checked = true;
         }
     }
 </script>
+
 
 @endsection
