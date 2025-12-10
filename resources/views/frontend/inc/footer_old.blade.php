@@ -24,8 +24,8 @@
                             <li><a href="{{ route('frontend.shop') }}">Our Shop</a></li>
                             <li><a href="{{ route('frontend.about') }}">About Us</a></li>                        
                             <li><a href="{{ route('frontend.contact') }}">Contact us</a></li>
-                            <li><a href="{{ route('frontend.privacy-policy') }}">Privacy</a></li>
-                            <li><a href="{{ route('frontend.terms-and-conditions') }}">Terms & Conditions</a></li>
+                            <li><a href="{{ route('privacy-policy') }}">Privacy</a></li>
+                            <li><a href="{{ route('terms-and-conditions') }}">Terms & Conditions</a></li>
                             <li><a href="{{ route('frontend.faq') }}">FAQ</a></li>
                         </ul>
                     </div>

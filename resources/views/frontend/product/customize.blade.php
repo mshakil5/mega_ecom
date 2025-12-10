@@ -1336,9 +1336,11 @@
                     },
                     success(resp) {
 
+                        // console.log(resp);
+
                         if (resp && resp.success) {
                             if (shippingAction === 'checkout') {
-                                window.location.href = '{{ route("checkout.store") }}';
+                                window.location.href = '{{ route("checkout") }}';
                             } else {
                                 window.location.href = '{{ route("frontend.homepage") }}'; 
                             }

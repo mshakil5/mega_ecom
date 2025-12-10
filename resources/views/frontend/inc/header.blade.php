@@ -1,15 +1,4 @@
 
-{{-- <div class="mt-1" id="searchSection">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="row search-products align-items-center px-xl-5">
-            </div>
-        </div>
-    </div>
-</div> --}}
-
-
-
 
     <!-- Top small bar (hidden on small screens) -->
     <div class="top-bar bg-dark text-white d-none d-lg-block">
@@ -191,19 +180,70 @@
                         </ul>
                     </div>
 
-                    <div class="dropdown" id="cartDropdown">
+                    {{-- <div class="dropdown" id="cartDropdown">
                         <button class="btn btn-outline-dark position-relative " type="button" aria-expanded="false" data-bs-toggle="dropdown">
                             
                             <i class="fas fa-cart-shopping"></i>
                             <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle cartCount">0</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end mini-cart p-0" aria-labelledby="cartDropdown">
-                            <li class="cart-item d-flex justify-content-between align-items-center"><div><p class="mb-0 fw-bold">Denim Jacket</p><small class="text-muted">1 x $45.00</small></div><button type="button" class="btn btn-sm btn-outline-danger"><i class="fas fa-times"></i></button></li>
-                            <li class="cart-item d-flex justify-content-between align-items-center"><div><p class="mb-0 fw-bold">Black Hoodie</p><small class="text-muted">2 x $30.00</small></div><button type="button" class="btn btn-sm btn-outline-danger"><i class="fas fa-times"></i></button></li>
+
+                            <li class="cart-item d-flex justify-content-between align-items-center"><div><p class="mb-0 fw-bold">Denim Jacket</p><small class="text-muted">1 x £45.00</small></div><button type="button" class="btn btn-sm btn-outline-danger"><i class="fas fa-times"></i></button></li>
+
+                            <li class="cart-item d-flex justify-content-between align-items-center"><div><p class="mb-0 fw-bold">Black Hoodie</p><small class="text-muted">2 x £30.00</small></div><button type="button" class="btn btn-sm btn-outline-danger"><i class="fas fa-times"></i></button></li>
+
                             <li><hr class="dropdown-divider my-0"></li>
-                            <li class="p-3"><div class="d-flex justify-content-between fw-bold mb-2"><span>Total:</span><span>$105.00</span></div><a href="{{ route('cart.index') }}" class="btn btn-dark w-100 cartBtn">Checkout</a></li>
+
+                            <li class="p-3"><div class="d-flex justify-content-between fw-bold mb-2"><span>Total:</span><span>£105.00</span></div><a href="{{ route('cart.index') }}" class="btn btn-dark w-100 cartBtn">Checkout</a></li>
+
                         </ul>
+                    </div> --}}
+
+                    <div class="dropdown" id="cartDropdown">
+                        <button 
+                            class="btn btn-outline-dark position-relative"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+
+                            <i class="fas fa-cart-shopping"></i>
+
+                            <!-- Cart Count -->
+                            <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle cartCount">
+                                0
+                            </span>
+                        </button>
+
+                        <ul class="dropdown-menu dropdown-menu-end mini-cart p-0" aria-labelledby="cartDropdown">
+
+                            <!-- Dynamic items wrapper -->
+                            <div id="miniCartItems"></div>
+
+                            <!-- Empty Message -->
+                            <li class="p-3 text-center text-muted" id="emptyCartMsg">
+                                Cart is empty.
+                            </li>
+
+                            <!-- Divider -->
+                            <li><hr class="dropdown-divider my-0 d-none" id="miniCartDivider"></li>
+
+                            <!-- Footer -->
+                            <li class="p-3 d-none" id="miniCartFooter">
+                                <div class="d-flex justify-content-between fw-bold mb-2">
+                                    <span>Total:</span>
+                                    <span id="miniCartTotal">£0.00</span>
+                                </div>
+                                <a href="{{ route('cart.index') }}" class="btn btn-dark w-100 cartBtn">Checkout</a>
+                            </li>
+
+                        </ul>
+
+
+
+
+
                     </div>
+
                 </div>
             </div>
         </div>

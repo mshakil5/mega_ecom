@@ -14,6 +14,7 @@ use App\Http\Controllers\Supplier\StockController;
 use App\Http\Controllers\Supplier\CampaignController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CustomiserController;
 
 // cache clear
@@ -89,8 +90,8 @@ Route::get('/shop', [FrontendController::class, 'shop'])->name('frontend.shop');
 
 Route::get('/about-us', [FrontendController::class, 'aboutUs'])->name('frontend.about');
 
-Route::get('/privacy-policy', [FrontendController::class, 'privacyPolicy'])->name('frontend.privacy-policy');
-Route::get('/terms-and-conditions', [FrontendController::class, 'termsAndConditions'])->name('frontend.terms-and-conditions');
+Route::get('/privacy-policy', [FrontendController::class, 'privacyPolicy'])->name('privacy-policy');
+Route::get('/terms-and-conditions', [FrontendController::class, 'termsAndConditions'])->name('terms-and-conditions');
 Route::get('/faq', [FrontendController::class, 'faq'])->name('frontend.faq');
 
 Route::get('/contact', [FrontendController::class, 'contact'])->name('frontend.contact');
@@ -131,6 +132,16 @@ Route::post('/get-types', [FrontendController::class, 'getTypes']);
 
 Route::get('/cart/count', [CartController::class, 'getCount'])->name('cart.getCount');
 Route::post('/cart/add-session', [CartController::class, 'addToSession'])->name('cart.addSession');
+
+Route::get('/cart/session-data', function () {
+    return response()->json([
+        'cart' => session()->get('cart', [])
+    ]);
+})->name('cart.sessionData');
+
+
+Route::get('/checkout', [CheckoutController::class, 'checkout'])->name('checkout');
+
 
 
 // product customization start

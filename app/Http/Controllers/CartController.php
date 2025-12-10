@@ -9,6 +9,7 @@ use App\Models\ProductSize;
 use App\Models\Size;
 use App\Models\Stock;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 
 class CartController extends Controller
 {
@@ -36,6 +37,8 @@ class CartController extends Controller
             // $product = Product::findOrFail($request->color_id);
             $product = Product::findOrFail($request->product_id);
 
+            $imgLink = URL::to('images/products/' . $product->feature_image);
+
 
             if(isset($cart[$key]) && is_array($cart[$key])) {
                 $cart[$key]['quantity'] += $size['quantity'];
@@ -44,10 +47,12 @@ class CartController extends Controller
                     'product_id' => $request->product_id,
                     'color_id' => $request->color_id,
                     'sizeName' => $sizeName->size,
+                    'selling_price' => $sizeName->selling_price,
                     'stock_id' => $size['stock_id'],
                     'quantity' => $size['quantity'],
                     'product_name' => $request->product_name,
                     'product_image' => $request->product_image ?? null,
+                    'product_image_link' => $imgLink ?? null,
                     'ean' => $size['ean'] ?? null
                 ];
             }
@@ -66,7 +71,9 @@ class CartController extends Controller
     {
         $encodedId = $request->query('product');
         $productId = intval(base64_decode($encodedId));
+
         $cart = session()->get('cart', []);
+        
 
 
         // Group by size_id for this product

@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class CustomiserController extends Controller
 {
-        public function addToSession(Request $request)
+    public function addToSession(Request $request)
     {
         $data = $request->all();
 

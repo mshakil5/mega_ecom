@@ -1,697 +1,919 @@
 @extends('frontend.layouts.app')
 
 @section('content')
+    @php
+        $company = App\Models\CompanyDetails::first();
+        $vatPercent = $company->vat_percent ?? 20;
+        $currency = $currency ?? '£';
+    @endphp
 
-<style>
-    .option-container {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-top: 20px;
-    }
-    .option {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 15px;
-        border-radius: 5px;
-        border: 1px solid #ddd;
-        cursor: pointer;
-        width: 100%;
-    }
-    .option div {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        width: 100%;
-    }
-    .option i {
-        font-size: 24px;
-        color: red;
-    }
-    .option.selected {
-        background-color: #e9f2ff;
-        border-color: #007bff;
-    }
-    .error {
-        display: block;
-        font-size: 14px;
-        margin-top: 5px;
-    }
-    .form-control.is-invalid {
-        border-color: #dc3545;
-    }
-    label.is-invalid {
-        border-color: #dc3545;
-    }
-</style>
+    <style>
+        .checkout-container {
+            text-align: center;
+            margin-top: 20px;
+        }
 
-<div class="page-content">
-    <div class="checkout">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8" style="border: #d7d7d7 dashed 1px;">
-                    <div id="alertContainer"></div>
+        .checkout-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
 
-                    <h4 class="mt-2 p-2">Delivery Options</h4>
-                    
-                    <!-- Delivery Options -->
-                    <div class="option-container" id="delivery-options">
-                        <label class="option selected" id="delivery-ship" onclick="showSection('ship', this)">
+        .checkout-buttons button {
+            border: 1px solid #80808040;
+            padding: 10px 12px;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 150px;
+        }
+
+        .customRadioButton {
+            height: 25px;
+            width: 25px;
+        }
+
+        @media (max-width: 767px) {
+            .customRadioButton {
+                height: 20px !important;
+                width: 20px !important;
+            }
+
+            .option {
+                padding: 5px !important;
+            }
+        }
+
+        .option-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .option div {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .option i {
+            font-size: 24px;
+            color: #007bff;
+        }
+
+        .option.selected {
+            background-color: #e9f2ff;
+            border-color: #007bff;
+        }
+
+        .accordion-button:not(.collapsed),
+        .accordion-button:focus {
+            outline: none;
+            border-color: transparent;
+            box-shadow: none;
+            background-color: transparent;
+        }
+
+        .accordion-button::after {
+            width: 11px;
+            height: 11px;
+            border-radius: 100%;
+            background-color: var(--bs-danger);
+            background-image: none !important;
+        }
+
+        .accordion-button.collapsed::after {
+            background-color: var(--bs-gray-300);
+        }
+
+        .error {
+            display: block;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .form-control.is-invalid {
+            border-color: #dc3545;
+        }
+
+        #loader {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 99;
+            display: none;
+        }
+
+        #loader .spinner-border {
+            width: 5rem;
+            height: 5rem;
+            border-width: 0.5rem;
+        }
+
+        .option-container.is-invalid {
+            border: 2px solid #dc3545;
+            border-radius: 5px;
+        }
+
+        .summary-card {
+            border: 1px solid #e6e6e6;
+            padding: 18px;
+            border-radius: 10px;
+            background: #fff;
+            position: sticky;
+            top: 18px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #f2f2f2;
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .checkout-btn-main {
+            display: block;
+            width: 100%;
+            background: #1E2D7D;
+            color: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 700;
+            text-decoration: none;
+            margin-top: 12px;
+            border: none;
+        }
+
+        .product-thumb {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #eee;
+        }
+
+        .customization-list {
+            margin-top: 8px;
+            padding-left: 14px;
+            font-size: 13px;
+            color: #444;
+        }
+
+        .custom-preview {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            margin-top: 6px;
+            padding: 6px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .custom-preview img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            border-radius: 4px;
+            border: 1px solid #eee;
+        }
+    </style>
+
+    <div class="container checkout-page py-4">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="summary-card">
+                    <div class="option-container mb-4">
+                        <h2 class="checkout-title">Delivery</h2>
+                        <label class="option selected" id="delivery-pickup" onclick="showSection('pickup', this)" >
                             <div>
                                 <input type="radio" name="shipping" class="customRadioButton" style="width: 7%" checked>
-                                <span>Ship to Address</span>
-                            </div>
-                            <i class="fa fa-truck px-4" style="font-size: 24px; color: red; margin-left: auto;"></i>
-                        </label>
-                        <label class="option d-none" id="delivery-pickup" onclick="showSection('pickup', this)">
-                            <div>
-                                <input type="radio" name="shipping" class="customRadioButton" style="width: 7%">
                                 <span>Pickup In Store</span>
                             </div>
-                            <i class="fa fa-home px-4" style="font-size: 24px; color: red; margin-left: auto;"></i>
+                            <i class="fa fa-home px-4" style="font-size: 24px; color: #000000; margin-left: auto;"></i>
                         </label>
-                        <span class="error text-danger" id="shipping-error"></span>
+                        <label class="option d-none" id="delivery-ship" onclick="showSection('ship', this)">
+                            <div>
+                                <input type="radio" name="shipping" class="customRadioButton" style="width: 7%" >
+                                <span>Ship</span>
+                            </div>
+                            <i class="fa fa-truck px-4" style="font-size: 24px; color: #000000; margin-left: auto;"></i>
+                        </label>
+                        <span class="error text-danger" id="shipping-error" style="display: none;">Please select a delivery
+                            option.</span>
                     </div>
 
                     <input type="hidden" id="shippingMethod" name="shippingMethod" value="0">
 
-                    <!-- Shipping Address -->
-                    <div id="shippingDetails">
-                        <h4 class="mt-3 p-2">Shipping Address</h4>
+                    <div id="shippingDetails" class="mt-2">
+                        <h2 class="checkout-title">Delivery Address</h2>
                         <div class="row">
                             <div class="col-md-6 form-group">
-                                <label>First Name<span style="color: red;">*</span></label>
-                                <input class="form-control" id="first_name" type="text" placeholder="" value="{{ Auth::user()->name ?? '' }}" required>
+                                <label>Full Name (Required)</label>
+                                <input class="form-control" id="first_name" type="text" placeholder="" maxlength="64"
+                                    value="{{ Auth::user()->name ?? '' }}">
                                 <span class="error text-danger" id="first_name-error"></span>
                             </div>
                             <div class="col-md-6 form-group">
-                                <label>Last Name<span style="color: red;">*</span></label>
-                                <input class="form-control" id="last_name" type="text" placeholder="" value="{{ Auth::user()->surname ?? '' }}">
-                                <span class="error text-danger" id="last_name-error"></span>
+                                <label>Company Name</label>
+                                <input class="form-control" id="company_name" type="text" placeholder=""
+                                    value="{{ Auth::user()->company_name ?? '' }}">
                             </div>
-                            <div class="col-md-6 form-group">
-                                <label>Email<span style="color: red;">*</span></label>
-                                <input class="form-control" id="email" type="email" placeholder="" value="{{ Auth::user()->email ?? '' }}">
+                            <div class="col-md-12 form-group">
+                                <label>Email (Required)</label>
+                                <input type="email" id="email" name="email" class="form-control" placeholder=""
+                                    value="{{ Auth::user()->email ?? '' }}">
                                 <span class="error text-danger" id="email-error"></span>
                             </div>
                             <div class="col-md-6 form-group">
-                                <label>Phone<span style="color: red;">*</span></label>
-                                <input class="form-control" id="phone" type="text" placeholder="" value="{{ Auth::user()->phone ?? '' }}">
+                                <label>Phone (Required)</label>
+                                <input class="form-control" id="phone" type="tel" placeholder="" maxlength="15"
+                                    value="{{ Auth::user()->phone ?? '' }}">
                                 <span class="error text-danger" id="phone-error"></span>
                             </div>
                             <div class="col-md-6 form-group">
-                                <label>House Number<span style="color: red;">*</span></label>
-                                <input class="form-control" type="text" placeholder="" id="house_number" value="{{ Auth::user()->house_number ?? '' }}">
-                                <span class="error text-danger" id="house_number-error"></span>
+                                <label>Address Line 1 (Required)</label>
+                                <input class="form-control" type="text" placeholder="" id="address_first_line"
+                                    maxlength="128" minlength="3" value="{{ Auth::user()->address_first_line ?? '' }}">
+                                <span class="error text-danger" id="address_first_line-error"></span>
                             </div>
                             <div class="col-md-6 form-group">
-                                <label>Street Name<span style="color: red;">*</span></label>
-                                <input class="form-control" type="text" placeholder="" id="street_name" value="{{ Auth::user()->street_name ?? '' }}">
-                                <span class="error text-danger" id="street_name-error"></span>
+                                <label>Address Line 2</label>
+                                <input class="form-control" type="text" placeholder="" id="address_second_line"
+                                    value="{{ Auth::user()->address_second_line ?? '' }}">
                             </div>
                             <div class="col-md-6 form-group">
-                                <label>Town<span style="color: red;">*</span></label>
-                                <input class="form-control" type="text" placeholder="" id="town" value="{{ Auth::user()->town ?? '' }}">
-                                <span class="error text-danger" id="town-error"></span>
+                                <label>Address Line 3</label>
+                                <input class="form-control" type="text" placeholder="" id="address_third_line"
+                                    value="{{ Auth::user()->address_third_line ?? '' }}">
                             </div>
                             <div class="col-md-6 form-group">
-                                <label>Postcode<span style="color: red;">*</span></label>
-                                <input class="form-control" type="text" placeholder="" id="postcode" value="{{ Auth::user()->postcode ?? '' }}">
+                                <label>City (Required)</label>
+                                <input class="form-control" type="text" placeholder="" id="city" maxlength="128"
+                                    value="{{ Auth::user()->city ?? '' }}">
+                                <span class="error text-danger" id="city-error"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Postcode (Required)</label>
+                                <input class="form-control" type="text" placeholder="" id="postcode" minlength="2"
+                                    maxlength="10" value="{{ Auth::user()->postcode ?? '' }}">
                                 <span class="error text-danger" id="postcode-error"></span>
                             </div>
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label for="note">Note</label>
-                                    <textarea class="form-control" id="note" name="note" rows="2" placeholder=""></textarea>
-                                </div>
+                            <div class="col-md-12 form-group">
+                                <label>Order Notes (Optional)</label>
+                                <textarea class="form-control" id="order_notes" rows="3" placeholder="Any special instructions..."></textarea>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Pickup Location -->
+                    <!-- Pickup Details -->
                     <div class="row my-3" id="pickupDetails" style="display: none;">
-                        <div class="col-md-12 form-group">
-                            <label class="mb-2">Pickup Location</label>
-                            <div class="contact-details-single-item">
-                                <div class="contact-details-content contact-phone">
-                                    <span style="font-weight: bold;">Test</span>
-                                </div>
+                        <div class="col-md-12">
+                            <h2 class="checkout-title">Pickup Location</h2>
+                            <div class="p-3 border rounded">
+                                <p><strong>{{ $company->company_name ?? 'Our Store' }}</strong></p>
+                                <p><strong>Address:</strong> {{ $company->address1 ?? '' }}</p>
+                                <p><strong>Hours:</strong> {{ $company->opening_time ?? 'Mon-Fri 9am-6pm' }}</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Billing Address -->
                     <div class="option-container mb-3">
-                        <h4 class="p-2">Billing Address</h4>
-                        <div id="shippingOptions">
-                            <label class="option selected mb-2" onclick="toggleDiffAddress('sameasshipping')">
-                                <div>
-                                    <input type="radio" name="differentAddress" class="customRadioButton" value="sameasshipping" style="width: 7%" checked>
-                                    <span>Same As Shipping Address</span>
-                                </div>
-                                <i class="fa fa-home px-4" style="font-size: 24px; color: red; margin-left: auto;"></i>
-                            </label>
-                            <label class="option" onclick="toggleDiffAddress('differentaddress')">
-                                <div>
-                                    <input type="radio" name="differentAddress" class="customRadioButton" value="differentaddress" style="width: 7%">
-                                    <input type="hidden" id="is_billing_same" name="is_billing_same" value="1">
-                                    <span>Use Different Billing Address</span>
-                                </div>
-                                <i class="fa fa-home px-4" style="font-size: 24px; color: red; margin-left: auto;"></i>
-                            </label>
-                        </div>
+                        <h2 class="checkout-title">Billing Address</h2>
+<div id="shippingOptions">
+        <label class="option selected mb-2 d-none" onclick="handleBillingOptionClick('sameasshipping')">
+            <div>
+                <input type="radio" name="differentAddress" class="customRadioButton"
+                    value="sameasshipping" style="width: 7%" checked>
+                <span>Same As Delivery Address</span>
+            </div>
+            <i class="fa fa-home px-4" style="font-size: 24px; color: #007bff; margin-left: auto;"></i>
+        </label>
+        <label class="option" onclick="handleBillingOptionClick('differentaddress')">
+            <div>
+                <input type="radio" name="differentAddress" class="customRadioButton"
+                    value="differentaddress" style="width: 7%">
+                <input type="hidden" id="is_billing_same" name="is_billing_same" value="1">
+                <span>Use Different Billing Address</span>
+            </div>
+            <i class="fa fa-home px-4" style="font-size: 24px; color: #007bff; margin-left: auto;"></i>
+        </label>
+    </div>
 
                         <div id="diffAddress" style="display: none;">
-                            <div class="row">
+                            <div class="row mt-3">
                                 <div class="col-md-6 form-group">
-                                    <label>First Name<span style="color: red;">*</span></label>
-                                    <input class="form-control" id="billing_first_name" type="text" placeholder="" value="{{ Auth::user()->name ?? '' }}">
+                                    <label>Full Name (Required)</label>
+                                    <input class="form-control" type="text" placeholder="" id="billing_first_name"
+                                        maxlength="64">
                                     <span class="error text-danger" id="billing_first_name-error"></span>
                                 </div>
                                 <div class="col-md-6 form-group">
-                                    <label>Last Name<span style="color: red;">*</span></label>
-                                    <input class="form-control" id="billing_last_name" type="text" placeholder="" value="{{ Auth::user()->surname ?? '' }}">
-                                    <span class="error text-danger" id="billing_last_name-error"></span>
+                                    <label>Company Name</label>
+                                    <input class="form-control" type="text" placeholder="" id="billing_company_name">
                                 </div>
-                                <div class="col-md-6 form-group">
-                                    <label>Email<span style="color: red;">*</span></label>
-                                    <input class="form-control" id="billing_email" type="email" placeholder="" value="{{ Auth::user()->email ?? '' }}">
+                                <div class="col-md-12 form-group">
+                                    <label>Email (Required)</label>
+                                    <input type="email" id="billing_email" name="billing_email" class="form-control" placeholder=""
+                                        value="{{ Auth::user()->email ?? '' }}">
                                     <span class="error text-danger" id="billing_email-error"></span>
                                 </div>
                                 <div class="col-md-6 form-group">
-                                    <label>Phone<span style="color: red;">*</span></label>
-                                    <input class="form-control" id="billing_phone" type="text" placeholder="" value="{{ Auth::user()->phone ?? '' }}">
+                                    <label>Phone (Required)</label>
+                                    <input class="form-control" id="billing_phone" type="tel" placeholder=""
+                                        maxlength="15">
                                     <span class="error text-danger" id="billing_phone-error"></span>
                                 </div>
                                 <div class="col-md-6 form-group">
-                                    <label>House Number<span style="color: red;">*</span></label>
-                                    <input class="form-control" id="billing_house_number" type="text" placeholder="" value="{{ Auth::user()->house_number ?? '' }}">
-                                    <span class="error text-danger" id="billing_house_number-error"></span>
+                                    <label>Address Line 1 (Required)</label>
+                                    <input class="form-control" type="text" placeholder=""
+                                        id="billing_address_first_line" maxlength="128" minlength="3">
+                                    <span class="error text-danger" id="billing_address_first_line-error"></span>
                                 </div>
                                 <div class="col-md-6 form-group">
-                                    <label>Street Name<span style="color: red;">*</span></label>
-                                    <input class="form-control" id="billing_street_name" type="text" placeholder="" value="{{ Auth::user()->street_name ?? '' }}">
-                                    <span class="error text-danger" id="billing_street_name-error"></span>
+                                    <label>Address Line 2</label>
+                                    <input class="form-control" type="text" placeholder=""
+                                        id="billing_address_second_line">
                                 </div>
                                 <div class="col-md-6 form-group">
-                                    <label>Town<span style="color: red;">*</span></label>
-                                    <input class="form-control" id="billing_town" type="text" placeholder="" value="{{ Auth::user()->town ?? '' }}">
-                                    <span class="error text-danger" id="billing_town-error"></span>
+                                    <label>Address Line 3</label>
+                                    <input class="form-control" type="text" placeholder=""
+                                        id="billing_address_third_line">
                                 </div>
                                 <div class="col-md-6 form-group">
-                                    <label>Postcode<span style="color: red;">*</span></label>
-                                    <input class="form-control" id="billing_postcode" type="text" placeholder="" value="{{ Auth::user()->postcode ?? '' }}">
+                                    <label>City (Required)</label>
+                                    <input class="form-control" id="billing_city" type="text" placeholder=""
+                                        maxlength="128">
+                                    <span class="error text-danger" id="billing_city-error"></span>
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label>Postcode (Required)</label>
+                                    <input class="form-control" id="billing_postcode" type="text" placeholder=""
+                                        minlength="2" maxlength="10">
                                     <span class="error text-danger" id="billing_postcode-error"></span>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="col-md-12 form-group">
-                        @guest
-                            <a href="{{ route('register') }}" class="btn btn-primary">
-                                Create an account?
-                            </a>
-                        @endguest
-                    </div>
-                </div> 
+            <!-- Order Summary -->
+            <div class="col-lg-4">
+                <div class="summary-card">
+                    <h3 class="summary-title">Your Order</h3>
 
-                <!-- Order Summary (Keep this exactly the same as before) -->
-                <aside class="col-lg-4">
-                    <div class="summary">
-                        <h3 class="summary-title">Order Summary</h3>
-                            <table class="table table-summary">
-                                <thead class="d-none">
-                                    <tr>
-                                        <th class="text-left">Product</th>
-                                        <th>Price</th>
-                                        <th class="text-right">Qty</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @php
-                                        $currency = \App\Models\CompanyDetails::value('currency');
-                                        $total = 0;
-                                        $shippingCharge = 0;
-                                    @endphp
+                    <!-- Order Items -->
+                    <div class="order-items mb-3">
+                        @foreach ($cartItems as $item)
+                            <div class="d-flex align-items-start mb-3 pb-3 border-bottom">
+                                <img src="{{ asset('images/products/'. $item['product_image'] ) }}" alt="{{ $item['product_name'] }}"
+                                    class="product-thumb me-3">
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold mb-1">{{ $item['product_name'] }}</div>
+                                    <div class="small text-muted mb-1">Qty: {{ $item['quantity'] }}</div>
+                                    <div class="small text-muted mb-1">Price:
+                                        {{ $currency }}{{ number_format($item['price'], 2) }}</div>
 
-                                    @foreach ($cart as $item)
-                                        @php
-                                            $isBundle = isset($item['bundleId']);
-                                            $entity = $isBundle ? \App\Models\BundleProduct::find($item['bundleId']) : \App\Models\Product::find($item['productId']);
+                                    <div class="product-meta">
+                                        @if ($item['ean'])
+                                            <div class="small">EAN: <strong>{{ $item['ean'] }}</strong></div>
+                                        @endif
+                                        @if ($item['size_id'])
+                                            @php $size = \App\Models\Size::find($item['size_id']); @endphp
+                                            <div class="small">Size:
+                                                <strong>{{ $size ? $size->name : $item['size_id'] }}</strong></div>
+                                        @endif
+                                        @if ($item['color_id'])
+                                            @php $color = \App\Models\Color::find($item['color_id']); @endphp
+                                            <div class="small">Color:
+                                                <strong>{{ $color ? $color->name : $item['color_id'] }}</strong></div>
+                                        @endif
 
-                                            $itemTotal = 0;
-                                            $price = $item['price'];
-                                            $typeName = isset($item['typeId']) ? \App\Models\Type::find($item['typeId'])->name ?? null : null;
-
-                                            if (!$isBundle && $entity) {
-                                                    $itemTotal = $price * $item['quantity'];
-                                                }  else {
-                                                $bundlePrice = $entity->price ?? $entity->total_price;
-                                                $itemTotal = $bundlePrice * $item['quantity'];
-                                            }
-
-                                            $total += $itemTotal;
-
-                                            $deliveryCharges = \App\Models\DeliveryCharge::get();
-
-                                            foreach ($deliveryCharges as $charge) {
-                                                if ($total >= $charge->min_price && $total <= $charge->max_price) {
-                                                    $shippingCharge = $charge->delivery_charge;
-                                                    break;
-                                                }
-                                            }
-                                        @endphp
-
-                                        <tr data-entity-id="{{ $entity->id }}" data-entity-type="{{ $isBundle ? 'bundle' : 'product' }}">
-                                            <td class="pt-2">
-                                                <div class="d-flex align-items-start" style="align-items: flex-start;">
-                                                    <x-image-with-loader 
-                                                        src="{{ asset('/images/' . ($isBundle ? 'bundle_product' : 'products') . '/' . $entity->feature_image) }}" 
-                                                        alt="{{ $entity->name }}" 
-                                                        style="width: 70px; height: 70px; object-fit: contain; margin-right: 10px;" 
-                                                    />       
-
-                                                    <div style="flex-grow: 1; text-align: left;">
-                                                        <div style="font-size: 16px; overflow-wrap: break-word; width: 200px;">
-                                                          <b>{{ $entity->name }}</b>
-                                                        </div>
-
-                                                        @if(!empty($item['color']) || !empty($item['size']))
-                                                            <div style="font-size: 16px; margin-top: 5px;" class="text-left">           
-                                                                <span>
-                                                                    {{ $item['color'] ?? '' }}
-                                                                    @if(!empty($item['color']) && !empty($item['size']))
-                                                                        |
+                                        @if (!empty($item['customization']))
+                                            <div class="mt-2">
+                                                <small><strong>Customization</strong></small>
+                                                <div class="customization-list">
+                                                    @foreach ($item['customization'] as $c)
+                                                        <div class="custom-preview mt-1">
+                                                            @if (isset($c['type']) && $c['type'] === 'image' && isset($c['data']['src']))
+                                                                <img src="{{ $c['data']['src'] }}" alt="Custom Image"
+                                                                    class="me-2">
+                                                            @endif
+                                                            <div class="flex-grow-1">
+                                                                <div style="font-weight:600; font-size:13px;">
+                                                                    {{ ucfirst($c['method'] ?? '') }}
+                                                                    @if (isset($c['position']))
+                                                                        - {{ $c['position'] }}
                                                                     @endif
-                                                                    {{ $item['size'] ?? '' }}
-                                                                    @if(!empty($typeName))
-                                                                        | {{ $typeName }}
-                                                                    @endif
-                                                                </span>
+                                                                </div>
+                                                                @if (isset($c['type']) && $c['type'] === 'text' && isset($c['data']['text']))
+                                                                    <div style="font-size:12px; color:#555;">Text:
+                                                                        "{{ $c['data']['text'] }}"</div>
+                                                                @endif
+                                                                @if (isset($c['type']) && $c['type'] === 'text' && isset($c['data']))
+                                                                    <div style="font-size:11px; color:#888;">
+                                                                        Font: {{ $c['data']['fontFamily'] ?? 'N/A' }},
+                                                                        Size: {{ $c['data']['fontSize'] ?? 'N/A' }}
+                                                                    </div>
+                                                                @endif
                                                             </div>
-                                                        @endif
-
-                                                        <div style="font-size: 16px; margin-top: 5px;">           
-                                                            <span>{{ $item['quantity'] }} x {{ number_format($price, 2) }}</span>
                                                         </div>
-                                                    </div>
+                                                    @endforeach
                                                 </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                    <input type="hidden" id="shipping-charge-input" value="{{ $shippingCharge }}">
-                                    <tr class="summary-subtotal">
-                                        <td>Subtotal:</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td>{{ $currency }}{{ number_format($total, 2) }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Delivery Charge:</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td id="shipping-charge">{{ $currency }}{{ number_format($shippingCharge, 2) }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Vat(5%):</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td id="vat-charge">{{ $currency }}00.00</td>
-                                    </tr>
-                                    <tr class="d-none" id="discount-row">
-                                        <td>Discount:</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td id="discount">{{ $currency }}$00.00</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <div class="form-group mt-3 d-none">
-                                <h6 for="delivery-location">Delivery Location:</h6>
-                                <div class="custom-control custom-radio custom-control-inline">
-                                    <input type="radio" class="custom-control-input" name="delivery_location" id="insideDhaka" value="insideDhaka" checked>
-                                    <label class="custom-control-label" for="insideDhaka">Inside Dhaka</label>
-                                </div>
-                                <div class="custom-control custom-radio custom-control-inline">
-                                    <input type="radio" class="custom-control-input" name="delivery_location" id="outsideDhaka" value="outsideDhaka">
-                                    <label class="custom-control-label" for="outsideDhaka">Outside Dhaka</label>
-                                </div>
-                            </div>
-
-                            <div class="form-group checkout-discount mb-2">
-                                <div class="coupon-input">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="couponName" required placeholder="Coupon Code">
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
-                                <div class="coupon-button">
-                                    <button class="btn btn-outline-dark-custom btn-block" type="submit" id="applyCoupon">
-                                        <span>Apply</span>
-                                        <i class="icon-refresh"></i>
-                                    </button>
-                                </div>
-                                <div id="couponDetails" class="mt-2 alert alert-success" style="display: none; width: 100%;">
-                                    <strong>Coupon Applied!</strong>
-                                </div>
-                                <input type="hidden" id="couponId" name="coupon_id" value="">
-                                <div style="display: none;">
-                                    <span id="couponValue"></span>
-                                    <span id="couponType"></span>
+                                <div class="fw-bold text-end">
+                                    {{ $currency }}{{ number_format($item['subtotal'], 2) }}
                                 </div>
                             </div>
-
-                            <div class="mb-2">
-                                <div class="d-flex justify-content-between mt-2">
-                                    <h5>Total</h5>
-                                    <h5 id="total-amount" class="summary-total">{{ $currency }} {{ number_format($total, 2) }}</h5>
-                                </div>
-                            </div>
-
-                            <div id="loader" style="display: none;">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="sr-only">Loading...</span>
-                                </div>
-                            </div>
-
-                            <div class="accordion-summary">
-                                <div class="form-group">
-                                    <div class="custom-control custom-radio">
-                                        <input type="radio" class="custom-control-input" name="payment_method" id="paypal" value="paypal" checked>
-                                        <label class="custom-control-label" for="paypal">Paypal</label>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="custom-control custom-radio">
-                                        <input type="radio" class="custom-control-input" name="payment_method" id="stripe" value="stripe">
-                                        <label class="custom-control-label" for="stripe">Stripe</label>
-                                    </div>
-                                </div>
-                                <div class="form-group mb-2 d-none">
-                                    <div class="custom-control custom-radio">
-                                        <input type="radio" class="custom-control-input" name="payment_method" id="cashOnDelivery" value="cashOnDelivery">
-                                        <label class="custom-control-label" for="cashOnDelivery">Cash On Delivery</label>
-                                    </div>
-                                </div>
-                                <button class="btn btn-outline-primary-2 btn-order btn-block" type="submit" id="placeOrderBtn">Place Order</button>
-                            </div>
+                        @endforeach
                     </div>
-                </aside>
+
+                    <div class="summary-totals">
+                        <div class="summary-row">
+                            <div>Subtotal:</div>
+                            <div id="summary-subtotal">{{ $currency }}{{ number_format($total, 2) }}</div>
+                        </div>
+                        <div class="summary-row">
+                            <div>Shipping:</div>
+                            <div id="shipping-charge">{{ $currency }}0.00</div>
+                        </div>
+                        <div class="summary-row">
+                            <div>VAT ({{ $vatPercent }}%):</div>
+                            <div id="vat-charge">{{ $currency }}0.00</div>
+                        </div>
+                        <div class="summary-row fw-bold fs-5">
+                            <div>Total:</div>
+                            <div id="total-amount">{{ $currency }}{{ number_format($total, 2) }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Terms and Conditions -->
+                    <div class="mt-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="termsCheck">
+                            <label class="form-check-label small" for="termsCheck">
+                                I agree to the <a href="{{ route('terms-and-conditions') }}">Terms & Conditions</a> and <a
+                                    href="{{ route('privacy-policy') }}">Privacy Policy</a>
+                            </label>
+                        </div>
+                        <span class="error text-danger" id="terms-error"></span>
+                    </div>
+
+                    <div class="payment-methods mt-4">
+                        <h5 class="mb-3">Payment Method</h5>
+                        <div class="accordion" id="paymentAccordion">
+                            <div class="accordion-item d-none">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseCard">
+                                        <i class="ri-bank-card-line me-2"></i> Credit / Debit Card (Stripe)
+                                    </button>
+                                </h2>
+                                <div id="collapseCard" class="accordion-collapse collapse show"
+                                    data-bs-parent="#paymentAccordion">
+                                    <div class="accordion-body">
+                                        <p>Pay securely using your credit or debit card through Stripe.</p>
+                                        <button type="button" id="payWithCard" class="checkout-btn-main mt-2 w-100">Pay
+                                            with Card</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- PayPal -->
+                            <div class="accordion-item d-none">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapsePayPal">
+                                        PayPal
+                                    </button>
+                                </h2>
+                                <div id="collapsePayPal" class="accordion-collapse collapse"
+                                    data-bs-parent="#paymentAccordion">
+                                    <div class="accordion-body">
+                                        <p>You will be redirected to PayPal to complete your payment.</p>
+                                        <button type="button" id="payWithPayPal" class="checkout-btn-main">Pay with
+                                            PayPal</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bank Transfer -->
+                            <div class="accordion-item d-none">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseBank">
+                                        Bank Transfer
+                                    </button>
+                                </h2>
+                                <div id="collapseBank" class="accordion-collapse collapse"
+                                    data-bs-parent="#paymentAccordion">
+                                    <div class="accordion-body">
+                                        <p>Complete your order and we'll send you bank transfer details.</p>
+                                        <button type="button" id="payWithBank" class="checkout-btn-main">Place
+                                            Order</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Cash on Delivery -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseCash">
+                                        Cash on Delivery
+                                    </button>
+                                </h2>
+                                <div id="collapseCash" class="accordion-collapse collapse"
+                                    data-bs-parent="#paymentAccordion">
+                                    <div class="accordion-body">
+                                        <p>Pay with cash when your order is delivered.</p>
+                                        <button type="button" id="payWithCash" class="checkout-btn-main">Place
+                                            Order</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    function showSection(type, element) {
-        const shippingDetails = document.getElementById('shippingDetails');
-        const pickupDetails = document.getElementById('pickupDetails');
-        const shippingMethodInput = document.getElementById('shippingMethod');
-        
-        // Update selected option styling
-        document.querySelectorAll('.option').forEach(opt => {
-            opt.classList.remove('selected');
+    <div id="loader" style="display: none;">
+        <div class="spinner-border text-danger" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const options = document.querySelectorAll(".option");
+            options.forEach(option => {
+                option.addEventListener("click", function() {
+                    options.forEach(opt => opt.classList.remove("selected"));
+                    this.classList.add("selected");
+                    this.querySelector("input").checked = true;
+                });
+            });
+
+            showSection('pickup');
+            updateTotals();
         });
-        element.classList.add('selected');
-        
-        if (type === 'ship') {
-            shippingDetails.style.display = 'block';
-            pickupDetails.style.display = 'none';
-            shippingMethodInput.value = '0';
-        } else {
-            shippingDetails.style.display = 'none';
-            pickupDetails.style.display = 'block';
-            shippingMethodInput.value = '1';
-        }
-    }
 
-    function toggleDiffAddress(value) {
-        const diffAddress = document.getElementById('diffAddress');
-        const isBillingSame = document.getElementById('is_billing_same');
+        function showSection(type) {
+            const shippingDetails = document.getElementById('shippingDetails');
+            const pickupDetails = document.getElementById('pickupDetails');
+            const shippingMethodInput = document.getElementById('shippingMethod');
+            const sameAsShippingOption = document.querySelector('input[value="sameasshipping"]').closest('.option');
+            const differentAddressOption = document.querySelector('input[value="differentaddress"]').closest('.option');
 
-        if (value === 'differentaddress') {
-            diffAddress.style.display = 'block';
-            isBillingSame.value = '0';
-        } else {
-            diffAddress.style.display = 'none';
-            isBillingSame.value = '1';
+            if (type === 'ship') {
+                shippingDetails.style.display = 'block';
+                pickupDetails.style.display = 'none';
+                shippingMethodInput.value = '0';
+                
+                // Enable both options for shipping
+                sameAsShippingOption.classList.remove('disabled');
+                sameAsShippingOption.style.pointerEvents = 'auto';
+                sameAsShippingOption.style.opacity = '1';
+                sameAsShippingOption.querySelector('input').disabled = false;
+                
+                differentAddressOption.classList.remove('disabled');
+                differentAddressOption.style.pointerEvents = 'auto';
+                differentAddressOption.style.opacity = '1';
+                differentAddressOption.querySelector('input').disabled = false;
+                
+                // Auto switch back to "Same As Delivery Address" for shipping
+                toggleDiffAddress('sameasshipping');
+                updateBillingOptionUI('sameasshipping');
+                
+            } else {
+                shippingDetails.style.display = 'none';
+                pickupDetails.style.display = 'block';
+                shippingMethodInput.value = '1';
+                
+                // Disable "Same As Delivery Address" option for pickup
+                sameAsShippingOption.classList.add('disabled');
+                sameAsShippingOption.style.pointerEvents = 'none';
+                sameAsShippingOption.style.opacity = '0.6';
+                sameAsShippingOption.querySelector('input').disabled = true;
+                
+                // Ensure "Use Different Billing Address" is enabled and selected
+                differentAddressOption.classList.remove('disabled');
+                differentAddressOption.style.pointerEvents = 'auto';
+                differentAddressOption.style.opacity = '1';
+                differentAddressOption.querySelector('input').disabled = false;
+                
+                // Force "Use Different Billing Address" for pickup
+                toggleDiffAddress('differentaddress');
+                updateBillingOptionUI('differentaddress');
+            }
+
+            updateTotals();
         }
-    }
-</script>
+
+        function toggleDiffAddress(value) {
+            const diffAddress = document.getElementById('diffAddress');
+            const isBillingSame = document.getElementById('is_billing_same');
+            const shippingMethod = document.getElementById('shippingMethod').value;
+
+            // Prevent switching to "Same As Delivery Address" for pickup
+            if (shippingMethod === '1' && value === 'sameasshipping') {
+                return; // Do nothing, keep it on different address
+            }
+
+            if (value === 'differentaddress') {
+                diffAddress.style.display = 'block';
+                isBillingSame.value = '0';
+            } else {
+                diffAddress.style.display = 'none';
+                isBillingSame.value = '1';
+            }
+        }
+
+        function handleBillingOptionClick(value) {
+            const shippingMethod = document.getElementById('shippingMethod').value;
+            
+            // Prevent any action if pickup is selected and user tries to click "Same As Delivery Address"
+            if (shippingMethod === '1' && value === 'sameasshipping') {
+                return; // Do nothing
+            }
+            
+            // For shipping method or "differentaddress" click, proceed normally
+            toggleDiffAddress(value);
+            updateBillingOptionUI(value);
+        }
+
+        function updateBillingOptionUI(selectedValue) {
+            const billingOptions = document.querySelectorAll('#shippingOptions .option');
+            const shippingMethod = document.getElementById('shippingMethod').value;
+            
+            billingOptions.forEach(option => {
+                option.classList.remove('selected');
+                const radio = option.querySelector('input[name="differentAddress"]');
+                
+                // For pickup, always select "differentaddress" regardless of user click
+                if (shippingMethod === '1') {
+                    if (radio.value === 'differentaddress') {
+                        option.classList.add('selected');
+                        radio.checked = true;
+                    }
+                } else {
+                    // For shipping, respect user selection
+                    if (radio.value === selectedValue) {
+                        option.classList.add('selected');
+                        radio.checked = true;
+                    }
+                }
+            });
+        }
+
+        function updateTotals() {
+            const shippingMethod = document.getElementById('shippingMethod').value;
+            const subtotal = {{ $total }};
+            let shippingCharge = 0;
+
+            if (shippingMethod === '0') {
+                if (subtotal < 50) {
+                    shippingCharge = 5.99;
+                } else if (subtotal < 100) {
+                    shippingCharge = 3.99;
+                } else {
+                    shippingCharge = 0;
+                }
+            } else {
+                shippingCharge = 0;
+            }
+
+            const vatPercent = {{ $vatPercent }};
+            const vatAmount = ((subtotal + shippingCharge) * vatPercent) / 100;
+            const totalAmount = subtotal + shippingCharge + vatAmount;
+
+            document.getElementById('shipping-charge').textContent = '{{ $currency }}' + shippingCharge.toFixed(2);
+            document.getElementById('vat-charge').textContent = '{{ $currency }}' + vatAmount.toFixed(2);
+            document.getElementById('total-amount').textContent = '{{ $currency }}' + totalAmount.toFixed(2);
+
+            document.getElementById('summary-subtotal').textContent = '{{ $currency }}' + subtotal.toFixed(2);
+        }
+    </script>
 @endsection
 
 @section('script')
-<script>
-      $(document).ready(function() {
-        // Initialize with shipping selected
-        showSection('ship', document.getElementById('delivery-ship'));
+    <script>
+        $(document).ready(function() {
+            $('#payWithCard, #payWithPayPal, #payWithBank, #payWithCash').on('click', function(e) {
+                e.preventDefault();
+                let paymentMethod;
+                const btnId = $(this).attr('id');
 
-        // Rest of your existing JavaScript remains exactly the same
-        function updateDiscount() {
-            var discountType = $('#couponType').text().includes('Percentage') ? 'percentage' : 'fixed';
-            var discountValue = parseFloat($('#couponValue').text()) || 0;
-            var subtotal = parseFloat('{{ $total }}');
-            var discount = 0;
+                if (btnId === 'payWithCard') paymentMethod = 'stripe';
+                else if (btnId === 'payWithPayPal') paymentMethod = 'paypal';
+                else if (btnId === 'payWithBank') paymentMethod = 'bank_transfer';
+                else if (btnId === 'payWithCash') paymentMethod = 'cash_on_delivery';
 
-            if (discountType === 'percentage') {
-                discount = (discountValue / 100) * subtotal;
-            } else {
-                discount = discountValue;
-            }
+                if (!validateForm()) return false;
 
-            $('#discount').text(`{{ $currency }}${discount.toFixed(2)}`);
-            if (discount > 0) {
-                $('#discount-row').removeClass('d-none');
-            } else {
-                $('#discount-row').addClass('d-none');
-            }
-            return discount;
-        }
+                $('#loader').show();
+                $(this).prop('disabled', true);
 
-        function updateVat() {
-            var subtotal = parseFloat('{{ $total }}');
-            var vatPercentage = 5;
-            var vatAmount = (vatPercentage / 100) * subtotal;
+                const formData = {
+                    shipping_method: $('#shippingMethod').val(),
+                    first_name: $('#first_name').val(),
+                    company_name: $('#company_name').val(),
+                    email: $('#email').val(),
+                    phone: $('#phone').val(),
+                    address_first_line: $('#address_first_line').val(),
+                    address_second_line: $('#address_second_line').val(),
+                    city: $('#city').val(),
+                    postcode: $('#postcode').val(),
+                    order_notes: $('#order_notes').val(),
+                    is_billing_same: $('#is_billing_same').val(),
+                    billing_first_name: $('#billing_first_name').val() || $('#first_name').val(),
+                    billing_company_name: $('#billing_company_name').val() || $('#company_name').val(),
+                    billing_email: $('#billing_email').val() || $('#email').val(),
+                    billing_phone: $('#billing_phone').val() || $('#phone').val(),
+                    billing_address_first_line: $('#billing_address_first_line').val() || $('#address_first_line').val(),
+                    billing_address_second_line: $('#billing_address_second_line').val() || $('#address_second_line').val(),
+                    billing_address_third_line: $('#billing_address_third_line').val() || $('#address_third_line').val(),
+                    billing_city: $('#billing_city').val() || $('#city').val(),
+                    billing_postcode: $('#billing_postcode').val() || $('#postcode').val(),
+                    payment_method: paymentMethod,
+                    cart_items: @json($cartItems),
+                    subtotal: {{ $total }},
+                    shipping_charge: parseFloat($('#shipping-charge').text().replace('£','')),
+                    vat_amount: parseFloat($('#vat-charge').text().replace('£','')),
+                    total_amount: parseFloat($('#total-amount').text().replace('£','')),
+                    _token: '{{ csrf_token() }}'
+                };
 
-            $('#vat-charge').text(`{{ $currency }}${vatAmount.toFixed(2)}`);
-            return vatAmount;
-        }
+                $.ajax({
+                    url: "{{ route('checkout.store') }}",
+                    type: "POST",
+                    data: JSON.stringify(formData),
+                    contentType: "application/json",
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(result) {
 
-        function updateTotal() {
-            var subtotal = parseFloat('{{ $total }}');
-            var shippingCharge = parseFloat($('#shipping-charge-input').val());
-            var discount = updateDiscount();
-            var vatAmount = updateVat();
-            var totalAmount = subtotal + shippingCharge - discount + vatAmount;
+                        $('#loader').hide();
+                        $('#' + btnId).prop('disabled', false);
 
-            $('#total-amount').text(`{{ $currency }}${totalAmount.toFixed(2)}`);
-        }
+                        if (result.success && result.redirect_url) {
+                            window.location.href = result.redirect_url;
+                        } else if (result.errors) {
+                            setTimeout(scrollToTop, 0);
+                            $('html, body').animate({
+                                scrollTop: 0
+                            }, 'fast');
+                            // Clear previous errors
+                            $('.error').text('');
+                            $('.form-control').removeClass('is-invalid');
 
-        $('#coupon, input[name="discountType"]').change(function() {
-            updateTotal();
-        });
-
-        function updateShippingCharge() {
-            var shippingCharge = parseFloat($('#shipping-charge-input').val());
-            var subtotal = parseFloat('{{ $total }}');
-
-            var currencySymbol = '{{ $currency }}';
-            $('#shipping-charge').text(`${currencySymbol}${shippingCharge.toFixed(2)}`);
-
-            updateTotal();
-        }
-
-        function updateCartCount() {
-            var cart = JSON.parse(localStorage.getItem('cart')) || [];
-            var cartCount = cart.length;
-            $('#cartCount').text(cartCount);
-        }
-
-        updateShippingCharge();
-
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-
-        $('#placeOrderBtn').click(async function() {
-            $('#loader').show();
-            $('#placeOrderBtn').prop('disabled', true);
-
-            // Validate required fields
-            let isValid = true;
-            
-            // Validate shipping method
-            if (!$('input[name="shipping"]:checked').val()) {
-                $('#shipping-error').text('Please select a delivery option');
-                isValid = false;
-            } else {
-                $('#shipping-error').text('');
-            }
-
-            // Validate shipping address if shipping method is 'ship'
-            if ($('#shippingMethod').val() === '0') {
-                const requiredFields = [
-                    '#first_name', '#last_name', '#email', '#phone', 
-                    '#house_number', '#street_name', '#town', '#postcode'
-                ];
-                
-                requiredFields.forEach(field => {
-                    if (!$(field).val()) {
-                        $(`${field}-error`).text('This field is required');
-                        $(field).addClass('is-invalid');
-                        isValid = false;
-                    } else {
-                        $(`${field}-error`).text('');
-                        $(field).removeClass('is-invalid');
-                    }
-                });
-            }
-
-            // Validate billing address if different
-            if ($('#is_billing_same').val() === '0') {
-                const billingFields = [
-                    '#billing_first_name', '#billing_last_name', '#billing_email', '#billing_phone', 
-                    '#billing_house_number', '#billing_street_name', '#billing_town', '#billing_postcode'
-                ];
-                
-                billingFields.forEach(field => {
-                    if (!$(field).val()) {
-                        $(`${field}-error`).text('This field is required');
-                        $(field).addClass('is-invalid');
-                        isValid = false;
-                    } else {
-                        $(`${field}-error`).text('');
-                        $(field).removeClass('is-invalid');
-                    }
-                });
-            }
-
-            if (!isValid) {
-                $('#loader').hide();
-                $('#placeOrderBtn').prop('disabled', false);
-                $('html, body').animate({ scrollTop: 0 }, 'smooth');
-                return false;
-            }
-
-            var formData = {
-                'name': $('#first_name').val(),
-                'surname': $('#last_name').val(),
-                'email': $('#email').val(),
-                'phone': $('#phone').val(),
-                'house_number': $('#house_number').val(),
-                'street_name': $('#street_name').val(),
-                'town': $('#town').val(),
-                'postcode': $('#postcode').val(),
-                'note': $('#note').val(),
-                'shipping': $('#shipping-charge-input').val(),
-                'payment_method': $('input[name="payment_method"]:checked').val(),
-                'discount_percentage': $('#couponType').text().includes('Percentage') ? $('#couponValue').text() : null,
-                'discount_amount': $('#couponType').text().includes('Fixed Amount') ? $('#couponValue').text() : null,
-                'coupon_id': $('#couponId').val(),
-                'order_summary': {!! json_encode($cart) !!},
-                'shipping_method': $('#shippingMethod').val(),
-                'is_billing_same': $('#is_billing_same').val(),
-                'billing_name': $('#is_billing_same').val() === '1' ? $('#first_name').val() : $('#billing_first_name').val(),
-                'billing_surname': $('#is_billing_same').val() === '1' ? $('#last_name').val() : $('#billing_last_name').val(),
-                'billing_email': $('#is_billing_same').val() === '1' ? $('#email').val() : $('#billing_email').val(),
-                'billing_phone': $('#is_billing_same').val() === '1' ? $('#phone').val() : $('#billing_phone').val(),
-                'billing_house_number': $('#is_billing_same').val() === '1' ? $('#house_number').val() : $('#billing_house_number').val(),
-                'billing_street_name': $('#is_billing_same').val() === '1' ? $('#street_name').val() : $('#billing_street_name').val(),
-                'billing_town': $('#is_billing_same').val() === '1' ? $('#town').val() : $('#billing_town').val(),
-                'billing_postcode': $('#is_billing_same').val() === '1' ? $('#postcode').val() : $('#billing_postcode').val(),
-                '_token': '{{ csrf_token() }}'
-            };
-
-            $.ajax({
-                url: '{{ route('place.order') }}',
-                type: 'POST',
-                data: formData,
-                success: function(response) {
-                    if (response.pdf_url) {
-                        window.location.href = response.pdf_url;
-                    }
-
-                    if (formData.payment_method === 'stripe') {
-                        window.location.href = response.redirectUrl; 
-                    } else if (formData.payment_method === 'paypal') {
-                        window.location.href = response.redirectUrl;
-                    } else if(formData.payment_method === 'cashOnDelivery') {
-                        if (response.success) {
-                            localStorage.removeItem('cart');
-                            localStorage.removeItem('wishlist');
-                            updateCartCount();
-                            window.location.href = response.redirectUrl;
+                            // Show validation errors
+                            $.each(result.errors, function(field, messages) {
+                                $('#' + field + '-error').text(messages[
+                                0]); // first error only
+                                $('#' + field).addClass('is-invalid');
+                            });
+                        } else {
+                            alert(result.message || 'Error processing your order.');
+                            setTimeout(scrollToTop, 0);
                         }
-                    } else {
-                        localStorage.removeItem('cart');
-                        localStorage.removeItem('wishlist');
-                        updateCartCount();
-                        window.location.href = response.redirectUrl;
+                    },
+                    error: function(xhr) {
+
+                        $('#loader').hide();
+                        $('#' + btnId).prop('disabled', false);
+
+                        if (xhr.status === 422) {
+                            setTimeout(scrollToTop, 0);
+                            // Laravel validation errors
+                            var errors = xhr.responseJSON.errors;
+                            $('.error').text('');
+                            $('.form-control').removeClass('is-invalid');
+                            $.each(errors, function(field, messages) {
+                                $('#' + field + '-error').text(messages[0]);
+                                $('#' + field).addClass('is-invalid');
+                            });
+                        } else {
+                            // Other errors
+                            alert('Unexpected error occurred. Check console for details.');
+                            setTimeout(scrollToTop, 0);
+                            console.error(xhr.responseText);
+                        }
                     }
-                },
-                error: function(xhr, status, error) {
-                    if (xhr.status === 422) {
-                        var errors = xhr.responseJSON.errors;
-                        var firstError = Object.values(errors)[0][0];
-                        var errorHtml = '<div class="alert alert-warning"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
-                        errorHtml += '<b>' + firstError + '</b><br>';
-                        errorHtml += '</div>';
-                        $('#alertContainer').html(errorHtml);
-                        $('html, body').animate({ scrollTop: 100 }, 'smooth');
-                    } else {
-                        console.error(xhr.responseText);
-                    }
-                },
-                complete: function() {
-                    $('#loader').hide();
-                    $('#placeOrderBtn').prop('disabled', false);
-                }
+                });
+
             });
-        });
 
-        $('#applyCoupon').click(function(e) {
-            e.preventDefault();
-            var couponName = $('#couponName').val();
-            var guest_email = $('#email').val();
-            var guest_phone = $('#phone').val();
-
-            if (!guest_email) {
-                toastr.error("Please enter your email before applying the coupon.", "");
-                return;
+            function scrollToTop() {
+                setTimeout(function() {
+                    $('html, body').animate({
+                        scrollTop: 0
+                    }, 'fast');
+                }, 50);
             }
 
-            if (!guest_phone) {
-                toastr.error("Please enter your phone before applying the coupon.", "");
-                return;
-            }
+            function validateForm() {
+                let isValid = true;
+                $('.error').text('');
+                $('.form-control').removeClass('is-invalid');
 
-            $.ajax({
-                url: '/check-coupon',
-                type: 'GET',
-                data: { guest_email: guest_email, guest_phone: guest_phone, coupon_name: couponName },
-                success: function(response) {
-                    if (response.success) {
-                        // $('#couponDetails').show();
-                        $('#couponType').text(response.coupon_type === 1 ? 'Fixed Amount' : 'Percentage');
-                        $('#couponValue').text(response.coupon_value);
-                        $('#couponId').val(response.coupon_id);
-                        updateTotal();
-                        toastr.success("Valid Coupon", "Coupon applied successfully!", "");
-                    }  else {
-                        toastr.error(response.message, "");
+                const shippingMethod = $('#shippingMethod').val();
+                const isBillingSame = $('#is_billing_same').val();
+
+                // For shipping method, validate shipping address
+                if (shippingMethod === '0') {
+                    const fields = [
+                        {id: 'first_name', message: 'Full name is required'},
+                        {id: 'email', message: 'Valid email is required'},
+                        {id: 'phone', message: 'Phone number is required'},
+                        {id: 'address_first_line', message: 'Address line 1 is required'},
+                        {id: 'city', message: 'City is required'},
+                        {id: 'postcode', message: 'Postcode is required'}
+                    ];
+
+                    $.each(fields, function(_, field) {
+                        if (!$('#'+field.id).val().trim()) {
+                            $('#'+field.id+'-error').text(field.message);
+                            $('#'+field.id).addClass('is-invalid');
+                            isValid = false;
+                        }
+                    });
+
+                    const email = $('#email').val();
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (email && !emailRegex.test(email)) {
+                        $('#email-error').text('Please enter a valid email address');
+                        $('#email').addClass('is-invalid');
+                        isValid = false;
                     }
-                },
-                error: function(xhr , status, error) {
-                    // console.error(xhr.responseText);
-                    toastr.error("Error", "Error applying coupon.", "");
                 }
-            });
+
+                // For pickup OR when different billing is selected, validate billing address
+                if (shippingMethod === '1' || isBillingSame === '0') {
+                    const billingFields = [
+                        {id: 'billing_first_name', message: 'Full name is required'},
+                        {id: 'billing_email', message: 'Valid email is required'},
+                        {id: 'billing_phone', message: 'Phone number is required'},
+                        {id: 'billing_address_first_line', message: 'Address line 1 is required'},
+                        {id: 'billing_city', message: 'City is required'},
+                        {id: 'billing_postcode', message: 'Postcode is required'}
+                    ];
+
+                    $.each(billingFields, function(_, field) {
+                        if (!$('#'+field.id).val().trim()) {
+                            $('#'+field.id+'-error').text(field.message);
+                            $('#'+field.id).addClass('is-invalid');
+                            isValid = false;
+                        }
+                    });
+
+                    const billingEmail = $('#billing_email').val();
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (billingEmail && !emailRegex.test(billingEmail)) {
+                        $('#billing_email-error').text('Please enter a valid email address');
+                        $('#billing_email').addClass('is-invalid');
+                        isValid = false;
+                    }
+                }
+
+                if (!$('#termsCheck').is(':checked')) {
+                    $('#terms-error').text('You must accept the terms and conditions');
+                    isValid = false;
+                }
+
+                return isValid;
+            }
         });
-    });
-</script>
+    </script>
 @endsection
