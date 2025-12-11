@@ -16,6 +16,9 @@ use App\Models\Warehouse;
 use App\Models\SystemLose;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Validator;
+use App\Models\SampleProduct;
+use App\Models\Product;
+use Yajra\DataTables\Facades\DataTables;
 
 class ShipmentController extends Controller
 {
@@ -134,6 +137,23 @@ class ShipmentController extends Controller
                 $purchaseHistory->shipped_quantity = $detail['shipped_quantity'] + $purchaseHistory->shipped_quantity; 
                 $purchaseHistory->remaining_product_quantity -= $detail['shipped_quantity']; 
                 $purchaseHistory->save();
+            }
+
+            if (!empty($detail['sample_quantity']) && $detail['sample_quantity'] > 0) {
+                $purchaseHistoryRecord = PurchaseHistory::find($detail['purchase_history_id']);
+                
+                SampleProduct::create([
+                    'product_id' => $detail['product_id'],
+                    'shipment_detail_id' => $detailShipment->id,
+                    'purchase_id' => $purchaseHistoryRecord->purchase_id ?? null,
+                    'warehouse_id' => $request->warehouse_id,
+                    'size' => $detail['size'],
+                    'color' => $detail['color'],
+                    'zip' => $purchaseHistoryRecord->zip ?? 0,
+                    'quantity' => $detail['sample_quantity'],
+                    'reason' => 'Sample from shipment',
+                    'created_by' => auth()->id(),
+                ]);
             }
 
             if (!empty($detail['missing_quantity']) && $detail['missing_quantity'] > 0) {
@@ -269,6 +289,35 @@ class ShipmentController extends Controller
                 $purchaseHistory->shipped_quantity += $shippedDifference;
                 $purchaseHistory->remaining_product_quantity -= $shippedDifference;
                 $purchaseHistory->save();
+            }
+
+            $sampleProduct = SampleProduct::where('shipment_detail_id', $shipmentDetail->id)->first();
+
+            if (!empty($detail['sample_quantity']) && $detail['sample_quantity'] > 0) {
+                if ($sampleProduct) {
+                    $sampleProduct->quantity = $detail['sample_quantity'];
+                    $sampleProduct->size = $detail['size'];
+                    $sampleProduct->color = $detail['color'];
+                    $sampleProduct->updated_by = auth()->id();
+                    $sampleProduct->save();
+                } else {
+                    $purchaseHistoryRecord = PurchaseHistory::find($shipmentDetail->purchase_history_id);
+                    
+                    SampleProduct::create([
+                        'product_id' => $detail['product_id'],
+                        'shipment_detail_id' => $shipmentDetail->id,
+                        'purchase_id' => $purchaseHistoryRecord->purchase_id ?? null,
+                        'warehouse_id' => $shipmentDetail->warehouse_id,
+                        'size' => $detail['size'],
+                        'color' => $detail['color'],
+                        'zip' => $purchaseHistoryRecord->zip ?? 0,
+                        'quantity' => $detail['sample_quantity'],
+                        'reason' => 'Sample from shipment',
+                        'created_by' => auth()->id(),
+                    ]);
+                }
+            } elseif ($sampleProduct) {
+                $sampleProduct->delete();
             }
 
             $systemLose = SystemLose::where('shipment_detail_id', $shipmentDetail->id)->first();
@@ -489,6 +538,36 @@ class ShipmentController extends Controller
             } elseif ($systemLose) {
                 $systemLose->delete();
             }
+
+            $sampleProduct = SampleProduct::where('shipment_detail_id', $shipmentDetail->id)->first();
+
+            if (!empty($detail['sample_quantity']) && $detail['sample_quantity'] > 0) {
+                if ($sampleProduct) {
+                    $sampleProduct->quantity = $detail['sample_quantity'];
+                    $sampleProduct->size = $detail['size'];
+                    $sampleProduct->color = $detail['color'];
+                    $sampleProduct->zip = $detail['zip'];
+                    $sampleProduct->updated_by = auth()->id();
+                    $sampleProduct->save();
+                } else {
+                    $purchaseHistoryRecord = PurchaseHistory::find($shipmentDetail->purchase_history_id);
+                    
+                    SampleProduct::create([
+                        'product_id' => $detail['product_id'],
+                        'shipment_detail_id' => $shipmentDetail->id,
+                        'purchase_id' => $purchaseHistoryRecord->purchase_id ?? null,
+                        'warehouse_id' => $shipmentDetail->warehouse_id,
+                        'size' => $detail['size'],
+                        'color' => $detail['color'],
+                        'zip' => $detail['zip'],
+                        'quantity' => $detail['sample_quantity'],
+                        'reason' => 'Sample from shipment',
+                        'created_by' => auth()->id(),
+                    ]);
+                }
+            } elseif ($sampleProduct) {
+                $sampleProduct->delete();
+            }
         }
         
         $shipping =  Shipping::find($shipment->shipping_id);
@@ -498,10 +577,116 @@ class ShipmentController extends Controller
         return response()->json(['message' => 'Shipment updated successfully!']);
     }  
 
-    public function showSampleProducts()
+    public function sampleProducts()
     {
-        $sampleProducts = ShipmentDetails::with(['product', 'shipment.shipping'])->where('sample_quantity', '>', 0)->latest()->get();
-        return view('admin.shipment.sample_products', compact('sampleProducts'));
+        $sizes = SampleProduct::whereNotNull('size')->distinct()->pluck('size')->filter()->values();
+        $colors = SampleProduct::whereNotNull('color')->distinct()->pluck('color')->filter()->values();
+        
+        $products = Product::whereIn('id', function($query) {
+            $query->select('product_id')
+                ->from('sample_products')
+                ->groupBy('product_id');
+        })->select('id', 'name', 'product_code')->get();
+        
+        $warehouses = Warehouse::select('id', 'name', 'location')->where('status', 1)->get();
+        
+        return view('admin.shipment.sample_products', compact('warehouses', 'products', 'sizes', 'colors'));
+    }
+
+    public function getSampleProducts(Request $request)
+    {  
+        $query = SampleProduct::with([
+            'product',
+            'warehouse',
+            'purchase',
+            'shipmentDetail.shipment.shipping',
+            'createdBy'
+        ]);
+
+        if ($request->has('warehouse_id') && $request->warehouse_id != '') {
+            $query->where('warehouse_id', $request->warehouse_id);
+        }
+        
+        if ($request->has('product_id') && $request->product_id != '') {
+            $query->where('product_id', $request->product_id);
+        }
+        
+        if ($request->has('size') && $request->size != '') {
+            $query->where('size', $request->size);
+        }
+        
+        if ($request->has('color') && $request->color != '') {
+            $query->where('color', $request->color);
+        }
+        
+        if ($request->has('zip') && $request->zip != '') {
+            $query->where('zip', $request->zip);
+        }
+
+        $data = $query->latest()->get();
+
+        return DataTables::of($data)
+            ->addColumn('sl', function($row) {
+                static $i = 1;
+                return $i++;
+            })
+            ->addColumn('date', function ($row) {
+                return $row->created_at ? $row->created_at->format('d-m-Y') : 'N/A';
+            })
+            ->addColumn('product_details', function ($row) {
+                if ($row->product) {
+                    $productCode = $row->product->product_code;
+                    $productName = $row->product->name;
+                    return "$productCode - $productName";
+                }
+                return 'N/A';
+            })
+            ->addColumn('size_formatted', function ($row) {
+                return $row->size ?? '-';
+            })
+            ->addColumn('color_formatted', function ($row) {
+                return $row->color ?? '-';
+            })
+            ->addColumn('quantity_formatted', function ($row) {
+                return number_format($row->quantity ?? 0, 0);
+            })
+            ->addColumn('warehouse', function ($row) {
+                return $row->warehouse ? $row->warehouse->name : 'N/A';
+            })
+            ->addColumn('shipment_info', function ($row) {
+                if ($row->shipmentDetail && $row->shipmentDetail->shipment && $row->shipmentDetail->shipment->shipping) {
+                    $shipping = $row->shipmentDetail->shipment->shipping;
+                    return $shipping->shipping_id . '<br><small>' . 
+                        ($shipping->shipping_date ?? '') . ' - ' . 
+                        ($shipping->shipping_name ?? '') . '</small>';
+                }
+                return 'Direct Entry';
+            })
+            ->addColumn('purchase_info', function ($row) {
+                return $row->purchase ? $row->purchase->purchase_number : 'N/A';
+            })
+            ->addColumn('zip_status', function ($row) {
+                if (!$row->product || !$row->product->is_zip) {
+                    return '-';
+                }
+                return $row->zip == 1 ? 'Yes' : 'No';
+            })
+            ->addColumn('reason', function ($row) {
+                return $row->reason ?? '-';
+            })
+            ->addColumn('added_by', function ($row) {
+                return $row->createdBy ? $row->createdBy->name : 'System';
+            })
+            ->addColumn('action', function ($row) {
+                $btn = '<div class="btn-group">';
+                $btn .= '<button type="button" class="btn btn-info btn-sm view-btn" data-id="' . $row->id . '" title="View"><i class="fas fa-eye"></i></button>';
+                $btn .= '<button type="button" class="btn btn-warning btn-sm edit-btn" data-id="' . $row->id . '" title="Edit"><i class="fas fa-edit"></i></button>';
+                $btn .= '<button type="button" class="btn btn-danger btn-sm delete-btn" data-id="' . $row->id . '" title="Delete"><i class="fas fa-trash"></i></button>';
+                $btn .= '</div>';
+                return $btn;
+            })
+            ->rawColumns(['shipment_info', 'action'])
+            ->make(true);
     }
 
 }

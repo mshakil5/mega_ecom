@@ -351,7 +351,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::put('/shipment-received/{id}', [ShipmentController::class, 'shipmentReceived'])->name('admin.shipment.received');
 
-    Route::get('/shipment/sample-products', [ShipmentController::class, 'showSampleProducts'])->name('shipment.sample_products');
+    Route::get('/shipment/sample-products', [ShipmentController::class, 'sampleProducts'])->name('shipment.sample_products');
+    Route::get('/sample-products/data', [ShipmentController::class, 'getSampleProducts'])->name('admin.sample.products.data');
 
     // direct stock
     Route::get('/direct-purchase-stock', [DirectPurchaseController::class, 'purchase'])->name('directPurchase');

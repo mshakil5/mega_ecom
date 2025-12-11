@@ -220,6 +220,8 @@ class DirectPurchaseController extends Controller
                     SampleProduct::create([
                         'product_id' => $item['product_id'],
                         'warehouse_id' => $validated['warehouse_id'],
+                        'shipment_detail_id' => $shipmentDetail->id,
+                        'purchase_id' => $purchase->id,
                         'quantity' => $sample_quantity,
                         'size' => $item['product_size'],
                         'color' => $item['product_color'],
