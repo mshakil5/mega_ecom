@@ -1,109 +1,51 @@
 <script>
-    $(document).ready(function() {
-        const $desktopSearchInput = $('.search-input');
-        const $mobileSearchInput = $('#mobile-search-input');
-        const $searchResults = $('.search-products');
-        const $desktopSearchIcon = $('.search-icon');
-        const $mobileSearchIcon = $('#mobile-search-icon');
-        let debounceTimer;
+$(function () {
 
-        function performSearch($input) {
-            let query = $input.val();
-            if (query.length > 2) {
-                $.ajax({
-                    url: "{{ route('search.products') }}",
-                    method: 'GET',
-                    data: { query: query },
-                    success: function(response) {
-                        const products = response.products;
-                        let productListHtml = '';
+    let timer;
+    const $input = $("#search-input");
+    const $results = $("#search-results");
+    const $btn = $("#search-btn");
 
-                        products.forEach(product => {
-                            if (product.slug && product.feature_image && product.name && product.price !== undefined) {
-                                productListHtml += `
-                                    <div class="col-6 col-md-4 col-lg-4 mb-4">
-                                        <div class="product product-2" style="height: 100%; display: flex; flex-direction: column;">
-                                            <figure class="product-media">
-                                                <a href="{{ route('product.show', '') }}/${product.slug}">
-                                                    <x-image-with-loader src="{{ asset('/images/products/') }}/${product.feature_image}" alt="${product.name}" class="product-image" style="height: 200px; object-fit: cover;" />
-                                                </a>
-                                                ${product.stock && product.stock.quantity > 0 ? `
-                                                    <div class="product-action-vertical">
-                                                        <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="${product.id}" data-offer-id="0" data-price="${product.price}">
-                                                            <span>Add to wishlist</span>
-                                                        </a>
-                                                    </div>
-                                                    <div class="product-action">
-                                                        <a href="#" class="btn-product btn-cart" 
-                                                        title="Add to cart" 
-                                                        data-product-id="${product.id}" 
-                                                        data-offer-id="0" 
-                                                        data-price="${product.price}" 
-                                                        data-toggle="modal" 
-                                                        data-target="#quickAddToCartModal" 
-                                                        data-image="{{ asset('images/products/') }}/${product.feature_image}" 
-                                                        data-stock="${product.stock.quantity}"
-                                                        data-colors='${JSON.stringify(product.colors)}' 
-                                                        data-sizes='${JSON.stringify(product.sizes)}'>
-                                                            <span>Add to cart</span>
-                                                        </a>
-                                                    </div>
-                                                ` : `<span class="product-label label-out-stock">Out of stock</span>`}
-                                            </figure>
-                                            <div class="product-body" style="flex-grow: 1;">
-                                                <h3 class="product-title">
-                                                    <a href="{{ route('product.show', '') }}/${product.slug}">${product.name}</a>
-                                                </h3>
-                                                <div class="product-price">
-                                                    {{ $currency }} ${parseFloat(product.price).toFixed(2)}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>`;
-                            }
-                        });
-
-                        $searchResults.html(productListHtml);
-                        $('.mobile-menu-close').click();
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error fetching search results:', error);
-                        $searchResults.html('<div class="p-2">An error occurred</div>');
-                    }
-                });
-            } else {
-                $searchResults.html(''); 
-            }
+    function renderResults(products) {
+        if (!products.length) {
+            $results.html(`<div class="p-2 text-muted small">No products found</div>`).removeClass("d-none");
+            return;
         }
 
-        function debouncedSearch($input) {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                performSearch($input);
-            }, 300);
+        let html = "";
+        products.forEach(p => {
+            html += `
+                <a href="/product/${p.slug}" class="search-product-item">
+                    <img src="/images/products/${p.feature_image}" class="search-product-image" />
+                    <div class="search-product-info">
+                        <p>${p.name}</p>
+                        <p class="price">{{ $currency }} ${parseFloat(p.price).toFixed(2)}</p>
+                    </div>
+                </a>
+            `;
+        });
+
+        $results.html(html).removeClass("d-none");
+    }
+
+    function search() {
+        let q = $input.val().trim();
+        if (q.length < 2) {
+            $results.addClass("d-none").html("");
+            return;
         }
 
-        $desktopSearchInput.on('keyup', function() {
-            debouncedSearch($(this));
+        $.get("{{ route('search.products') }}", { query: q }, function (res) {
+            renderResults(res.products);
         });
+    }
 
-        $desktopSearchIcon.on('click', function() {
-            performSearch($desktopSearchInput);
-        });
-
-        $mobileSearchInput.on('keyup', function() {
-            debouncedSearch($(this));
-        });
-
-        $mobileSearchIcon.on('click', function() {
-            performSearch($mobileSearchInput);
-        });
-
-        $('.search-input, #mobile-search-input').on('input', function() {
-            if ($(this).val().length === 0) {
-                $searchResults.empty();
-                $('.mobile-menu-close').click();
-            }
-        });
+    $input.on("keyup", function () {
+        clearTimeout(timer);
+        timer = setTimeout(search, 250);
     });
+
+    $btn.on("click", search);
+
+});
 </script>

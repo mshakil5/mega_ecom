@@ -123,42 +123,11 @@
 
                     <li class="nav-item search-container">
                         <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Search Products by Titles or Tags" aria-label="Search" id="search-input">
-                            <button class="btn btn-outline-secondary" type="button"><i class="fas fa-search"></i></button>
+                            <input type="text" class="form-control" placeholder="Search Products ..." id="search-input">
+                            <button class="btn btn-outline-secondary" id="search-btn"><i class="fas fa-search"></i></button>
                         </div>
 
-                        <!-- Search results dropdown (injected from static markup) -->
-                        <div class="search-results-dropdown rounded" id="search-results" aria-hidden="true">
-                            <a href="#" class="search-product-item">
-                                <img src="https://placehold.co/40x40/343a40/ffffff?text=JKT" class="search-product-image" alt="Denim Jacket">
-                                <div class="search-product-info">
-                                    <p>Denim Jacket <span class="badge bg-secondary ms-1">Men</span></p>
-                                    <p class="price">$45.00</p>
-                                </div>
-                            </a>
-                            <a href="#" class="search-product-item">
-                                <img src="https://placehold.co/40x40/dc3545/ffffff?text=TSH" class="search-product-image" alt="Premium T-Shirt">
-                                <div class="search-product-info">
-                                    <p>Premium Cotton T-Shirt</p>
-                                    <p class="price">$19.99</p>
-                                </div>
-                            </a>
-                            <a href="#" class="search-product-item">
-                                <img src="https://placehold.co/40x40/6c757d/ffffff?text=Bag" class="search-product-image" alt="Leather Backpack">
-                                <div class="search-product-info">
-                                    <p>Leather Backpack</p>
-                                    <p class="price">$89.50</p>
-                                </div>
-                            </a>
-                            <a href="#" class="search-product-item">
-                                <img src="https://placehold.co/40x40/0d6efd/ffffff?text=WCH" class="search-product-image" alt="Smart Watch">
-                                <div class="search-product-info">
-                                    <p>Smart Watch Series</p>
-                                    <p class="price">$120.00</p>
-                                </div>
-                            </a>
-                            <div class="dropdown-item text-center text-secondary small pt-2">Type more to refine results...</div>
-                        </div>
+                        <div class="search-results-dropdown rounded d-none" id="search-results"></div>
                     </li>
                 </ul>
 
