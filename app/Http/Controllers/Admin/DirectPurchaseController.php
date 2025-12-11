@@ -17,6 +17,8 @@ use App\Models\Size;
 use App\Models\SystemLose;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
+use App\Models\Shipment;
+use App\Models\ShipmentDetails;
 
 class DirectPurchaseController extends Controller
 {
@@ -76,10 +78,8 @@ class DirectPurchaseController extends Controller
 
         try {
 
-            // Generate Invoice
             $prefix = 'INV-' . date('ym') . '-';
 
-            // Find the last invoice that matches the prefix
             $lastInvoice = Purchase::where('invoice', 'like', "%{$prefix}%")
                 ->orderBy('id', 'desc')
                 ->value('invoice');
@@ -87,7 +87,6 @@ class DirectPurchaseController extends Controller
             $lastSeq = 0;
 
             if ($lastInvoice) {
-                // Extract the sequence number from the invoice
                 if (preg_match("/{$prefix}(\d{4})/", $lastInvoice, $matches)) {
                     $lastSeq = (int) $matches[1];
                 }
@@ -96,17 +95,11 @@ class DirectPurchaseController extends Controller
             $nextSeq = $lastSeq + 1;
             $invoicePrefix = "STL-{$validated['season']}-" . $prefix . str_pad($nextSeq, 4, '0', STR_PAD_LEFT);
 
-            // Ensure unique invoice ID
             while (Purchase::where('invoice', $invoicePrefix)->exists()) {
                 $nextSeq++;
                 $invoicePrefix = "STL-{$validated['season']}-" . $prefix . str_pad($nextSeq, 4, '0', STR_PAD_LEFT);
             }
 
-            
-
-            /** ---------------------------
-             *  Create Purchase Record
-             * --------------------------*/
             $purchase = Purchase::create([
                 'invoice'          => $invoicePrefix,
                 'supplier_id'      => $validated['supplier_id'],
@@ -119,73 +112,129 @@ class DirectPurchaseController extends Controller
                 'paid_amount'      => ($request->cash_payment ?? 0) + ($request->bank_payment ?? 0),
                 'other_cost'       => ($request->total_additional_cost ?? 0),
                 'due_amount'       => $validated['net_amount'] - (($request->cash_payment ?? 0) + ($request->bank_payment ?? 0)),
-                'status'           => $request->warehouse_id ? 4 : 1,
+                'status'           => 1,
                 'direct_purchase'  => 1,
                 'created_by'       => Auth::id(),
             ]);
 
-            /** ---------------------------
-             *  Insert Purchase Items
-             * --------------------------*/
+            $total_quantity = 0;
+            $total_missing_quantity = 0;
+            $total_purchase_cost = 0;
+            $total_additional_cost = $request->total_additional_cost ?? 0;
+            $total_saleable_quantity = 0;
+
+            $shipment = Shipment::create([
+                'shipping_id' => null,
+                'total_product_quantity' => 0,
+                'total_missing_quantity' => 0,
+                'total_purchase_cost' => 0,
+                'total_additional_cost' => $total_additional_cost,
+                'total_profit' => 0,
+                'target_budget' => 0,
+                'budget_over' => 0,
+                'total_cost_of_shipment' => $validated['net_amount'],
+                'purchase_ids' => json_encode([(string) $purchase->id]),
+                'created_by' => auth()->id(),
+            ]);
+
             foreach ($validated['products'] as $item) {
 
                 $vatPerUnit = ($item['unit_price'] * ($item['vat_percent'] ?? 0)) / 100;
                 $totalVat   = $vatPerUnit * $item['quantity'];
                 $totalPrice = $item['unit_price'] * $item['quantity'];
 
-                    PurchaseHistory::create([
-                        'purchase_id'               => $purchase->id,
-                        'product_id'                => $item['product_id'],
-                        'type_id'                   => $item['type_id'] ?? null,
-                        'quantity'                  => $item['quantity'],
-                        'product_size'              => $item['product_size'],
-                        'product_color'             => $item['product_color'],
-                        'purchase_price'            => $item['unit_price'],
-                        'vat_percent'               => $item['vat_percent'] ?? 0,
-                        'vat_amount_per_unit'       => $vatPerUnit,
-                        'total_vat'                 => $totalVat,
-                        'total_amount'              => $totalPrice,
-                        'total_amount_with_vat'     => $totalPrice + $totalVat,
-                        'remaining_product_quantity'=> $request->warehouse_id ? 0 : $item['quantity'],
-                        'transferred_product_quantity'=> $request->warehouse_id ? $item['quantity'] : 0,
-                        'created_by'                => Auth::id(),
-                    ]);
+                $missing_quantity = $item['missing_quantity'] ?? 0;
+                $sample_quantity = $item['sample_quantity'] ?? 0;
+                $saleable_quantity = $item['quantity'] - $missing_quantity - $sample_quantity;
 
-                // Update product latest price
+                $purchaseHistory = PurchaseHistory::create([
+                    'purchase_id'               => $purchase->id,
+                    'product_id'                => $item['product_id'],
+                    'type_id'                   => $item['type_id'] ?? null,
+                    'quantity'                  => $item['quantity'],
+                    'product_size'              => $item['product_size'],
+                    'product_color'             => $item['product_color'],
+                    'purchase_price'            => $item['unit_price'],
+                    'vat_percent'               => $item['vat_percent'] ?? 0,
+                    'vat_amount_per_unit'       => $vatPerUnit,
+                    'total_vat'                 => $totalVat,
+                    'total_amount'              => $totalPrice,
+                    'total_amount_with_vat'     => $totalPrice + $totalVat,
+                    'remaining_product_quantity'=> $saleable_quantity,
+                    'transferred_product_quantity'=> 0,
+                    'zip'                       => $item['zip'] ?? 0,
+                    'created_by'                => Auth::id(),
+                ]);
+
+                $total_quantity += $saleable_quantity;
+                $total_missing_quantity += $missing_quantity;
+                $total_purchase_cost += ($item['unit_price'] * $saleable_quantity);
+                $total_saleable_quantity += $saleable_quantity;
+
+                $additional_cost_per_item = $total_additional_cost > 0 ? 
+                    ($total_additional_cost / $total_saleable_quantity) : 0;
+                $ground_cost_per_item = $item['unit_price'] + $additional_cost_per_item;
+
+                $profit_margin = $item['profit_margin'] ?? 30;
+                $selling_price = $ground_cost_per_item + ($ground_cost_per_item * $profit_margin / 100);
+
+                $shipmentDetail = ShipmentDetails::create([
+                    'shipment_id' => $shipment->id,
+                    'product_id' => $item['product_id'],
+                    'supplier_id' => $validated['supplier_id'],
+                    'purchase_history_id' => $purchaseHistory->id,
+                    'size' => $item['product_size'],
+                    'color' => $item['product_color'],
+                    'type_id' => $item['type_id'] ?? null,
+                    'warehouse_id' => $validated['warehouse_id'],
+                    'quantity' => $saleable_quantity,
+                    'shipped_quantity' => 0,
+                    'missing_quantity' => $missing_quantity,
+                    'price_per_unit' => $item['unit_price'],
+                    'ground_price_per_unit' => $ground_cost_per_item,
+                    'profit_margin' => $profit_margin,
+                    'selling_price' => $selling_price,
+                    'considerable_margin' => 0,
+                    'considerable_price' => 0,
+                    'sample_quantity' => $sample_quantity,
+                ]);
+
                 Product::where('id', $item['product_id'])
                     ->update(['price' => $item['unit_price']]);
 
-                    if (!empty($item['missing_quantity']) && $item['missing_quantity'] > 0) {
-                        SystemLose::create([
-                            'product_id' => $item['product_id'],
-                            'purchase_id' => $purchase->id,
-                            'warehouse_id' => $request->warehouse_id,
-                            'quantity' => $item['missing_quantity'],
-                            'size' => $item['product_size'],
-                            'color' => $item['product_color'],
-                            'type_id' => $item['type_id'] ?? null,
-                            'reason' => 'Damaged from purchase',
-                            'created_by' => auth()->id()
-                        ]);
-                    }
+                if (!empty($missing_quantity) && $missing_quantity > 0) {
+                    SystemLose::create([
+                        'product_id' => $item['product_id'],
+                        'shipment_detail_id' => $shipmentDetail->id,
+                        'warehouse_id' => $validated['warehouse_id'],
+                        'quantity' => $missing_quantity,
+                        'size' => $item['product_size'],
+                        'color' => $item['product_color'],
+                        'type_id' => $item['type_id'] ?? null,
+                        'reason' => 'Damaged from purchase',
+                        'created_by' => auth()->id()
+                    ]);
+                }
 
-                    if (!empty($item['sample_quantity']) && $item['sample_quantity'] > 0) {
-                        SampleProduct::create([
-                            'product_id' => $item['product_id'],
-                            'purchase_id' => $purchase->id,
-                            'warehouse_id' => $request->warehouse_id,
-                            'quantity' => $item['sample_quantity'],
-                            'size' => $item['product_size'],
-                            'color' => $item['product_color'],
-                            'reason' => 'Sample quantity create from purchase',
-                            'created_by' => auth()->id()
-                        ]);
-                    }
+                if (!empty($sample_quantity) && $sample_quantity > 0) {
+                    SampleProduct::create([
+                        'product_id' => $item['product_id'],
+                        'warehouse_id' => $validated['warehouse_id'],
+                        'quantity' => $sample_quantity,
+                        'size' => $item['product_size'],
+                        'color' => $item['product_color'],
+                        'reason' => 'Sample quantity create from purchase',
+                        'created_by' => auth()->id()
+                    ]);
+                }
             }
 
-            /** ---------------------------
-             *  Supplier Transaction - Main
-             * --------------------------*/
+            $shipment->update([
+                'total_product_quantity' => $total_quantity,
+                'total_missing_quantity' => $total_missing_quantity,
+                'total_purchase_cost' => $total_purchase_cost,
+            ]);
+
             $mainTransaction = Transaction::create([
                 'date'           => $validated['purchase_date'],
                 'supplier_id'    => $validated['supplier_id'],
@@ -205,9 +254,6 @@ class DirectPurchaseController extends Controller
                 'tran_id' => 'SL' . date('ymd') . str_pad($mainTransaction->id, 4, '0', STR_PAD_LEFT)
             ]);
 
-            /** ---------------------------
-             *  Cash Payment
-             * --------------------------*/
             if ($request->cash_payment > 0) {
                 $this->storePaymentTransaction(
                     $validated['purchase_date'],
@@ -218,9 +264,6 @@ class DirectPurchaseController extends Controller
                 );
             }
 
-            /** ---------------------------
-             *  Bank Payment
-             * --------------------------*/
             if ($request->bank_payment > 0) {
                 $this->storePaymentTransaction(
                     $validated['purchase_date'],
@@ -231,7 +274,6 @@ class DirectPurchaseController extends Controller
                 );
             }
 
-
             $expenses = $request->input('expenses');
 
             foreach ($expenses as $expense) {
@@ -239,6 +281,7 @@ class DirectPurchaseController extends Controller
                 $transaction->date = $validated['purchase_date'];
                 $transaction->table_type = 'Expenses';
                 $transaction->purchase_id = $purchase->id;
+                $transaction->shipment_id = $shipment->id;
                 $transaction->supplier_id = $validated['supplier_id'];
                 $transaction->amount = $expense['amount'];
                 $transaction->at_amount = $expense['amount'];
@@ -250,6 +293,7 @@ class DirectPurchaseController extends Controller
                 $transaction->transaction_type = 'Current';
                 $transaction->created_by = auth()->id();
                 $transaction->save();
+
                 $transaction->tran_id = 'EX' . date('ymd') . str_pad($transaction->id, 4, '0', STR_PAD_LEFT);
                 $transaction->save();
             }
@@ -259,6 +303,8 @@ class DirectPurchaseController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Purchase saved successfully!',
+                'purchase_id' => $purchase->id,
+                'shipment_id' => $shipment->id,
             ]);
 
         } catch (\Exception $e) {
@@ -272,9 +318,6 @@ class DirectPurchaseController extends Controller
         }
     }
 
-        /**
-     * Store Cash/Bank Payment Transaction
-     */
     private function storePaymentTransaction($date, $supplierId, $purchaseId, $paymentType, $amount)
     {
         $trx = Transaction::create([
@@ -294,5 +337,4 @@ class DirectPurchaseController extends Controller
             'tran_id' => 'SL' . date('ymd') . str_pad($trx->id, 4, '0', STR_PAD_LEFT)
         ]);
     }
-
 }

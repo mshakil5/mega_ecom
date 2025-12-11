@@ -27,6 +27,7 @@ use App\Models\StockTransferRequest;
 use App\Models\CompanyDetails;
 use PDF;
 use App\Models\Type;
+use App\Models\Shipment;
 
 class StockController extends Controller
 {
@@ -1386,10 +1387,114 @@ class StockController extends Controller
         ]);
 
         $purchase = Purchase::find($request->purchase_id);
+        $oldStatus = $purchase->status;
         $purchase->status = $request->status;
         $purchase->save();
 
+        if ($request->status == 4 && $oldStatus != 4) {
+            if ($purchase->direct_purchase == 1) {
+                $this->handleDirectPurchaseReceived($purchase);
+            }
+        }
+
         return response()->json(['success' => true]);
+    }
+
+    private function handleDirectPurchaseReceived($purchase)
+    {
+        $shipment = Shipment::whereJsonContains('purchase_ids', (string)$purchase->id)->first();
+        
+        $shipmentDetails = ShipmentDetails::with('purchaseHistory')
+            ->where('shipment_id', $shipment->id)
+            ->get();
+
+        foreach ($shipmentDetails as $detail) {
+            if ($detail->shipped_quantity > 0) {
+                continue;
+            }
+
+            $purchaseHistory = $detail->purchaseHistory;
+            if (!$purchaseHistory) {
+                continue;
+            }
+
+            $quantity = $detail->quantity;
+            $missing_quantity = $detail->missing_quantity ?? 0;
+            $sample_quantity = $detail->sample_quantity ?? 0;
+
+            $stock = Stock::where('product_id', $detail->product_id)
+                ->where('size', $detail->size)
+                ->where('color', $detail->color)
+                ->where('zip', $purchaseHistory->zip ?? 0)
+                ->where('warehouse_id', $detail->warehouse_id)
+                ->where('type_id', $detail->type_id)
+                ->first();
+
+            if ($stock) {
+                $stock->quantity += $quantity;
+                $stock->purchase_price = $detail->price_per_unit;
+                $stock->ground_price_per_unit = $detail->ground_price_per_unit;
+                $stock->profit_margin = $detail->profit_margin;
+                $stock->selling_price = $detail->selling_price;
+                $stock->considerable_margin = $detail->considerable_margin;
+                $stock->considerable_price = $detail->considerable_price;
+                $stock->updated_by = auth()->id();
+                $stock->save();
+            } else {
+                $stock = Stock::create([
+                    'product_id' => $detail->product_id,
+                    'quantity' => $quantity,
+                    'size' => $detail->size,
+                    'color' => $detail->color,
+                    'zip' => $purchaseHistory->zip ?? 0,
+                    'type_id' => $detail->type_id,
+                    'purchase_price' => $detail->price_per_unit,
+                    'ground_price_per_unit' => $detail->ground_price_per_unit,
+                    'profit_margin' => $detail->profit_margin,
+                    'selling_price' => $detail->selling_price,
+                    'considerable_margin' => $detail->considerable_margin,
+                    'considerable_price' => $detail->considerable_price,
+                    'warehouse_id' => $detail->warehouse_id,
+                    'created_by' => auth()->id(),
+                ]);
+            }
+
+            $stockid = date('mds') . str_pad($detail->product_id, 4, '0', STR_PAD_LEFT);
+            StockHistory::create([
+                'stock_id' => $stock->id,
+                'date' => $purchase->purchase_date ?? date('Y-m-d'),
+                'product_id' => $detail->product_id,
+                'quantity' => $quantity,
+                'size' => $detail->size,
+                'color' => $detail->color,
+                'zip' => $purchaseHistory->zip ?? 0,
+                'type_id' => $detail->type_id,
+                'warehouse_id' => $detail->warehouse_id,
+                'available_qty' => $quantity,
+                'ground_price_per_unit' => $detail->ground_price_per_unit,
+                'profit_margin' => $detail->profit_margin,
+                'purchase_price' => $detail->price_per_unit,
+                'selling_price' => $detail->selling_price,
+                'considerable_margin' => $detail->considerable_margin,
+                'considerable_price' => $detail->considerable_price,
+                'sample_quantity' => $sample_quantity,
+                'created_by' => auth()->id(),
+                'stockid' => 'DP' . date('ymd') . str_pad($detail->product_id, 5, '0', STR_PAD_LEFT),
+            ]);
+
+            $detail->update([
+                'shipped_quantity' => $quantity,
+            ]);
+
+            $purchaseHistory->update([
+                'shipped_quantity' => $quantity,
+                'remaining_product_quantity' => 0,
+            ]);
+        }
+
+        $shipment->update([
+            'updated_by' => auth()->id(),
+        ]);
     }
 
     public function missingProduct($id)

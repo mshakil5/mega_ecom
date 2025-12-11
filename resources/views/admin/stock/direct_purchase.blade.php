@@ -34,7 +34,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="form-group col-sm-2">
+                                <div class="form-group col-sm-3">
                                     <label for="season">Season<span style="color: red;">*</span></label>
                                     <select class="form-control" id="season" name="season">
                                         <option value="All">All Season</option>
@@ -51,7 +51,7 @@
                                     <small class="text-muted">Example: <span id="productCodePreview">STL-Season-Year-XXXXX</span></small>
                                     <span id="invoice-error" class="text-danger" style="display: none;">Invoice already exists</span>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-4">
                                     <div class="form-group">
                                         <label for="warehouse_id">Warehouse <span class="text-danger">*</span></label>
                                         <select name="warehouse_id" id="warehouse_id" class="form-control select2">
@@ -849,7 +849,7 @@
                             className: "swal-button--confirm"
                         }
                     }).then(() => {
-                        window.location.href = "{{ route('admin.newPurchaseHistory') }}";
+                        window.location.href = "{{ route('productPurchaseHistory') }}";
                     });
                 },
                 error: function(xhr) {

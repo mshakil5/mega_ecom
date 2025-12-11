@@ -61,8 +61,41 @@
 
                                     <!-- <td>{{ $totalRemainingQuantity }}</td>
                                     <td>{{$purchase->purchaseHistory->sum('missing_product_quantity')}}</td> -->
-                                    <td> {{$purchase->purchaseHistory->sum('quantity')}} / {{$purchase->purchaseHistory->sum('shipped_quantity')}}</td>
                                     <td>
+                                        @php
+                                            $purchased = $purchase->purchaseHistory->sum('quantity');
+                                            $shipped   = $purchase->purchaseHistory->sum('shipped_quantity');
+                                        @endphp
+
+                                        {{-- Direct Purchase --}}
+                                        @if ($purchase->direct_purchase == 1)
+                                            @if ($purchase->status == 4)
+                                                {{ $purchased }} / {{ $purchased }}
+                                            @else
+                                                {{ $purchased }} / 0
+                                            @endif
+
+                                        {{-- Normal Purchase --}}
+                                        @else
+                                            {{ $purchase->purchaseHistory->sum('quantity') }} /
+                                            {{ $purchase->purchaseHistory->sum('shipped_quantity') }}
+                                        @endif
+                                    </td>
+                                    <td>
+
+                                        @if ($purchase->direct_purchase == 1)
+
+                                        <select class="form-control purchase-status"
+                                                data-purchase-id="{{ $purchase->id }}"
+                                                {{ $purchase->status == 4 ? 'disabled' : '' }}>
+                                            <option value="1" {{ $purchase->status == 1 ? 'selected' : '' }}>Processing</option>
+                                            <option value="2" {{ $purchase->status == 2 ? 'selected' : '' }}>On The Way</option>
+                                            <option value="3" {{ $purchase->status == 3 ? 'selected' : '' }}>Customs</option>
+                                            <option value="4" {{ $purchase->status == 4 ? 'selected' : '' }}>Received</option>
+                                        </select>
+
+                                        @else
+                                        
                                         @php
                                             $totalRemainingQuantity = $purchase->purchaseHistory->sum('remaining_product_quantity');
                                             $totalShippedQuantity = $purchase->purchaseHistory->sum('shipped_quantity');
@@ -73,12 +106,8 @@
                                             <span class="btn btn-sm btn-success">Partially Completed</span>
                                         @elseif($totalShippedQuantity == 0)
                                         <span class="btn btn-sm btn-success">New</span>
-                                        <!-- <select class="form-control purchase-status" data-purchase-id="{{ $purchase->id }}">
-                                            <option value="1" {{ $purchase->status == 1 ? 'selected' : '' }}>Processing</option>
-                                            <option value="2" {{ $purchase->status == 2 ? 'selected' : '' }}>On The Way</option>
-                                            <option value="3" {{ $purchase->status == 3 ? 'selected' : '' }}>Customs</option>
-                                            <option value="4" {{ $purchase->status == 4 ? 'selected' : '' }}>Received</option>
-                                        </select> -->
+                                        @endif
+
                                         @endif
                                     </td>
                                     <td>
@@ -91,17 +120,17 @@
                                         @php
                                             $totalShippedQuantity = $purchase->purchaseHistory->sum('shipped_quantity');
                                         @endphp
-                                        @if ($totalShippedQuantity < 1)
+                                        @if ($totalShippedQuantity < 1 && $purchase->direct_purchase == 0)
                                         <a href="{{ route('purchase.edit', $purchase->id) }}" class="btn btn-sm btn-primary">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         @endif
-                                        @if($purchase->status == 4 && $totalNotReturnedQuantity > 0)
+                                        @if($purchase->status == 4 && $totalNotReturnedQuantity > 0 && $purchase->direct_purchase == 0)
                                         <a href="{{ route('returnProduct', $purchase->id) }}" class="btn btn-sm btn-warning">
                                             <i class="fas fa-undo-alt"></i>
                                         </a>
                                         @endif
-                                        @if ($totalRemainingQuantity > 1 && $purchase->status == 4)
+                                        @if ($totalRemainingQuantity > 1 && $purchase->status == 4 && $purchase->direct_purchase == 0)
                                             <a href="{{ route('transferToWarehouse', $purchase->id) }}" class="btn btn-sm btn-success">
                                                 <i class="fas fa-arrow-right"></i>
                                             </a>
