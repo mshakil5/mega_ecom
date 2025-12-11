@@ -91,11 +91,11 @@ class FrontendController extends Controller
         $popularProducts      = Cache::remember('home_popular_products', 600, fn() => $getProducts('is_popular'));
         $featuredProducts     = Cache::remember('home_featured_products', 600, fn() => $getProducts('is_featured'));
 
-        $sliders = Cache::remember('home_sliders', 600, function () {
+        $slider = Cache::remember('home_sliders', 600, function () {
             return Slider::where('status', 1)
                 ->orderBy('id', 'asc')
                 ->select('title', 'sub_title', 'image', 'link')
-                ->get();
+                ->first();
         });
 
         $advertisements = Cache::remember('home_ads', 600, function () {
@@ -133,7 +133,7 @@ class FrontendController extends Controller
             'featuredProducts',
             'section_status',
             'advertisements',
-            'sliders',
+            'slider',
             'categories'
         ));
     }

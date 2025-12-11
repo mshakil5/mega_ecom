@@ -5,6 +5,15 @@
         $company = \App\Models\CompanyDetails::select('fav_icon', 'company_name', 'design', 'footer_content', 'address1', 'email1', 'phone1', 'company_logo', 'facebook', 'twitter', 'instagram', 'youtube', 'currency')->first();
         $currency = $company->currency;
 
+        $topCategories = \App\Models\Category::with(['subcategories' => function($q){
+                $q->where('status', 1)->orderBy('name');
+            }])
+            ->where('status', 1)
+            ->withCount('subcategories')
+            ->orderByDesc('subcategories_count')
+            ->take(3)
+            ->get();
+
     @endphp  
 
 <head>

@@ -37,6 +37,7 @@ class SliderController extends Controller
         }
         
         if ($data->save()) {
+            $this->clearSliderCache();
             $message ="<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Data Create Successfully.</b></div>";
             return response()->json(['status'=> 300,'message'=>$message]);
         }else{
@@ -76,6 +77,7 @@ class SliderController extends Controller
         }
 
           if ($slider->save()) {
+            $this->clearSliderCache();
             $message = "<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Data Updated Successfully.</b></div>";
             return response()->json(['status' => 300, 'message' => $message]);
         } else {
@@ -98,6 +100,7 @@ class SliderController extends Controller
         }
 
         if ($slider->delete()) {
+            $this->clearSliderCache();
             return response()->json(['success' => true, 'message' => 'Deleted successfully.']);
         } else {
             return response()->json(['success' => false, 'message' => 'Failed to delete.'], 500);
@@ -113,7 +116,13 @@ class SliderController extends Controller
 
         $slider->status = $request->status;
         $slider->save();
+        $this->clearSliderCache();
 
         return response()->json(['status' => 200, 'message' => 'Status updated successfully']);
+    }
+
+    protected function clearSliderCache()
+    {
+        \Cache::forget('home_sliders');
     }
 }

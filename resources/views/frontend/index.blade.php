@@ -2,22 +2,15 @@
 
 @section('content')
     
-
-
-    <!-- HERO CAROUSEL -->
     <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
-        <div class="carousel-indicators">
-            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
-        </div>
-
         <div class="carousel-inner">
-            <div class="carousel-item slide-2">
+            <div class="carousel-item" style="background-image: url('{{ asset('images/slider/' . $slider->image) }}');">
                 <div class="carousel-caption d-block text-center position-relative">
-                    <h2 class="display-3 fw-bolder">50% OFF FOR LIMITED TIME</h2>
-                    <p class="lead">Check out our new season essentials before they run out.</p>
-                    <a href="#" class="btn btn-light btn-lg mt-3">Shop Essentials</a>
+                    <h2 class="display-3 fw-bolder">{{ $slider->title ?? '' }}</h2>
+                    <p class="lead">{{ $slider->sub_title ?? '' }}</p>
+                    @if($slider->link)
+                        <a href="{{ $slider->link }}" class="btn btn-light btn-lg mt-3">Shop Now</a>
+                    @endif
                 </div>
             </div>
         </div>
@@ -139,6 +132,7 @@
             <h2 class="fs-2 fw-bold mb-4 text-dark">Trending - Kurti & Tops</h2>
 
             <div class="row g-4">
+                <!-- Promo Block -->
                 <div class="col-12 col-lg-4">
                     <div class="promo-overlay" style="background-image: url('https://placehold.co/800x1200/c084fc/ffffff?text=KURTI%2C+TUNIC+%26+TOPS');">
                         <div class="promo-text-box">
@@ -148,8 +142,132 @@
                     </div>
                 </div>
 
+                <!-- Trending Products -->
                 <div class="col-12 col-lg-8">
-                    <div class="row g-3" id="women-products-container"></div>
+                    <div class="row g-3">
+                        @foreach ($trendingProducts as $product)
+                            <div class="col-6 col-md-4 col-lg-3 mb-4 product-item-card">
+                                <a href="{{ route('product.show', $product->slug) }}" class="card bg-white product-card text-decoration-none text-dark">
+                                    <div class="product-image-container">
+                                        <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="img-fluid">
+                                        <span class="badge position-absolute top-0 start-0 product-tag">{{ strtoupper($product->category->name ?? '') }} - {{$product->id}}</span>
+                                    </div>
+                                    <div class="product-price">
+                                        <div>
+                                            <strong>£{{ number_format($product->price, 2) }}</strong>
+                                            <strike>£{{ number_format($product->price, 2) }}</strike>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        @endforeach
+
+                        <!-- View More Card -->
+                        <div class="col-6 col-md-4 col-lg-3 mb-4">
+                            <a href="#" class="card view-more-card" style="min-height: 220px;">
+                                <div class="overlay"></div>
+                                <div class="view-more-content fw-bold fs-4">
+                                    <i data-lucide="eye" class="mb-2"></i>
+                                    <div class="tracking-wider">View More</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="container section-container">
+            <h2 class="fs-2 fw-bold mb-4 text-dark">Popular Products</h2>
+
+            <div class="row g-4">
+                <!-- Optional Promo Block -->
+                <div class="col-12 col-lg-4">
+                    <div class="promo-overlay" style="background-image: url('https://placehold.co/800x1200/ff9f43/ffffff?text=POPULAR+COLLECTION');">
+                        <div class="promo-text-box">
+                            <h3 class="fs-3 fw-bold">Popular Collection</h3>
+                            <p class="mb-0 small">Top Picks</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Popular Products -->
+                <div class="col-12 col-lg-8">
+                    <div class="row g-3">
+                        @foreach ($popularProducts as $product)
+                            <div class="col-6 col-md-4 col-lg-3 mb-4 product-item-card">
+                                <a href="{{ route('product.show', $product->slug) }}" class="card bg-white product-card text-decoration-none text-dark">
+                                    <div class="product-image-container">
+                                        <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="img-fluid">
+                                        <span class="badge position-absolute top-0 start-0 product-tag">{{ strtoupper($product->category->name ?? '') }} - {{$product->id}}</span>
+                                    </div>
+                                    <div class="product-price">
+                                        <div>
+                                            <strong>£{{ number_format($product->price, 2) }}</strong>
+                                            <strike>£{{ number_format($product->price, 2) }}</strike>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        @endforeach
+
+                        <!-- View More Card -->
+                        <div class="col-6 col-md-4 col-lg-3 mb-4">
+                            <a href="#" class="card view-more-card" style="min-height: 220px;">
+                                <div class="overlay"></div>
+                                <div class="view-more-content fw-bold fs-4">
+                                    <i data-lucide="eye" class="mb-2"></i>
+                                    <div class="tracking-wider">View More</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="container section-container">
+            <h2 class="fs-2 fw-bold mb-4 text-dark">Featured Products</h2>
+
+            <div class="row g-4">
+                <div class="col-12 col-lg-4">
+                    <div class="promo-overlay" style="background-image: url('https://placehold.co/800x1200/00b894/ffffff?text=FEATURED+COLLECTION');">
+                        <div class="promo-text-box">
+                            <h3 class="fs-3 fw-bold">Featured Collection</h3>
+                            <p class="mb-0 small">Top Picks</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-8">
+                    <div class="row g-3">
+                        @foreach ($featuredProducts as $product)
+                            <div class="col-6 col-md-4 col-lg-3 mb-4 product-item-card">
+                                <a href="{{ route('product.show', $product->slug) }}" class="card bg-white product-card text-decoration-none text-dark">
+                                    <div class="product-image-container">
+                                        <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="img-fluid">
+                                        <span class="badge position-absolute top-0 start-0 product-tag">{{ strtoupper($product->category->name ?? '') }} - {{$product->id}}</span>
+                                    </div>
+                                    <div class="product-price">
+                                        <div>
+                                            <strong>£{{ number_format($product->price, 2) }}</strong>
+                                            <strike>£{{ number_format($product->price, 2) }}</strike>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        @endforeach
+
+                        <div class="col-6 col-md-4 col-lg-3 mb-4">
+                            <a href="#" class="card view-more-card" style="min-height: 220px;">
+                                <div class="overlay"></div>
+                                <div class="view-more-content fw-bold fs-4">
+                                    <i data-lucide="eye" class="mb-2"></i>
+                                    <div class="tracking-wider">View More</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>

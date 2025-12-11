@@ -10,7 +10,7 @@
 
                     <div class="col-lg-4 mb-3 mb-lg-0">
                         <h6 class="fw-bold mb-2"><i class="bi bi-patch-check-fill"></i> Satisfaction guaranteed</h6>
-                        <p class="small text-muted mb-0">Made with premium quality materials.<br>**Cozy yet lasts the test of time**</p>
+                        <p class="small mb-0">Made with premium quality materials.<br>**Cozy yet lasts the test of time**</p>
                     </div>
 
                     <div class="col-lg-4">
@@ -40,7 +40,7 @@
                             <i class="bi bi-telephone-fill me-2" style="color: orange;"></i>
                             <span class="text-uppercase fw-bold">For any help you may call us at</span>
                         </div>
-                        <p class="mb-0 mt-1">**+8809677666888**</p>
+                        <p class="mb-0 mt-1">{{ $company->phone1 }}</p>
                         <p class="small mb-0">Open 24 Hours a Day, 7 Days a week</p>
                     </div>
                 </div>
@@ -51,63 +51,40 @@
             <div class="container">
                 <div class="row">
                     <div class="col-6 col-lg-3 mb-4">
-                        <h6 class="text-uppercase fw-bold mb-3" style="color: #ffc107;">FABRLIFE</h6>
+                        <h6 class="text-uppercase fw-bold mb-3" style="color: #ffc107;">{{ $company->company_name }}</h6>
                         <ul class="list-unstyled">
-                            <li><a href="#" class="text-white text-decoration-none small">ABOUT US</a></li>
-                            <li><a href="#" class="text-white text-decoration-none small">TERMS & CONDITIONS</a></li>
-                            <li><a href="#" class="text-white text-decoration-none small">PRIVACY POLICY</a></li>
-                            <li><a href="#" class="text-white text-decoration-none small">CANCELLATION & RETURN POLICY</a></li>
-                            <li><a href="#" class="text-white text-decoration-none small">FAQS</a></li>
-                            <li><a href="#" class="text-white text-decoration-none small">CONTACT US</a></li>
-                            <li><a href="#" class="text-white text-decoration-none small">STORE LOCATIONS</a></li>
+                            <li><a href="{{ route('frontend.about') }}" class="text-white text-decoration-none small">ABOUT US</a></li>
+                            <li><a href="{{ route('terms-and-conditions') }}" class="text-white text-decoration-none small">TERMS & CONDITIONS</a></li>
+                            <li><a href="{{ route('privacy-policy') }}" class="text-white text-decoration-none small">PRIVACY POLICY</a></li>
+                            <li><a href="{{ route('frontend.faq') }}" class="text-white text-decoration-none small">FAQS</a></li>
+                            <li><a href="{{ route('frontend.contact') }}" class="text-white text-decoration-none small">CONTACT US</a></li>
                         </ul>
                         <div class="d-flex mt-3">
-                            <a href="#" class="text-white me-2"><i class="bi bi-facebook fs-5"></i></a>
-                            <a href="#" class="text-white me-2"><i class="bi bi-instagram fs-5"></i></a>
-                            <a href="#" class="text-white"><i class="bi bi-twitter fs-5"></i></a>
+                            <a href="{{ $comapny->facebook ?? '#' }}" class="text-white me-2"><i class="bi bi-facebook fs-5"></i></a>
+                            <a href="{{ $comapny->instagram ?? '#' }}" class="text-white me-2"><i class="bi bi-instagram fs-5"></i></a>
+                            <a href="{{ $comapny->twitter ?? '#' }}" class="text-white"><i class="bi bi-twitter fs-5"></i></a>
                         </div>
                     </div>
 
-                    <div class="col-6 col-lg-3 mb-4">
-                        <h6 class="text-uppercase fw-bold mb-3">MEN</h6>
-                        <ul class="list-unstyled">
-                            <li><a href="#" class="text-white text-decoration-none small">SHORT SLEEVE</a></li>
-                            <li><a href="#" class="text-white text-decoration-none small">LONG SLEEVE</a></li>
-                            <li><a href="#" class="text-white text-decoration-none small">POLO</a></li>
-                            <li><a href="#" class="text-white text-decoration-none small">SHIRT</a></li>
-                            <li><a href="#" class="text-white text-decoration-none small">HOODIE</a></li>
-                            <li><a href="#" class="text-white text-decoration-none small">COMFY TROUSER</a></li>
-                            <li><a href="#" class="text-white text-decoration-none small">SPORTS TROUSER</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="col-6 col-lg-3 mb-4">
-                        <h6 class="text-uppercase fw-bold mb-3">WOMEN</h6>
-                        <ul class="list-unstyled">
-                            <li><a href="#" class="text-white text-decoration-none small">COMFY TROUSER</a></li>
-                            <li class="fw-bold"><a href="#" class="text-white text-decoration-none small">FACE MASK</a></li>
-                            <li><a href="#" class="text-white text-decoration-none small">CLASSIC</a></li>
-                            <li><a href="#" class="text-white text-decoration-none small">DESIGNER EDITION</a></li>
-                            <li><a href="#" class="text-white text-decoration-none small">KIDS MASK</a></li>
-                            <li class="fw-bold"><a href="#" class="text-white text-decoration-none small">SPORTS</a></li>
-                            <li><a href="#" class="text-white text-decoration-none small">JERSEY</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="col-6 col-lg-3 mb-4">
-                        <h6 class="text-uppercase fw-bold mb-3">KIDS</h6>
-                        <ul class="list-unstyled">
-                            <li><a href="#" class="text-white text-decoration-none small">SHORT SLEEVE</a></li>
-                            <li><a href="#" class="text-white text-decoration-none small">LONG SLEEVE</a></li>
-                            <li><a href="#" class="text-white text-decoration-none small">SHORTS</a></li>
-                            <li><a href="#" class="text-white text-decoration-none small">TROUSER</a></li>
-                        </ul>
-                    </div>
+                    @foreach($topCategories as $category)
+                        <div class="col-6 col-lg-3 mb-4">
+                            <h6 class="text-uppercase fw-bold mb-3">{{ $category->name }}</h6>
+                            <ul class="list-unstyled">
+                                @foreach($category->subcategories as $sub)
+                                    <li>
+                                        <a href="{{ route('subcategory.show', $sub->slug) }}" class="text-white text-decoration-none small">
+                                            {{ $sub->name }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endforeach
                 </div>
             </div>
 
             <div class="container border-top border-secondary pt-3 text-center">
-                <p class="small text-muted mb-0">
+                <p class="small mb-0">
                     FABRLIFE prints a huge variety of custom clothing like T-shirts, hoodies and more. Your order is handled daily with a lot of <i class="bi bi-heart-fill text-danger"></i> from <strong>BANGLADESH</strong> and delivered worldwide!
                 </p>
             </div>
