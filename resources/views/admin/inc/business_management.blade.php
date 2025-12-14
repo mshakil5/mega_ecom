@@ -293,7 +293,13 @@
                 </li>
             </ul>
         </li>
-   
+
+        <li class="nav-item">
+            <a href="{{ route('discount.index') }}" class="nav-link {{ (request()->is('admin/discount*')) ? 'active' : '' }}">
+                <i class="nav-icon fas fa-percent"></i> 
+                <p>Discount</p>
+            </a>
+        </li>
 
         <!-- stock -->
         <li class="nav-item dropdown {{ (request()->is('admin/stock*') || request()->is('admin/system-losses*') || request()->is('admin/stock-transfer-requests*')) ? 'menu-open' : '' }}">

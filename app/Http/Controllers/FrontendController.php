@@ -85,6 +85,23 @@ class FrontendController extends Controller
                 ->get();
         };
 
+        // $getProducts = function ($flagColumn, $orderByColumn = 'id') {
+        //     return Product::active()
+        //         ->where($flagColumn, 1)
+        //         ->withoutOffers()
+        //         ->commonSelect()
+        //         ->whereHas('stockhistory')
+        //         ->with(['stockhistory' => function($q) {
+        //             $q->with('product');
+        //         }])
+        //         ->orderByDesc($orderByColumn)
+        //         ->take(11)
+        //         ->get();
+        // };
+
+        // $products = $getProducts('is_trending');
+        // dd($products->toArray());
+
         $trendingProducts     = Cache::remember('home_trending_products', 600, fn() => $getProducts('is_trending'));
         $recentProducts       = Cache::remember('home_recent_products', 600, fn() => $getProducts('is_recent', 'id'));
         $mostViewedProducts   = Cache::remember('home_most_viewed_products', 600, fn() => $getProducts('is_recent', 'watch'));
