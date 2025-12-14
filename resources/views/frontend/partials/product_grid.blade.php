@@ -10,11 +10,23 @@
                     <span class="sale-badge">SALE</span>
                 @endif
                 
+                @php
+                    $imagePath = 'images/products/' . $product->feature_image;
+                    $placeholderPath = '26690.jpg';
+
+                    if ($product->feature_image && file_exists(public_path($imagePath))) {
+                        $imageUrl = asset($imagePath);
+                    } else {
+                        $imageUrl = asset($placeholderPath);
+                    }
+                @endphp
                 <div class="product-image-container">
+                    {{-- @if (isset($product->stock) && $product->stock <= 0)
+                        <span class="out-of-stock-tag">OUT OF STOCK</span>
+                    @endif --}}
                     
-                    <img src="{{ asset('images/products/' . $product->feature_image) }}" class="img-fluid" alt="{{ $product->name }}">
+                    <img src="{{ $imageUrl }}" class="img-fluid" alt="{{ $product->name }}">
                 </div>
-                
                 <div class="product-info text-center">
                     <p class="product-title">{{ $product->name }}</p>
                     
