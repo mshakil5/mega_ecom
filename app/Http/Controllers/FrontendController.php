@@ -215,6 +215,8 @@ class FrontendController extends Controller
         return view('frontend.sub_category_products', compact('sub_category', 'products', 'title', 'currency'));
     }
 
+
+
     public function showProduct($slug, $offerId = null)
     {
         $product = Product::where('slug', $slug)->with(['colors.color', 'stockhistory', 'stock', 'reviews'])->firstOrFail();
@@ -470,40 +472,113 @@ class FrontendController extends Controller
         return response()->json(['products' => $products]);
     }
     
-    public function shop(Request $request)
+    // public function shop(Request $request)
+    // {
+    //     $currency = CompanyDetails::value('currency');
+
+    //     $categories = Category::where('status', 1)
+    //         ->whereHas('products.stock', function($query) {
+    //             $query->where('quantity', '>', 0);
+    //         })
+    //         ->orderBy('id', 'desc')
+    //         ->select('id', 'name')
+    //         ->get();
+            
+    //     $brands = Brand::where('status', 1)
+    //         ->whereHas('products.stock', function($query) {
+    //             $query->where('quantity', '>', 0);
+    //         })
+    //         ->orderBy('id', 'desc')
+    //         ->select('id', 'name')
+    //         ->get();
+
+    //     $colors = Stock::where('quantity', '>', 0)
+    //         ->groupBy('color')
+    //         ->select('color')
+    //         ->get();
+
+    //     $sizes = Stock::where('quantity', '>', 0)
+    //         ->groupBy('size')
+    //         ->select('size')
+    //         ->get();
+
+    //     $minPrice = Stock::where('status', 1)->min('selling_price'); 
+    //     $maxPrice = Stock::where('status', 1)->max('selling_price');
+
+    //     return view('frontend.shop', compact('currency', 'categories', 'brands', 'colors', 'sizes', 'minPrice', 'maxPrice'));
+    // }
+
+    public function shop2(Request $request)
     {
         $currency = CompanyDetails::value('currency');
 
-        $categories = Category::where('status', 1)
-            ->whereHas('products.stock', function($query) {
-                $query->where('quantity', '>', 0);
-            })
-            ->orderBy('id', 'desc')
-            ->select('id', 'name')
+        // $categories = Category::where('status', 1)
+        //     ->whereHas('products.stock', function($query) {
+        //         $query->where('quantity', '>', 0);
+        //     })
+        //     ->orderBy('id', 'desc')
+        //     ->get();
+
+            $products = Product::where('status', 1)->get();
+
+            $categories = Category::with('products', 'subcategories')->where('status', 1)
+            ->orderBy('id', 'desc')->limit(2)
             ->get();
+
+            dd($categories);
             
-        $brands = Brand::where('status', 1)
-            ->whereHas('products.stock', function($query) {
-                $query->where('quantity', '>', 0);
-            })
-            ->orderBy('id', 'desc')
-            ->select('id', 'name')
-            ->get();
 
-        $colors = Stock::where('quantity', '>', 0)
-            ->groupBy('color')
-            ->select('color')
-            ->get();
+            
 
-        $sizes = Stock::where('quantity', '>', 0)
-            ->groupBy('size')
-            ->select('size')
-            ->get();
+        return view('frontend.shop', compact('currency', 'categories',));
+    }
 
-        $minPrice = Stock::where('status', 1)->min('selling_price'); 
-        $maxPrice = Stock::where('status', 1)->max('selling_price');
+    public function shop()
+    {
+        // 1. Fetch Categories with their Subcategories (Eager Loading)
+        $categories = Category::with('subcategories')
+                            ->where('status', 1) // Assuming status 1 means active
+                            ->get();
 
-        return view('frontend.shop', compact('currency', 'categories', 'brands', 'colors', 'sizes', 'minPrice', 'maxPrice'));
+        // 2. Fetch the initial list of Products (e.g., paginated)
+        // Adjust pagination as needed, e.g., 8 products per page.
+        $products = Product::where('status', 1)->with('stock') // Assuming status 1 means active
+                           ->get();
+
+
+        // 3. Pass data to the view
+        return view('frontend.shop', compact('categories', 'products'));
+    }
+
+    public function shopfilter(Request $request)
+    {
+        $query = Product::where('status', 1);
+
+        // Check for Category IDs array
+        if ($request->has('category_ids') && is_array($request->category_ids) && count($request->category_ids) > 0) {
+            $query->whereIn('category_id', $request->category_ids);
+        }
+
+        // Check for Subcategory IDs array
+        if ($request->has('subcategory_ids') && is_array($request->subcategory_ids) && count($request->subcategory_ids) > 0) {
+            
+            // If both Category AND Subcategory filters are active, you might need a complex OR condition.
+            // For a simple hierarchy, if a subcategory is chosen, we filter by that.
+            // You might want to decide if selecting a main category should include ALL its subproducts.
+            
+            // For now, let's combine the filters (AND logic for selected categories AND subcategories).
+            $query->whereIn('sub_category_id', $request->subcategory_ids);
+        }
+
+        // Fetch ALL filtered products
+        $products = $query->get();
+
+        // Render the product grid part of the blade file and return it as HTML
+        $productHtml = view('frontend.partials.product_grid', compact('products'))->render();
+
+        return response()->json([
+            'html' => $productHtml,
+        ]);
     }
 
     public function supplierPage($slug)

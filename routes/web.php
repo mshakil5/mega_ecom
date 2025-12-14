@@ -87,6 +87,7 @@ Route::get('flash-sells/{slug}', [FlashSellController::class, 'show'])->name('fl
 Route::get('/campaign/{slug}', [FrontendController::class, 'showCampaignDetails'])->name('campaign.details.frontend');
 
 Route::get('/shop', [FrontendController::class, 'shop'])->name('frontend.shop');
+Route::post('/shop/filter', [FrontendController::class, 'shopfilter'])->name('shop.filter');
 
 Route::get('/about-us', [FrontendController::class, 'aboutUs'])->name('frontend.about');
 

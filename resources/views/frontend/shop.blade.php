@@ -2,365 +2,201 @@
 
 @section('content')
 
-<div class="page-content">
-    <div class="container">
+    <div class="container-fluid main-content-area">
         <div class="row">
-            <!-- Shop Sidebar Start -->
-            <aside class="col-lg-3 mt-9">
-                <div class="sidebar sidebar-shop">
 
-                    <!-- Category Filter Start -->
-                     @if($categories->count() > 0)
-                    <div class="widget widget-collapsible">
-                        <h3 class="widget-title">
-                            <a data-toggle="collapse" href="#widget-category" role="button" aria-expanded="true" aria-controls="widget-category">
-                                Filter by Category
+            {{-- -------------------------- SIDEBAR (Categories & Subcategories) -------------------------- --}}
+            <div class="col-lg-2 sidebar-menu">
+                <h3 class="sidebar-title">Categories</h3>
+                <hr>
+
+                {{-- Loop through main Categories --}}
+                @foreach($categories as $category)
+                    {{-- 1. Checkbox for the main Category --}}
+                    <div class="d-flex align-items-center mb-1">
+                        <input type="checkbox" 
+                            class="filter-checkbox category-checkbox mx-2" 
+                            data-filter-id="{{ $category->id }}"
+                            data-filter-name="{{ $category->name }}"
+                            data-filter-type="category">
+
+                        <h4 class="sidebar-subtitle mb-0" style="display: inline-block;">
+                            <a href="#" class="filter-link category-link" data-id="{{ $category->id }}" data-type="category">
+                                {{ $category->name }} 
                             </a>
-                        </h3>
-
-                        <div class="collapse show" id="widget-category">
-                            <div class="widget-body">
-                                <form id="filterForm">
-                                    <div class="filter-items">
-                                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
-                                            <input type="radio" class="custom-control-input" id="category-all" name="category" value="">
-                                            <label class="custom-control-label" for="category-all">All Categories</label>
-                                        </div>
-                                        @foreach($categories as $category)
-                                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
-                                            <input type="radio" class="custom-control-input" id="category-{{ $category->id }}" name="category" value="{{ $category->id }}">
-                                            <label class="custom-control-label d-flex justify-content-between w-100" for="category-{{ $category->id }}">
-                                                <span>{{ $category->name }}</span>
-                                                <span class="ml-auto">{{ $category->products->count() }}</span>
-                                            </label>
-                                        </div>
-                                        @endforeach
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+                        </h4>
                     </div>
+                    
+                    @if($category->subcategories->count() > 0)
+                        <ul class="list-unstyled sidebar-list ms-3">
+                            {{-- Loop through Subcategories --}}
+                            @foreach($category->subcategories as $subcategory)
+                                <li>
+                                    {{-- 2. Checkbox for Subcategory (Already exists, just added unique class/data) --}}
+                                    <input type="checkbox" 
+                                        class="filter-checkbox subcategory-checkbox mx-2" 
+                                        data-filter-id="{{ $subcategory->id }}"
+                                        data-filter-name="{{ $subcategory->name }}"
+                                        data-filter-type="subcategory">
+                                    <a href="#" class="filter-link subcategory-link" data-id="{{ $subcategory->id }}" data-type="subcategory">
+                                        {{ $subcategory->name }} 
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
                     @endif
-                    <!-- Category Filter End -->
-
-                    <!-- Size Filter Start -->
-                    @if($sizes->count() > 0)
-                    <div class="widget widget-collapsible">
-                        <h3 class="widget-title">
-                            <a data-toggle="collapse" href="#widget-size" role="button" aria-expanded="true" aria-controls="widget-size">
-                                Filter by Size
-                            </a>
-                        </h3>
-
-                        <div class="collapse" id="widget-size">
-                            <div class="widget-body">
-                                <form id="sizeFilterForm">
-                                    <div class="filter-items">
-                                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
-                                            <input type="radio" class="custom-control-input" id="size-all" name="shop-size" value="">
-                                            <label class="custom-control-label d-flex justify-content-between w-100" for="size-all">
-                                                <span>All Sizes</span>
-                                                <span class="ml-auto"></span>
-                                            </label>
-                                        </div>
-
-                                        @foreach ($sizes as $size)
-                                            <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
-                                                <input type="radio" class="custom-control-input" id="size-{{ $size->size }}" name="shop-size" value="{{ $size->size }}">
-                                                <label class="custom-control-label" for="size-{{ $size->size }}">
-                                                    <span>{{ strtoupper($size->size) }}</span>
-                                                    <span class="ml-auto"></span>
-                                                </label>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    @endif
-                    <!-- Size Filter End -->
-
-                    <!-- Color Filter Start -->
-                    @if($colors->count() > 0)
-                    <div class="widget widget-collapsible">
-                        <h3 class="widget-title">
-                            <a data-toggle="collapse" href="#widget-color" role="button" aria-expanded="true" aria-controls="widget-color">
-                                Filter by Color
-                            </a>
-                        </h3>
-
-                        <div class="collapse" id="widget-color">
-                            <div class="widget-body">
-                                <form id="colorFilterForm">
-                                    <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
-                                        <input type="radio" class="custom-control-input" id="shop-color-all" name="shop-color" value="">
-                                        <label class="custom-control-label d-flex justify-content-between w-100" for="shop-color-all">
-                                            <span>All Colors</span>
-                                            <span class="ml-auto"></span>
-                                        </label>
-                                    </div>
-                                    <div class="filter-items">
-                                        @foreach ($colors as $color)
-                                            <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
-                                                <input type="radio" class="custom-control-input" id="shop-color-{{ $loop->index }}" name="shop-color" value="{{ $color->color }}">
-                                                <label class="custom-control-label" for="shop-color-{{ $loop->index }}">
-                                                    <span>{{ ucfirst($color->color) }}</span>
-                                                    <span class="ml-auto"></span>
-                                                </label>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    @endif
-                    <!-- Color Filter End -->
-
-                    <!-- Brand Filter Start -->
-                    @if($brands->count() > 0)
-                    <div class="widget widget-collapsible">
-                        <h3 class="widget-title">
-                            <a data-toggle="collapse" href="#widget-brand" role="button" aria-expanded="false" aria-controls="widget-brand">
-                                Filter by Brand
-                            </a>
-                        </h3>
-
-                        <div class="collapse" id="widget-brand">
-                            <div class="widget-body">
-                                <form id="brandFilterForm">
-                                    <div class="filter-items">
-                                        <!-- All Brands Option -->
-                                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
-                                            <input type="radio" class="custom-control-input" id="brand-all" name="brand" value="">
-                                            <label class="custom-control-label d-flex justify-content-between w-100" for="brand-all">
-                                                <span>All Brands</span>
-                                                <span class="ml-auto"></span>
-                                            </label>
-                                        </div>
-
-                                        <!-- Individual Brands -->
-                                        @foreach($brands as $brand)
-                                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
-                                            <input type="radio" class="custom-control-input" id="brand-{{ $brand->id }}" name="brand" value="{{ $brand->id }}">
-                                            <label class="custom-control-label d-flex justify-content-between w-100" for="brand-{{ $brand->id }}">
-                                                <span>{{ $brand->name }}</span>
-                                                <span class="ml-auto">{{ $brand->products->count() }}</span>
-                                            </label>
-                                        </div>
-                                        @endforeach
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    @endif
-                    <!-- Brand Filter End -->
-
-                    <!-- Price Filter Start -->
-                    <div class="widget widget-collapsible">
-                        <h3 class="widget-title">
-                            <a data-toggle="collapse" href="#widget-price" role="button" aria-expanded="true" aria-controls="widget-price">
-                                Filter by Price
-                            </a>
-                        </h3>
-
-                        <div class="collapse show" id="widget-price">
-                            <div class="widget-body">
-                                <div class="filter-price" style="padding-right: 20px;">
-                                    <div class="filter-price-text">
-                                        Price Range: <span id="filter-price-range">{{ $currency }}{{ $minPrice }} - ${{ $maxPrice }}</span>
-                                    </div>
-                                    <input type="hidden" id="price-min" name="price-min" value="{{ $minPrice }}">
-                                    <input type="hidden" id="price-max" name="price-max" value="{{ $maxPrice }}">
-                                    <div id="price-slider"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Price Filter End -->
-
-                </div>
-            </aside>
-            <!-- Shop Sidebar End -->
-
-            <!-- Shop Product Start -->
-            <div class="col-lg-9 col-md-8">
-                <div class="row pb-3">
-
-                    <div class="row" id="product-list">
-                        
-                    </div>
-
-                    <div class="col-12" id="pagination">
-                        <nav>
-                           
-                        </nav>
-                    </div>
-                </div>
+                @endforeach
+                
             </div>
-            <!-- Shop Product End -->
+
+            {{-- -------------------------- PRODUCT DISPLAY -------------------------- --}}
+            <div class="col-lg-10 product-display">
+                
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="secondary-search-bar">
+                            <input type="text" class="form-control secondary-search-input" placeholder="Search a product">
+                            <button class="btn secondary-search-btn"><i class="fas fa-search"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Filter Tags will be inserted here by JavaScript --}}
+                <div class="row mt-3 filter-section">
+                    <div class="col-12 d-flex align-items-center" id="active-filters-container">
+                        {{-- Dynamic filter tags will appear here --}}
+                        <button class="btn btn-clear-adjustments d-none">Clear adjustments</button>
+                    </div>
+                </div>
+
+                {{-- Products Grid Container --}}
+                <div class="row product-grid mt-4" id="product-list-container">
+                    @include('frontend.partials.product_grid', ['products' => $products])
+                </div>
+
+                
+
+            </div>
         </div>
     </div>
-</div>
 
-<style>
-    .col-lg-4 {
-        min-width: 300px;
-    }
-</style>
 
 @endsection
 
 @section('script')
-
 <script>
-    $(document).ready(function() {
-        var priceSlider = document.getElementById('price-slider');
-        var minPrice = {{ $minPrice }};
-        var maxPrice = {{ $maxPrice }};
-        var currencySymbol = "{{ $currency }}";
-
-        // Debounce function to limit how often triggerFilter is called
-        function debounce(func, delay) {
-            let debounceTimer;
-            return function() {
-                const context = this;
-                const args = arguments;
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(() => func.apply(context, args), delay);
-            };
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
-
-        function triggerFilter() {
-            let startValue = $('#price-min').val().replace(currencySymbol, '');
-            let endValue = $('#price-max').val().replace(currencySymbol, '');
-            let selectedCategoryId = $('input[name="category"]:checked').val();
-            let selectedBrandId = $('input[name="brand"]:checked').val();
-            let selectedColor = $('input[name="shop-color"]:checked').val();
-            let selectedSize = $('input[name="shop-size"]:checked').val();
-            let csrfToken = $('meta[name="csrf-token"]').attr('content');
-
-            $.ajax({
-                url: '/products/filter',
-                type: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken
-                },
-                dataType: 'json',
-                data: {
-                    start_price: startValue,
-                    end_price: endValue,
-                    category: selectedCategoryId,
-                    brand: selectedBrandId,
-                    color: selectedColor,
-                    size: selectedSize
-                },
-                success: function(response) {
-                    // console.log(response.products);
-                    var products = response.products;
-                    var productListHtml = '';
-
-                    if (products.length === 0) {
-                        $('#product-list').empty();
-                        toastr.error("No products found", "", {
-                            closeButton: true,
-                            progressBar: true,
-                            timeOut: 3000,
-                            positionClass: "toast-top-center",
-                        });
-                        return;
-                    } else {
-                        $.each(products, function(index, product) {
-                            if (product.slug && product.feature_image && product.name && product.price !== undefined) {
-                                productListHtml += `
-                                    <div class="col-6 col-md-4 col-lg-4 mb-4">
-                                        <div class="product product-2" style="height: 100%; display: flex; flex-direction: column;">
-                                            <figure class="product-media">
-                                                <a href="{{ route('product.show', '') }}/${product.slug}">
-                                                    <x-image-with-loader src="{{ asset('/images/products/') }}/${product.feature_image}" alt="${product.name}" class="product-image" style="height: 200px; object-fit: cover;" />
-                                                </a>
-                                                ${product.total_stock > 0 ? `
-                                                    <div class="product-action-vertical">
-                                                        <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="${product.id}" data-offer-id="0" data-price="${product.price}">
-                                                            <span>Add to wishlist</span>
-                                                        </a>
-                                                    </div>
-                                                    <div class="product-action">
-                                                        <a href="#" class="btn-product btn-cart" 
-                                                        title="Add to cart" 
-                                                        data-product-id="${product.id}" 
-                                                        data-offer-id="0" 
-                                                        data-price="${product.price}" 
-                                                        data-toggle="modal" 
-                                                        data-target="#quickAddToCartModal" 
-                                                        data-image="{{ asset('images/products/') }}/${product.feature_image}" 
-                                                        data-stock="${product.total_stock}"
-                                                        data-colors='${JSON.stringify(product.colors)}' 
-                                                        data-sizes='${JSON.stringify(product.sizes)}'
-                                                        data-name="${product.name}">
-                                                            <span>Add to cart</span>
-                                                        </a>
-                                                    </div>
-                                                ` : `<span class="product-label label-out-stock">Out of stock</span>`}
-                                            </figure>
-                                            <div class="product-body" style="flex-grow: 1;">
-                                                <h3 class="product-title">
-                                                    <a href="{{ route('product.show', '') }}/${product.slug}">${product.name}</a>
-                                                </h3>
-                                                <div class="product-price">
-                                                    {{ $currency }}${parseFloat(product.price).toFixed(2)}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>`;
-                            }
-                        });
-
-                    $('#product-list').html(productListHtml);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error(xhr.responseText);
-                }
-            });
-        }
-
-        if (minPrice === maxPrice) {
-            maxPrice = minPrice + 1;
-        }
-        
-        if (priceSlider) {
-            noUiSlider.create(priceSlider, {
-                start: [minPrice, maxPrice],
-                connect: true,
-                step: 100,
-                range: {
-                    'min': minPrice,
-                    'max': maxPrice
-                },
-                tooltips: true,
-                format: wNumb({
-                    decimals: 0,
-                    prefix: currencySymbol
-                })
-            });
-
-            priceSlider.noUiSlider.on('update', debounce(function(values, handle) {
-                $('#filter-price-range').text(values.join(' - '));
-                $('#price-min').val(values[0].replace(currencySymbol, ''));
-                $('#price-max').val(values[1].replace(currencySymbol, ''));
-                triggerFilter();
-            }, 500));
-        }
-
-
-        $('#filterForm, #brandFilterForm, #price-min, #price-max, #colorFilterForm, #sizeFilterForm').on('change', debounce(function() {
-            triggerFilter();
-        }, 500));
-
     });
-</script>
 
+    // --- Core Filter Function ---
+    function fetchProducts() {
+        // 1. Collect all active filter IDs
+        const activeCategories = [];
+        const activeSubcategories = [];
+
+        $('.filter-checkbox[data-filter-type="category"]:checked').each(function() {
+            activeCategories.push($(this).data('filter-id'));
+        });
+        $('.filter-checkbox[data-filter-type="subcategory"]:checked').each(function() {
+            activeSubcategories.push($(this).data('filter-id'));
+        });
+
+        // 2. Prepare UI for loading
+        $('#product-list-container').html('<div class="col-12 text-center py-5">Loading Products...</div>');
+
+        // 3. Send AJAX request
+        $.ajax({
+            url: '{{ route("shop.filter") }}', 
+            method: 'POST',
+            data: {
+                category_ids: activeCategories, // Now sending an array
+                subcategory_ids: activeSubcategories, // Now sending an array
+            },
+            success: function(response) {
+                $('#product-list-container').html(response.html);
+                updateFilterTags(); // Update tags after successful product fetch
+            },
+            error: function(xhr) {
+                console.error("Error fetching products:", xhr.responseText);
+                $('#product-list-container').html('<div class="col-12 text-center py-5 text-danger">Failed to load products.</div>');
+            }
+        });
+    }
+
+    // --- Filter Tag Display Function ---
+    function updateFilterTags() {
+        const $filterContainer = $('#active-filters-container');
+        $filterContainer.empty(); // Clear existing tags
+        
+        const $activeCheckboxes = $('.filter-checkbox:checked');
+        let hasFilters = false;
+
+        $activeCheckboxes.each(function() {
+            hasFilters = true;
+            const id = $(this).data('filter-id');
+            const name = $(this).data('filter-name');
+            const type = $(this).data('filter-type');
+            
+            $filterContainer.append(`
+                <div class="active-filter-tag me-2 mb-2" data-filter-id="${id}" data-filter-type="${type}">
+                    ${name}
+                    <button type="button" class="btn-close" aria-label="Close"></button>
+                </div>
+            `);
+        });
+
+        // Add the 'Clear adjustments' button if any filters are active
+        if (hasFilters) {
+            $filterContainer.append('<button class="btn btn-clear-adjustments">Clear adjustments</button>');
+        }
+    }
+
+
+    // --- Event Handlers ---
+    
+    // 1. Link click handler (toggles checkbox state)
+    $(document).on('click', '.filter-link', function(e) {
+        e.preventDefault(); 
+        // Find the adjacent or siblings checkbox
+        const $checkbox = $(this).closest('.sidebar-subtitle, li').find('.filter-checkbox');
+        $checkbox.prop('checked', !$checkbox.prop('checked')); // Toggle the state
+        $checkbox.trigger('change'); // Manually trigger change event
+    });
+
+    // 2. Checkbox change handler (runs the main filter logic)
+    $(document).on('change', '.filter-checkbox', function() {
+        fetchProducts();
+    });
+    
+    // 3. Remove individual filter tag handler
+    $(document).on('click', '.active-filter-tag .btn-close', function() {
+        const $tag = $(this).closest('.active-filter-tag');
+        const id = $tag.data('filter-id');
+        const type = $tag.data('filter-type');
+
+        // Uncheck the corresponding checkbox in the sidebar
+        $(`.filter-checkbox[data-filter-id="${id}"][data-filter-type="${type}"]`).prop('checked', false);
+        
+        // Remove the tag and refetch products
+        $tag.remove();
+        fetchProducts(); 
+    });
+
+    // 4. Clear All Filters handler
+    $(document).on('click', '.btn-clear-adjustments', function() {
+        $('.filter-checkbox').prop('checked', false);
+        $('#active-filters-container').empty();
+        fetchProducts(); // Fetch all products
+    });
+    
+    // Initial load
+    $(document).ready(function() {
+        // Run fetchProducts once to ensure tags are correct if filters were previously applied
+        updateFilterTags(); 
+    });
+
+</script>
 @endsection

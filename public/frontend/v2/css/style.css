@@ -238,4 +238,291 @@ html, body {
 .premium-badge { margin: 1rem; }
 .carousel-head { letter-spacing:15px; }
 
+
+/* shop page css start */
+
+
+/* Secondary Search/Filter Bar */
+.secondary-search-bar {
+    display: flex;
+    position: relative;
+    max-width: 300px;
+}
+
+.secondary-search-input {
+    border-radius: 0;
+    border-right: none;
+    border-color: #ccc;
+}
+
+.secondary-search-btn {
+    border-radius: 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    color: #000;
+}
+
+/* Active Filters Section */
+.filter-section {
+    padding-left: 10px;
+}
+
+.active-filter-tag {
+    background-color: #000000;
+    color: white;
+    padding: 0px 5px;
+    border-radius: 5px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    position: relative;
+    margin-right: 15px;
+}
+
+.active-filter-tag .btn-close {
+    position: absolute;
+    top: 50%;
+    right: 5px;
+    transform: translateY(-50%);
+    opacity: 1;
+    background: none;
+    color: white;
+    font-size: 0.7rem;
+    padding: 0;
+    margin: 0;
+}
+
+.btn-close:focus {
+    box-shadow: none;
+}
+
+.btn-clear-adjustments {
+    color: #000000;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 4px;
+    margin: 0;
+    border: 1px solid #000;
+}
+
+/* --- Product Card Styles --- */
+.product-card {
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    overflow: hidden;
+    padding-bottom: 10px;
+    position: relative;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.sale-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #ffc107; /* Amber/Yellow for SALE */
+    color: #000;
+    font-weight: 700;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    z-index: 10;
+    border-radius: 3px;
+}
+
+.product-image-container {
+    background-color: #f9f9f9; /* Light background for the image section */
+    height: 250px; /* Fixed height for uniformity */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.out-of-stock-tag {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 5px 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    z-index: 5;
+    border-radius: 3px;
+}
+
+.product-image-container img {
+    max-height: 100%;
+    width: auto;
+    object-fit: contain;
+    /* You may need to adjust the opacity or add a color overlay to match the 'out of stock' visual style in the image */
+    opacity: 0.6; 
+}
+
+.product-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: #000;
+}
+
+.price-section {
+    margin-bottom: 10px;
+}
+
+.old-price {
+    color: #999;
+    text-decoration: line-through;
+    margin-right: 10px;
+    font-size: 0.85rem;
+}
+
+.new-price {
+    color: #dc3545; /* Red for the main price */
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.buy-now-btn {
+    background-color: #fff;
+    color: #000;
+    border: 1px solid #ccc;
+    padding: 5px 20px;
+    font-weight: 600;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    width: 80%;
+    transition: all 0.2s;
+}
+
+.buy-now-btn:hover {
+    background-color: #f0f0f0;
+}
+
+/* Media Queries for Responsiveness (Bootstrap handles most, but for fine-tuning) */
+@media (max-width: 992px) {
+    .sidebar-menu {
+        display: none; /* Hide sidebar on smaller screens, typically replaced by a toggle */
+        height: auto;
+    }
+    .product-display {
+        width: 100%;
+    }
+}
+
+
+/* new  */
+
+
+/* --- Main Content Layout --- */
+.main-content-area {
+    padding: 0;
+    margin-top: 0;
+}
+
+/* 1. APPLYING 30PX PADDING TO LEFT/RIGHT CONTENT */
+.product-display {
+    padding: 20px 30px 20px 20px; /* 30px right, original left for spacing */
+}
+.sidebar-menu {
+    background-color: #fff;
+    padding: 20px 30px 20px 20px; /* Adjusted padding to the right for the menu itself */
+    height: 100vh;
+    border-right: 1px solid #eee;
+    overflow-y: scroll; /* Changed to scroll for custom styling */
+}
+
+/* --- Sidebar Styles --- */
+
+/* 2. CUSTOM THIN BLACK SCROLLBAR STYLING */
+.sidebar-menu::-webkit-scrollbar {
+    width: 6px; /* Width of the scrollbar */
+}
+.sidebar-menu::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Color of the tracking area */
+}
+.sidebar-menu::-webkit-scrollbar-thumb {
+    background: #333; /* Color of the scroll thumb */
+    border-radius: 3px;
+}
+.sidebar-menu::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Color on hover */
+}
+
+
+.sidebar-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.sidebar-subtitle {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    padding-left: 5px;
+}
+
+.sidebar-subtitle.active {
+    color: #000000;
+}
+
+.sidebar-subtitle a{
+    color: #000;
+    text-decoration: none;
+}
+
+.sidebar-list {
+    margin-left: 0;
+    padding-left: 5px;
+    list-style: none;
+}
+
+/* Styling the list item content container */
+.sidebar-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+    font-size: 0.9rem;
+    color: #666;
+    align-items: center; /* Vertically align checkbox and text */
+}
+
+.sidebar-list li a {
+    display: flex;
+    justify-content: space-between;
+    flex-grow: 1; /* Allows the link to take up all space */
+    padding-right: 10px;
+    color: #666;
+}
+
+.sidebar-list li a:hover {
+    color: #000;
+}
+
+.sidebar-list li a span {
+    font-weight: 500;
+    color: #999;
+}
+
+/* Checkbox styling */
+.category-checkbox {
+    width: 14px;
+    height: 14px;
+    margin-left: auto;
+    cursor: pointer;
+}
+
+.list-unstyled li a{
+    text-decoration: none;
+}
+
+/* shop page css end */
+
 /* end of style.css */
