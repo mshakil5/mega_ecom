@@ -1,192 +1,15 @@
 @extends('frontend.layouts.app')
 
 @section('content')
+
+    <link rel="stylesheet" href="{{ asset('frontend/v2/css/customization.css') }}">
+
     @php
         $company = App\Models\CompanyDetails::first();
         $vatPercent = $company->vat_percent ?? 20;
         $currency = $currency ?? '£';
     @endphp
 
-    <style>
-
-
-        .customRadioButton {
-            height: 25px;
-            width: 25px;
-        }
-
-        @media (max-width: 767px) {
-            .customRadioButton {
-                height: 20px !important;
-                width: 20px !important;
-            }
-
-            .option {
-                padding: 5px !important;
-            }
-        }
-
-        .option-container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .option {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        .option div {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            width: 100%;
-        }
-
-        .option i {
-            font-size: 24px;
-            color: #000000;
-        }
-
-        .option.selected {
-            background-color: #e9f2ff;
-            border-color: #007bff;
-        }
-
-        .accordion-button:not(.collapsed),
-        .accordion-button:focus {
-            outline: none;
-            border-color: transparent;
-            box-shadow: none;
-            background-color: transparent;
-        }
-
-        .accordion-button::after {
-            width: 11px;
-            height: 11px;
-            border-radius: 100%;
-            background-color: var(--bs-danger);
-            background-image: none !important;
-        }
-
-        .accordion-button.collapsed::after {
-            background-color: var(--bs-gray-300);
-        }
-
-        .error {
-            display: block;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-
-        .form-control.is-invalid {
-            border-color: #dc3545;
-        }
-
-        #loader {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 99;
-            display: none;
-        }
-
-        #loader .spinner-border {
-            width: 5rem;
-            height: 5rem;
-            border-width: 0.5rem;
-        }
-
-        .option-container.is-invalid {
-            border: 2px solid #dc3545;
-            border-radius: 5px;
-        }
-
-        .summary-card {
-            border: 1px solid #e6e6e6;
-            padding: 18px;
-            border-radius: 10px;
-            background: #fff;
-            position: sticky;
-            top: 18px;
-        }
-
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px dashed #f2f2f2;
-        }
-
-        .summary-row:last-child {
-            border-bottom: none;
-        }
-
-        .checkout-btn-main {
-            display: block;
-            width: 100%;
-            background: #000000;
-            color: #fff;
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: 700;
-            text-decoration: none;
-            margin-top: 12px;
-            border: none;
-        }
-
-        .product-thumb {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 6px;
-            border: 1px solid #eee;
-        }
-
-        .customization-list {
-            margin-top: 8px;
-            padding-left: 14px;
-            font-size: 13px;
-            color: #444;
-        }
-
-        .custom-preview {
-            display: flex;
-            gap: 8px;
-            align-items: flex-start;
-            margin-top: 6px;
-            padding: 6px;
-            background: #f8f9fa;
-            border-radius: 4px;
-        }
-
-        .custom-preview img {
-            width: 50px;
-            height: 50px;
-            object-fit: contain;
-            border-radius: 4px;
-            border: 1px solid #eee;
-        }
-
-        .form-check a{
-            text-decoration: none;
-            color: #dc3545
-        }
-
-        .accordion-header{
-            border: 1px solid #ededed;
-        }
-    </style>
 
     <div class="container checkout-page py-4">
         <div class="row">
@@ -315,7 +138,7 @@
                                 <div class="col-md-6 form-group">
                                     <label>Full Name (Required)</label>
                                     <input class="form-control" type="text" placeholder="" id="billing_first_name"
-                                        maxlength="64">
+                                        maxlength="64" value="{{ Auth::user()->name ?? '' }}">
                                     <span class="error text-danger" id="billing_first_name-error"></span>
                                 </div>
                                 <div class="col-md-6 form-group">
@@ -765,7 +588,7 @@
                 console.log(formData);
 
                 $.ajax({
-                    url: "{{ route('checkout.store') }}",
+                    url: "{{ route('checkout.process') }}",
                     type: "POST",
                     data: JSON.stringify(formData),
                     contentType: "application/json",

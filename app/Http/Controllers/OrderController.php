@@ -37,10 +37,14 @@ use App\Mail\OrderStatusChangedMail;
 use App\Models\Coupon;
 use App\Models\CouponUsage;
 use App\Mail\AdminNotificationMail;
+use App\Models\OrderCustomisation;
 use Stripe\Checkout\Session;
 
 class OrderController extends Controller
 {
+
+
+
     public function placeOrder(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -282,7 +286,6 @@ class OrderController extends Controller
 
                         if ($supplierStock) {
                             $totalPrice = (float) $item['quantity'] * (float) $supplierStock->price;
-                            // $supplierStock->quantity -= $item['quantity'];
                             $supplierStock->save();
                         }
                         $orderDetail->supplier_id = $item['supplierId'];
@@ -371,76 +374,6 @@ class OrderController extends Controller
       });
     }
 
-    private function initiateStripePayment($formData, $discountAmount, $subtotal, $vat_percent, $vat_amount, $shippingAmount, $netAmount)
-    {
-        session([
-            'payment_data' => [
-                'formData' => $formData,
-                'discountAmount' => $discountAmount,
-                'subtotal' => $subtotal,
-                'vat_percent' => $vat_percent,
-                'vat_amount' => $vat_amount,
-                'shippingAmount' => $shippingAmount,
-                'netAmount' => $netAmount,
-            ]
-        ]);
-
-        Stripe::setApiKey(config('services.stripe.secret'));
-        try {
-            $session = Session::create([
-                'payment_method_types' => ['card'],
-                'line_items' => [[
-                    'price_data' => [
-                        'currency' => 'GBP',
-                        'product_data' => ['name' => 'Order Payment'],
-                        'unit_amount' => intval($netAmount * 100),
-                    ],
-                    'quantity' => 1,
-                ]],
-                'mode' => 'payment',
-                'success_url' => route('stripe.resumeOrderFlow'),
-                'cancel_url' => route('payment.cancel'),
-            ]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-
-        return response()->json([
-            'success' => true,
-            'redirectUrl' => $session->url,
-        ]);
-    }
-
-    public function resumeOrderFlow(Request $request)
-    {
-        $paymentData = session('payment_data');
-        
-        $formData = $paymentData['formData'];
-        $discountAmount = $paymentData['discountAmount'];
-        $subtotal = $paymentData['subtotal'];
-        $vat_percent = $paymentData['vat_percent'];
-        $vat_amount = $paymentData['vat_amount'];
-        $shippingAmount = $paymentData['shippingAmount'];
-        $netAmount = $paymentData['netAmount'];
-
-        $pdfUrl = null;
-        $order = $this->createOrder($formData, $discountAmount, $subtotal, $vat_percent, $vat_amount, $shippingAmount, $netAmount);
-
-        $pdfUrl = route('generate-pdf', ['encoded_order_id' => base64_encode($order->id)]);
-        $this->sendOrderEmail($order);
-
-        session()->forget('payment_data');
-
-        return view('frontend.order.success', compact('pdfUrl'));
-    }
-
-    protected function getPayPalCredentials()
-    {
-        return PaymentGateway::where('name', 'paypal')
-            ->where('status', 1)
-            ->first();
-    }
-
     protected function initiatePayPalPayment($formData, $discountAmount, $subtotal, $vat_percent, $vat_amount, $shippingAmount, $netAmount)
     {
         $payPalCredentials = $this->getPayPalCredentials();
@@ -482,6 +415,70 @@ class OrderController extends Controller
 
     }
 
+    protected function getPayPalCredentials()
+    {
+        return PaymentGateway::where('name', 'paypal')
+            ->where('status', 1)
+            ->first();
+    }
+
+    protected function handleCustomizations(Request $request, $order)
+    {
+        foreach ($request->cart_items as $itemIndex => $item) {
+            if (!empty($item['customization'])) {
+                $orderDetail = OrderDetails::where('order_id', $order->id)
+                    ->skip($itemIndex)
+                    ->first();
+
+                if (!$orderDetail) continue;
+
+                foreach ($item['customization'] as $customization) {
+                    $orderCustomization = new OrderCustomisation();
+                    $orderCustomization->order_details_id = $orderDetail->id;
+                    $orderCustomization->product_id = $item['product_id'] ?? null;
+                    $orderCustomization->customization_type = $customization['type'] ?? 'text';
+                    $orderCustomization->method = $customization['method'] ?? '';
+                    $orderCustomization->position = $customization['position'] ?? '';
+                    $orderCustomization->z_index = $customization['zIndex'] ?? null;
+                    $orderCustomization->layer_id = $customization['layerId'] ?? null;
+
+                    $orderCustomization->data = json_encode($customization['data'] ?? []);
+
+                    $orderCustomization->save();
+                }
+            }
+        }
+    }
+
+
+
+    public function resumeOrderFlow(Request $request)
+    {
+        $paymentData = session('payment_data');
+        
+        $formData = $paymentData['formData'];
+        $discountAmount = $paymentData['discountAmount'];
+        $subtotal = $paymentData['subtotal'];
+        $vat_percent = $paymentData['vat_percent'];
+        $vat_amount = $paymentData['vat_amount'];
+        $shippingAmount = $paymentData['shippingAmount'];
+        $netAmount = $paymentData['netAmount'];
+
+        $pdfUrl = null;
+        $order = $this->createOrder($formData, $discountAmount, $subtotal, $vat_percent, $vat_amount, $shippingAmount, $netAmount);
+
+        $pdfUrl = route('generate-pdf', ['encoded_order_id' => base64_encode($order->id)]);
+        $this->sendOrderEmail($order);
+
+        session()->forget('payment_data');
+
+        return view('frontend.order.success', compact('pdfUrl'));
+    }
+
+
+
+
+
     public function paymentSuccess(Request $request)
     {
         $formData = session('order_data');
@@ -511,6 +508,46 @@ class OrderController extends Controller
         foreach ($contactEmails as $email) {
             Mail::to($email)->send(new OrderConfirmation($order, $pdfUrl));
         }
+    }
+
+    private function initiateStripePayment($formData, $discountAmount, $subtotal, $vat_percent, $vat_amount, $shippingAmount, $netAmount)
+    {
+        session([
+            'payment_data' => [
+                'formData' => $formData,
+                'discountAmount' => $discountAmount,
+                'subtotal' => $subtotal,
+                'vat_percent' => $vat_percent,
+                'vat_amount' => $vat_amount,
+                'shippingAmount' => $shippingAmount,
+                'netAmount' => $netAmount,
+            ]
+        ]);
+
+        Stripe::setApiKey(config('services.stripe.secret'));
+        try {
+            $session = Session::create([
+                'payment_method_types' => ['card'],
+                'line_items' => [[
+                    'price_data' => [
+                        'currency' => 'GBP',
+                        'product_data' => ['name' => 'Order Payment'],
+                        'unit_amount' => intval($netAmount * 100),
+                    ],
+                    'quantity' => 1,
+                ]],
+                'mode' => 'payment',
+                'success_url' => route('stripe.resumeOrderFlow'),
+                'cancel_url' => route('payment.cancel'),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+
+        return response()->json([
+            'success' => true,
+            'redirectUrl' => $session->url,
+        ]);
     }
 
     public function paymentCancel()

@@ -109,16 +109,16 @@ Route::get('/search/products', [FrontendController::class, 'search'])->name('sea
 Route::put('/cart/store', [FrontendController::class, 'storeCart'])->name('cart.store');
 Route::get('/cart', [FrontendController::class, 'showCart'])->name('cart.index');
 
-Route::post('/checkout', [FrontendController::class, 'checkout'])->name('checkout.store');
+// Route::post('/checkout', [FrontendController::class, 'checkout'])->name('checkout.store');
 
-Route::post('/place-order', [OrderController::class, 'placeOrder'])->name('place.order');
+// Route::post('/place-order', [OrderController::class, 'placeOrder'])->name('place.order');
 
 Route::get('/resume-order', [OrderController::class, 'resumeOrderFlow'])->name('stripe.resumeOrderFlow');
 
 Route::get('payment/success', [OrderController::class, 'paymentSuccess'])->name('payment.success');
 Route::get('payment/cancel', [OrderController::class, 'paymentCancel'])->name('payment.cancel');
 
-Route::get('/order/success', [OrderController::class, 'orderSuccess'])->name('order.success');
+// Route::get('/order/success', [OrderController::class, 'orderSuccess'])->name('order.success');
 
 Route::get('/order/{encoded_order_id}', [OrderController::class, 'generatePDF'])->name('generate-pdf');
 
@@ -142,6 +142,11 @@ Route::get('/cart/session-data', function () {
 
 
 Route::get('/checkout', [CheckoutController::class, 'checkout'])->name('checkout');
+
+Route::post('/checkout/process', [CheckoutController::class, 'processOrder'])->name('checkout.process');
+Route::get('/order/success/{order_id}', [CheckoutController::class, 'orderSuccess'])->name('order.success');
+Route::get('/order/cancel', [CheckoutController::class, 'orderCancel'])->name('order.cancel');
+Route::get('/order/{order}/invoice', [CheckoutController::class, 'showInvoice'])->name('order.invoice');
 
 
 
