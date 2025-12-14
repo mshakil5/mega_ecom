@@ -80,7 +80,7 @@ class FrontendController extends Controller
                 ->withoutOffers()
                 ->commonSelect()
                 ->orderByDesc($orderByColumn)
-                ->take(7)
+                ->take(11)
                 ->get();
         };
 

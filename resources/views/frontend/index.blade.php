@@ -79,10 +79,12 @@
     <!-- MAIN content sections for Men/Women product lists (JS injects product cards) -->
     <main class="py-4">
         <section class="container section-container">
-            <h2 class="fs-2 fw-bold mb-4 text-dark">New Arrivals - Men's Polo</h2>
+            <h2 class="fs-2 fw-bold mb-4 text-dark">New Arrivals</h2>
 
             <div class="row g-4">
-                <div class="col-12 col-lg-4">
+
+
+                {{-- <div class="col-12 col-lg-4">
                     <div class="promo-overlay" style="background-image: url('https://placehold.co/800x1200/262626/ffffff?text=AURUM+POLO+%7C+DESIGNER+POLO');">
                         <div class="promo-text-box">
                             <h3 class="fs-3 fw-bold">AURUM POLO</h3>
@@ -90,12 +92,12 @@
                         </div>
                         <div class="position-absolute top-0 end-0 bg-white text-dark fw-bold px-3 py-1 rounded-pill small premium-badge">PREMIUM</div>
                     </div>
-                </div>
+                </div> --}}
 
-                <div class="col-12 col-lg-8">
+                <div class="col-12 col-lg-12">
                     <div class="row g-3">
                         @foreach ($recentProducts as $product)
-                            <div class="col-6 col-md-4 col-lg-3 mb-4 product-item-card">
+                            <div class="col-6 col-md-4 col-lg-2 mb-4 product-item-card">
                                 <a href="{{ route('product.show', $product->slug) }}" class="card bg-white product-card text-decoration-none text-dark">
 
                                     <div class="product-image-container">
@@ -113,7 +115,7 @@
                         @endforeach
 
 
-                        <div class="col-6 col-md-4 col-lg-3 mb-4">
+                        <div class="col-6 col-md-4 col-lg-2 mb-4">
                             <a href="#" class="card view-more-card" style="min-height: 220px;">
                                 <div class="overlay"></div>
                                 <div class="view-more-content fw-bold fs-4">
@@ -129,24 +131,24 @@
         </section>
 
         <section class="container section-container">
-            <h2 class="fs-2 fw-bold mb-4 text-dark">Trending - Kurti & Tops</h2>
+            <h2 class="fs-2 fw-bold mb-4 text-dark">Trending</h2>
 
             <div class="row g-4">
                 <!-- Promo Block -->
-                <div class="col-12 col-lg-4">
+                {{-- <div class="col-12 col-lg-4">
                     <div class="promo-overlay" style="background-image: url('https://placehold.co/800x1200/c084fc/ffffff?text=KURTI%2C+TUNIC+%26+TOPS');">
                         <div class="promo-text-box">
                             <h3 class="fs-3 fw-bold">Kurti, Tunic & Tops</h3>
                             <p class="mb-0 small">Latest Collection</p>
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
                 <!-- Trending Products -->
-                <div class="col-12 col-lg-8">
+                <div class="col-12 col-lg-12">
                     <div class="row g-3">
                         @foreach ($trendingProducts as $product)
-                            <div class="col-6 col-md-4 col-lg-3 mb-4 product-item-card">
+                            <div class="col-6 col-md-4 col-lg-2 mb-4 product-item-card">
                                 <a href="{{ route('product.show', $product->slug) }}" class="card bg-white product-card text-decoration-none text-dark">
                                     <div class="product-image-container">
                                         <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="img-fluid">
@@ -163,7 +165,7 @@
                         @endforeach
 
                         <!-- View More Card -->
-                        <div class="col-6 col-md-4 col-lg-3 mb-4">
+                        <div class="col-6 col-md-4 col-lg-2 mb-4">
                             <a href="#" class="card view-more-card" style="min-height: 220px;">
                                 <div class="overlay"></div>
                                 <div class="view-more-content fw-bold fs-4">
@@ -182,20 +184,20 @@
 
             <div class="row g-4">
                 <!-- Optional Promo Block -->
-                <div class="col-12 col-lg-4">
+                {{-- <div class="col-12 col-lg-4">
                     <div class="promo-overlay" style="background-image: url('https://placehold.co/800x1200/ff9f43/ffffff?text=POPULAR+COLLECTION');">
                         <div class="promo-text-box">
                             <h3 class="fs-3 fw-bold">Popular Collection</h3>
                             <p class="mb-0 small">Top Picks</p>
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
                 <!-- Popular Products -->
-                <div class="col-12 col-lg-8">
+                <div class="col-12 col-lg-12">
                     <div class="row g-3">
                         @foreach ($popularProducts as $product)
-                            <div class="col-6 col-md-4 col-lg-3 mb-4 product-item-card">
+                            <div class="col-6 col-md-4 col-lg-2 mb-4 product-item-card">
                                 <a href="{{ route('product.show', $product->slug) }}" class="card bg-white product-card text-decoration-none text-dark">
                                     <div class="product-image-container">
                                         <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="img-fluid">
@@ -212,7 +214,7 @@
                         @endforeach
 
                         <!-- View More Card -->
-                        <div class="col-6 col-md-4 col-lg-3 mb-4">
+                        <div class="col-6 col-md-4 col-lg-2 mb-4">
                             <a href="#" class="card view-more-card" style="min-height: 220px;">
                                 <div class="overlay"></div>
                                 <div class="view-more-content fw-bold fs-4">
@@ -230,19 +232,19 @@
             <h2 class="fs-2 fw-bold mb-4 text-dark">Featured Products</h2>
 
             <div class="row g-4">
-                <div class="col-12 col-lg-4">
+                {{-- <div class="col-12 col-lg-4">
                     <div class="promo-overlay" style="background-image: url('https://placehold.co/800x1200/00b894/ffffff?text=FEATURED+COLLECTION');">
                         <div class="promo-text-box">
                             <h3 class="fs-3 fw-bold">Featured Collection</h3>
                             <p class="mb-0 small">Top Picks</p>
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
-                <div class="col-12 col-lg-8">
+                <div class="col-12 col-lg-12">
                     <div class="row g-3">
                         @foreach ($featuredProducts as $product)
-                            <div class="col-6 col-md-4 col-lg-3 mb-4 product-item-card">
+                            <div class="col-6 col-md-4 col-lg-2 mb-4 product-item-card">
                                 <a href="{{ route('product.show', $product->slug) }}" class="card bg-white product-card text-decoration-none text-dark">
                                     <div class="product-image-container">
                                         <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="img-fluid">
@@ -258,7 +260,7 @@
                             </div>
                         @endforeach
 
-                        <div class="col-6 col-md-4 col-lg-3 mb-4">
+                        <div class="col-6 col-md-4 col-lg-2 mb-4">
                             <a href="#" class="card view-more-card" style="min-height: 220px;">
                                 <div class="overlay"></div>
                                 <div class="view-more-content fw-bold fs-4">
@@ -272,7 +274,7 @@
             </div>
         </section>
 
-        <section class="container section-container">
+        <section class="container section-container d-none">
             <div class="row g-4">
                 <div class="col-12 col-md-4">
                     <a href="#" class="d-block text-decoration-none">

@@ -1,4 +1,10 @@
 
+@php
+    $categories = \App\Models\Category::where('status', 1)
+        ->whereHas('subcategories') 
+        ->with('subcategories')  
+        ->get();
+@endphp
 
     <!-- Top small bar (hidden on small screens) -->
     <div class="top-bar bg-dark text-white d-none d-lg-block">
@@ -86,32 +92,26 @@
                         <ul class="dropdown-menu" aria-labelledby="shopMegaMenu">
                             <div class="container">
                                 <div class="row">
-                                    <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
-                                        <h6 class="dropdown-header">MEN'S FASHION</h6>
-                                        <a class="dropdown-item" href="#">T-Shirts & Polos</a>
-                                        <a class="dropdown-item" href="#">Casual Shirts</a>
-                                        <a class="dropdown-item" href="#">Jeans & Trousers</a>
-                                        <a class="dropdown-item" href="#">Jackets & Hoodies</a>
-                                        <a class="dropdown-item" href="#">Sports Wear</a>
+                                    <div class="col-lg-9 col-md-12">
+                                        <div class="row">
+
+
+                                            @foreach ($categories as $category)
+                                                <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
+                                                    <h6 class="dropdown-header text-uppercase">  {{ $category->name }}    </h6>
+
+                                                    @foreach ($category->subcategories as $subcategory)
+                                                    <a class="dropdown-item" href="#">{{$subcategory->name}}</a>
+                                                    @endforeach
+                                                    
+                                                </div>
+                                            @endforeach
+
+
+                                        </div>
                                     </div>
-                                    <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
-                                        <h6 class="dropdown-header">WOMEN'S WEAR</h6>
-                                        <a class="dropdown-item" href="#">Tops & Tunics</a>
-                                        <a class="dropdown-item" href="#">Dresses</a>
-                                        <a class="dropdown-item" href="#">Denim Collection</a>
-                                        <a class="dropdown-item" href="#">Winter Outerwear</a>
-                                        <a class="dropdown-item" href="#">Saree & Ethnic</a>
-                                    </div>
-                                    <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
-                                        <h6 class="dropdown-header">KIDS & BABY</h6>
-                                        <a class="dropdown-item" href="#">Boys' Apparel</a>
-                                        <a class="dropdown-item" href="#">Girls' Apparel</a>
-                                        <a class="dropdown-item" href="#">Baby Essentials</a>
-                                        <h6 class="dropdown-header mt-3">ACCESSORIES</h6>
-                                        <a class="dropdown-item" href="#">Watches & Jewelry</a>
-                                        <a class="dropdown-item" href="#">Bags & Backpacks</a>
-                                    </div>
-                                    <div class="col-lg-3 col-md-6">
+                                    
+                                    <div class="col-lg-3 col-md-12">
                                         <h6 class="dropdown-header">FEATURED</h6>
                                         <img src="https://placehold.co/300x200/212529/ffffff?text=NEW+ARRIVALS" class="img-fluid rounded shadow-sm" alt="New Arrivals Promo">
                                         <a href="#" class="btn btn-dark btn-sm mt-2 w-100">Shop New Collection</a>
