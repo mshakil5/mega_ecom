@@ -36,6 +36,7 @@ use App\Models\ProductReview;
 use App\Models\FaqQuestion;
 use App\Models\ProductPrice;
 use Illuminate\Support\Facades\Cache;
+use SebastianBergmann\Environment\Console;
 
 class FrontendController extends Controller
 {
@@ -427,16 +428,15 @@ class FrontendController extends Controller
 
     public function showCart(Request $request)
     {
-        $cartJson = $request->session()->get('cart', '[]');
-        $cart = json_decode($cartJson, true);
+        $cart = $request->session()->get('cart', '[]');
         return view('frontend.cart', compact('cart'));
     }
 
-    public function checkout(Request $request)
-    {
-        $cart = json_decode($request->input('cart'), true);
-        return view('frontend.checkout', compact('cart'));
-    }
+    // public function checkout(Request $request)
+    // {
+    //     $cart = json_decode($request->input('cart'), true);
+    //     return view('frontend.checkout', compact('cart'));
+    // }
 
     public function search(Request $request)
     {

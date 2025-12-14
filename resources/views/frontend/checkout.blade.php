@@ -8,30 +8,7 @@
     @endphp
 
     <style>
-        .checkout-container {
-            text-align: center;
-            margin-top: 20px;
-        }
 
-        .checkout-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-
-        .checkout-buttons button {
-            border: 1px solid #80808040;
-            padding: 10px 12px;
-            border-radius: 5px;
-            font-size: 18px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 150px;
-        }
 
         .customRadioButton {
             height: 25px;
@@ -76,7 +53,7 @@
 
         .option i {
             font-size: 24px;
-            color: #007bff;
+            color: #000000;
         }
 
         .option.selected {
@@ -157,7 +134,7 @@
         .checkout-btn-main {
             display: block;
             width: 100%;
-            background: #1E2D7D;
+            background: #000000;
             color: #fff;
             padding: 12px;
             border-radius: 8px;
@@ -199,6 +176,15 @@
             object-fit: contain;
             border-radius: 4px;
             border: 1px solid #eee;
+        }
+
+        .form-check a{
+            text-decoration: none;
+            color: #dc3545
+        }
+
+        .accordion-header{
+            border: 1px solid #ededed;
         }
     </style>
 
@@ -304,25 +290,25 @@
                     <!-- Billing Address -->
                     <div class="option-container mb-3">
                         <h2 class="checkout-title">Billing Address</h2>
-<div id="shippingOptions">
-        <label class="option selected mb-2 d-none" onclick="handleBillingOptionClick('sameasshipping')">
-            <div>
-                <input type="radio" name="differentAddress" class="customRadioButton"
-                    value="sameasshipping" style="width: 7%" checked>
-                <span>Same As Delivery Address</span>
-            </div>
-            <i class="fa fa-home px-4" style="font-size: 24px; color: #007bff; margin-left: auto;"></i>
-        </label>
-        <label class="option" onclick="handleBillingOptionClick('differentaddress')">
-            <div>
-                <input type="radio" name="differentAddress" class="customRadioButton"
-                    value="differentaddress" style="width: 7%">
-                <input type="hidden" id="is_billing_same" name="is_billing_same" value="1">
-                <span>Use Different Billing Address</span>
-            </div>
-            <i class="fa fa-home px-4" style="font-size: 24px; color: #007bff; margin-left: auto;"></i>
-        </label>
-    </div>
+                        <div id="shippingOptions">
+                            <label class="option selected mb-2 d-none" onclick="handleBillingOptionClick('sameasshipping')">
+                                <div>
+                                    <input type="radio" name="differentAddress" class="customRadioButton"
+                                        value="sameasshipping" style="width: 7%" checked>
+                                    <span>Same As Delivery Address</span>
+                                </div>
+                                <i class="fa fa-home px-4" style="font-size: 24px; color: #000000; margin-left: auto;"></i>
+                            </label>
+                            <label class="option" onclick="handleBillingOptionClick('differentaddress')">
+                                <div>
+                                    <input type="radio" name="differentAddress" class="customRadioButton"
+                                        value="differentaddress" style="width: 7%">
+                                    <input type="hidden" id="is_billing_same" name="is_billing_same" value="1">
+                                    <span>Use Different Billing Address</span>
+                                </div>
+                                <i class="fa fa-home px-4" style="font-size: 24px; color: #000000; margin-left: auto;"></i>
+                            </label>
+                        </div>
 
                         <div id="diffAddress" style="display: none;">
                             <div class="row mt-3">
@@ -497,7 +483,7 @@
                                         <i class="ri-bank-card-line me-2"></i> Credit / Debit Card (Stripe)
                                     </button>
                                 </h2>
-                                <div id="collapseCard" class="accordion-collapse collapse show"
+                                <div id="collapseCard" class="accordion-collapse"
                                     data-bs-parent="#paymentAccordion">
                                     <div class="accordion-body">
                                         <p>Pay securely using your credit or debit card through Stripe.</p>
@@ -508,14 +494,14 @@
                             </div>
 
                             <!-- PayPal -->
-                            <div class="accordion-item d-none">
+                            <div class="accordion-item  shadow-sm">
                                 <h2 class="accordion-header">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#collapsePayPal">
                                         PayPal
                                     </button>
                                 </h2>
-                                <div id="collapsePayPal" class="accordion-collapse collapse"
+                                <div id="collapsePayPal" class="accordion-collapse  collapse show"
                                     data-bs-parent="#paymentAccordion">
                                     <div class="accordion-body">
                                         <p>You will be redirected to PayPal to complete your payment.</p>
@@ -544,7 +530,7 @@
                             </div>
 
                             <!-- Cash on Delivery -->
-                            <div class="accordion-item">
+                            <div class="accordion-item d-none">
                                 <h2 class="accordion-header">
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#collapseCash">
@@ -562,6 +548,8 @@
                             </div>
                         </div>
                     </div>
+
+
                 </div>
             </div>
         </div>
@@ -773,6 +761,8 @@
                     total_amount: parseFloat($('#total-amount').text().replace('£','')),
                     _token: '{{ csrf_token() }}'
                 };
+
+                console.log(formData);
 
                 $.ajax({
                     url: "{{ route('checkout.store') }}",

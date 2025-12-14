@@ -8,13 +8,23 @@ use Illuminate\Http\Request;
 
 class CheckoutController extends Controller
 {
-        public function checkout(Request $request)
+    public function checkout(Request $request)
     {
         $sessionCart = $request->session()->get('cart', []);
 
 
         if (!is_array($sessionCart) || empty($sessionCart)) {
-            return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
+            // **TEMPORARILY COMMENT OUT THE REDIRECT**
+            // return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
+            
+            // **Instead, define the variables to see the checkout page with an empty list.**
+            $cartItems = [];
+            $total = 0;
+            return view('frontend.checkout', [
+                'cartItems' => $cartItems,
+                'total' => $total,
+                'currency' => '£',
+            ]);
         }
 
         $productIds = collect($sessionCart)->pluck('product_id')->unique()->filter()->values()->all();

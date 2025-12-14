@@ -1,6 +1,6 @@
     <!-- FOOTER -->
-    <footer class="footer bg-dark text-white pt-4">
-        <div class="container-fluid border-bottom border-secondary py-3 footer-top" style="background-color: #f8f9fa;">
+    <footer class="footer bg-dark text-white">
+        <div class="container-fluid border-bottom border-secondary py-3 footer-top" style="background-color: #f8f9fa;border:1px dashed #ddd;">
             <div class="container">
                 <div class="row text-dark text-center align-items-center">
                     <div class="col-lg-4 mb-3 mb-lg-0">
