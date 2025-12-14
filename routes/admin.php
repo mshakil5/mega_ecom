@@ -59,6 +59,7 @@ use App\Http\Controllers\Admin\StockTransferRequestController;
 use App\Http\Controllers\Admin\FAQController;
 use App\Http\Controllers\Admin\TypeController;
 use App\Http\Controllers\Admin\WholesaleController;
+use App\Http\Controllers\Admin\DiscountController;
 
 Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], function(){
   
@@ -695,6 +696,17 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/faq-questions/{id}/edit', [FAQController::class, 'edit']);
     Route::post('/faq-questions-update', [FAQController::class, 'update']);
     Route::get('/faq-questions/{id}', [FAQController::class, 'delete']);    
+
+    Route::prefix('discount')->group(function () {
+        Route::get('/', [DiscountController::class, 'index'])->name('discount.index');
+        Route::post('/', [DiscountController::class, 'store'])->name('discount.store');
+        Route::get('/{id}/edit', [DiscountController::class, 'edit'])->name('discount.edit');
+        Route::post('/update', [DiscountController::class, 'update'])->name('discount.update');
+        Route::get('/{id}/delete', [DiscountController::class, 'destroy'])->name('discount.delete');
+
+        Route::get('/get-subcategories/{categoryId}', [DiscountController::class, 'getSubcategories'])->name('discount.getSubcategories');
+        Route::get('/get-products', [DiscountController::class, 'getProducts'])->name('discount.getProducts');
+    });
 
     Route::get('/clean-db', [HomeController::class, 'truncateTables']);
 
