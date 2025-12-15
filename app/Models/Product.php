@@ -254,5 +254,10 @@ class Product extends Model
         return $this->hasMany(SampleProduct::class);
     }
 
+    public function positionImages()
+    {
+        return $this->hasMany(ProductPositionImage::class);
+    }
+
     
 }

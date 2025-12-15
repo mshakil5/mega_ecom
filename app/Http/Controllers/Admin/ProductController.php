@@ -29,6 +29,7 @@ use App\Models\Stock;
 use App\Imports\ProductUploadImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Image;
+use App\Models\ProductPositionImage;
 
 class ProductController extends Controller
 {
@@ -71,7 +72,8 @@ class ProductController extends Controller
             'feature_image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             // 'color_id' => 'nullable|array',
             // 'color_id.*' => 'exists:colors,id',
-            'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120'
+            'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'position_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
 
         $imagePath = null;
@@ -164,6 +166,31 @@ class ProductController extends Controller
             }
         }
 
+        // Insert Product Position Images
+        if ($request->has('position_images') && is_array($request->position_images)) {
+            foreach ($request->position_images as $position => $image) {
+                if ($image && $image->isValid()) {
+                    $randomName = mt_rand(10000000, 99999999) . '.webp';
+                    $destinationPath = public_path('images/products/position/');
+                    
+                    if (!file_exists($destinationPath)) {
+                        mkdir($destinationPath, 0755, true);
+                    }
+
+                    Image::make($image)
+                        ->encode('webp', 30)
+                        ->save($destinationPath . $randomName);
+
+                    // Insert into product_position_images table
+                    ProductPositionImage::create([
+                        'product_id' => $product->id,
+                        'image' => 'images/products/position/' . $randomName,
+                        'position' => $position,
+                    ]);
+                }
+            }
+        }
+
         if ($request->has('type_id')) {
             $product->types()->sync($request->type_id);
         }
@@ -173,7 +200,7 @@ class ProductController extends Controller
 
     public function productEdit($id)
     {
-        $product = Product::withoutGlobalScopes()->with('colors', 'sizes', 'types')->findOrFail($id);
+        $product = Product::withoutGlobalScopes()->with('colors', 'sizes', 'types', 'positionImages')->findOrFail($id);
         $brands = Brand::select('id', 'name')->orderby('id','DESC')->get();
         $product_models = ProductModel::select('id', 'name')->orderby('id','DESC')->get();
         $groups = Group::select('id', 'name')->orderby('id','DESC')->get();
@@ -267,6 +294,66 @@ class ProductController extends Controller
             $product->types()->sync($request->type_id);
         } else {
             $product->types()->sync([]);
+        }
+
+        if ($request->has('position_images') && is_array($request->position_images)) {
+            foreach ($request->position_images as $position => $image) {
+                if ($image && $image->isValid()) {
+                    // Check if position image already exists
+                    $existingPositionImage = ProductPositionImage::where('product_id', $product->id)
+                        ->where('position', $position)
+                        ->first();
+                    
+                    // Delete old image if exists
+                    if ($existingPositionImage && file_exists(public_path($existingPositionImage->image))) {
+                        unlink(public_path($existingPositionImage->image));
+                        $existingPositionImage->delete();
+                    }
+                    
+                    // Upload new image
+                    $randomName = mt_rand(10000000, 99999999) . '.webp';
+                    $destinationPath = public_path('images/products/position/');
+                    
+                    if (!file_exists($destinationPath)) {
+                        mkdir($destinationPath, 0755, true);
+                    }
+
+                    Image::make($image)
+                        ->encode('webp', 30)
+                        ->save($destinationPath . $randomName);
+
+                    // Insert into product_position_images table
+                    ProductPositionImage::create([
+                        'product_id' => $product->id,
+                        'image' => 'images/products/position/' . $randomName,
+                        'position' => $position,
+                    ]);
+                }
+            }
+        }
+
+        // Handle delete position images requests
+        if ($request->has('delete_position_images') && is_array($request->delete_position_images)) {
+            foreach ($request->delete_position_images as $position => $value) {
+                if ($value == 1) {
+                    $positionImage = ProductPositionImage::where('product_id', $product->id)
+                        ->where('position', $position)
+                        ->first();
+                    
+                    if ($positionImage) {
+                        // Delete file from storage
+                        if (file_exists(public_path($positionImage->image))) {
+                            unlink(public_path($positionImage->image));
+                        }
+                        // Delete record from database
+                        $positionImage->delete();
+                    }
+                }
+            }
+        }
+
+        if ($request->has('type_id')) {
+            $product->types()->sync($request->type_id);
         }
 
         if ($request->has('color_id')) {

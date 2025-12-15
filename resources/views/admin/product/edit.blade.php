@@ -180,6 +180,50 @@
                                 </div>
                             </div>
 
+                            <div class="form-row mt-3">
+                                <div class="col-md-12">
+                                    <h5>Product Position Images</h5>
+                                    <hr>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                @php
+                                    $positions = [
+                                        'front' => 'Front Image',
+                                        'back' => 'Back Image', 
+                                        'left' => 'Left Side Image',
+                                        'right' => 'Right Side Image'
+                                    ];
+                                    
+                                    // Get existing position images
+                                    $existingImages = [];
+                                    foreach ($product->positionImages as $positionImage) {
+                                        $existingImages[$positionImage->position] = $positionImage;
+                                    }
+                                @endphp
+                                
+                                @foreach($positions as $key => $label)
+                                    <div class="form-group col-md-3">
+                                        <label for="{{ $key }}_image">{{ $label }}</label>
+                                        <input type="file" class="form-control-file" id="{{ $key }}_image" name="position_images[{{ $key }}]" accept="image/*">
+                                        
+                                        @if(isset($existingImages[$key]))
+                                            <div class="mt-2">
+                                                <p class="mb-1">Current Image:</p>
+                                                <img src="{{ asset($existingImages[$key]->image) }}" alt="{{ $label }}" style="max-width: 200px; width: 100%; height: auto;">
+                                                <div class="form-check mt-2">
+                                                    <input type="checkbox" class="form-check-input" id="delete_{{ $key }}_image" name="delete_position_images[{{ $key }}]" value="1">
+                                                    <label class="form-check-label text-danger" for="delete_{{ $key }}_image">Delete this image</label>
+                                                </div>
+                                            </div>
+                                        @endif
+                                        
+                                        <img id="preview-{{ $key }}-image" src="#" alt="{{ $label }} Preview" style="max-width: 200px; width: 100%; height: auto; margin-top: 10px; display: none;">
+                                    </div>
+                                @endforeach
+                            </div>
+
                             <div id="dynamic-rows">
                                 @if($product->colors->isEmpty())
                                 <div class="form-row dynamic-row">
@@ -262,6 +306,27 @@
 
 @include('admin.inc.modal.product_modal_script')
 @include('admin.inc.modal.product_type_script')
+
+<script>
+$(function() {
+    // Function to handle image preview for position images
+    function setupPositionImagePreview(inputId, previewId) {
+        $(`#${inputId}`).change(function(e) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $(`#${previewId}`).attr("src", e.target.result).show();
+            };
+            reader.readAsDataURL(this.files[0]);
+        });
+    }
+
+    // Setup preview for all position images
+    const positions = ['front', 'back', 'left', 'right'];
+    positions.forEach(position => {
+        setupPositionImagePreview(`${position}_image`, `preview-${position}-image`);
+    });
+});
+</script>
 
 <script>
 

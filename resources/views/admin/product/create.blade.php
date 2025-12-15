@@ -189,6 +189,34 @@
                                 </div>
                             </div>
 
+                            <div class="form-row mt-3">
+                                <div class="col-md-12">
+                                    <h5>Product Position Images</h5>
+                                    <hr>
+                                </div>
+                            </div>
+
+                            <div class="form-row mb-3">
+                                @php
+                                    $positions = [
+                                        'front' => 'Front Image',
+                                        'back' => 'Back Image', 
+                                        'left' => 'Left Side Image',
+                                        'right' => 'Right Side Image',
+                                        'top' => 'Top Image',
+                                        'bottom' => 'Bottom Image'
+                                    ];
+                                @endphp
+                                
+                                @foreach($positions as $key => $label)
+                                    <div class="form-group col-md-4">
+                                        <label for="{{ $key }}_image">{{ $label }}</label>
+                                        <input type="file" class="form-control-file" id="{{ $key }}_image" name="position_images[{{ $key }}]" accept="image/*">
+                                        <img id="preview-{{ $key }}-image" src="#" alt="{{ $label }} Preview" style="max-width: 200px; width: 100%; height: auto; margin-top: 10px; display: none;">
+                                    </div>
+                                @endforeach
+                            </div>
+
                             <div class="form-row">
                                 <div class="form-group col-md-5">
                                     <label for="color_id">Select Color</label>
@@ -232,6 +260,25 @@
 @include('admin.inc.modal.product_modal_script')
 @include('admin.inc.modal.product_type_script')
 <!-- Category Wise Subcategory Start -->
+
+<script>
+$(function() {
+    // Define positions array
+    const positions = ['front', 'back', 'left', 'right', 'top', 'bottom'];
+    
+    // Loop through each position and set up image preview
+    positions.forEach(position => {
+        $(`#${position}_image`).change(function(e) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $(`#preview-${position}-image`).attr("src", e.target.result).show();
+            };
+            reader.readAsDataURL(this.files[0]);
+        });
+    });
+});
+</script>
+
 <script>
     $(document).ready(function() {
         $('#subcategory').val('').find('option').hide();
