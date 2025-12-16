@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('product_id')->nullable()->constrained('products')->onDelete('cascade');
             $table->enum('category', ['Blank pricing', 'Print', 'Embroidery', 'High stitch count'])->nullable();
-            $table->string('min_max_qty')->nullable();
             $table->integer('min_quantity')->nullable();
             $table->integer('max_quantity')->nullable();
             $table->integer('discount_percent')->nullable(); 

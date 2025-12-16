@@ -60,6 +60,7 @@ use App\Http\Controllers\Admin\FAQController;
 use App\Http\Controllers\Admin\TypeController;
 use App\Http\Controllers\Admin\WholesaleController;
 use App\Http\Controllers\Admin\DiscountController;
+use App\Http\Controllers\Admin\ProductPriceController;
 
 Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], function(){
   
@@ -241,6 +242,11 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/toggle-recent', [ProductController::class, 'toggleRecent'])->name('toggle-recent');
     Route::post('/toggle-popular', [ProductController::class, 'togglePopular'])->name('togglePopular');
     Route::post('/toggle-trending', [ProductController::class, 'toggleTrending'])->name('toggleTrending');
+
+    Route::get('/product-prices', [ProductPriceController::class, 'productPricesIndex'])->name('product.prices.index');
+    Route::post('/product-prices/store', [ProductPriceController::class, 'store'])->name('product.prices.store');
+    Route::get('/product-prices/get-products', [ProductPriceController::class, 'getProducts'])->name('product.prices.getProducts');
+    Route::get('/product-prices/{productId}/delete-all', [ProductPriceController::class, 'deleteAllPrices'])->name('product.prices.deleteAll');
 
     Route::get('product/{product}/prices', [ProductController::class, 'showProductPrices'])->name('product.prices.show');
     Route::post('/product-price', [ProductController::class, 'storePrice'])->name('product-price.store');

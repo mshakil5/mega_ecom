@@ -30,13 +30,109 @@ use App\Imports\ProductUploadImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Image;
 use App\Models\ProductPositionImage;
+use Yajra\DataTables\DataTables;
 
 class ProductController extends Controller
 {
-    public function getProduct()
+    public function getProduct(Request $request)
     {
-        $data = Product::productSellingPriceCal();
-        return view('admin.product.index', compact('data'));
+        if ($request->ajax()) {
+            $products = Product::with(['category', 'subCategory', 'brand', 'productModel'])
+                ->withCount('orderDetails', 'purchaseHistories')
+                ->select('id', 'name', 'category_id', 'sub_category_id', 'brand_id', 
+                        'product_model_id', 'is_featured', 'is_recent', 'is_popular', 
+                        'is_trending', 'feature_image', 'product_code', 'active_status')
+                ->orderBy('id', 'DESC');
+
+            return DataTables::of($products)
+                ->addIndexColumn()
+                ->addColumn('image', function($row) {
+                    $imageUrl = asset('images/products/' . $row->feature_image);
+                    return '<img src="' . $imageUrl . '" style="width: 50px; height: 50px; object-fit: cover;">';
+                })
+                ->addColumn('price', function($row) {
+                    $price = \App\Models\Stock::where('product_id', $row->id)
+                        ->orderBy('id', 'desc')
+                        ->first();
+                    return number_format($price ? $price->selling_price : 0, 2);
+                })
+                ->addColumn('total_quantity', function($row) {
+                    $totalQty = \App\Models\Stock::where('product_id', $row->id)
+                        ->sum('quantity');
+                    return number_format($totalQty ?: 0, 0);
+                })
+                ->addColumn('category', function($row) {
+                    return $row->category->name ?? '-';
+                })
+                ->addColumn('status_switch', function($row) {
+                    $checked = $row->active_status == 1 ? 'checked' : '';
+                    return '<div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input toggle-active" 
+                            id="customSwitchActive' . $row->id . '" 
+                            data-id="' . $row->id . '" ' . $checked . '>
+                        <label class="custom-control-label" for="customSwitchActive' . $row->id . '"></label>
+                    </div>';
+                })
+                ->addColumn('featured_switch', function($row) {
+                    $checked = $row->is_featured == 1 ? 'checked' : '';
+                    return '<div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input toggle-featured" 
+                            id="customSwitch' . $row->id . '" 
+                            data-id="' . $row->id . '" ' . $checked . '>
+                        <label class="custom-control-label" for="customSwitch' . $row->id . '"></label>
+                    </div>';
+                })
+                ->addColumn('recent_switch', function($row) {
+                    $checked = $row->is_recent == 1 ? 'checked' : '';
+                    return '<div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input toggle-recent" 
+                            id="customSwitchRecent' . $row->id . '" 
+                            data-id="' . $row->id . '" ' . $checked . '>
+                        <label class="custom-control-label" for="customSwitchRecent' . $row->id . '"></label>
+                    </div>';
+                })
+                ->addColumn('popular_switch', function($row) {
+                    $checked = $row->is_popular == 1 ? 'checked' : '';
+                    return '<div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input toggle-popular" 
+                            id="customSwitchPopular' . $row->id . '" 
+                            data-id="' . $row->id . '" ' . $checked . '>
+                        <label class="custom-control-label" for="customSwitchPopular' . $row->id . '"></label>
+                    </div>';
+                })
+                ->addColumn('trending_switch', function($row) {
+                    $checked = $row->is_trending == 1 ? 'checked' : '';
+                    return '<div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input toggle-trending" 
+                            id="customSwitchTrending' . $row->id . '" 
+                            data-id="' . $row->id . '" ' . $checked . '>
+                        <label class="custom-control-label" for="customSwitchTrending' . $row->id . '"></label>
+                    </div>';
+                })
+                ->addColumn('action', function($row) {
+                    return '
+                        <a id="viewBtn" href="' . route('product.show.admin', $row->id) . '">
+                            <i class="fa fa-eye" style="color: #4CAF50; font-size:16px; margin-right: 10px;"></i>
+                        </a>
+                        <a href="' . route('product.reviews.show', $row->id) . '" class="reviewBtn d-none">
+                            <i class="fa fa-comments" style="color: #FF5722; font-size:16px; margin-right: 10px;" title="View Reviews"></i>
+                        </a>
+                        <a href="' . route('product.prices.show', $row->id) . '">
+                            <i class="fa fa-money d-none" style="color: #FF9800; font-size:16px; margin-right: 10px;"></i>
+                        </a>
+                        <a href="' . route('product.edit', $row->id) . '" id="EditBtn" rid="' . $row->id . '">
+                            <i class="fa fa-edit" style="color: #2196f3; font-size:16px; margin-right: 10px;"></i>
+                        </a>
+                        <a class="deleteBtn" rid="' . $row->id . '">
+                            <i class="fa fa-trash-o" style="color: red; font-size:16px;"></i>
+                        </a>
+                    ';
+                })
+                ->rawColumns(['image', 'status_switch', 'featured_switch', 'recent_switch', 'popular_switch', 'trending_switch', 'action', 'total_quantity'])
+                ->make(true);
+        }
+
+        return view('admin.product.index');
     }
 
     public function createProduct()
@@ -546,7 +642,19 @@ class ProductController extends Controller
     public function showProductDetails($id)
     {
         $currency = CompanyDetails::value('currency');
-        $product = Product::with(['colors.color', 'sizes', 'category', 'subCategory', 'brand', 'productModel', 'group', 'unit'])->findOrFail($id);
+        $product = Product::with([
+            'colors.color', 
+            'sizes', 
+            'category', 
+            'subCategory', 
+            'brand', 
+            'productModel', 
+            'group', 
+            'unit',
+            'types', // Added types relationship
+            'positionImages' // Added position images relationship
+        ])->findOrFail($id);
+        
         return view('admin.product.details', compact('product', 'currency'));
     }
 
