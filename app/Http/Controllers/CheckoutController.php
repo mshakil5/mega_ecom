@@ -13,19 +13,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Omnipay\Omnipay;
+use App\Models\Size;
 
 class CheckoutController extends Controller
 {
     public function checkout(Request $request)
     {
         $sessionCart = $request->session()->get('cart', []);
-
-
+        // dd($sessionCart);
         if (!is_array($sessionCart) || empty($sessionCart)) {
-            // **TEMPORARILY COMMENT OUT THE REDIRECT**
-            // return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
-            
-            // **Instead, define the variables to see the checkout page with an empty list.**
             $cartItems = [];
             $total = 0;
             return view('frontend.checkout', [
@@ -37,9 +33,6 @@ class CheckoutController extends Controller
 
         $productIds = collect($sessionCart)->pluck('product_id')->unique()->filter()->values()->all();
         $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
-
-        // dd($products);
-
 
         $cartItems = [];
         $total = 0;
@@ -57,8 +50,10 @@ class CheckoutController extends Controller
             $frontImage = null;
             if ($product) {
                 $colorId = $item['color_id'] ?? null;
-            
-
+                $color = Color::find($colorId);
+                $colorName = $color->color ?? null;
+                $sizeName = $item['sizeName'] ?? null;
+                $size = Size::where('size', $sizeName)->first();
                 $frontImageRow = $product->images()
                     ->where('image_type', 'front')
                     ->when($colorId, fn($q) => $q->where('color_id', $colorId))
@@ -66,7 +61,6 @@ class CheckoutController extends Controller
                     ->first();
                 $frontImage = $frontImageRow->image_path ?? null;
             }
-                $colorName = Color::where('id', $item['color_id'])->first()->color;
 
             $cartItems[] = [
                 'key' => $key,
@@ -75,14 +69,17 @@ class CheckoutController extends Controller
                 'product_name' => $item['product_name'] ?? ($product->name ?? 'Unknown Product'),
                 'product_image' => $frontImage ?? ($item['product_image'] ?? $product->feature_image ?? null),
                 'ean' => $item['ean'] ?? null,
-                'size_id' => $item['size_id'] ?? null,
-                'color_id' => $item['color_id'] ?? null,
+                'size_id' => $size->id ?? null,
+                'sizeName' => $sizeName ?? null,
+                'color_id' => $colorId ?? null,
                 'colorName' => $colorName,
                 'quantity' => $quantity,
                 'price' => $price,
                 'subtotal' => $subtotal,
                 'customization' => $item['customization'] ?? [],
             ];
+
+            // dd($cartItems);
         }
 
         return view('frontend.checkout', [
@@ -91,7 +88,6 @@ class CheckoutController extends Controller
             'currency' => '£',
         ]);
     }
-
 
     public function processOrder(Request $request)
     {
@@ -110,7 +106,7 @@ class CheckoutController extends Controller
         } elseif ($request->payment_method === 'bank_transfer') {
             return $this->processBankTransfer($request, $totals);
         } elseif ($request->payment_method === 'paypal') {
-            return $this->initiatePayPalPayment($request, $totals);
+            return $this->processPaypal($request, $totals);
         } elseif ($request->payment_method === 'stripe') {
             return $this->processStripe($request, $totals);
         } else {
@@ -149,6 +145,105 @@ class CheckoutController extends Controller
         }
     }
 
+    protected function processPaypal(Request $request, $totals)
+    {
+        $payPalCredentials = $this->getPayPalCredentials();
+
+        if (!$payPalCredentials) {
+            return response()->json(['error' => 'PayPal credentials not found'], 404);
+        }
+
+        $gateway = Omnipay::create('PayPal_Rest');
+        $gateway->setClientId($payPalCredentials->clientid);
+        $gateway->setSecret($payPalCredentials->secretid);
+        $gateway->setTestMode($payPalCredentials->mode);
+
+        try {
+            $amount = $request->total_amount ?? $totals['total_amount'];
+            
+            $response = $gateway->purchase([
+                'amount' => number_format($amount, 2, '.', ''),
+                'currency' => 'GBP',
+                'returnUrl' => route('paypal.success'),
+                'cancelUrl' => route('payment.cancel')
+            ])->send();
+
+            if ($response->isRedirect()) {
+                session()->put('paypal_order_data', $request->all());
+                session()->put('paypal_totals', [
+                    'subtotal' => $request->subtotal,
+                    'shipping_charge' => $request->shipping_charge,
+                    'vat_percent' => $request->vat_amount ? (($request->vat_amount / ($request->subtotal + $request->shipping_charge)) * 100) : 20,
+                    'vat_amount' => $request->vat_amount,
+                    'total_amount' => $request->total_amount
+                ]);
+                return response()->json(['redirectUrl' => $response->getRedirectUrl()]);
+            } else {
+                return response()->json(['error' => $response->getMessage()], 400);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function paypalSuccess(Request $request)
+    {
+        // \Log::info('PayPal Success Called', [
+        //     'request_params' => $request->all(),
+        // ]);
+
+        $payPalCredentials = $this->getPayPalCredentials();
+        $gateway = Omnipay::create('PayPal_Rest');
+        $gateway->setClientId($payPalCredentials->clientid);
+        $gateway->setSecret($payPalCredentials->secretid);
+        $gateway->setTestMode($payPalCredentials->mode);
+
+        try {
+            $response = $gateway->completePurchase([
+                'transactionReference' => $request->input('paymentId'),
+                'payerId' => $request->input('PayerID')
+            ])->send();
+
+            // \Log::info('PayPal Response', [
+            //     'isSuccessful' => $response->isSuccessful(),
+            //     'message' => $response->getMessage()
+            // ]);
+
+            if ($response->isSuccessful()) {
+                $orderData = session()->get('paypal_order_data');
+                $totals = session()->get('paypal_totals');
+
+                DB::beginTransaction();
+
+                $order = $this->createOrderFromData($orderData, $totals);
+                $order->payment_method = 'paypal';
+                $order->save();
+
+                $this->createOrderDetailsFromData($orderData, $order);
+                $this->handleCustomizationsFromData($orderData, $order);
+
+                DB::commit();
+                $request->session()->forget('cart');
+                session()->forget('paypal_order_data');
+                session()->forget('paypal_totals');
+
+                return redirect()->route('order.success', ['order_id' => $order->id]);
+            } else {
+                // \Log::error('PayPal payment not successful', ['message' => $response->getMessage()]);
+                return redirect()->route('payment.cancel');
+            }
+        } catch (\Exception $e) {
+            // \Log::error('PayPal Exception', ['error' => $e->getMessage()]);
+            DB::rollBack();
+            return redirect()->route('payment.cancel');
+        }
+    }
+
+    public function paypalCancel()
+    {
+        return view('frontend.order.cancel');
+    }
+
     protected function validateOrder(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -157,7 +252,6 @@ class CheckoutController extends Controller
             'cart_items' => 'required|array',
         ]);
 
-        // Only require shipping address for "Ship" method
         if ($request->shipping_method === '0') {
             $validator->addRules([
                 'first_name' => 'required|string|max:64',
@@ -169,7 +263,6 @@ class CheckoutController extends Controller
             ]);
         }
 
-        // Always require billing address for pickup OR when different billing is selected
         if ($request->shipping_method === '1' || $request->is_billing_same == '0') {
             $validator->addRules([
                 'billing_first_name' => 'required|string|max:64',
@@ -219,48 +312,55 @@ class CheckoutController extends Controller
     protected function createOrder(Request $request, $totals)
     {
         $order = new Order();
-        $order->order_number = 'ORD-' . time() . rand(1000, 9999);
-        $order->user_id = auth()->id();
-        $order->shipping_method = $request->shipping_method;
-        $order->full_name = $request->first_name;
-        $order->company_name = $request->company_name;
+        $order->invoice = 'ORD-' . time() . rand(1000, 9999);
+        $order->purchase_date = now();
+        $order->user_id = auth()->id() ?? null;
+        $order->name = $request->first_name;
+        $order->surname = $request->company_name ?? '';
         $order->email = $request->email;
         $order->phone = $request->phone;
         $order->address_first_line = $request->address_first_line;
-        $order->address_second_line = $request->address_second_line;
-        $order->address_third_line = $request->address_third_line;
-        $order->city = $request->city;
+        $order->address_second_line = $request->address_second_line ?? '';
+        $order->address_third_line = $request->address_third_line ?? '';
+        $order->town = $request->city;
         $order->postcode = $request->postcode;
-        $order->order_notes = $request->order_notes;
-        
-        if ($request->is_billing_same == '1') {
-            $order->billing_full_name = $request->first_name;
-            $order->billing_company_name = $request->company_name;
-            $order->billing_email = $request->email;
-            $order->billing_phone = $request->phone;
-            $order->billing_address_first_line = $request->address_first_line;
-            $order->billing_address_second_line = $request->address_second_line;
-            $order->billing_address_third_line = $request->address_third_line;
-            $order->billing_city = $request->city;
-            $order->billing_postcode = $request->postcode;
-        } else {
-            $order->billing_full_name = $request->billing_first_name;
-            $order->billing_company_name = $request->billing_company_name;
-            $order->billing_email = $request->billing_email ?? $request->email;
-            $order->billing_phone = $request->billing_phone;
-            $order->billing_address_first_line = $request->billing_address_first_line;
-            $order->billing_address_second_line = $request->billing_address_second_line;
-            $order->billing_address_third_line = $request->billing_address_third_line;
-            $order->billing_city = $request->billing_city;
-            $order->billing_postcode = $request->billing_postcode;
-        }
-
+        $order->note = $request->order_notes ?? '';
         $order->payment_method = $request->payment_method;
-        $order->subtotal = $totals['subtotal'];
-        $order->shipping_charge = $totals['shipping_charge'];
+        $order->subtotal_amount = $totals['subtotal'];
+        $order->shipping_amount = $totals['shipping_charge'];
         $order->vat_percent = $totals['vat_percent'];
         $order->vat_amount = $totals['vat_amount'];
-        $order->total_amount = $totals['total_amount'];
+        $order->net_amount = $totals['total_amount'];
+        $order->discount_amount = 0;
+        $order->status = 'pending';
+        
+        $order->save();
+        
+        return $order;
+    }
+
+    protected function createOrderFromData($data, $totals)
+    {
+        $order = new Order();
+        $order->invoice = 'ORD-' . time() . rand(1000, 9999);
+        $order->purchase_date = now();
+        $order->user_id = auth()->id() ?? null;
+        $order->name = $data['first_name'] ?? '';
+        $order->surname = $data['company_name'] ?? '';
+        $order->email = $data['email'] ?? '';
+        $order->phone = $data['phone'] ?? '';
+        $order->address_first_line = $data['address_first_line'] ?? '';
+        $order->address_second_line = $data['address_second_line'] ?? '';
+        $order->address_third_line = $data['address_third_line'] ?? '';
+        $order->town = $data['city'] ?? '';
+        $order->postcode = $data['postcode'] ?? '';
+        $order->note = $data['order_notes'] ?? '';
+        $order->subtotal_amount = $totals['subtotal'];
+        $order->shipping_amount = $totals['shipping_charge'];
+        $order->vat_percent = $totals['vat_percent'];
+        $order->vat_amount = $totals['vat_amount'];
+        $order->net_amount = $totals['total_amount'];
+        $order->discount_amount = 0;
         $order->status = 'pending';
         
         $order->save();
@@ -275,11 +375,27 @@ class CheckoutController extends Controller
             $orderDetail->order_id = $order->id;
             $orderDetail->product_id = $item['product_id'] ?? null;
             $orderDetail->quantity = $item['quantity'];
-            $orderDetail->price = $item['price'];
-            $orderDetail->subtotal = $item['subtotal'];
-            $orderDetail->ean = $item['ean'] ?? null;
-            $orderDetail->size_id = $item['size_id'] ?? null;
-            $orderDetail->color_id = $item['color_id'] ?? null;
+            $orderDetail->price_per_unit = $item['price'];
+            $orderDetail->total_price = $item['subtotal'];
+            $orderDetail->total_price_with_vat = $item['subtotal'];
+            $orderDetail->size = $item['sizeName'] ?? null;
+            $orderDetail->color = $item['colorName'] ?? null;
+            $orderDetail->save();
+        }
+    }
+
+    protected function createOrderDetailsFromData($data, $order)
+    {
+        foreach ($data['cart_items'] as $item) {
+            $orderDetail = new OrderDetails();
+            $orderDetail->order_id = $order->id;
+            $orderDetail->product_id = $item['product_id'] ?? null;
+            $orderDetail->quantity = $item['quantity'];
+            $orderDetail->price_per_unit = $item['price'];
+            $orderDetail->total_price = $item['subtotal'];
+            $orderDetail->total_price_with_vat = $item['subtotal'];
+            $orderDetail->size = $item['sizeName'] ?? null;
+            $orderDetail->color = $item['colorName'] ?? null;
             $orderDetail->save();
         }
     }
@@ -305,9 +421,35 @@ class CheckoutController extends Controller
                     $orderCustomization->position = $customization['position'] ?? '';
                     $orderCustomization->z_index = $customization['zIndex'] ?? null;
                     $orderCustomization->layer_id = $customization['layerId'] ?? null;
-
                     $orderCustomization->data = json_encode($customization['data'] ?? []);
+                    $orderCustomization->save();
+                }
+            }
+        }
+    }
 
+    protected function handleCustomizationsFromData($data, $order)
+    {
+        foreach ($data['cart_items'] as $itemIndex => $item) {
+            if (!empty($item['customization'])) {
+                $orderDetail = OrderDetails::where('order_id', $order->id)
+                    ->skip($itemIndex)
+                    ->first();
+
+                if (!$orderDetail) continue;
+
+                foreach ($item['customization'] as $customization) {
+                    $orderCustomization = new OrderCustomisation();
+                    $orderCustomization->order_details_id = $orderDetail->id;
+                    $orderCustomization->product_id = $item['product_id'] ?? null;
+                    $orderCustomization->size_id = $item['size_id'] ?? null;
+                    $orderCustomization->color_id = $item['color_id'] ?? null;
+                    $orderCustomization->customization_type = $customization['type'] ?? 'text';
+                    $orderCustomization->method = $customization['method'] ?? '';
+                    $orderCustomization->position = $customization['position'] ?? '';
+                    $orderCustomization->z_index = $customization['zIndex'] ?? null;
+                    $orderCustomization->layer_id = $customization['layerId'] ?? null;
+                    $orderCustomization->data = json_encode($customization['data'] ?? []);
                     $orderCustomization->save();
                 }
             }
@@ -317,7 +459,8 @@ class CheckoutController extends Controller
     public function orderSuccess($order_id)
     {
         $order = Order::with(['orderDetails.orderCustomisations'])->findOrFail($order_id);
-        return view('frontend.order.success', compact('order'));
+        $pdfUrl = route('generate-pdf', ['encoded_order_id' => base64_encode($order->id)]);
+        return view('frontend.order.success', compact('pdfUrl'));
     }
 
     public function orderCancel()
@@ -325,58 +468,11 @@ class CheckoutController extends Controller
         return view('frontend.order.cancel');
     }
 
-    public function showInvoice(Order $order)
-    {
-        $order->load('orderDetails');
-
-        $html = view('frontend.order.invoice', compact('order'))->render();
-
-        return response($html)
-            ->header('Content-Type', 'text/html');
-    }
-
-    protected function initiatePayPalPayment($formData, $totals)
-    {
-        $payPalCredentials = $this->getPayPalCredentials();
-
-        if (!$payPalCredentials) {
-            return response()->json(['error' => 'PayPal credentials not found'], 404);
-        }
-
-        $gateway = Omnipay::create('PayPal_Rest');
-        $gateway->setClientId($payPalCredentials->clientid);
-        $gateway->setSecret($payPalCredentials->secretid);
-        $gateway->setTestMode($payPalCredentials->mode);
-
-        $netAmount = 100;
-        try {
-            $response = $gateway->purchase([
-                'amount' => number_format($netAmount, 2, '.', ''),
-                'currency' => 'GBP',
-                'returnUrl' => route('payment.success'),
-                'cancelUrl' => route('payment.cancel')
-            ])->send();
-
-            if ($response->isRedirect()) {
-                session()->put('order_data', $formData);
-                return response()->json(['redirectUrl' => $response->getRedirectUrl()]);
-            } else {
-                return response()->json(['error' => $response->getMessage()], 400);
-            }
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => $e->getMessage()
-            ], 500);
-        }
-
-    }
-
-        protected function getPayPalCredentials()
+    protected function getPayPalCredentials()
     {
         return PaymentGateway::where('name', 'paypal')
             ->where('status', 1)
             ->first();
     }
-
 
 }

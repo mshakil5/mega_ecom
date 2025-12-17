@@ -1,7 +1,7 @@
 <?php
-  
+
 use Illuminate\Support\Facades\Route;
-  
+
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\UserController;
@@ -18,18 +18,28 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CustomiserController;
 
 // cache clear
-Route::get('/clear', function() {
+Route::get('/clear', function () {
     Auth::logout();
     session()->flush();
     Artisan::call('cache:clear');
     Artisan::call('config:clear');
     Artisan::call('config:cache');
     Artisan::call('view:clear');
+
+    return response(
+        '<script>
+            localStorage.clear();
+            sessionStorage.clear();
+            location.replace("/");
+        </script>',
+        200,
+        ['Content-Type' => 'text/html']
+    );
     return "Cleared!";
- });
+});
 //  cache clear
-  
-  
+
+
 Auth::routes();
 
 Route::get('/clear-session', [FrontendController::class, 'clearAllSessionData'])->name('clearSessionData');
@@ -53,8 +63,8 @@ Route::get('register', function () {
 Route::fallback(function () {
     return redirect('/');
 });
-  
-  
+
+
 // Frontend
 Route::get('/', [FrontendController::class, 'index'])->name('frontend.homepage');
 Route::get('/category/{slug}', [FrontendController::class, 'showCategoryProducts'])->name('category.show');
@@ -118,7 +128,7 @@ Route::get('/resume-order', [OrderController::class, 'resumeOrderFlow'])->name('
 Route::get('payment/success', [OrderController::class, 'paymentSuccess'])->name('payment.success');
 Route::get('payment/cancel', [OrderController::class, 'paymentCancel'])->name('payment.cancel');
 
-// Route::get('/order/success', [OrderController::class, 'orderSuccess'])->name('order.success');
+Route::get('/paypal/success', [CheckoutController::class, 'paypalSuccess'])->name('paypal.success');
 
 Route::get('/order/{encoded_order_id}', [OrderController::class, 'generatePDF'])->name('generate-pdf');
 
@@ -159,8 +169,8 @@ Route::post('/customiser/add-to-session', [CustomiserController::class, 'addToSe
 // Search supplier products
 Route::get('/search/supplier-products', [FrontendController::class, 'searchSupplierProducts'])->name('search.supplier.products');
 
-Route::group(['prefix' =>'user/', 'middleware' => ['auth', 'is_user']], function(){
-  
+Route::group(['prefix' => 'user/', 'middleware' => ['auth', 'is_user']], function () {
+
     Route::get('/dashboard', [HomeController::class, 'userHome'])->name('user.dashboard');
 
     Route::get('/profile', [UserController::class, 'userProfile'])->name('user.profile');
@@ -179,10 +189,10 @@ Route::group(['prefix' =>'user/', 'middleware' => ['auth', 'is_user']], function
 
     Route::post('/send-admin-mail', [OrderController::class, 'sendMailToAdmin'])->name('send.admin.mail');
 });
-  
 
-Route::group(['prefix' =>'manager/', 'middleware' => ['auth', 'is_manager']], function(){
-  
+
+Route::group(['prefix' => 'manager/', 'middleware' => ['auth', 'is_manager']], function () {
+
     Route::get('/dashboard', [HomeController::class, 'managerHome'])->name('manager.dashboard');
 });
 
@@ -219,8 +229,4 @@ Route::prefix('supplier')->middleware(['auth.supplier'])->group(function () {
     Route::post('/campaign-request', [CampaignController::class, 'campaignRequestStore'])->name('supplier.campaign.request.store');
     Route::get('/campaign-requests', [CampaignController::class, 'campaignRequests'])->name('supplier.campaignRequests');
     Route::get('/campaign-request/{id}', [CampaignController::class, 'getCampaignRequestDetails'])->name('campaign.request.details');
-
-
 });
-
- 

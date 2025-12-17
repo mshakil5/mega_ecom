@@ -13,19 +13,32 @@ return new class extends Migration
     {
         Schema::create('order_customisations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_details_id')->constrained()->onDelete('cascade');
-            $table->foreignId('product_id')->nullable()->constrained()->onDelete('set null');
-            $table->enum('customization_type', ['text', 'image']);
-            $table->string('method')->nullable();
-            $table->string('position')->nullable();
-            $table->text('text_content')->nullable();
-            $table->string('font_family')->nullable();
-            $table->string('font_size')->nullable();
-            $table->longText('image_url')->nullable();
+            $table->unsignedBigInteger('order_details_id');
+            $table->unsignedBigInteger('product_id')->nullable();
+            $table->unsignedBigInteger('size_id')->nullable();
+            $table->unsignedBigInteger('color_id')->nullable();
+            
+            // Customization details
+            $table->string('customization_type')->default('text'); // text, image
+            $table->string('method')->nullable(); // embroidery, printing, etc.
+            $table->string('position')->nullable(); // left_chest, back, etc.
             $table->integer('z_index')->nullable();
-            $table->string('layer_id')->nullable();
-            $table->json('data')->nullable();
+            $table->string('layer_id')->nullable(); // For identifying layers
+            
+            // Customization data (stored as JSON)
+            $table->json('data')->nullable(); // Contains all customization data
+            
             $table->timestamps();
+            
+            // Foreign keys
+            $table->foreign('order_details_id')->references('id')->on('order_details')->onDelete('cascade');
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('set null');
+            $table->foreign('size_id')->references('id')->on('sizes')->onDelete('set null');
+            $table->foreign('color_id')->references('id')->on('colors')->onDelete('set null');
+            
+            // Indexes
+            $table->index('order_details_id');
+            $table->index('product_id');
         });
     }
 

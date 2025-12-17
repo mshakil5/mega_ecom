@@ -237,7 +237,7 @@ class FrontendController extends Controller
 
     public function showProduct($slug, $offerId = null)
     {
-        $product = Product::where('slug', $slug)->with(['colors.color', 'stockhistory', 'stock', 'reviews'])->firstOrFail();
+        $product = Product::where('slug', $slug)->with(['colors.color', 'stockhistory', 'stock', 'reviews', 'prices', 'positionImages'])->firstOrFail();
 
         $supplierPrice = null;
 

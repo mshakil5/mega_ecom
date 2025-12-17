@@ -127,7 +127,7 @@
                                     <input type="radio" name="differentAddress" class="customRadioButton"
                                         value="differentaddress" style="width: 7%">
                                     <input type="hidden" id="is_billing_same" name="is_billing_same" value="1">
-                                    <span>Use Different Billing Address</span>
+                                    <span> Billing Address</span>
                                 </div>
                                 <i class="fa fa-home px-4" style="font-size: 24px; color: #000000; margin-left: auto;"></i>
                             </label>
@@ -212,15 +212,13 @@
                                         @if ($item['ean'])
                                             <div class="small">EAN: <strong>{{ $item['ean'] }}</strong></div>
                                         @endif
-                                        @if ($item['size_id'])
-                                            @php $size = \App\Models\Size::find($item['size_id']); @endphp
+                                        @if ($item['sizeName'])
                                             <div class="small">Size:
-                                                <strong>{{ $size ? $size->name : $item['size_id'] }}</strong></div>
+                                                <strong>{{ $item['sizeName'] }}</strong></div>
                                         @endif
-                                        @if ($item['color_id'])
-                                            @php $color = \App\Models\Color::find($item['color_id']); @endphp
+                                        @if ($item['colorName'])
                                             <div class="small">Color:
-                                                <strong>{{ $color ? $color->name : $item['color_id'] }}</strong></div>
+                                                <strong>{{ $item['colorName'] }}</strong></div>
                                         @endif
 
                                         @if (!empty($item['customization']))
@@ -353,7 +351,7 @@
                             </div>
 
                             <!-- Cash on Delivery -->
-                            <div class="accordion-item d-none">
+                            <div class="accordion-item">
                                 <h2 class="accordion-header">
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#collapseCash">
@@ -557,14 +555,14 @@
 
                 const formData = {
                     shipping_method: $('#shippingMethod').val(),
-                    first_name: $('#first_name').val(),
-                    company_name: $('#company_name').val(),
-                    email: $('#email').val(),
-                    phone: $('#phone').val(),
-                    address_first_line: $('#address_first_line').val(),
-                    address_second_line: $('#address_second_line').val(),
-                    city: $('#city').val(),
-                    postcode: $('#postcode').val(),
+                    first_name: $('#billing_first_name').val(),
+                    company_name: $('#billing_company_name').val(),
+                    email: $('#billing_email').val(),
+                    phone: $('#billing_phone').val(),
+                    address_first_line: $('#billing_address_first_line').val(),
+                    address_second_line: $('#billing_address_second_line').val(),
+                    city: $('#billing_city').val(),
+                    postcode: $('#billing_postcode').val(),
                     order_notes: $('#order_notes').val(),
                     is_billing_same: $('#is_billing_same').val(),
                     billing_first_name: $('#billing_first_name').val() || $('#first_name').val(),
@@ -586,6 +584,7 @@
                 };
 
                 console.log(formData);
+                // return;
 
                 $.ajax({
                     url: "{{ route('checkout.process') }}",
@@ -596,40 +595,42 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     success: function(result) {
-
+                        console.log('Response:', result);
                         $('#loader').hide();
                         $('#' + btnId).prop('disabled', false);
 
-                        if (result.success && result.redirect_url) {
+                        if (result.redirectUrl) {
+                            window.location.href = result.redirectUrl;
+                            return;
+                        }
+
+                        if (result.redirect_url) {
                             window.location.href = result.redirect_url;
-                        } else if (result.errors) {
-                            setTimeout(scrollToTop, 0);
-                            $('html, body').animate({
-                                scrollTop: 0
-                            }, 'fast');
-                            // Clear previous errors
+                            return;
+                        }
+
+                        if (result.errors) {
+                            $('html, body').animate({ scrollTop: 0 }, 'fast');
                             $('.error').text('');
                             $('.form-control').removeClass('is-invalid');
-
-                            // Show validation errors
+                            
                             $.each(result.errors, function(field, messages) {
-                                $('#' + field + '-error').text(messages[
-                                0]); // first error only
+                                $('#' + field + '-error').text(messages[0]);
                                 $('#' + field).addClass('is-invalid');
                             });
-                        } else {
-                            alert(result.message || 'Error processing your order.');
-                            setTimeout(scrollToTop, 0);
+                            return;
                         }
+
+                        alert(result.message || result.error || 'Error processing order');
+                        $('html, body').animate({ scrollTop: 0 }, 'fast');
                     },
                     error: function(xhr) {
-
                         $('#loader').hide();
                         $('#' + btnId).prop('disabled', false);
+                        console.error('Error:', xhr);
 
                         if (xhr.status === 422) {
-                            setTimeout(scrollToTop, 0);
-                            // Laravel validation errors
+                            $('html, body').animate({ scrollTop: 0 }, 'fast');
                             var errors = xhr.responseJSON.errors;
                             $('.error').text('');
                             $('.form-control').removeClass('is-invalid');
@@ -638,9 +639,7 @@
                                 $('#' + field).addClass('is-invalid');
                             });
                         } else {
-                            // Other errors
-                            alert('Unexpected error occurred. Check console for details.');
-                            setTimeout(scrollToTop, 0);
+                            alert('Error: ' + (xhr.responseJSON?.error || 'Unknown error'));
                             console.error(xhr.responseText);
                         }
                     }

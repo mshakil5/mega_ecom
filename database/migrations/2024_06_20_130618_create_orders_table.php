@@ -23,6 +23,9 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('house_number')->nullable();
             $table->string('street_name')->nullable();
+            $table->string('address_first_line')->nullable();
+            $table->string('address_second_line')->nullable();
+            $table->string('address_third_line')->nullable();
             $table->string('town')->nullable();
             $table->string('postcode')->nullable();
             $table->longText('note')->nullable();

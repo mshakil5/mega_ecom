@@ -9,26 +9,29 @@
 <div class="container mt-4 product-container">
 
     <!-- PRICE TABLE -->
-    <div class="price-table-wrapper">
-        <h4 class="mb-3">Pricing Summary</h4>
-        <table class="price-table">
-            <thead>
-                <tr>
-                    <th>Feature</th>
-                    <th>Value 1</th>
-                    <th>Value 2</th>
-                    <th>Value 3</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr><td>Row 1</td><td>Data</td><td>Data</td><td>Data</td></tr>
-                <tr><td>Row 2</td><td>Data</td><td>Data</td><td>Data</td></tr>
-                <tr><td>Row 3</td><td>Data</td><td>Data</td><td>Data</td></tr>
-                <tr><td>Row 4</td><td>Data</td><td>Data</td><td>Data</td></tr>
-                <tr><td>Row 5</td><td>Data</td><td>Data</td><td>Data</td></tr>
-            </tbody>
-        </table>
-    </div>
+        @if($product->prices->count())
+        <div class="price-table-wrapper">
+            <h4 class="mb-3">Pricing Summary</h4>
+            <table class="price-table">
+                <thead>
+                    <tr>
+                        <th>Min Qty</th>
+                        <th>Max Qty</th>
+                        <th>Discount (%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($product->prices as $price)
+                    <tr>
+                        <td>{{ $price->min_quantity }}</td>
+                        <td>{{ $price->max_quantity }}</td>
+                        <td>{{ $price->discount_percent ?? 0 }}%</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        @endif
 
         <div class="product-section">
 
@@ -43,18 +46,39 @@
             <div class="thumb-list mt-3">
                 <div class="thumb-item active">
                     <img src="{{ asset('/images/products/' . $product->feature_image) }}"
-                         data-large="{{ asset('/images/products/' . $product->feature_image) }}">
+                        data-large="{{ asset('/images/products/' . $product->feature_image) }}">
+                    <small class="d-block text-center mt-1">Main</small>
                 </div>
 
                 @foreach($product->colors as $color)
                     @if($color->image)
                         <div class="thumb-item">
                             <img src="{{ asset($color->image) }}"
-                                 data-large="{{ asset($color->image) }}">
+                                data-large="{{ asset($color->image) }}">
+                            <small class="d-block text-center mt-1">
+                                {{ $color->color->color ?? 'Color' }}
+                            </small>
                         </div>
                     @endif
                 @endforeach
             </div>
+
+            @if($product->positionImages->count())
+            <div class="position-images-section mt-4">
+                <h5 class="mb-3 text-center">Position Views</h5>
+                <div class="position-thumb-list">
+                    @foreach($product->positionImages as $posImg)
+                        <div class="thumb-item">
+                            <img src="{{ asset($posImg->image) }}"
+                                data-large="{{ asset($posImg->image) }}">
+                            <small class="d-block text-center mt-1">
+                                <strong>{{ ucfirst($posImg->position) }} View</strong>
+                            </small>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
         </div>
 
         <!-- RIGHT SIDE = INFO -->
