@@ -76,8 +76,11 @@
                                         <p style="font-size: 12px; margin : 5px;text-align: left; line-height: 10px;">{{ $order->user->name ?? $order->name ?? '' }}</p>
                                         <p style="font-size: 12px; margin : 5px;text-align: left; line-height: 10px;">{{ $order->user->email ?? $order->email ?? '' }}</p>
                                         <p style="font-size: 12px; margin : 5px;text-align: left; line-height: 10px;">{{ $order->user->phone ?? $order->phone ?? '' }}</p>
-                                        <p style="font-size: 12px; margin: 5px; text-align: left; line-height: 10px;">
-                                            {{ $order->user->address ?? $order->house_number ?? '' }} {{ $order->user->street_name ?? $order->street_name ?? '' }} {{ $order->user->town ?? $order->town ?? '' }} {{ $order->user->postcode ?? $order->postcode ?? '' }}
+                                        <p style="font-size:12px;margin:5px;text-align:left;line-height:10px;">
+                                            {{ $order->user->address ?? $order->address_first_line ?? $order->house_number ?? '' }}
+                                            {{ $order->user->street_name ?? $order->address_second_line ?? $order->street_name ?? '' }}
+                                            {{ $order->user->town ?? $order->address_third_line ?? $order->town ?? '' }}
+                                            {{ $order->user->postcode ?? $order->postcode ?? '' }}
                                         </p>
                                     </div>
                                 </td>
