@@ -351,7 +351,7 @@
                             </div>
 
                             <!-- Cash on Delivery -->
-                            <div class="accordion-item">
+                            <div class="accordion-item d-none">
                                 <h2 class="accordion-header">
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#collapseCash">
