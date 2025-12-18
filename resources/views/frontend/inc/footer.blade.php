@@ -83,7 +83,7 @@
 
             <div class="container border-top border-secondary pt-3 text-center">
                 <p class="small mb-0">
-                    FABRLIFE prints a huge variety of custom clothing like T-shirts, hoodies and more. Your order is handled daily with a lot of <i class="bi bi-heart-fill text-danger"></i> from <strong>BANGLADESH</strong> and delivered worldwide!
+                    {!! $company->copyright !!}
                 </p>
             </div>
         </div>

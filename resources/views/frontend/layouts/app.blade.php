@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale())}}">
     @php
 
-        $company = \App\Models\CompanyDetails::select('fav_icon', 'company_name', 'design', 'footer_content', 'address1', 'email1', 'phone1', 'company_logo', 'facebook', 'twitter', 'instagram', 'youtube', 'currency')->first();
+        $company = \App\Models\CompanyDetails::select('fav_icon', 'company_name', 'design', 'footer_content', 'address1', 'email1', 'phone1', 'company_logo', 'facebook', 'twitter', 'instagram', 'youtube', 'currency', 'copyright')->first();
         $currency = $company->currency;
 
         $topCategories = \App\Models\Category::with(['subcategories' => function($q){

@@ -251,6 +251,13 @@
 
                 <div class="col-sm-12">
                     <div class="form-group">
+                    <label>Copyright</label>
+                        <textarea name="copyright" id="copyright" class="form-control @error('copyright') is-invalid @enderror summernote" cols="30" rows="3">{{$data->copyright}}</textarea>
+                    </div>
+                </div>
+
+                <div class="col-sm-12">
+                    <div class="form-group">
                     <label>Footer Content</label>
                     <textarea name="footer_content" id="footer_content" class="form-control @error('footer_content') is-invalid @enderror" cols="30" rows="3">{{$data->footer_content}}</textarea>
                     </div>

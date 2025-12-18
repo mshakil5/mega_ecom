@@ -106,6 +106,7 @@ class CompanyDetailsController extends Controller
         $data->vat_number = $request->vat_number;
         $data->design = $request->design;
         $data->size_guide = $request->size_guide;
+        $data->copyright = $request->copyright;
         $data->about_us = $request->about_us;
         $data->footer_content = $request->footer_content;
         $data->google_map = $request->google_map;
