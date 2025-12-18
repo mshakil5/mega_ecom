@@ -42,36 +42,36 @@
 
     <div class="new-arrival-banner mb-5">
         <div class="container text-center">
-            <h2 class="display-5 fw-bolder text-uppercase" style="letter-spacing: 5px;">NEW ARRIVAL</h2>
+            <h2 class="display-5 fw-bolder text-uppercase" style="letter-spacing: 5px;">Popular Categories</h2>
         </div>
     </div>
 
     <!-- Category grid (static) -->
     <!-- 7. Category Product Grid -->
     <div class="container mb-5">
-
-        <div class="row justify-content-center gx-2 gx-md-3"> 
-            
-
-            <!-- Row 1: 6 Categories (Desktop) -->
+        <div class="row justify-content-center gx-2 gx-md-3">
             @foreach ($categories as $categoriesItem)
-                
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2 category-col">
-                <div class="category-card">
-                    <div class="product-image-container">
-                    <span class="category-name">{{$categoriesItem->name}}</span>
-                        @if ($categoriesItem->image)
-                            <img src="{{ asset('/images/category/' . $categoriesItem->image) }}" alt="{{$categoriesItem->name}}" class="img-fluid">
-                        @else
-                            <img src="https://fabrilife.com/image-gallery/638741f4b169a-square.jpg" alt="{{$categoriesItem->name}}" class="img-fluid">
-                        @endif
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2 category-col mb-3">
+                <a href="#" class="text-decoration-none">
+                    <div class="category-card">
+                        <div class="product-image-container">
+                            @if ($categoriesItem->image)
+                                <img src="{{ asset('/images/category/' . $categoriesItem->image) }}" 
+                                    alt="{{$categoriesItem->name}}" 
+                                    class="img-fluid">
+                            @else
+                                <img src="https://fabrilife.com/image-gallery/638741f4b169a-square.jpg" 
+                                    alt="{{$categoriesItem->name}}" 
+                                    class="img-fluid">
+                            @endif
+                        </div>
+                        <div class="category-name text-center p-2">
+                            {{$categoriesItem->name}}
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
-            
             @endforeach
-
-            
         </div>
     </div>
     <!-- END OF NEW CONTENT -->
@@ -102,7 +102,7 @@
 
                                     <div class="product-image-container">
                                         <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="img-fluid">
-                                        <span class="badge position-absolute top-0 start-0 product-tag">{{ strtoupper($product->category->name ?? '') }} - {{$product->id}}</span>
+                                        <span class="badge position-absolute top-0 start-0 product-tag d-none">{{ strtoupper($product->category->name ?? '') }} - {{$product->id}}</span>
                                     </div>
                                     <div class="product-price">
                                         <div><strong>£{{ number_format($product->price, 2) }}</strong> <strike>£{{ number_format($product->price, 2) }}</strike></div>
@@ -116,7 +116,7 @@
 
 
                         <div class="col-6 col-md-4 col-lg-2 mb-4">
-                            <a href="#" class="card view-more-card" style="min-height: 220px;">
+                            <a href="{{ route('frontend.shop') }}" class="card view-more-card" style="min-height: 268px;">
                                 <div class="overlay"></div>
                                 <div class="view-more-content fw-bold fs-4">
                                     <i data-lucide="eye" class="mb-2"></i>
@@ -152,7 +152,7 @@
                                 <a href="{{ route('product.show', $product->slug) }}" class="card bg-white product-card text-decoration-none text-dark">
                                     <div class="product-image-container">
                                         <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="img-fluid">
-                                        <span class="badge position-absolute top-0 start-0 product-tag">{{ strtoupper($product->category->name ?? '') }} - {{$product->id}}</span>
+                                        <span class="badge position-absolute top-0 start-0 product-tag d-none">{{ strtoupper($product->category->name ?? '') }} - {{$product->id}}</span>
                                     </div>
                                     <div class="product-price">
                                         <div>
@@ -166,11 +166,11 @@
 
                         <!-- View More Card -->
                         <div class="col-6 col-md-4 col-lg-2 mb-4">
-                            <a href="#" class="card view-more-card" style="min-height: 220px;">
+                            <a href="{{ route('frontend.shop') }}" class="card view-more-card" style="min-height: 268px;">
                                 <div class="overlay"></div>
                                 <div class="view-more-content fw-bold fs-4">
                                     <i data-lucide="eye" class="mb-2"></i>
-                                    <div class="tracking-wider">View More</div>
+                                    <div class="tracking-wider"></div>
                                 </div>
                             </a>
                         </div>
@@ -201,7 +201,7 @@
                                 <a href="{{ route('product.show', $product->slug) }}" class="card bg-white product-card text-decoration-none text-dark">
                                     <div class="product-image-container">
                                         <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="img-fluid">
-                                        <span class="badge position-absolute top-0 start-0 product-tag">{{ strtoupper($product->category->name ?? '') }} - {{$product->id}}</span>
+                                        <span class="badge position-absolute top-0 start-0 product-tag d-none">{{ strtoupper($product->category->name ?? '') }} - {{$product->id}}</span>
                                     </div>
                                     <div class="product-price">
                                         <div>
@@ -215,11 +215,11 @@
 
                         <!-- View More Card -->
                         <div class="col-6 col-md-4 col-lg-2 mb-4">
-                            <a href="#" class="card view-more-card" style="min-height: 220px;">
+                            <a href="{{ route('frontend.shop') }}" class="card view-more-card" style="min-height: 268px;">
                                 <div class="overlay"></div>
                                 <div class="view-more-content fw-bold fs-4">
                                     <i data-lucide="eye" class="mb-2"></i>
-                                    <div class="tracking-wider">View More</div>
+                                    <div class="tracking-wider"></div>
                                 </div>
                             </a>
                         </div>
@@ -248,7 +248,7 @@
                                 <a href="{{ route('product.show', $product->slug) }}" class="card bg-white product-card text-decoration-none text-dark">
                                     <div class="product-image-container">
                                         <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="img-fluid">
-                                        <span class="badge position-absolute top-0 start-0 product-tag">{{ strtoupper($product->category->name ?? '') }} - {{$product->id}}</span>
+                                        <span class="badge position-absolute top-0 start-0 product-tag d-none">{{ strtoupper($product->category->name ?? '') }} - {{$product->id}}</span>
                                     </div>
                                     <div class="product-price">
                                         <div>
@@ -261,11 +261,11 @@
                         @endforeach
 
                         <div class="col-6 col-md-4 col-lg-2 mb-4">
-                            <a href="#" class="card view-more-card" style="min-height: 220px;">
+                            <a href="{{ route('frontend.shop') }}" class="card view-more-card" style="min-height: 268px;">
                                 <div class="overlay"></div>
                                 <div class="view-more-content fw-bold fs-4">
                                     <i data-lucide="eye" class="mb-2"></i>
-                                    <div class="tracking-wider">View More</div>
+                                    <div class="tracking-wider"></div>
                                 </div>
                             </a>
                         </div>

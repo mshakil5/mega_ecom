@@ -73,7 +73,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm" id="main-navbar">
         <div class="container">
             <a class="navbar-brand fw-bolder fs-3" href="{{ route('frontend.homepage') }}">
-                <img src="{{ asset('images/company/' . $company->company_logo) }}" alt="{{ $company->company_name }}" width="105" height="25">
+                <img src="{{ asset('images/company/' . $company->company_logo) }}" alt="{{ $company->company_name }}" width="80" height="50">
             </a>
 
             

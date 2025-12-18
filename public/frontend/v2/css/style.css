@@ -54,16 +54,13 @@ html, body {
     object-fit: cover;
 }
 
-.product-item-card .product-price {
-    width: 100%;
- }
-
 /* price badge under image */
 .product-price {
     font-size: 12px;
     position: absolute;
-    bottom: -8px;
+    bottom: 0px;
     color: #000;
+    width: 100%;
     text-align: center;
 }
 .product-price strike { color: #a9a9a9; font-size: 14px; }
