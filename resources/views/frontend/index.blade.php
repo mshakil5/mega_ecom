@@ -20,15 +20,15 @@
     <div class="bottom-strip border-top border-bottom">
         <div class="container-fluid">
             <div class="row text-center align-items-center">
-                <div class="col-md-2 col-3"><a href="#">SHOP</a></div>
-                <div class="col-md-2 col-3"><a href="#">MEN</a></div>
-                <div class="col-md-2 col-3"><a href="#">WOMEN</a></div>
-                <div class="col-md-2 col-3"><a href="#">KIDS</a></div>
+                <div class="col-md-2 col-3"><a href="{{ route('frontend.shop') }}">SHOP</a></div>
+                <div class="col-md-2 col-3"><a href="{{ route('frontend.shop') }}">MEN</a></div>
+                <div class="col-md-2 col-3"><a href="{{ route('frontend.shop') }}">WOMEN</a></div>
+                <div class="col-md-2 col-3"><a href="{{ route('frontend.shop') }}">KIDS</a></div>
 
                 <div class="col-md-4 col-12 d-flex justify-content-center justify-content-md-end align-items-center p-2">
                     <p class="mb-0 me-3 fw-bold text-success d-none d-lg-block">GET 5% OFF ON APP</p>
-                    <a href="#" class="me-2"><img src="https://placehold.co/120x35/000000/ffffff?text=GET+IT+ON+Google+Play" alt="Google Play" class="img-fluid rounded"></a>
-                    <a href="#"><img src="https://placehold.co/120x35/000000/ffffff?text=Download+on+the+App+Store" alt="App Store" class="img-fluid rounded"></a>
+                    <a href="{{ route('frontend.shop') }}" class="me-2"><img src="https://placehold.co/120x35/000000/ffffff?text=GET+IT+ON+Google+Play" alt="Google Play" class="img-fluid rounded"></a>
+                    <a href="{{ route('frontend.shop') }}"><img src="https://placehold.co/120x35/000000/ffffff?text=Download+on+the+App+Store" alt="App Store" class="img-fluid rounded"></a>
                 </div>
             </div>
         </div>
@@ -104,6 +104,9 @@
                                         <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="img-fluid">
                                         <span class="badge position-absolute top-0 start-0 product-tag d-none">{{ strtoupper($product->category->name ?? '') }} - {{$product->id}}</span>
                                     </div>
+                                    <div class="product-title text-center mb-2">
+                                        <strong>{{ $product->name ?? '' }}</strong>
+                                    </div>
                                     <div class="product-price">
                                         <div><strong>£{{ number_format($product->price, 2) }}</strong> <strike>£{{ number_format($product->price, 2) }}</strike></div>
                                     </div>
@@ -154,6 +157,9 @@
                                         <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="img-fluid">
                                         <span class="badge position-absolute top-0 start-0 product-tag d-none">{{ strtoupper($product->category->name ?? '') }} - {{$product->id}}</span>
                                     </div>
+                                    <div class="product-title text-center mb-2">
+                                        <strong>{{ $product->name ?? '' }}</strong>
+                                    </div>
                                     <div class="product-price">
                                         <div>
                                             <strong>£{{ number_format($product->price, 2) }}</strong>
@@ -203,6 +209,9 @@
                                         <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="img-fluid">
                                         <span class="badge position-absolute top-0 start-0 product-tag d-none">{{ strtoupper($product->category->name ?? '') }} - {{$product->id}}</span>
                                     </div>
+                                     <div class="product-title text-center mb-2">
+                                        <strong>{{ $product->name ?? '' }}</strong>
+                                    </div>
                                     <div class="product-price">
                                         <div>
                                             <strong>£{{ number_format($product->price, 2) }}</strong>
@@ -249,6 +258,9 @@
                                     <div class="product-image-container">
                                         <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="img-fluid">
                                         <span class="badge position-absolute top-0 start-0 product-tag d-none">{{ strtoupper($product->category->name ?? '') }} - {{$product->id}}</span>
+                                    </div>
+                                    <div class="product-title text-center mb-2">
+                                        <strong>{{ $product->name ?? '' }}</strong>
                                     </div>
                                     <div class="product-price">
                                         <div>

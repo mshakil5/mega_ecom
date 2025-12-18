@@ -333,6 +333,10 @@ html, body {
     justify-content: center;
     align-items: center;
     position: relative;
+    margin-bottom: 0px;
+}
+
+.product-item-card .product-image-container{
     margin-bottom: 10px;
 }
 
@@ -354,8 +358,7 @@ html, body {
     max-height: 100%;
     width: auto;
     object-fit: contain;
-    /* You may need to adjust the opacity or add a color overlay to match the 'out of stock' visual style in the image */
-    opacity: 0.6; 
+    opacity: 1.5; 
 }
 
 .product-title {

@@ -17,12 +17,12 @@
                 </div>
 
                 <div class="col-auto p-0">
-                    <a href="#" class="btn btn-link"><i class="fas fa-briefcase me-1"></i> Corporate Sales</a>
-                    <a href="#" class="btn btn-link"><i class="fas fa-store me-1"></i> Store Locations</a>
+                    <a href="{{ route('frontend.shop') }}" class="btn btn-link"><i class="fas fa-briefcase me-1"></i> Corporate Sales</a>
+                    <a href="{{ route('frontend.shop') }}" class="btn btn-link"><i class="fas fa-store me-1"></i> Store Locations</a>
                 </div>
 
                 <div class="col-auto p-0 d-flex align-items-center">
-                    <a href="#" class="btn btn-link"><i class="fas fa-circle-info me-1"></i> About Us</a>
+                    <a href="{{ route('frontend.about') }}" class="btn btn-link"><i class="fas fa-circle-info me-1"></i> About Us</a>
                     <div class="dropdown account-dropdown">
                         <button class="btn btn-link dropdown-toggle" type="button" id="accountDropdownMenu" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-user-circle me-1"></i> 
@@ -101,7 +101,7 @@
                                                     <h6 class="dropdown-header text-uppercase">  {{ $category->name }}    </h6>
 
                                                     @foreach ($category->subcategories as $subcategory)
-                                                    <a class="dropdown-item" href="#">{{$subcategory->name}}</a>
+                                                    <a class="dropdown-item" href="{{ route('frontend.shop') }}">{{$subcategory->name}}</a>
                                                     @endforeach
                                                     
                                                 </div>
@@ -114,7 +114,7 @@
                                     <div class="col-lg-3 col-md-12">
                                         <h6 class="dropdown-header">FEATURED</h6>
                                         <img src="https://placehold.co/300x200/212529/ffffff?text=NEW+ARRIVALS" class="img-fluid rounded shadow-sm" alt="New Arrivals Promo">
-                                        <a href="#" class="btn btn-dark btn-sm mt-2 w-100">Shop New Collection</a>
+                                        <a href="{{ route('frontend.shop') }}" class="btn btn-dark btn-sm mt-2 w-100">Shop New Collection</a>
                                     </div>
                                 </div>
                             </div>

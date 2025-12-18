@@ -5,7 +5,6 @@
                 <div class="row text-dark text-center align-items-center">
                     <div class="col-lg-4 mb-3 mb-lg-0">
                         <h6 class="fw-bold mb-2"><i class="bi bi-lock-fill"></i> All secure payment methods</h6>
-                        <div class="d-inline-block p-1 border border-secondary rounded" style="background-color: #f8f9fa;"></div>
                     </div>
 
                     <div class="col-lg-4 mb-3 mb-lg-0">
@@ -15,7 +14,6 @@
 
                     <div class="col-lg-4">
                         <h6 class="fw-bold mb-2"><i class="bi bi-truck"></i> Worldwide delivery</h6>
-                        <div class="d-inline-block p-1 border border-secondary rounded" style="background-color: #f8f9fa;"></div>
                     </div>
                 </div>
             </div>
