@@ -564,11 +564,14 @@ class OrderController extends Controller
     public function generatePDF($encoded_order_id)
     {
         $order_id = base64_decode($encoded_order_id);
-        $order = Order::with('orderDetails')->findOrFail($order_id);
+        $order = Order::with([
+            'orderDetails.product',
+            'orderDetails.orderCustomisations'
+        ])->findOrFail($order_id);
 
         $data = [
             'order' => $order,
-            'currency' => CompanyDetails::value('currency'),
+            'currency' => CompanyDetails::value('currency') ?? '£',
             'bundleProduct' => $order->bundle_product_id ? BundleProduct::find($order->bundle_product_id) : null,
         ];
 
@@ -1101,7 +1104,7 @@ class OrderController extends Controller
 
     public function showOrder($orderId)
     {
-        $order = Order::with(['user', 'orderDetails.product', 'orderDetails.buyOneGetOne', 'bundleProduct'])
+        $order = Order::with(['user', 'orderDetails.product', 'orderDetails.buyOneGetOne', 'bundleProduct', 'orderDetails.orderCustomisations',])
             ->where('id', $orderId)
             ->firstOrFail();
         return view('admin.orders.details', compact('order'));

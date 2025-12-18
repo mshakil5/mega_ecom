@@ -52,7 +52,7 @@
         <div class="row justify-content-center gx-2 gx-md-3">
             @foreach ($categories as $categoriesItem)
             <div class="col-6 col-sm-4 col-md-3 col-lg-2 category-col mb-3">
-                <a href="#" class="text-decoration-none">
+                <a href="{{ route('frontend.shop') }}" class="text-decoration-none">
                     <div class="category-card">
                         <div class="product-image-container">
                             @if ($categoriesItem->image)

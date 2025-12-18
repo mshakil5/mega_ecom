@@ -129,13 +129,83 @@
                             </thead>
                             <tbody>
 
-                                @foreach ($order->orderDetails as $key => $detail )      
-                                <tr style="border-bottom:1px solid #dee2e6 ; border-right:1px solid #dee2e6 ; border-left:1px solid #dee2e6 ;">
-                                    <td style="border: 0px solid #ffffff!important; padding: 1px 10px;">{{$detail->product->product_code}} - {{ $detail->product->name }} - {{ $detail->size }} - {{ $detail->color }} </td>
-                                    <td style="border: 0px solid #ffffff!important; padding: 1px 10px;text-align:center;width: 10%">{{$detail->quantity}} </td>
-                                    <td style="border: 0px solid #ffffff!important; padding: 1px 10px;text-align:center;width: 10%">£{{ number_format($detail->price_per_unit, 2) }}</td>
-                                    <td style="border: 0px solid #ffffff!important; padding: 1px 1px;text-align:right;width: 20%">£{{ number_format($detail->total_price , 2) }}</td>
-                                </tr>
+                                @foreach ($order->orderDetails as $key => $detail)
+                                    <tr style="border-bottom:1px solid #dee2e6; border-right:1px solid #dee2e6; border-left:1px solid #dee2e6;">
+                                        <td style="border: 0px solid #ffffff!important; padding: 1px 10px;">
+                                            {{ $detail->product->product_code ?? '' }} - {{ $detail->product->name ?? '' }} - {{ $detail->size ?? '' }} - {{ $detail->color ?? '' }}
+                                        </td>
+                                        <td style="border: 0px solid #ffffff!important; padding: 1px 10px; text-align: center; width: 10%">
+                                            {{ $detail->quantity }}
+                                        </td>
+                                        <td style="border: 0px solid #ffffff!important; padding: 1px 10px; text-align: center; width: 10%">
+                                            £{{ number_format($detail->price_per_unit, 2) }}
+                                        </td>
+                                        <td style="border: 0px solid #ffffff!important; padding: 1px 1px; text-align: right; width: 20%">
+                                            £{{ number_format($detail->total_price, 2) }}
+                                        </td>
+                                    </tr>
+
+                                    {{-- Show Customizations --}}
+                                    @if ($detail->orderCustomisations && $detail->orderCustomisations->count())
+                                        <tr style="border-bottom:1px solid #dee2e6; border-right:1px solid #dee2e6; border-left:1px solid #dee2e6; background-color: #f8f9fa;">
+                                            <td colspan="4" style="border: 0px solid #ffffff!important; padding: 6px 10px; height: 90px; vertical-align: top;">
+                                                <table style="width: 100%; border-collapse: collapse;">
+                                                    <tbody>
+                                                        <tr>
+                                                            @foreach ($detail->orderCustomisations as $index => $customization)
+                                                                @php
+                                                                    $data = json_decode($customization->data, true) ?? [];
+                                                                @endphp
+                                                                @if ($index > 0 && $index % 4 == 0)
+                                                                    </tr><tr>
+                                                                @endif
+                                                                <td style="width: 25%; padding: 4px; border: 1px solid #ddd; background: white; vertical-align: top;">
+                                                                    
+                                                                    {{-- Text Customization --}}
+                                                                    @if ($customization->customization_type === 'text')
+                                                                        <div style="font-size: 9px; font-weight: bold; margin-bottom: 2px;">Text</div>
+                                                                        <div style="font-size: 8px; color: {{ $data['color'] ?? '#000000' }}; font-family: {{ $data['fontFamily'] ?? 'Arial' }}; margin-bottom: 2px;">
+                                                                            {{ substr($data['text'] ?? '', 0, 20) }}{{ strlen($data['text'] ?? '') > 20 ? '...' : '' }}
+                                                                        </div>
+                                                                        <div style="font-size: 7px; color: #666;">
+                                                                            {{ $data['fontFamily'] ?? 'Default' }} | {{ $data['fontSize'] ?? '' }}
+                                                                        </div>
+                                                                    @endif
+
+                                                                    {{-- Image Customization --}}
+                                                                    @if ($customization->customization_type === 'image')
+                                                                        <div style="font-size: 9px; font-weight: bold; margin-bottom: 2px;">Image</div>
+                                                                        @if(isset($data['src']) && !empty($data['src']))
+                                                                            <img src="{{ $data['src'] }}" alt="Custom" style="max-width: 100%; max-height: 45px; margin-bottom: 2px; border: 1px solid #ddd;">
+                                                                        @endif
+                                                                        <div style="font-size: 7px; color: #666; margin-bottom: 1px;">
+                                                                            M: {{ $customization->method ?? 'N/A' }}
+                                                                        </div>
+                                                                        <div style="font-size: 7px; color: #666;">
+                                                                            P: {{ $customization->position ?? 'N/A' }}
+                                                                        </div>
+                                                                    @endif
+
+                                                                    {{-- Other Types --}}
+                                                                    @if ($customization->customization_type !== 'text' && $customization->customization_type !== 'image')
+                                                                        <div style="font-size: 9px; font-weight: bold; margin-bottom: 2px;">{{ ucfirst($customization->customization_type) }}</div>
+                                                                        <div style="font-size: 7px; color: #666; margin-bottom: 1px;">
+                                                                            M: {{ $customization->method ?? 'N/A' }}
+                                                                        </div>
+                                                                        <div style="font-size: 7px; color: #666;">
+                                                                            P: {{ $customization->position ?? 'N/A' }}
+                                                                        </div>
+                                                                    @endif
+
+                                                                </td>
+                                                            @endforeach
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    @endif
+
                                 @endforeach
                             </tbody>
                         </table>

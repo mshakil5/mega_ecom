@@ -122,11 +122,11 @@ class CheckoutController extends Controller
         DB::beginTransaction();
         
         try {
-            $order = $this->createOrder($request, $totals);
+            $order = $this->createOrder($request->all(), $totals);
             
-            $this->createOrderDetails($request, $order);
+            $this->createOrderDetails($request->cart_items, $order);
             
-            $this->handleCustomizations($request, $order);
+            $this->handleCustomizations($request->cart_items, $order);
             
             DB::commit();
             $request->session()->forget('cart');
@@ -215,19 +215,24 @@ class CheckoutController extends Controller
 
                 DB::beginTransaction();
 
-                $order = $this->createOrderFromData($orderData, $totals);
-                $order->payment_method = 'paypal';
-                $order->save();
+                try {
+                    $order = $this->createOrder($orderData, $totals);
+                    $order->payment_method = 'paypal';
+                    $order->save();
 
-                $this->createOrderDetailsFromData($orderData, $order);
-                $this->handleCustomizationsFromData($orderData, $order);
+                    $this->createOrderDetails($orderData['cart_items'], $order);
+                    $this->handleCustomizations($orderData['cart_items'], $order);
 
-                DB::commit();
-                $request->session()->forget('cart');
-                session()->forget('paypal_order_data');
-                session()->forget('paypal_totals');
+                    DB::commit();
+                    $request->session()->forget('cart');
+                    session()->forget('paypal_order_data');
+                    session()->forget('paypal_totals');
 
-                return redirect()->route('order.success', ['order_id' => $order->id]);
+                    return redirect()->route('order.success', ['order_id' => $order->id]);
+                } catch (\Exception $e) {
+                    DB::rollBack();
+                    throw $e;
+                }
             } else {
                 // \Log::error('PayPal payment not successful', ['message' => $response->getMessage()]);
                 return redirect()->route('payment.cancel');
@@ -309,41 +314,13 @@ class CheckoutController extends Controller
         return 0;
     }
 
-    protected function createOrder(Request $request, $totals)
+    protected function createOrder($data, $totals)
     {
-        $order = new Order();
-        $order->invoice = 'ORD-' . time() . rand(1000, 9999);
-        $order->purchase_date = now();
-        $order->user_id = auth()->id() ?? null;
-        $order->name = $request->first_name;
-        $order->surname = $request->company_name ?? '';
-        $order->email = $request->email;
-        $order->phone = $request->phone;
-        $order->address_first_line = $request->address_first_line;
-        $order->address_second_line = $request->address_second_line ?? '';
-        $order->address_third_line = $request->address_third_line ?? '';
-        $order->town = $request->city;
-        $order->postcode = $request->postcode;
-        $order->note = $request->order_notes ?? '';
-        $order->payment_method = $request->payment_method;
-        $order->subtotal_amount = $totals['subtotal'];
-        $order->shipping_amount = $totals['shipping_charge'];
-        $order->vat_percent = $totals['vat_percent'];
-        $order->vat_amount = $totals['vat_amount'];
-        $order->net_amount = $totals['total_amount'];
-        $order->discount_amount = 0;
-        $order->status = 'pending';
-        
-        $order->save();
-        
-        return $order;
-    }
+        $data = is_array($data) ? $data : $data->all();
 
-    protected function createOrderFromData($data, $totals)
-    {
         $order = new Order();
         $order->invoice = 'ORD-' . time() . rand(1000, 9999);
-        $order->purchase_date = now();
+        $order->purchase_date = now()->format('Y-m-d');
         $order->user_id = auth()->id() ?? null;
         $order->name = $data['first_name'] ?? '';
         $order->surname = $data['company_name'] ?? '';
@@ -355,22 +332,26 @@ class CheckoutController extends Controller
         $order->town = $data['city'] ?? '';
         $order->postcode = $data['postcode'] ?? '';
         $order->note = $data['order_notes'] ?? '';
+        $order->payment_method = $data['payment_method'] ?? '';
         $order->subtotal_amount = $totals['subtotal'];
         $order->shipping_amount = $totals['shipping_charge'];
         $order->vat_percent = $totals['vat_percent'];
         $order->vat_amount = $totals['vat_amount'];
         $order->net_amount = $totals['total_amount'];
         $order->discount_amount = 0;
-        $order->status = 'pending';
+        $order->order_type = 0;
+        $order->status = 1;
+        $order->due_status = 0;
+        $order->admin_notify = 1;
         
         $order->save();
         
         return $order;
     }
 
-    protected function createOrderDetails(Request $request, $order)
+    protected function createOrderDetails($cartItems, $order)
     {
-        foreach ($request->cart_items as $item) {
+        foreach ($cartItems as $item) {
             $orderDetail = new OrderDetails();
             $orderDetail->order_id = $order->id;
             $orderDetail->product_id = $item['product_id'] ?? null;
@@ -384,53 +365,9 @@ class CheckoutController extends Controller
         }
     }
 
-    protected function createOrderDetailsFromData($data, $order)
+    protected function handleCustomizations($cartItems, $order)
     {
-        foreach ($data['cart_items'] as $item) {
-            $orderDetail = new OrderDetails();
-            $orderDetail->order_id = $order->id;
-            $orderDetail->product_id = $item['product_id'] ?? null;
-            $orderDetail->quantity = $item['quantity'];
-            $orderDetail->price_per_unit = $item['price'];
-            $orderDetail->total_price = $item['subtotal'];
-            $orderDetail->total_price_with_vat = $item['subtotal'];
-            $orderDetail->size = $item['sizeName'] ?? null;
-            $orderDetail->color = $item['colorName'] ?? null;
-            $orderDetail->save();
-        }
-    }
-
-    protected function handleCustomizations(Request $request, $order)
-    {
-        foreach ($request->cart_items as $itemIndex => $item) {
-            if (!empty($item['customization'])) {
-                $orderDetail = OrderDetails::where('order_id', $order->id)
-                    ->skip($itemIndex)
-                    ->first();
-
-                if (!$orderDetail) continue;
-
-                foreach ($item['customization'] as $customization) {
-                    $orderCustomization = new OrderCustomisation();
-                    $orderCustomization->order_details_id = $orderDetail->id;
-                    $orderCustomization->product_id = $item['product_id'] ?? null;
-                    $orderCustomization->size_id = $item['size_id'] ?? null;
-                    $orderCustomization->color_id = $item['color_id'] ?? null;
-                    $orderCustomization->customization_type = $customization['type'] ?? 'text';
-                    $orderCustomization->method = $customization['method'] ?? '';
-                    $orderCustomization->position = $customization['position'] ?? '';
-                    $orderCustomization->z_index = $customization['zIndex'] ?? null;
-                    $orderCustomization->layer_id = $customization['layerId'] ?? null;
-                    $orderCustomization->data = json_encode($customization['data'] ?? []);
-                    $orderCustomization->save();
-                }
-            }
-        }
-    }
-
-    protected function handleCustomizationsFromData($data, $order)
-    {
-        foreach ($data['cart_items'] as $itemIndex => $item) {
+        foreach ($cartItems as $itemIndex => $item) {
             if (!empty($item['customization'])) {
                 $orderDetail = OrderDetails::where('order_id', $order->id)
                     ->skip($itemIndex)
@@ -474,5 +411,4 @@ class CheckoutController extends Controller
             ->where('status', 1)
             ->first();
     }
-
 }

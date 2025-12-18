@@ -6,28 +6,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('frontend/v2/css/customization.css') }}">
 
-
-    <div class="breadcrumb-section">
-        <div class="breadcrumb-wrapper">
-            <div class="container">
-                <div class="row">
-                    <div
-                        class="col-12 d-flex justify-content-between justify-content-md-between  align-items-center flex-md-row flex-column">
-                        <h3 class="breadcrumb-title"></h3>
-                        <div class="breadcrumb-nav">
-                            <nav aria-label="breadcrumb">
-                                <ul>
-                                    <li><a href="{{ route('frontend.homepage') }}">Home</a></li>
-                                    <li aria-current="page">Product Customizer</li>
-                                </ul>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <main class="main">
         <div class="container">
             <div class="row">
