@@ -202,6 +202,7 @@
                     </a>
                 </div>
 
+                @if($product->is_customizable == 1)
                 <div class="ms-2">
                     <a href="#" class="btn btn-dark add-to-cart ml-3"
                         data-product-id="{{ $product->id }}"
@@ -211,6 +212,7 @@
                         Customise
                     </a>
                 </div>
+                @endif
             </div>
 
         </div>
