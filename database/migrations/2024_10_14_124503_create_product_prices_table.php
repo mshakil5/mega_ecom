@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('product_prices', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->nullable()->constrained('products')->onDelete('cascade');
-            $table->enum('category', ['Blank pricing', 'Print', 'Embroidery', 'High stitch count'])->nullable();
+            $table->string('category')->nullable();
             $table->integer('min_quantity')->nullable();
             $table->integer('max_quantity')->nullable();
-            $table->integer('discount_percent')->nullable(); 
+            $table->integer('discount_percent')->nullable();
             $table->double('price', 8, 2)->nullable();
             $table->boolean('status')->default(1);
             $table->unsignedBigInteger('created_by')->nullable();

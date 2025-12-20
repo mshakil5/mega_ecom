@@ -117,6 +117,7 @@
 
     @include('frontend.partials.wishlist_script')
     @include('frontend.partials.add_to_cart_script')
+    @include('frontend.partials.add_to_wishlist_script')
     @include('frontend.partials.search_script')
     @include('frontend.modals.add_to_cart_modal_script')
     

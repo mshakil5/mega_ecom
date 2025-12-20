@@ -133,41 +133,34 @@
 
 
                 <div class="d-flex align-items-center ms-auto">
+                    {{-- Wishlist --}}
                     <div class="dropdown me-3" id="wishlistDropdown">
                         <button class="btn btn-outline-dark position-relative" type="button" aria-expanded="false" data-bs-toggle="dropdown">
-                            
-                                <i class="fas fa-heart"></i>
-                                <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle wishlistCount">0</span>
-                                
+                            <i class="fas fa-heart"></i>
+                            <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle wishlistCount">0</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end mini-wishlist p-0" aria-labelledby="wishlistDropdown">
-                            <li class="p-3"><h6 class="dropdown-header text-center mb-0">My Wishlist (5 Items)</h6></li>
-                            <li class="cart-item d-flex justify-content-between align-items-center"><div><p class="mb-0 fw-bold">Denim Jacket</p><small class="text-muted">In Stock</small></div><button type="button" class="btn btn-sm btn-outline-success"><i class="fas fa-cart-plus"></i></button></li>
-                            <li class="cart-item d-flex justify-content-between align-items-center"><div><p class="mb-0 fw-bold">Summer Dress</p><small class="text-muted">Low Stock</small></div><button type="button" class="btn btn-sm btn-outline-success"><i class="fas fa-cart-plus"></i></button></li>
-                            <li><hr class="dropdown-divider my-0"></li>
-                            <li class="p-3"><a href="{{ route('wishlist.index') }}" class="btn btn-outline-dark w-100 wishlistBtn">View Full Wishlist</a></li>
+                            <li class="p-3">
+                                <h6 class="dropdown-header text-center mb-0">My Wishlist (<span id="wishlistItemCount">0</span> Items)</h6>
+                            </li>
+                            
+                            <!-- Dynamic wishlist items -->
+                            <div id="miniWishlistItems"></div>
+                            
+                            <!-- Empty Message -->
+                            <li class="p-3 text-center text-muted" id="emptyWishlistMsg">
+                                Your wishlist is empty.
+                            </li>
+                            
+                            <li><hr class="dropdown-divider my-0" id="miniWishlistDivider"></li>
+                            
+                            <!-- Simple footer - just close -->
+                            <li class="p-2 text-center" id="miniWishlistFooter">
+                                <small class="text-muted">Items saved for later</small>
+                            </li>
                         </ul>
                     </div>
-
-                    {{-- <div class="dropdown" id="cartDropdown">
-                        <button class="btn btn-outline-dark position-relative " type="button" aria-expanded="false" data-bs-toggle="dropdown">
-                            
-                            <i class="fas fa-cart-shopping"></i>
-                            <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle cartCount">0</span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end mini-cart p-0" aria-labelledby="cartDropdown">
-
-                            <li class="cart-item d-flex justify-content-between align-items-center"><div><p class="mb-0 fw-bold">Denim Jacket</p><small class="text-muted">1 x £45.00</small></div><button type="button" class="btn btn-sm btn-outline-danger"><i class="fas fa-times"></i></button></li>
-
-                            <li class="cart-item d-flex justify-content-between align-items-center"><div><p class="mb-0 fw-bold">Black Hoodie</p><small class="text-muted">2 x £30.00</small></div><button type="button" class="btn btn-sm btn-outline-danger"><i class="fas fa-times"></i></button></li>
-
-                            <li><hr class="dropdown-divider my-0"></li>
-
-                            <li class="p-3"><div class="d-flex justify-content-between fw-bold mb-2"><span>Total:</span><span>£105.00</span></div><a href="{{ route('cart.index') }}" class="btn btn-dark w-100 cartBtn">Checkout</a></li>
-
-                        </ul>
-                    </div> --}}
-
+                    {{-- Cart --}}
                     <div class="dropdown" id="cartDropdown">
                         <button 
                             class="btn btn-outline-dark position-relative"
@@ -202,7 +195,7 @@
                                     <span>Total:</span>
                                     <span id="miniCartTotal">£0.00</span>
                                 </div>
-                                <a href="{{ route('cart.index') }}" class="btn btn-dark w-100 cartBtn">Checkout</a>
+                                <a href="{{ route('checkout') }}" class="btn btn-dark w-100 cartBtn">Checkout</a>
                             </li>
 
                         </ul>
@@ -212,7 +205,6 @@
 
 
                     </div>
-
                 </div>
             </div>
         </div>

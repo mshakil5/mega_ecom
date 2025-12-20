@@ -154,6 +154,46 @@ $(function () {
 
     });
 
+    $(document).on('click', '.add-wishlist-to-cart', function(){
+        const btn = $(this);
+        const productId = btn.data('product-id');
+        const sizeId = btn.data('size-id');
+        const sizeName = btn.data('size-name');
+        const colorId = btn.data('color-id');
+        const image = btn.data('image');
+        const key = btn.data('key'); // MUST match session key
+
+        if(!productId || !sizeId){
+            toastr.error('Invalid product data');
+            return;
+        }
+
+        // Add to cart
+        $.post("{{ route('cart.addSession') }}", {
+            _token: "{{ csrf_token() }}",
+            product_id: productId,
+            color_id: colorId || 0,
+            sizes: [{stock_id: sizeId, size: sizeName, quantity: 1}],
+            product_name: btn.closest('li').find('small.fw-bold').text(),
+            product_image: image
+        }, function(res){
+            toastr.success('Product added to cart!');
+            updateCartCount();
+            updateMiniCart(res.cart);
+
+            // remove from wishlist
+            if(key){
+                $.post("{{ route('wishlist.store') }}", {
+                    _token: "{{ csrf_token() }}",
+                    remove: key
+                }, function(res){
+                    loadWishlist(); // make sure your loadWishlist updates the HTML
+                    toastr.info('Removed from wishlist');
+                });
+            }
+        });
+    });
+
     // initial cart count load
     updateCartCount();
     // updateMiniCart();
@@ -289,9 +329,139 @@ $(function () {
         });
     });
 
+    $(document).on('click', '.removeCartItem', function () {
+        const key = $(this).data('key');
+
+        $.ajax({
+            url: "{{ route('cart.removeSessionItem') }}",
+            method: "POST",
+            data: {
+                _token: "{{ csrf_token() }}",
+                key: key
+            },
+            success: function (res) {
+                toastr.success("Item removed");
+                updateMiniCart(res.cart);
+                updateCartCount();
+            },
+            error: function () {
+                toastr.error("Failed to remove item");
+            }
+        });
+    });
 
 
 }); // end ready
+
+
+    $(function () {
+        function loadWishlist() {
+            $.get("{{ route('wishlist.index') }}", function(res){
+                $('.wishlistCount').text(res.count);
+                $('#wishlistItemCount').text(res.count);
+
+                let html = '';
+                if(Object.keys(res.wishlist).length === 0){
+                    $('#emptyWishlistMsg').removeClass('d-none');
+                    $('#miniWishlistItems').html('');
+                    return;
+                }
+
+                $('#emptyWishlistMsg').addClass('d-none');
+
+                    $.each(res.wishlist, function(key, item){
+                        html += `
+                        <li class="d-flex justify-content-between align-items-center p-2 border-bottom">
+                            <div class="d-flex">
+                                <img src="${item.image}" width="40" class="me-2">
+                                <div>
+                                    <small class="fw-bold">${item.name}</small><br>
+                                    <small>${item.color} / ${item.size}</small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <button class="btn btn-sm btn-dark me-1 add-wishlist-to-cart" 
+                                        data-key="${key}"
+                                        data-product-id="${item.product_id ?? ''}"
+                                        data-color="${item.color}"
+                                        data-size-id="${item.size_id ?? ''}"
+                                        data-size-name="${item.size}"
+                                        data-image="${item.image}">
+                                    <i class="fas fa-cart-plus"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger remove-wishlist" data-key="${key}">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </li>`;
+                    });
+
+                $('#miniWishlistItems').html(html);
+            });
+        }
+
+        $(document).on('click','.add-to-wishlist',function(e){
+            e.preventDefault();
+
+            let colorBtn = $('.color-option.active');
+            let colorRadio = $('input[name="color"]:checked');
+
+            if(!colorBtn.length || !colorRadio.length){
+                toastr.warning('Please select a color');
+                return;
+            }
+
+            let sizes = getWishlistSizes();
+
+            if(sizes.length === 0){
+                toastr.warning('Please select at least one size');
+                return;
+            }
+
+            $.post("{{ route('wishlist.store') }}",{
+                _token: "{{ csrf_token() }}",
+                product_id: $(this).data('product-id'),
+                product_name: $(this).data('product-name'),
+                product_image: $(this).data('image'),
+
+                color_id: colorRadio.val(),
+                color_name: colorBtn.data('color-name'),
+
+                sizes: sizes
+            },function(){
+                toastr.success('Added to wishlist');
+                loadWishlist();
+            });
+        });
+
+        function getWishlistSizes() {
+            let sizes = [];
+
+            $('.qty-input').each(function () {
+                if (parseInt($(this).val()) > 0) {
+                    sizes.push({
+                        size_id: $(this).data('variant-id'),
+                        size_name: $(this).data('size')
+                    });
+                }
+            });
+
+            return sizes;
+        }
+
+        $(document).on('click','.remove-wishlist',function(){
+            let key = $(this).data('key');
+
+            $.post("{{ route('wishlist.store') }}",{
+                _token: "{{ csrf_token() }}",
+                remove: key
+            },function(){
+                loadWishlist();
+            });
+        });
+
+        loadWishlist();
+    });
 </script>
 
 

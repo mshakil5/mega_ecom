@@ -66,6 +66,14 @@ class CartController extends Controller
         ]);
     }
 
+    public function removeSessionItem(Request $request)
+    {
+        $cart = session()->get('cart', []);
+        unset($cart[$request->key]);
+        session()->put('cart', $cart);
+
+        return response()->json(['cart' => $cart]);
+    }
 
     public function customize(Request $request)
     {
@@ -124,18 +132,16 @@ class CartController extends Controller
 
         $images = [];
         foreach (['front', 'back', 'left', 'right'] as $type) {
-            $img = $product->images()
-                ->where('image_type', $type)
-                ->where('color_id', $firstColorId)
+            $img = $product->positionImages()
+                ->where('position', $type)
                 ->orderByDesc('id')
                 ->first();
 
             $images[$type] = $img
-                ? $img->image_path
+                ? $img->image
                 : 'https://placehold.co/400x300?bg=ccc&color=000&text=' . ucfirst($type);
         }
 
-        
         $dataProduct = [
             'id' => $product->id,
             'name' => $product->name,
@@ -148,7 +154,6 @@ class CartController extends Controller
             'colorID' => $firstColorId, // now contains name + qty per size
             'colorName' => $colorName, // now contains name + qty per size
         ];
-
 
 
 

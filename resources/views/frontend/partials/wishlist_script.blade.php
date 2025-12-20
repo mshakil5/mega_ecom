@@ -1,4 +1,4 @@
-<script>
+{{-- <script>
     $(document).ready(function() {
         function updateWishlistCount() {
             var wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
@@ -69,4 +69,4 @@
             updateHeartIcon(productId, offerId);
         });
     });
-</script>
+</script> --}}

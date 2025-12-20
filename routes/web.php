@@ -16,6 +16,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CustomiserController;
+use App\Http\Controllers\WishlistController;
 
 // cache clear
 Route::get('/clear', function () {
@@ -150,6 +151,13 @@ Route::get('/cart/session-data', function () {
     ]);
 })->name('cart.sessionData');
 
+Route::post('/cart/remove-item', [CartController::class, 'removeSessionItem'])
+    ->name('cart.removeSessionItem');
+
+
+// Wishlist Routes
+Route::post('/wishlist', [WishlistController::class, 'store'])->name('wishlist.store');
+Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
 
 Route::get('/checkout', [CheckoutController::class, 'checkout'])->name('checkout');
 

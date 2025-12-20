@@ -27,13 +27,14 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('allproduct') }}" class="nav-link {{ (request()->is('admin/product*')) ? 'active' : '' }}">
+                    <a href="{{ route('allproduct') }}" class="nav-link {{ request()->routeIs('allproduct') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-box-open"></i>
                         <p>Manage Products</p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('product.prices.index') }}" class="nav-link {{ (request()->is('admin/productproduct-prices*')) ? 'active' : '' }}">
+                    <a href="{{ route('product.prices.index') }}" class="nav-link {{ request()->routeIs('product.prices.*') ? 'active' : '' }}">
+
                         <i class="nav-icon fas fa-dollar-sign"></i>
                         <p>Product Prices</p>
                     </a>

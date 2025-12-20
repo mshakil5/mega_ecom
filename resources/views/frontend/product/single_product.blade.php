@@ -182,7 +182,17 @@
             @endif
 
             <div class="d-flex align-items-center mt-3">
+
                 <div class="">
+                    <a href="#" class="btn btn-outline-danger add-to-wishlist"
+                        data-product-id="{{ $product->id }}"
+                        data-product-name="{{ $product->name }}"
+                        data-image="{{ $product->feature_image }}">
+                        <i class="fas fa-heart"></i> Add to Wishlist
+                    </a>
+                </div>
+
+                <div class="ms-2">
                     <a href="#" class="btn btn-dark add-to-cart ml-3"
                         data-product-id="{{ $product->id }}"
                         data-product-name="{{ $product->name }}"
