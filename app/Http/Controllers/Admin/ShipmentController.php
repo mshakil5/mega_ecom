@@ -600,7 +600,7 @@ class ShipmentController extends Controller
             'warehouse',
             'purchase',
             'shipmentDetail.shipment.shipping',
-            'createdBy'
+            'assignments.wholesaler'
         ]);
 
         if ($request->has('warehouse_id') && $request->warehouse_id != '') {
@@ -665,27 +665,33 @@ class ShipmentController extends Controller
             ->addColumn('purchase_info', function ($row) {
                 return $row->purchase ? $row->purchase->purchase_number : 'N/A';
             })
-            ->addColumn('zip_status', function ($row) {
-                if (!$row->product || !$row->product->is_zip) {
-                    return '-';
-                }
-                return $row->zip == 1 ? 'Yes' : 'No';
-            })
             ->addColumn('reason', function ($row) {
                 return $row->reason ?? '-';
             })
             ->addColumn('added_by', function ($row) {
                 return $row->createdBy ? $row->createdBy->name : 'System';
             })
-            ->addColumn('action', function ($row) {
-                $btn = '<div class="btn-group">';
-                $btn .= '<button type="button" class="btn btn-info btn-sm view-btn" data-id="' . $row->id . '" title="View"><i class="fas fa-eye"></i></button>';
-                $btn .= '<button type="button" class="btn btn-warning btn-sm edit-btn" data-id="' . $row->id . '" title="Edit"><i class="fas fa-edit"></i></button>';
-                $btn .= '<button type="button" class="btn btn-danger btn-sm delete-btn" data-id="' . $row->id . '" title="Delete"><i class="fas fa-trash"></i></button>';
+            ->addColumn('distributed_quantity', function ($row) {
+                return number_format($row->distributed_quantity ?? 0, 0);
+            })
+            ->addColumn('available_qty', function ($row) {
+                return number_format($row->available_quantity ?? 0, 0);
+            })
+            ->addColumn('assignment_action', function ($row) {
+                $btn = '<div class="btn-group btn-group-sm">';
+                
+                if ($row->has_available_quantity) {
+                    $btn .= '<button type="button" class="btn btn-success distribute-btn" data-id="' . $row->id . '" title="Distribute to Wholesaler"><i class="fas fa-share-alt"></i> Distribute</button>';
+                }
+                
+                if ($row->has_distributed_quantity) {
+                    $btn .= '<button type="button" class="btn btn-info list-btn" data-id="' . $row->id . '" title="View Distribution List"><i class="fas fa-list"></i> List</button>';
+                }
+                
                 $btn .= '</div>';
                 return $btn;
             })
-            ->rawColumns(['shipment_info', 'action'])
+            ->rawColumns(['shipment_info', 'assignment_action'])
             ->make(true);
     }
 

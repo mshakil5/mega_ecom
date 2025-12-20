@@ -61,6 +61,7 @@ use App\Http\Controllers\Admin\TypeController;
 use App\Http\Controllers\Admin\WholesaleController;
 use App\Http\Controllers\Admin\DiscountController;
 use App\Http\Controllers\Admin\ProductPriceController;
+use App\Http\Controllers\Admin\SampleProductController;
 
 Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], function(){
   
@@ -360,6 +361,15 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::get('/shipment/sample-products', [ShipmentController::class, 'sampleProducts'])->name('shipment.sample_products');
     Route::get('/sample-products/data', [ShipmentController::class, 'getSampleProducts'])->name('admin.sample.products.data');
+
+    Route::post('/sample-products/assignment/store', [SampleProductController::class, 'storeAssignment'])
+    ->name('admin.sample.assignment.store');
+
+    Route::get('/sample-products/assignment/{sampleProductId}/list', [SampleProductController::class, 'getAssignmentList'])
+        ->name('admin.sample.assignment.list');
+
+    Route::get('/sample-products/wholesalers', [SampleProductController::class, 'getWholesalers'])
+        ->name('admin.sample.wholesalers');
 
     // direct stock
     Route::get('/direct-purchase-stock', [DirectPurchaseController::class, 'purchase'])->name('directPurchase');

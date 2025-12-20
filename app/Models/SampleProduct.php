@@ -62,4 +62,29 @@ class SampleProduct extends Model
     {
         return $this->belongsTo(Order::class, 'order_id');
     }
+
+     public function assignments()
+    {
+        return $this->hasMany(SampleProductAssignment::class);
+    }
+
+    public function getDistributedQuantityAttribute()
+    {
+        return $this->assignments()->sum('quantity') ?? 0;
+    }
+
+    public function getAvailableQuantityAttribute()
+    {
+        return $this->quantity - $this->distributed_quantity;
+    }
+
+    public function getHasAvailableQuantityAttribute()
+    {
+        return $this->available_quantity > 0;
+    }
+
+    public function getHasDistributedQuantityAttribute()
+    {
+        return $this->distributed_quantity > 0;
+    }
 }

@@ -91,11 +91,8 @@
                                         <th>Quantity</th>
                                         <th>Warehouse</th>
                                         <th>Shipment Info</th>
-                                        {{-- <th>Purchase</th> --}}
-                                        {{-- <th>Zip</th> --}}
                                         <th>Reason</th>
-                                        {{-- <th>Added By</th> --}}
-                                        {{-- <th>Action</th> --}}
+                                        <th>Distribution</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -110,7 +107,7 @@
     </div>
 </section>
 
-<!-- View Modal -->
+<!-- View Modal (existing) -->
 <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -132,7 +129,7 @@
     </div>
 </div>
 
-<!-- Edit Modal -->
+<!-- Edit Modal (existing) -->
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -172,6 +169,92 @@
     </div>
 </div>
 
+<div class="modal fade" id="distributeModal" tabindex="-1" aria-labelledby="distributeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="distributeModalLabel">Distribute to Wholesaler</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="distributeForm">
+                @csrf
+                <input type="hidden" id="dist_sample_product_id" name="sample_product_id">
+                <div class="modal-body">
+                    <div class="alert alert-info" id="productInfoAlert">
+                        <!-- Product info will be loaded here -->
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dist_wholesaler_id">Wholesaler <span class="text-danger">*</span></label>
+                        <select class="form-control select2" id="dist_wholesaler_id" name="wholesaler_id" required style="width: 100%;">
+                            <option value="">Select Wholesaler</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dist_assignment_date">Assignment Date <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control" id="dist_assignment_date" name="assignment_date" required value="{{ date('Y-m-d') }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dist_quantity">Quantity <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="dist_quantity" name="quantity" min="1" required placeholder="Enter quantity">
+                        <small class="form-text text-muted" id="distQuantityHelp"></small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check"></i> Distribute
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="distributionListModal" tabindex="-1" aria-labelledby="distributionListModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="distributionListModalLabel">Distribution List</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="distributionListTable">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Wholesaler</th>
+                                <th>Quantity</th>
+                                <th>Date</th>
+                                <th>Assigned By</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody id="distributionListBody">
+                        </tbody>
+                        <tfoot>
+                            <tr class="font-weight-bold">
+                                <td>Total</td>
+                                <td id="distributionTotal">0</td>
+                                <td colspan="3"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('script')
@@ -184,9 +267,7 @@
             ajax: {
                 url: "{{ route('admin.sample.products.data') }}",
                 error: function (xhr) {
-                    // use raw response text here
                     let msg = xhr.responseText || "Something went wrong";
-
                     $("#search-results")
                         .removeClass("d-none")
                         .html(`<div class="p-2 text-danger small">${msg}</div>`);
@@ -210,11 +291,8 @@
                 { data: 'quantity_formatted', name: 'quantity' },
                 { data: 'warehouse', name: 'warehouse' },
                 { data: 'shipment_info', name: 'shipment_info' },
-                // { data: 'purchase_info', name: 'purchase_info' },
-                // { data: 'zip_status', name: 'zip_status' },
                 { data: 'reason', name: 'reason' },
-                // { data: 'added_by', name: 'added_by' },
-                // { data: 'action', name: 'action', orderable: false, searchable: false }
+                { data: 'assignment_action', name: 'assignment_action', orderable: false, searchable: false },
             ],
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
@@ -237,98 +315,154 @@
             table.draw();
         });
 
-        // View button click
-        $(document).on('click', '.view-btn', function() {
-            var id = $(this).data('id');
+        $(document).on('click', '.distribute-btn', function() {
+            console.log(row);
+            var sampleProductId = $(this).data('id');
+            $('#dist_sample_product_id').val(sampleProductId);
+
+            var row = table.row($(this).closest('tr')).data();
             
-            $.ajax({
-                url: '/admin/sample-products/' + id + '/details',
-                type: 'GET',
-                success: function(response) {
-                    $('#viewDetails').html(response);
-                    $('#viewModal').modal('show');
-                },
-                error: function(xhr) {
-                    toastr.error('Error loading details');
-                }
-            });
+            var productInfo = '<strong>Product:</strong> ' + row.product_details;
+            productInfo += '<br><strong>Total Qty:</strong> ' + row.quantity_formatted;
+            productInfo += '<br><strong>Distributed:</strong> ' + row.distributed_quantity;
+            productInfo += '<br><strong>Available:</strong> ' + row.available_qty;
+            
+            $('#productInfoAlert').html(productInfo);
+            $('#distQuantityHelp').text('Maximum ' + row.available_qty + ' units available.');
+            $('#dist_quantity').attr('max', row.available_qty).val('');
+
+            loadWholesalers();
+            $('#distributeModal').modal('show');
         });
 
-        // Edit button click
-        $(document).on('click', '.edit-btn', function() {
-            var id = $(this).data('id');
-            
+        function loadWholesalers() {
             $.ajax({
-                url: '/admin/sample-products/' + id + '/edit',
+                url: "/admin/sample-products/wholesalers",
                 type: 'GET',
                 success: function(response) {
-                    $('#edit_id').val(response.id);
-                    $('#edit_quantity').val(response.quantity);
-                    $('#edit_size').val(response.size);
-                    $('#edit_color').val(response.color);
-                    $('#edit_reason').val(response.reason);
-                    $('#editModal').modal('show');
+                    var select = $('#dist_wholesaler_id');
+                    select.find('option:not(:first)').remove();
+                    
+                    $.each(response, function(key, wholesaler) {
+                        select.append('<option value="' + wholesaler.id + '">' + wholesaler.name + ' (' + wholesaler.email + ')</option>');
+                    });
+
+                    select.select2({
+                        placeholder: "Select Wholesaler",
+                        allowClear: true,
+                        width: '100%'
+                    });
                 },
-                error: function(xhr) {
-                    toastr.error('Error loading data');
+                error: function() {
+                    aler('Error loading wholesalers');
                 }
             });
-        });
+        }
 
-        // Edit form submission
-        $('#editForm').submit(function(e) {
+        $('#distributeForm').on('submit', function(e) {
             e.preventDefault();
-            var formData = $(this).serialize();
             
+            var maxQty = parseInt($('#dist_quantity').attr('max'));
+            var quantity = parseInt($('#dist_quantity').val());
+
+            if (quantity > maxQty) {
+                swal({
+                    text: "Quantity exceeds available amount",
+                    icon: "success",
+                    button: {
+                        text: "OK",
+                        className: "swal-button--confirm"
+                    }
+                });
+                return;
+            }
+
             $.ajax({
-                url: '/admin/sample-products/' + $('#edit_id').val(),
-                type: 'PUT',
-                data: formData,
+                url: "/admin/sample-products/assignment/store",
+                type: 'POST',
+                data: $(this).serialize(),
                 success: function(response) {
                     if (response.success) {
-                        toastr.success(response.message);
-                        $('#editModal').modal('hide');
+                        swal({
+                            text: response.message,
+                            icon: "success",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--confirm"
+                            }
+                        });
+                        $('#distributeModal').modal('hide');
+                        $('#distributeForm')[0].reset();
                         table.ajax.reload();
                     }
                 },
                 error: function(xhr) {
-                    var errors = xhr.responseJSON.errors;
-                    $.each(errors, function(key, value) {
-                        toastr.error(value[0]);
-                    });
+                    if (xhr.status === 422) {
+                        var errors = xhr.responseJSON.errors;
+                        $.each(errors, function(key, value) {
+                            swal({
+                                text: value[0],
+                                icon: "success",
+                                button: {
+                                    text: "OK",
+                                    className: "swal-button--confirm"
+                                }
+                            });
+                        });
+                    } else {
+                        var response = xhr.responseJSON;
+                        swal({
+                            text: response.message,
+                            icon: "success",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--confirm"
+                            }
+                        });
+                    }
                 }
             });
         });
 
-        // Delete button click
-        $(document).on('click', '.delete-btn', function() {
-            if (confirm('Are you sure you want to delete this sample product?')) {
-                var id = $(this).data('id');
-                
-                $.ajax({
-                    url: '/admin/sample-products/' + id,
-                    type: 'DELETE',
-                    data: {
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            toastr.success(response.message);
-                            table.ajax.reload();
-                        }
-                    },
-                    error: function(xhr) {
-                        toastr.error('Error deleting sample product');
-                    }
-                });
-            }
-        });
+        $(document).on('click', '.list-btn', function() {
+            var sampleProductId = $(this).data('id');
+            var row = table.row($(this).closest('tr')).data();
 
-        // Initialize Select2
-        $('.select2').select2({
-            placeholder: "Select...",
-            allowClear: true,
-            width: '100%'
+            var modalTitle = 'Distribution List - ' + row.product_details;
+            $('#distributionListModalLabel').text(modalTitle);
+
+            $.ajax({
+                url: "/admin/sample-products/assignment/" + sampleProductId + "/list",
+                type: 'GET',
+                success: function(response) {
+                    var tbody = $('#distributionListBody');
+                    tbody.empty();
+
+                    $.each(response.assignments, function(key, assignment) {
+                        var row = '<tr>';
+                        row += '<td>' + assignment.wholesaler.name + '</td>';
+                        row += '<td>' + assignment.quantity + '</td>';
+                        row += '<td>' + (assignment.assignment_date ? new Date(assignment.assignment_date).toLocaleDateString() : 'N/A') + '</td>';
+                        row += '<td>' + (assignment.created_by ? assignment.created_by.name : 'System') + '</td>';
+                        row += '<td>' + (assignment.created_at ? new Date(assignment.created_at).toLocaleDateString() : 'N/A') + '</td>';
+                        row += '</tr>';
+                        tbody.append(row);
+                    });
+
+                    $('#distributionTotal').text(response.total);
+                    $('#distributionListModal').modal('show');
+                },
+                error: function() {
+                    swal({
+                        text: "Error loading distribution list",
+                        icon: "success",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    });
+                }
+            });
         });
     });
 </script>
