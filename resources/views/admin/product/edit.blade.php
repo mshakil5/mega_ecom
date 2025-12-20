@@ -150,9 +150,13 @@
                                 </div>
                                 <!-- Feature Image part end -->
 
-                                <div class="form-group col-md-1">
+                                <div class="form-group col-md-1 d-none">
                                     <label for="is_whole_sale">Whole Sale</label>
                                     <input type="checkbox" class="form-control" id="is_whole_sale" name="is_whole_sale" value="1" {{ $product->is_whole_sale ? 'checked' : '' }}>
+                                </div>
+                                <div class="form-group col-md-1">
+                                    <label for="is_customizable">Customise</label>
+                                    <input type="checkbox" class="form-control" id="is_customizable" name="is_customizable" value="1" {{ $product->is_customizable ? 'checked' : '' }}>
                                 </div>
                                 <div class="form-group col-md-1">
                                     <label for="is_featured">Featured</label>

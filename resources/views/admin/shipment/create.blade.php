@@ -10,7 +10,18 @@
     <div class="container-fluid">
         <div class="row justify-content-md-center">
             <div class="col-md-12">
-                <a href="{{ route('admin.shipping') }}" class="btn btn-secondary mb-3">Back</a>
+                <div class="row mb-4 align-items-end">
+                    <div class="col-md-2">
+                        <a href="{{ route('admin.shipping') }}" class="btn btn-secondary">Back</a>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="defaultProfitMargin"><strong>Default Profit Margin (%):</strong></label>
+                        <input type="number" id="defaultProfitMargin" class="form-control" value="30" min="1">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" id="applyDefaultMargin" class="btn btn-success">Apply to All Rows</button>
+                    </div>
+                </div>
                 <div class="card card-secondary">
                     <div class="card-header">
                         <h3 class="card-title">Create Shipment</h3>
@@ -512,6 +523,19 @@
         calculateTotalAdditionalCost();
         updateCosts();
         updateCalculations();
+    });
+
+    $('#applyDefaultMargin').on('click', function() {
+        let defaultMargin = parseFloat($('#defaultProfitMargin').val()) || 30;
+        
+        // Apply to all rows
+        $('#purchaseData tr').each(function() {
+            $(this).find('.profit_margin').val(defaultMargin.toFixed(2));
+        });
+        
+        // Trigger update
+        updateCalculations();
+        updateCosts();
     });
 
     $(document).on('click', '.add-expense', function () {

@@ -220,6 +220,7 @@ class ProductController extends Controller
             'is_top_rated' => $request->is_top_rated ? 1 : 0,
             'is_popular' => $request->is_popular ? 1 : 0,
             'is_trending' => $request->is_trending ? 1 : 0,
+            'is_customizable' => $request->is_customizable ? 1 : 0,
         ]);
 
         if($request->size_ids){
@@ -379,6 +380,7 @@ class ProductController extends Controller
         $product->is_top_rated = $request->is_top_rated ? 1 : 0;
         $product->is_popular = $request->is_popular ? 1 : 0;
         $product->is_trending = $request->is_trending ? 1 : 0;
+        $product->is_customizable = $request->is_customizable ? 1 : 0;
 
         $product->save();
 

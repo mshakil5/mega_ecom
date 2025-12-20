@@ -164,6 +164,10 @@
                                     <input type="checkbox" class="form-control" id="is_whole_sale" name="is_whole_sale" value="1" checked>
                                 </div>
                                 <div class="form-group col-md-1">
+                                    <label for="is_customizable">Customise</label>
+                                    <input type="checkbox" class="form-control" id="is_customizable" name="is_customizable" value="1" checked>
+                                </div>
+                                <div class="form-group col-md-1">
                                     <label for="is_featured">Featured</label>
                                     <input type="checkbox" class="form-control" id="is_featured" name="is_featured" value="1">
                                 </div>

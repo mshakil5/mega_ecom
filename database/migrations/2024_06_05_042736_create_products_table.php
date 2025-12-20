@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->string('slug')->unique()->nullable();
             $table->string('product_code')->nullable();
+            $table->tinyInteger('is_customizable')->default(1);
             $table->longText('short_description')->nullable();
             $table->longText('long_description')->nullable();
             $table->decimal('price', 8, 2)->default(0);
