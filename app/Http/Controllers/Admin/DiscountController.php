@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Discount;
 use App\Models\Product;
 use App\Models\Category;
-use App\Models\Subcategory;
+use App\Models\SubCategory;
 
 class DiscountController extends Controller
 {
