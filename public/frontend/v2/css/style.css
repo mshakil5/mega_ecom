@@ -218,6 +218,132 @@ html, body {
     display:flex; align-items:center; justify-content:center; color:#fff;
     text-shadow:2px 2px 4px rgba(0,0,0,.6); position:relative; transition: transform .6s ease-in-out;
 }
+
+/* Tablet */
+@media (max-width: 768px){
+    .carousel-item{
+        min-height:300px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 480px){
+    .carousel-item{
+        min-height:165px;
+    }
+}
+
+@media (max-width: 991px) {
+    #mainNav .search-results-dropdown {
+        position: static;      /* inside navbar collapse */
+        margin-top: 5px;
+        max-height: 250px;
+        overflow-y: auto;
+        border-radius: 0;
+        border-left: 0;
+        border-right: 0;
+    }
+
+    /* Make dropdown items full width */
+    #mainNav .search-product-item {
+        width: 100%;
+    }
+}
+
+/* Mobile Sidebar Filter with Toggler */
+@media (max-width: 991px) {
+    .sidebar-menu {
+        display: none !important;
+        width: 100% !important;
+        height: auto !important;
+        border-right: none !important;
+        border-bottom: 1px solid #eee;
+        padding: 15px !important;
+        margin-bottom: 20px;
+        overflow-y: visible !important;
+    }
+
+    /* Show sidebar when toggled */
+    .sidebar-menu.show {
+        display: block !important;
+    }
+
+    .product-display {
+        width: 100% !important;
+    }
+
+    .sidebar-title {
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+    }
+
+    .sidebar-list {
+        padding-left: 20px !important;
+    }
+
+    .filter-checkbox {
+        width: 16px !important;
+        height: 16px !important;
+        margin: 0 8px !important;
+    }
+
+    .sidebar-subtitle {
+        font-size: 0.9rem;
+    }
+
+    /* Filter Toggler Button */
+    .filter-toggle-btn {
+        display: block !important;
+        width: 100%;
+        margin-bottom: 15px;
+        padding: 10px;
+        background-color: #000;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 600;
+        text-align: left;
+    }
+
+    .filter-toggle-btn:hover {
+        background-color: #333;
+    }
+}
+
+@media (max-width: 576px) {
+    .sidebar-menu {
+        padding: 12px !important;
+    }
+
+    .sidebar-title {
+        font-size: 1rem;
+    }
+
+    .sidebar-subtitle {
+        font-size: 0.85rem;
+    }
+
+    .sidebar-list {
+        padding-left: 15px !important;
+    }
+
+    .filter-toggle-btn {
+        padding: 8px !important;
+        font-size: 0.9rem;
+    }
+}
+
+@media (min-width: 992px) {
+    .filter-toggle-btn {
+        display: none !important;
+    }
+
+    .sidebar-menu {
+        display: block !important;
+    }
+}
+
 .slide-1 { background-image: url('https://fabrilife.com/image-gallery/69221af255306.jpg'); }
 .slide-2 { background-image: url('https://fabrilife.com/image-gallery/69221af255306.jpg'); }
 .slide-3 { background-image: url('https://fabrilife.com/image-gallery/69221af255306.jpg'); }

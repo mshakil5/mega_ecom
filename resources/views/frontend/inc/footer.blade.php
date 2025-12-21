@@ -1,23 +1,62 @@
     <!-- FOOTER -->
     <footer class="footer bg-dark text-white">
-        <div class="container-fluid border-bottom border-secondary py-3 footer-top" style="background-color: #f8f9fa;border:1px dashed #ddd;">
+        <div class="container-fluid border-bottom border-secondary py-3 footer-top" style="background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); border: 1px dashed #ddd;">
             <div class="container">
                 <div class="row text-dark text-center align-items-center">
                     <div class="col-lg-4 mb-3 mb-lg-0">
-                        <h6 class="fw-bold mb-2"><i class="bi bi-lock-fill"></i> All secure payment methods</h6>
+                        <div style="padding: 25px 15px; transition: all 0.3s ease; border-radius: 12px;" class="footer-item">
+                            <div style="width: 80px; height: 80px; margin: 0 auto 18px; background: linear-gradient(135deg, #e74c3c, #c0392b); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(231, 76, 60, 0.2); transition: all 0.3s ease;">
+                                <i class="bi bi-lock-fill" style="font-size: 42px; color: white;"></i>
+                            </div>
+                            <h6 class="fw-bold" style="color: #2c3e50; font-size: 16px; margin-bottom: 8px; letter-spacing: 0.5px;">Secure Payment</h6>
+                            <p style="color: #666; font-size: 13px; margin: 0; line-height: 1.5;">All transactions protected</p>
+                        </div>
                     </div>
 
                     <div class="col-lg-4 mb-3 mb-lg-0">
-                        <h6 class="fw-bold mb-2"><i class="bi bi-patch-check-fill"></i> Satisfaction guaranteed</h6>
-                        <p class="small mb-0">Made with premium quality materials.<br>**Cozy yet lasts the test of time**</p>
+                        <div style="padding: 25px 15px; transition: all 0.3s ease; border-radius: 12px;" class="footer-item">
+                            <div style="width: 80px; height: 80px; margin: 0 auto 18px; background: linear-gradient(135deg, #2ecc71, #27ae60); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(46, 204, 113, 0.2); transition: all 0.3s ease;">
+                                <i class="bi bi-patch-check-fill" style="font-size: 42px; color: white;"></i>
+                            </div>
+                            <h6 class="fw-bold" style="color: #2c3e50; font-size: 16px; margin-bottom: 8px; letter-spacing: 0.5px;">Quality Guaranteed</h6>
+                            <p style="color: #666; font-size: 13px; margin: 0; line-height: 1.5;">Premium materials<br><strong style="color: #2c3e50;">Built to last</strong></p>
+                        </div>
                     </div>
 
                     <div class="col-lg-4">
-                        <h6 class="fw-bold mb-2"><i class="bi bi-truck"></i> Worldwide delivery</h6>
+                        <div style="padding: 25px 15px; transition: all 0.3s ease; border-radius: 12px;" class="footer-item">
+                            <div style="width: 80px; height: 80px; margin: 0 auto 18px; background: linear-gradient(135deg, #f39c12, #e67e22); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(243, 156, 18, 0.2); transition: all 0.3s ease;">
+                                <i class="bi bi-truck" style="font-size: 42px; color: white;"></i>
+                            </div>
+                            <h6 class="fw-bold" style="color: #2c3e50; font-size: 16px; margin-bottom: 8px; letter-spacing: 0.5px;">Fast Delivery</h6>
+                            <p style="color: #666; font-size: 13px; margin: 0; line-height: 1.5;">Nationwide England</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <style>
+            .footer-item {
+                cursor: pointer;
+            }
+
+            .footer-item:hover {
+                background-color: rgba(255, 255, 255, 0.6);
+                transform: translateY(-8px);
+            }
+
+            .footer-item:hover div:first-child {
+                transform: scale(1.08);
+                box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15) !important;
+            }
+
+            @media (max-width: 768px) {
+                .footer-item {
+                    padding: 20px 10px !important;
+                }
+            }
+        </style>
 
         <div class="container-fluid py-4" style="background-color: #343a40;">
             <div class="container">
@@ -58,9 +97,9 @@
                             <li><a href="{{ route('frontend.contact') }}" class="text-white text-decoration-none small">CONTACT US</a></li>
                         </ul>
                         <div class="d-flex mt-3">
-                            <a href="{{ $comapny->facebook ?? '#' }}" class="text-white me-2"><i class="bi bi-facebook fs-5"></i></a>
-                            <a href="{{ $comapny->instagram ?? '#' }}" class="text-white me-2"><i class="bi bi-instagram fs-5"></i></a>
-                            <a href="{{ $comapny->twitter ?? '#' }}" class="text-white"><i class="bi bi-twitter fs-5"></i></a>
+                            @if($company->facebook)<a href="{{ $company->facebook ?? '#' }}" class="text-white me-2"><i class="bi bi-facebook fs-5"></i></a>@endif
+                            @if($company->instagram)<a href="{{ $company->instagram ?? '#' }}" class="text-white me-2"><i class="bi bi-instagram fs-5"></i></a>@endif
+                            @if($company->twitter)<a href="{{ $company->twitter ?? '#' }}" class="text-white"><i class="bi bi-twitter fs-5"></i></a>@endif
                         </div>
                     </div>
 

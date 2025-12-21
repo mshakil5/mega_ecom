@@ -6,7 +6,8 @@
     <div class="page-content pb-0">
         <div class="container">
             <div class="row">
-                <div class="col-12 mx-auto">
+                <div class="col-10 mx-auto">
+                    <h2 class="fs-2 fw-bold mb-4 text-dark">Frequently Asked Questions</h2>
                     <div class="accordion" id="faqAccordion" style="border: 1px solid #e0e0e0; border-radius: 8px; background-color: #fafafa;">
                         @foreach($faqQuestions as $faq)
                             <div class="accordion-item" style="border-bottom: 1px solid #e0e0e0;">

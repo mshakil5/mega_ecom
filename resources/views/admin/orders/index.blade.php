@@ -53,7 +53,13 @@
                                             {{ $order->payment_method }}
                                         @endif
                                     </td>
-                                    <td>{{ $order->order_type == 0 ? 'Frontend' : 'In-house Sale' }}</td>
+                                    <td>
+                                        {{ 
+                                            $order->order_type == 0 ? 'Ecommerce' :
+                                            ($order->order_type == 1 ? 'In-house Sale' :
+                                            ($order->order_type == 2 ? 'Quotation' : 'Wholesale'))
+                                        }}
+                                    </td>
                                     <td>
                                         <select class="form-control order-status" data-order-id="{{ $order->id }}"
                                             {{ empty($order->warehouse_id) ? 'disabled' : '' }}>
@@ -93,9 +99,17 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <a href="{{ route('in-house-sell.generate-pdf', ['encoded_order_id' => base64_encode($order->id)]) }}" class="btn btn-success btn-round btn-shadow" target="_blank">
-                                            <i class="fas fa-receipt"></i> Invoice
-                                        </a>
+                                        @if($order->order_type == 0)
+                                            <a href="{{ route('generate-pdf', base64_encode($order->id)) }}"
+                                            class="btn btn-success btn-round btn-shadow" target="_blank">
+                                                <i class="fas fa-receipt"></i> Invoice
+                                            </a>
+                                        @elseif($order->order_type == 1)
+                                            <a href="{{ route('in-house-sell.generate-pdf', ['encoded_order_id' => base64_encode($order->id)]) }}"
+                                            class="btn btn-success btn-round btn-shadow" target="_blank">
+                                                <i class="fas fa-receipt"></i> Invoice
+                                            </a>
+                                        @endif
                                         <a href="{{ route('in-house-sell.generate-delivery-note', ['encoded_order_id' => base64_encode($order->id)]) }}" class="btn btn-primary btn-round btn-shadow" target="_blank">
                                             <i class="fas fa-truck"></i> Delivery Note
                                         </a>

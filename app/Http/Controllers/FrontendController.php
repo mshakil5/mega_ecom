@@ -37,6 +37,9 @@ use App\Models\FaqQuestion;
 use App\Models\ProductPrice;
 use Illuminate\Support\Facades\Cache;
 use SebastianBergmann\Environment\Console;
+use App\Models\ContactEmail;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ContactMail;
 
 class FrontendController extends Controller
 {
@@ -109,6 +112,14 @@ class FrontendController extends Controller
         $popularProducts      = Cache::remember('home_popular_products', 600, fn() => $getProducts('is_popular'));
         $featuredProducts     = Cache::remember('home_featured_products', 600, fn() => $getProducts('is_featured'));
 
+        $customizableProducts = Product::active()
+            ->where('is_customizable', 1)
+            ->withoutOffers()
+            ->commonSelect()
+            ->orderByDesc('id')
+            ->take(11)
+            ->get();
+
         $slider = Cache::remember('home_sliders', 600, function () {
             return Slider::where('status', 1)
                 ->orderBy('id', 'asc')
@@ -152,7 +163,8 @@ class FrontendController extends Controller
             'section_status',
             'advertisements',
             'slider',
-            'categories'
+            'categories',
+            'customizableProducts'
         ));
     }
 
@@ -680,6 +692,12 @@ class FrontendController extends Controller
         $contact->subject = $request->input('subject');
         $contact->message = $request->input('message');
         $contact->save();
+
+        $contactEmails = ContactEmail::where('status', 1)->pluck('email');
+
+        foreach ($contactEmails as $contactEmail) {
+            Mail::to($contactEmail)->send(new ContactMail($contact));
+        }
 
         return back()->with('success', 'Your message has been sent successfully!');
     }

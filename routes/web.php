@@ -127,6 +127,7 @@ Route::get('/cart', [FrontendController::class, 'showCart'])->name('cart.index')
 Route::get('/resume-order', [OrderController::class, 'resumeOrderFlow'])->name('stripe.resumeOrderFlow');
 
 Route::get('payment/success', [OrderController::class, 'paymentSuccess'])->name('payment.success');
+
 Route::get('payment/cancel', [OrderController::class, 'paymentCancel'])->name('payment.cancel');
 
 Route::get('/paypal/success', [CheckoutController::class, 'paypalSuccess'])->name('paypal.success');

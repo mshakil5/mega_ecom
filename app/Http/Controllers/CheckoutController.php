@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Omnipay\Omnipay;
 use App\Models\Size;
+use App\Mail\OrderMail;
+use Illuminate\Support\Facades\Mail;
+use App\Models\ContactEmail;
 
 class CheckoutController extends Controller
 {
@@ -223,6 +226,8 @@ class CheckoutController extends Controller
                     $this->createOrderDetails($orderData['cart_items'], $order);
                     $this->handleCustomizations($orderData['cart_items'], $order);
 
+                    $this->sendOrderEmails($order);
+
                     DB::commit();
                     $request->session()->forget('cart');
                     session()->forget('paypal_order_data');
@@ -411,4 +416,27 @@ class CheckoutController extends Controller
             ->where('status', 1)
             ->first();
     }
+
+    protected function sendOrderEmails(Order $order)
+    {
+        try {
+            $order = $order->load('orderDetails');
+            
+            // Send customer immediately
+            Mail::to($order->email)->send(new OrderMail($order, 'customer'));
+            \Log::info('✓ Customer email sent to: ' . $order->email);
+
+            // Send admin emails immediately (no queue)
+            $adminEmails = ContactEmail::where('status', 1)->pluck('email');
+            
+            foreach ($adminEmails as $adminEmail) {
+                Mail::to($adminEmail)->send(new OrderMail($order, 'admin'));
+                \Log::info('✓ Admin email sent to: ' . $adminEmail);
+            }
+
+        } catch (\Exception $e) {
+            \Log::error('Error: ' . $e->getMessage());
+        }
+    }
+
 }

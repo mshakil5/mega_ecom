@@ -11,9 +11,9 @@
         <div class="container-fluid h-100">
             <div class="row h-100 align-items-center justify-content-between">
                 <div class="col-auto p-0">
-                    <button class="btn btn-link text-uppercase fw-bold">
+                    <a href="{{ route('frontend.shop') }}" class="btn btn-link text-uppercase fw-bold">
                         <i class="fas fa-bolt me-2"></i>EXCLUSIVE FALL COLLECTION
-                    </button>
+                    </a>
                 </div>
 
                 <div class="col-auto p-0">
@@ -84,8 +84,8 @@
 
             <div class="collapse navbar-collapse" id="mainNav">
                 
-                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 align-items-center">
-                    <li class="nav-item mega-dropdown dropdown me-5" id="shopDropdown">
+                <ul class="navbar-nav mx-auto mb-3 mb-lg-0 align-items-center">
+                    <li class="nav-item mega-dropdown dropdown me-5 pb-2" id="shopDropdown">
                         <button class="btn btn-outline-dark dropdown-toggle text-dark fw-bold" type="button" id="shopMegaMenu" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-shop me-1"></i> SHOP
                         </button>

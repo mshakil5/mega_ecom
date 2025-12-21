@@ -583,7 +583,7 @@
                     _token: '{{ csrf_token() }}'
                 };
 
-                console.log(formData);
+               // console.log(formData);
                 // return;
 
                 $.ajax({

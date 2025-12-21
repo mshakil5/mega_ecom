@@ -3,6 +3,9 @@
 @section('content')
 
     <div class="container-fluid main-content-area">
+        <button class="filter-toggle-btn d-lg-none" id="filterToggle">
+            <i class="fas fa-filter me-2"></i> Filters
+        </button>
         <div class="row">
 
             {{-- -------------------------- SIDEBAR (Categories & Subcategories) -------------------------- --}}
@@ -52,7 +55,7 @@
             {{-- -------------------------- PRODUCT DISPLAY -------------------------- --}}
             <div class="col-lg-10 product-display">
                 
-                <div class="row mt-3">
+                <div class="row mt-3 d-none">
                     <div class="col-12">
                         <div class="secondary-search-bar">
                             <input type="text" class="form-control secondary-search-input" placeholder="Search a product">
@@ -80,6 +83,20 @@
         </div>
     </div>
 
+
+    <script>
+// Filter Toggle for Mobile
+document.addEventListener('DOMContentLoaded', function() {
+    const filterBtn = document.getElementById('filterToggle');
+    const sidebar = document.querySelector('.sidebar-menu');
+    
+    if (filterBtn && sidebar) {
+        filterBtn.addEventListener('click', function() {
+            sidebar.classList.toggle('show');
+        });
+    }
+});
+</script>
 
 @endsection
 

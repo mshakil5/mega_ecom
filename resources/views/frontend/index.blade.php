@@ -119,7 +119,7 @@
 
 
                         <div class="col-6 col-md-4 col-lg-2 mb-4">
-                            <a href="{{ route('frontend.shop') }}" class="card view-more-card" style="min-height: 268px;">
+                            <a href="{{ route('frontend.shop') }}" class="card view-more-card" style="min-height: 300px;">
                                 <div class="overlay"></div>
                                 <div class="view-more-content fw-bold fs-4">
                                     <i data-lucide="eye" class="mb-2"></i>
@@ -172,7 +172,7 @@
 
                         <!-- View More Card -->
                         <div class="col-6 col-md-4 col-lg-2 mb-4">
-                            <a href="{{ route('frontend.shop') }}" class="card view-more-card" style="min-height: 268px;">
+                            <a href="{{ route('frontend.shop') }}" class="card view-more-card" style="min-height: 300px;">
                                 <div class="overlay"></div>
                                 <div class="view-more-content fw-bold fs-4">
                                     <i data-lucide="eye" class="mb-2"></i>
@@ -184,6 +184,51 @@
                 </div>
             </div>
         </section>
+
+        @if($customizableProducts->count() > 0)
+        <section class="container section-container">
+            <h2 class="fs-2 fw-bold mb-4 text-dark">
+                Customizable Products
+            </h2>
+
+            <div class="row g-4">
+                <div class="col-12 col-lg-12">
+                    <div class="row g-3">
+                        @foreach ($customizableProducts as $product)
+                            <div class="col-6 col-md-4 col-lg-2 mb-4 product-item-card">
+                                <a href="{{ route('product.show', $product->slug) }}" class="card bg-white product-card text-decoration-none text-dark">
+                                    <div class="product-image-container">
+                                        <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="img-fluid">
+                                        <span class="badge position-absolute top-0 start-0 product-tag d-none">{{ strtoupper($product->category->name ?? '') }} - {{$product->id}}</span>
+                                    </div>
+                                    <div class="product-title text-center mb-2">
+                                        <strong>{{ $product->name ?? '' }}</strong>
+                                    </div>
+                                    <div class="product-price">
+                                        <div>
+                                            <strong>£{{ number_format($product->price, 2) }}</strong>
+                                            <strike>£{{ number_format($product->price, 2) }}</strike>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        @endforeach
+
+                        <!-- View More Card -->
+                        <div class="col-6 col-md-4 col-lg-2 mb-4">
+                            <a href="{{ route('frontend.shop') }}" class="card view-more-card" style="min-height: 300px;">
+                                <div class="overlay"></div>
+                                <div class="view-more-content fw-bold fs-4">
+                                    <i data-lucide="eye" class="mb-2"></i>
+                                    <div class="tracking-wider"></div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        @endif
 
         <section class="container section-container">
             <h2 class="fs-2 fw-bold mb-4 text-dark">Popular Products</h2>
@@ -224,7 +269,7 @@
 
                         <!-- View More Card -->
                         <div class="col-6 col-md-4 col-lg-2 mb-4">
-                            <a href="{{ route('frontend.shop') }}" class="card view-more-card" style="min-height: 268px;">
+                            <a href="{{ route('frontend.shop') }}" class="card view-more-card" style="min-height: 300px;">
                                 <div class="overlay"></div>
                                 <div class="view-more-content fw-bold fs-4">
                                     <i data-lucide="eye" class="mb-2"></i>
@@ -273,7 +318,7 @@
                         @endforeach
 
                         <div class="col-6 col-md-4 col-lg-2 mb-4">
-                            <a href="{{ route('frontend.shop') }}" class="card view-more-card" style="min-height: 268px;">
+                            <a href="{{ route('frontend.shop') }}" class="card view-more-card" style="min-height: 300px;">
                                 <div class="overlay"></div>
                                 <div class="view-more-content fw-bold fs-4">
                                     <i data-lucide="eye" class="mb-2"></i>
