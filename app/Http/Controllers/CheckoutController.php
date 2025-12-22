@@ -17,6 +17,8 @@ use App\Models\Size;
 use App\Mail\OrderMail;
 use Illuminate\Support\Facades\Mail;
 use App\Models\ContactEmail;
+use Stripe\Stripe;
+use Stripe\Checkout\Session as StripeSession;
 
 class CheckoutController extends Controller
 {
@@ -95,7 +97,7 @@ class CheckoutController extends Controller
     public function processOrder(Request $request)
     {
         $validator = $this->validateOrder($request);
-        
+
         if ($validator->fails()) {
             return response()->json([
                 'errors' => $validator->errors()
@@ -103,7 +105,7 @@ class CheckoutController extends Controller
         }
 
         $totals = $this->calculateTotals($request);
-        
+
         if ($request->payment_method === 'cash_on_delivery') {
             return $this->processCashOnDelivery($request, $totals);
         } elseif ($request->payment_method === 'bank_transfer') {
@@ -123,14 +125,14 @@ class CheckoutController extends Controller
     protected function processCashOnDelivery(Request $request, $totals)
     {
         DB::beginTransaction();
-        
+
         try {
             $order = $this->createOrder($request->all(), $totals);
-            
+
             $this->createOrderDetails($request->cart_items, $order);
-            
+
             $this->handleCustomizations($request->cart_items, $order);
-            
+
             DB::commit();
             $request->session()->forget('cart');
             return response()->json([
@@ -138,7 +140,6 @@ class CheckoutController extends Controller
                 'order_id' => $order->id,
                 'redirect_url' => route('order.success', ['order_id' => $order->id])
             ]);
-            
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -163,7 +164,7 @@ class CheckoutController extends Controller
 
         try {
             $amount = $request->total_amount ?? $totals['total_amount'];
-            
+
             $response = $gateway->purchase([
                 'amount' => number_format($amount, 2, '.', ''),
                 'currency' => 'GBP',
@@ -254,6 +255,133 @@ class CheckoutController extends Controller
         return view('frontend.order.cancel');
     }
 
+    protected function processStripe(Request $request, $totals)
+    {
+        return $this->initiateStripePayment($request, $totals);
+    }
+
+    private function initiateStripePayment($request, $totals)
+    {
+        Stripe::setApiKey(config('services.stripe.secret'));
+
+        try {
+            // Store order data in session for later retrieval
+            session()->put('stripe_order_data', $request->all());
+            session()->put('stripe_totals', [
+                'subtotal' => $totals['subtotal'],
+                'shipping_charge' => $totals['shipping_charge'],
+                'vat_percent' => $totals['vat_percent'],
+                'vat_amount' => $totals['vat_amount'],
+                'total_amount' => $totals['total_amount']
+            ]);
+
+            // Create Stripe Checkout Session
+            $session = StripeSession::create([
+                'payment_method_types' => ['card'],
+                'line_items' => [[
+                    'price_data' => [
+                        'currency' => 'gbp',
+                        'product_data' => [
+                            'name' => 'Order Payment',
+                            'description' => 'Order Payment'
+                        ],
+                        'unit_amount' => intval($totals['total_amount'] * 100), // Convert to pence
+                    ],
+                    'quantity' => 1,
+                ]],
+                'mode' => 'payment',
+                'success_url' => route('stripe.success') . '?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => route('payment.cancel'),
+                'customer_email' => $request->email,
+            ]);
+
+            \Log::info('Stripe Session Created', ['session_id' => $session->id, 'amount' => $totals['total_amount']]);
+
+            return response()->json([
+                'success' => true,
+                'redirectUrl' => $session->url,
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Stripe Session Creation Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'error' => 'Error creating payment session: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function stripeSuccess(Request $request)
+    {
+        Stripe::setApiKey(config('services.stripe.secret'));
+
+        try {
+            $sessionId = $request->get('session_id');
+            
+            if (!$sessionId) {
+                \Log::warning('Stripe Success: Missing session ID');
+                return redirect()->route('payment.cancel')->with('error', 'Missing session ID');
+            }
+
+            // Retrieve session from Stripe
+            $session = StripeSession::retrieve($sessionId);
+
+            // Verify payment was successful
+            if ($session->payment_status !== 'paid') {
+                \Log::warning('Stripe Success: Payment not completed', ['status' => $session->payment_status]);
+                return redirect()->route('payment.cancel')->with('error', 'Payment not completed');
+            }
+
+            // Get stored order data
+            $orderData = session()->get('stripe_order_data');
+            $totals = session()->get('stripe_totals');
+
+            if (!$orderData || !$totals) {
+                \Log::warning('Stripe Success: Order session expired');
+                return redirect()->route('payment.cancel')->with('error', 'Order session expired');
+            }
+
+            DB::beginTransaction();
+
+            try {
+                // Create order
+                $order = $this->createOrder($orderData, $totals);
+                $order->payment_method = 'stripe';
+                $order->save();
+
+                // Create order details
+                $this->createOrderDetails($orderData['cart_items'], $order);
+                
+                // Handle customizations
+                $this->handleCustomizations($orderData['cart_items'], $order);
+
+                // Send emails
+                $this->sendOrderEmails($order);
+
+                DB::commit();
+
+                \Log::info('Order Created from Stripe', ['order_id' => $order->id, 'stripe_session_id' => $sessionId]);
+
+                // Clear session data
+                $request->session()->forget('cart');
+                session()->forget('stripe_order_data');
+                session()->forget('stripe_totals');
+
+                return redirect()->route('order.success', ['order_id' => $order->id]);
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                \Log::error('Error processing Stripe order: ' . $e->getMessage());
+                return redirect()->route('payment.cancel')->with('error', 'Error processing order: ' . $e->getMessage());
+            }
+
+        } catch (\Exception $e) {
+            \Log::error('Stripe Success Handler Error: ' . $e->getMessage());
+            return redirect()->route('payment.cancel')->with('error', 'Payment verification failed');
+        }
+
+    }
+
     protected function validateOrder(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -290,7 +418,7 @@ class CheckoutController extends Controller
     protected function calculateTotals(Request $request)
     {
         $subtotal = 0;
-        
+
         foreach ($request->cart_items as $item) {
             $subtotal += $item['subtotal'];
         }
@@ -348,9 +476,9 @@ class CheckoutController extends Controller
         $order->status = 1;
         $order->due_status = 0;
         $order->admin_notify = 1;
-        
+
         $order->save();
-        
+
         return $order;
     }
 
@@ -421,22 +549,20 @@ class CheckoutController extends Controller
     {
         try {
             $order = $order->load('orderDetails');
-            
+
             // Send customer immediately
             Mail::to($order->email)->send(new OrderMail($order, 'customer'));
             \Log::info('✓ Customer email sent to: ' . $order->email);
 
             // Send admin emails immediately (no queue)
             $adminEmails = ContactEmail::where('status', 1)->pluck('email');
-            
+
             foreach ($adminEmails as $adminEmail) {
                 Mail::to($adminEmail)->send(new OrderMail($order, 'admin'));
                 \Log::info('✓ Admin email sent to: ' . $adminEmail);
             }
-
         } catch (\Exception $e) {
             \Log::error('Error: ' . $e->getMessage());
         }
     }
-
 }

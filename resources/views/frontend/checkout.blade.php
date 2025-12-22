@@ -297,22 +297,6 @@
                     <div class="payment-methods mt-4">
                         <h5 class="mb-3">Payment Method</h5>
                         <div class="accordion" id="paymentAccordion">
-                            <div class="accordion-item d-none">
-                                <h2 class="accordion-header">
-                                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#collapseCard">
-                                        <i class="ri-bank-card-line me-2"></i> Credit / Debit Card (Stripe)
-                                    </button>
-                                </h2>
-                                <div id="collapseCard" class="accordion-collapse"
-                                    data-bs-parent="#paymentAccordion">
-                                    <div class="accordion-body">
-                                        <p>Pay securely using your credit or debit card through Stripe.</p>
-                                        <button type="button" id="payWithCard" class="checkout-btn-main mt-2 w-100">Pay
-                                            with Card</button>
-                                    </div>
-                                </div>
-                            </div>
 
                             <!-- PayPal -->
                             <div class="accordion-item  shadow-sm">
@@ -328,6 +312,24 @@
                                         <p>You will be redirected to PayPal to complete your payment.</p>
                                         <button type="button" id="payWithPayPal" class="checkout-btn-main">Pay with
                                             PayPal</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Stripe -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#collapseCard">
+                                        <i class="bi bi-credit-card me-2"></i> Credit / Debit Card (Stripe)
+                                    </button>
+                                </h2>
+                                <div id="collapseCard" class="accordion-collapse collapse"
+                                    data-bs-parent="#paymentAccordion">
+                                    <div class="accordion-body">
+                                        <p>Pay securely using your credit or debit card through Stripe.</p>
+                                        <button type="button" id="payWithCard" class="checkout-btn-main mt-2 w-100">Pay
+                                            with Card</button>
                                     </div>
                                 </div>
                             </div>

@@ -131,7 +131,7 @@ Route::get('payment/success', [OrderController::class, 'paymentSuccess'])->name(
 Route::get('payment/cancel', [OrderController::class, 'paymentCancel'])->name('payment.cancel');
 
 Route::get('/paypal/success', [CheckoutController::class, 'paypalSuccess'])->name('paypal.success');
-
+Route::get('/payment/stripe/success', [CheckoutController::class, 'stripeSuccess'])->name('stripe.success');
 Route::get('/order/{encoded_order_id}', [OrderController::class, 'generatePDF'])->name('generate-pdf');
 
 Route::post('/products/filter', [FrontendController::class, 'filter']);
