@@ -228,6 +228,19 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="col-md-6 mb-2">
+                                <div class="d-flex align-items-center">
+                                    <span class="mr-3">Customizable:</span>
+                                    <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input toggle-customizable"
+                                        id="customSwitchCustom{{ $product->id }}"
+                                        data-id="{{ $product->id }}"
+                                        {{ $product->is_customizable ? 'checked' : '' }}>
+                                    <label class="custom-control-label" for="customSwitchCustom{{ $product->id }}"></label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -527,6 +540,31 @@
           }
       });
   });
+
+    $(document).on('change','.toggle-customizable',function(){
+        let isChecked = $(this).is(':checked');
+        let itemId = $(this).data('id');
+
+        $.ajax({
+            url: '/admin/toggle-customizable',
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                id: itemId,
+                is_customizable: isChecked ? 1 : 0
+            },
+            success: function () {
+                swal({
+                    text: "Customizable status updated successfully!",
+                    icon: "success",
+                });
+                location.reload();
+            },
+            error: function (xhr) {
+                console.error(xhr.responseText);
+            }
+        });
+    });
 
   // Popular Toggle
   $(document).on('change', '.toggle-popular', function() {

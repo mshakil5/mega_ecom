@@ -243,6 +243,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/toggle-recent', [ProductController::class, 'toggleRecent'])->name('toggle-recent');
     Route::post('/toggle-popular', [ProductController::class, 'togglePopular'])->name('togglePopular');
     Route::post('/toggle-trending', [ProductController::class, 'toggleTrending'])->name('toggleTrending');
+    Route::post('/toggle-customizable',[ProductController::class,'toggleCustomizable']);
 
     Route::get('/product-prices', [ProductPriceController::class, 'productPricesIndex'])->name('product.prices.index');
     Route::post('/product-prices/store', [ProductPriceController::class, 'store'])->name('product.prices.store');

@@ -641,6 +641,12 @@ class ProductController extends Controller
         return response()->json(['message' => 'Trending status updated successfully!']);
     }
 
+    public function toggleCustomizable(Request $r)
+    {
+        Product::whereId($r->id)->update(['is_customizable'=>$r->is_customizable]);
+        return response()->json(['ok'=>1]);
+    }
+
     public function showProductDetails($id)
     {
         $currency = CompanyDetails::value('currency');
