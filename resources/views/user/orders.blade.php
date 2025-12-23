@@ -1,4 +1,4 @@
-@extends('user.dashboard')
+@extends('user.layout')
 
 @section('user_content')
 <div class="row">

@@ -1,4 +1,4 @@
-@extends('user.dashboard')
+@extends('user.layout')
 
 @section('user_content')
 
@@ -59,7 +59,7 @@
     <label>Address</label>
     <textarea class="form-control" id="address" name="address" rows="3" placeholder="Enter your address">@if (!empty($user->address)){!! $user->address !!}@endif</textarea>
 
-    <button type="submit" class="btn btn-outline-primary-2">
+    <button type="submit" class="btn btn-outline-primary-2 mt-3">
         <span>SAVE CHANGES</span>
         <i class="icon-long-arrow-right"></i>
     </button>

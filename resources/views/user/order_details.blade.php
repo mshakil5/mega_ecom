@@ -1,4 +1,4 @@
-@extends('user.dashboard')
+@extends('user.layout')
 
 @section('user_content')
 
@@ -60,7 +60,6 @@
                                     <th>Quantity</th>
                                     <th>Size</th>
                                     <th>Color</th>
-                                    <th>Type</th>
                                     <th>Per Unit</th>
                                     <th>Total Price</th>
                                 </tr>
@@ -75,7 +74,6 @@
                                     <td class="text-center">{{ $orderDetail->quantity }}</td>
                                     <td>{{ $orderDetail->size }}</td>
                                     <td>{{ $orderDetail->color }}</td>
-                                    <td>{{ $orderDetail->type->name }}</td>
                                     <td>{{ number_format($orderDetail->price_per_unit, 2) }}</td>
                                     <td>{{ number_format($orderDetail->total_price, 2) }}</td>
                                 </tr>
@@ -90,7 +88,7 @@
 
                         <a href="{{ url()->previous() }}" class="btn btn-primary btn-rounded btn-shadow">Back</a>
 
-                        <button class="btn btn-info btn-rounded btn-mail" data-toggle="modal" data-target="#mailModal">
+                        <button class="btn btn-info btn-rounded btn-mail d-none" data-toggle="modal" data-target="#mailModal">
                             <i class="fas fa-envelope"></i> Mail
                         </button>
 
