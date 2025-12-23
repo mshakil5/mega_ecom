@@ -65,18 +65,46 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($order->orderDetails as $orderDetail)
+                                @foreach ($order->orderDetails as $orderDetail)
                                 <tr>
                                     <td>
-                                        <img src="{{ asset('/images/products/' . $orderDetail->product->feature_image) }}" alt="{{ $orderDetail->product->name }}" style="width: 100px; height: auto;">
+                                        <img src="{{ asset('/images/products/' . $orderDetail->product->feature_image) }}"
+                                            style="width:100px">
                                     </td>
-                                    <td>{{ Str::limit($orderDetail->product->name, 40) }}</td>
+                                    <td>{{ $orderDetail->product->name }}</td>
                                     <td class="text-center">{{ $orderDetail->quantity }}</td>
-                                    <td>{{ $orderDetail->size }}</td>
-                                    <td>{{ $orderDetail->color }}</td>
+                                    <td>{{ $orderDetail->size ?? 'N/A' }}</td>
+                                    <td>{{ $orderDetail->color ?? 'N/A' }}</td>
                                     <td>{{ number_format($orderDetail->price_per_unit, 2) }}</td>
                                     <td>{{ number_format($orderDetail->total_price, 2) }}</td>
                                 </tr>
+
+                                {{-- Customizations --}}
+                                @if ($orderDetail->orderCustomisations && $orderDetail->orderCustomisations->count())
+                                <tr>
+                                    <td colspan="7" class="bg-light">
+                                        <strong>Customizations:</strong>
+
+                                        @foreach ($orderDetail->orderCustomisations as $c)
+                                            @php $data = json_decode($c->data, true) ?? []; @endphp
+
+                                            <div class="mt-2">
+                                                <strong>{{ ucfirst($c->method ?? 'Custom') }}</strong>
+                                                @if($c->position) ({{ $c->position }}) @endif
+                                                <small>— {{ ucfirst($c->customization_type) }}</small>
+
+                                                @if ($c->customization_type === 'text')
+                                                    <div>Text: {{ $data['text'] ?? '' }}</div>
+                                                @endif
+
+                                                @if ($c->customization_type === 'image' && isset($data['src']))
+                                                    <img src="{{ $data['src'] }}" style="max-height:70px">
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    </td>
+                                </tr>
+                                @endif
                                 @endforeach
                             </tbody>
                         </table>
