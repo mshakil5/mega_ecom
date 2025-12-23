@@ -101,7 +101,7 @@
                                                     <h6 class="dropdown-header text-uppercase">  {{ $category->name }}    </h6>
 
                                                     @foreach ($category->subcategories as $subcategory)
-                                                    <a class="dropdown-item" href="{{ route('frontend.shop') }}">{{$subcategory->name}}</a>
+                                                    <a class="dropdown-item" href="{{ route('frontend.shop') }}?subcategory={{ $subcategory->id }}">{{$subcategory->name}}</a>
                                                     @endforeach
                                                     
                                                 </div>

@@ -20,10 +20,13 @@
     <div class="bottom-strip border-top border-bottom">
         <div class="container-fluid">
             <div class="row text-center align-items-center">
-                <div class="col-md-2 col-3"><a href="{{ route('frontend.shop') }}">SHOP</a></div>
-                <div class="col-md-2 col-3"><a href="{{ route('frontend.shop') }}">MEN</a></div>
-                <div class="col-md-2 col-3"><a href="{{ route('frontend.shop') }}">WOMEN</a></div>
-                <div class="col-md-2 col-3"><a href="{{ route('frontend.shop') }}">KIDS</a></div>
+                @foreach ($categories->take(4) as $category)
+                    <div class="col-md-2 col-3">
+                        <a href="{{ route('frontend.shop') }}?category={{ $category->id }}">
+                            {{ $category->name }}
+                        </a>
+                    </div>
+                @endforeach
 
                 <div class="col-md-4 col-12 d-flex justify-content-center justify-content-md-end align-items-center p-2">
                     <p class="mb-0 me-3 fw-bold text-success d-none d-lg-block">GET 5% OFF ON APP</p>
@@ -52,7 +55,7 @@
         <div class="row justify-content-center gx-2 gx-md-3">
             @foreach ($categories as $categoriesItem)
             <div class="col-6 col-sm-4 col-md-3 col-lg-2 category-col mb-3">
-                <a href="{{ route('frontend.shop') }}" class="text-decoration-none">
+                <a href="{{ route('frontend.shop') }}?category={{ $category->id }}" class="text-decoration-none">
                     <div class="category-card">
                         <div class="product-image-container">
                             @if ($categoriesItem->image)

@@ -562,7 +562,7 @@ class FrontendController extends Controller
         return view('frontend.shop', compact('currency', 'categories',));
     }
 
-    public function shop()
+    public function shop(Request $request)
     {
         // 1. Fetch Categories with their Subcategories (Eager Loading)
         $categories = Category::with('subcategories')
@@ -574,9 +574,10 @@ class FrontendController extends Controller
         $products = Product::where('status', 1)->with('stock') // Assuming status 1 means active
                            ->get();
 
-
+        $selectedCategory = $request->query('category');
+        $selectedSubcategory = $request->query('subcategory');
         // 3. Pass data to the view
-        return view('frontend.shop', compact('categories', 'products'));
+        return view('frontend.shop', compact('categories', 'products', 'selectedCategory', 'selectedSubcategory'));
     }
 
     public function shopfilter(Request $request)

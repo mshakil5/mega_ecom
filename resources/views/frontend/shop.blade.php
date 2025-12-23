@@ -21,7 +21,9 @@
                             class="filter-checkbox category-checkbox mx-2" 
                             data-filter-id="{{ $category->id }}"
                             data-filter-name="{{ $category->name }}"
-                            data-filter-type="category">
+                            data-filter-type="category"
+                            {{ isset($selectedCategory) && $selectedCategory == $category->id ? 'checked' : '' }}
+                            >
 
                         <h4 class="sidebar-subtitle mb-0" style="display: inline-block;">
                             <a href="#" class="filter-link category-link" data-id="{{ $category->id }}" data-type="category">
@@ -40,7 +42,8 @@
                                         class="filter-checkbox subcategory-checkbox mx-2" 
                                         data-filter-id="{{ $subcategory->id }}"
                                         data-filter-name="{{ $subcategory->name }}"
-                                        data-filter-type="subcategory">
+                                        data-filter-type="subcategory"
+                                        {{ isset($selectedSubcategory) && $selectedSubcategory == $subcategory->id ? 'checked' : '' }}>
                                     <a href="#" class="filter-link subcategory-link" data-id="{{ $subcategory->id }}" data-type="subcategory">
                                         {{ $subcategory->name }} 
                                     </a>
@@ -213,6 +216,15 @@ document.addEventListener('DOMContentLoaded', function() {
     $(document).ready(function() {
         // Run fetchProducts once to ensure tags are correct if filters were previously applied
         updateFilterTags(); 
+
+        if ($('.category-checkbox:checked').length) {
+            fetchProducts();
+            updateFilterTags();
+        }
+        if ($('.subcategory-checkbox:checked').length) {
+            fetchProducts();
+            updateFilterTags();
+        }
     });
 
 </script>

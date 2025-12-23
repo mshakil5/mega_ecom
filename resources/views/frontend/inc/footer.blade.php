@@ -109,7 +109,7 @@
                             <ul class="list-unstyled">
                                 @foreach($category->subcategories as $sub)
                                     <li>
-                                        <a href="{{ route('subcategory.show', $sub->slug) }}" class="text-white text-decoration-none small">
+                                        <a href="{{ route('frontend.shop') }}?subcategory={{ $sub->id }}" class="text-white text-decoration-none small">
                                             {{ $sub->name }}
                                         </a>
                                     </li>
