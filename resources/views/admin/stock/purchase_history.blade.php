@@ -125,6 +125,11 @@
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         @endif
+                                        @if ($purchase->direct_purchase == 1 && $purchase->status != 4)
+                                        <a href="{{ route('directPurchase.edit', $purchase->id) }}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        @endif
                                         @if($purchase->status == 4 && $totalNotReturnedQuantity > 0 && $purchase->direct_purchase == 0)
                                         <a href="{{ route('returnProduct', $purchase->id) }}" class="btn btn-sm btn-warning">
                                             <i class="fas fa-undo-alt"></i>

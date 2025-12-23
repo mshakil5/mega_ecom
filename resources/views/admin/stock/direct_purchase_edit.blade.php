@@ -8,17 +8,18 @@
             <div class="col-md-12">
                 <div class="card card-secondary">
                     <div class="card-header">
-                        <h3 class="card-title" id="cardTitle">Purchase</h3>
+                        <h3 class="card-title" id="cardTitle">Edit Purchase - {{ $purchase->invoice }}</h3>
                     </div>
                     <div class="card-body">
                         <div class="ermsg"></div>
                         <form id="createThisForm">
                             @csrf
+                            @method('PUT')
                             <div class="row">
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="purchase_date">Purchase Date <span class="text-danger">*</span></label>
-                                        <input type="date" class="form-control" id="purchase_date" name="purchase_date" value="{{ date('Y-m-d') }}">
+                                        <input type="date" class="form-control" id="purchase_date" name="purchase_date" value="{{ $purchase->purchase_date }}">
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
@@ -29,7 +30,7 @@
                                         <select class="form-control" id="supplier_id" name="supplier_id">
                                             <option value="" >Select...</option>
                                             @foreach($suppliers as $supplier)
-                                                <option value="{{ $supplier->id }}" data-balance="{{ $supplier->balance }}">{{ $supplier->name }}</option>
+                                                <option value="{{ $supplier->id }}" {{ $purchase->supplier_id == $supplier->id ? 'selected' : '' }}>{{ $supplier->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -37,28 +38,31 @@
                                 <div class="form-group col-sm-3">
                                     <label for="season">Season<span style="color: red;">*</span></label>
                                     <select class="form-control" id="season" name="season">
-                                        <option value="All">All Season</option>
-                                        <option value="Spring">Spring</option>
-                                        <option value="Summer">Summer</option>
-                                        <option value="Autumn">Autumn</option>
-                                        <option value="Winter">Winter</option>
+                                        <option value="All" {{ $purchase->season ?? '' == 'All' ? 'selected' : '' }}>All Season</option>
+                                        <option value="Spring" {{ $purchase->season ?? '' == 'Spring' ? 'selected' : '' }}>Spring</option>
+                                        <option value="Summer" {{ $purchase->season ?? '' == 'Summer' ? 'selected' : '' }}>Summer</option>
+                                        <option value="Autumn" {{ $purchase->season ?? '' == 'Autumn' ? 'selected' : '' }}>Autumn</option>
+                                        <option value="Winter" {{ $purchase->season ?? '' == 'Winter' ? 'selected' : '' }}>Winter</option>
                                     </select>
                                 </div>
 
                                 <div class="form-group col-sm-2 d-none">
                                     <label for="invoice">Invoice<span style="color: red;">*</span></label>
-                                    <input type="text" class="form-control" id="invoice" name="invoice">
+                                    <input type="text" class="form-control" id="invoice" name="invoice" value="{{ $purchase->invoice }}" readonly>
                                     <small class="text-muted">Example: <span id="productCodePreview">STL-Season-Year-XXXXX</span></small>
-                                    <span id="invoice-error" class="text-danger" style="display: none;">Invoice already exists</span>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
                                         <label for="warehouse_id">Warehouse <span class="text-danger">*</span></label>
                                         <select name="warehouse_id" id="warehouse_id" class="form-control select2">
                                             <option value="">Select</option>
+                                            @php
+                                                $selectedWarehouseId = $shipment?->shipmentDetails?->first()?->warehouse_id;
+                                            @endphp
                                             @foreach ($warehouses as $warehouse)
-                                            <option value="{{$warehouse->id}}">{{$warehouse->name}}-{{$warehouse->location}}</option>
-                                                
+                                                <option value="{{$warehouse->id}}" {{ $selectedWarehouseId == $warehouse->id ? 'selected' : '' }}>
+                                                    {{$warehouse->name}}-{{$warehouse->location}}
+                                                </option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -75,7 +79,7 @@
                                                   data-code="{{ $product->product_code }}" 
                                                   data-price="{{ $product->price }}"  
                                                   data-is-zip="{{ $product->isZip() ? '1' : '0' }}"
-                                                  data-types='@json($product->types->map(fn($t) => ['id' => $t->id, 'name' => $t->name]))'
+                                                  data-types='@json($product->types->map(fn($t) => ["id" => $t->id, "name" => $t->name]))'
                                                   >{{ $product->product_code }} - {{ $product->name }}</option>
                                             @endforeach
                                         </select>
@@ -124,7 +128,6 @@
                                     </label>
                                     <select id="product-type-select" name="product_type_id" class="form-control">
                                         <option value="">Select Type</option>
-                                        {{-- Options --}}
                                     </select>
                                   </div>
                                 </div>
@@ -164,7 +167,33 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                
+                                                @foreach ($purchase->purchaseHistory as $history)
+                                                    @php
+                                                        $shipmentDetail = $shipment?->shipmentDetails?->where('purchase_history_id', $history->id)?->first();
+                                                        $saleableQty = $history->quantity - ($history->missing_product_quantity ?? 0) - ($history->sample_quantity ?? 0);
+                                                        $totalPrice = $history->total_amount;
+                                                        $totalPriceWithVat = $history->total_amount_with_vat;
+                                                    @endphp
+                                                    <tr data-product-id="{{ $history->product_id }}" data-type-id="{{ $history->type_id }}">
+                                                        <td>{{ $history->product->product_code }} - {{ $history->product->name }}</td>
+                                                        <td><input type="number" class="form-control quantity" value="{{ $history->quantity }}" min="1" /></td>
+                                                        <td>{{ $history->product_size }}</td>
+                                                        <td>{{ $history->product_color }}</td>
+                                                        <td>{{ $history->type->name ?? '' }}<input type="hidden" name="product_type_id[]" value="{{ $history->type_id ?? '' }}"></td>
+                                                        <td><input type="number" step="0.01" class="form-control unit_price" value="{{ $history->purchase_price }}" /></td>
+                                                        <td><input type="number" step="0.01" class="form-control vat_percent" value="{{ $history->vat_percent }}" /></td>
+                                                        <td>{{ number_format($history->total_vat, 2) }}</td>
+                                                        <td>{{ number_format($totalPrice, 2) }}</td>
+                                                        <td>{{ number_format($totalPriceWithVat, 2) }}</td>
+                                                        <td><input type="number" value="{{ $history->missing_product_quantity ?? 0 }}" max="{{ $history->quantity }}" min="0" class="form-control missing_quantity"/></td>
+                                                        <td><input type="number" value="{{ $history->sample_quantity ?? 0 }}" max="{{ $history->quantity }}" min="0" class="form-control sample_quantity"/></td>
+                                                        <td class="saleable_quantity_td"><input type="number" value="{{ $saleableQty }}" max="{{ $history->quantity }}" min="0" class="form-control saleable_quantity" readonly/></td>
+                                                        <td class="ground_cost_per_item">{{ number_format($shipmentDetail->ground_price_per_unit ?? $history->purchase_price, 2) }}</td>
+                                                        <td><input type="number" value="{{ $shipmentDetail->profit_margin ?? 30 }}" min="1" class="form-control profit_margin" /></td>
+                                                        <td class="selling_price_per_unit_td"><input type="number" min="0" step="0.01" class="form-control selling_price_per_unit" value="{{ $shipmentDetail->selling_price ?? 0 }}" /></td>
+                                                        <td><button type="button" class="btn btn-sm btn-danger remove-product">Remove</button></td>
+                                                    </tr>
+                                                @endforeach
                                             </tbody>
                                         </table>
 
@@ -229,24 +258,52 @@
 
                                       <span class="badge badge-success" style="cursor: pointer;" data-toggle="modal" data-target="#chartModal">Add New Expense</span>
                                         <div id="expense-container">
-                                            <div class="row mt-1 expense-row" id="row-default">
-                                                <div class="col-sm-12 d-flex align-items-center">
-                                                    <select class="form-control expense-type" style="width: 200px;" >
-                                                        <option value="" selected>Select Expense</option>
-                                                        @foreach($expenses as $expense)
-                                                            <option value="{{ $expense->id }}">{{ $expense->account_name }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                    <select class="form-control payment-type" style="width: 100px; margin-left: 10px;">
-                                                        <option value="Bank">Bank</option>
-                                                        <option value="Cash">Cash</option>
-                                                    </select>
-                                                    <input type="number" class="form-control expense-amount" style="width: 100px; margin-left: 10px;" min="0" placeholder="Amount">                              
-                                                    <input type="text" class="form-control expense-description" style="width: 150px; margin-left: 10px;" min="0" placeholder="Description">
-                                                    <input type="text" class="form-control expense-note" style="width: 150px; margin-left: 10px;" min="0" placeholder="Note">
-                                                    <button type="button" class="btn btn-success add-expense btn-sm" style="margin-left: 10px;"><i class="fas fa-plus"></i></button>
+                                            @if(count($expenseTransactions) > 0)
+                                                @foreach ($expenseTransactions as $index => $expense)
+                                                    <div class="row mt-1 expense-row" id="row-{{ $expense->id }}">
+                                                        <div class="col-sm-12 d-flex align-items-center">
+                                                            <select class="form-control expense-type" style="width: 200px;" >
+                                                                <option value="" selected>Select Expense</option>
+                                                                @foreach($expenses as $exp)
+                                                                    <option value="{{ $exp->id }}" {{ $expense->expense_id == $exp->id ? 'selected' : '' }}>{{ $exp->account_name }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                            <select class="form-control payment-type" style="width: 100px; margin-left: 10px;">
+                                                                <option value="Bank" {{ $expense->payment_type == 'Bank' ? 'selected' : '' }}>Bank</option>
+                                                                <option value="Cash" {{ $expense->payment_type == 'Cash' ? 'selected' : '' }}>Cash</option>
+                                                            </select>
+                                                            <input type="number" class="form-control expense-amount" style="width: 100px; margin-left: 10px;" min="0" placeholder="Amount" value="{{ $expense->amount }}">                              
+                                                            <input type="text" class="form-control expense-description" style="width: 150px; margin-left: 10px;" placeholder="Description" value="{{ $expense->description }}">
+                                                            <input type="text" class="form-control expense-note" style="width: 150px; margin-left: 10px;" placeholder="Note" value="{{ $expense->note }}">
+                                                            
+                                                            @if($index === 0)
+                                                                <button type="button" class="btn btn-success add-expense btn-sm" style="margin-left: 10px;"><i class="fas fa-plus"></i></button>
+                                                            @else
+                                                                <button type="button" class="btn btn-danger remove-expense btn-sm" style="margin-left: 10px;"><i class="fas fa-trash"></i></button>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            @else
+                                                <div class="row mt-1 expense-row" id="row-default">
+                                                    <div class="col-sm-12 d-flex align-items-center">
+                                                        <select class="form-control expense-type" style="width: 200px;" >
+                                                            <option value="" selected>Select Expense</option>
+                                                            @foreach($expenses as $expense)
+                                                                <option value="{{ $expense->id }}">{{ $expense->account_name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                        <select class="form-control payment-type" style="width: 100px; margin-left: 10px;">
+                                                            <option value="Bank">Bank</option>
+                                                            <option value="Cash">Cash</option>
+                                                        </select>
+                                                        <input type="number" class="form-control expense-amount" style="width: 100px; margin-left: 10px;" min="0" placeholder="Amount">                              
+                                                        <input type="text" class="form-control expense-description" style="width: 150px; margin-left: 10px;" placeholder="Description">
+                                                        <input type="text" class="form-control expense-note" style="width: 150px; margin-left: 10px;" placeholder="Note">
+                                                        <button type="button" class="btn btn-success add-expense btn-sm" style="margin-left: 10px;"><i class="fas fa-plus"></i></button>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            @endif
                                         </div>
                                     </div>
                                     
@@ -256,46 +313,46 @@
                                     <div class="row justify-content-end">
                                         <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Item Total Amount:</span>
-                                            <input type="text" class="form-control" id="item_total_amount" readonly style="width: 100px; margin-left: auto;">
+                                            <input type="text" class="form-control" id="item_total_amount" name="total_amount" readonly style="width: 100px; margin-left: auto;" value="{{ number_format($purchase->total_amount, 2) }}">
                                         </div>
                                     </div>
 
                                     <div class="row justify-content-end mt-1">
                                         <div class="col-sm-6 d-flex align-items-center">
                                             <span>Total Additional Cost:</span>
-                                            <input type="number" class="form-control" id="total_additional_cost" style="width: 100px; margin-left: auto;" min="0" readonly value="">
+                                            <input type="number" class="form-control" id="total_additional_cost" name="total_additional_cost" style="width: 100px; margin-left: auto;" min="0" step="0.01" value="{{ $purchase->other_cost ?? 0 }}">
                                         </div>
                                     </div>
 
                                     <div class="row justify-content-end mt-1">
                                         <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Discount Amount:</span>
-                                            <input type="number" step="0.01" class="form-control" id="discount" name="discount" style="width: 100px; margin-left: auto;" min="0">
+                                            <input type="number" step="0.01" class="form-control" id="discount" name="discount" style="width: 100px; margin-left: auto;" min="0" value="{{ $purchase->discount ?? 0 }}">
                                         </div>
                                     </div>
                                     <div class="row justify-content-end mt-1">
                                         <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Total VAT Amount:</span>
-                                            <input type="text" class="form-control" id="total_vat_amount" readonly style="width: 100px; margin-left: auto;">
+                                            <input type="text" class="form-control" id="total_vat_amount" name="total_vat_amount" readonly style="width: 100px; margin-left: auto;" value="{{ number_format($purchase->total_vat_amount, 2) }}">
                                         </div>
                                     </div>
                                     <div class="row justify-content-end mt-1">
                                         <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Net Amount:</span>
-                                            <input type="text" class="form-control" id="net_amount" readonly style="width: 100px; margin-left: auto;">
+                                            <input type="text" class="form-control" id="net_amount" name="net_amount" readonly style="width: 100px; margin-left: auto;" value="{{ number_format($purchase->net_amount, 2) }}">
                                         </div>
                                     </div>
                                     <div class="row justify-content-end mt-1">
                                         <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Cash Payment:</span>
-                                            <input type="number" step="0.01" class="form-control" id="cash_payment" name="cash_payment" style="width: 100px; margin-left: auto;" min="0">
+                                            <input type="number" step="0.01" class="form-control" id="cash_payment" name="cash_payment" style="width: 100px; margin-left: auto;" min="0" value="{{ $paymentTransactions->where('payment_type', 'Cash')->first()?->amount ?? 0 }}">
                                         </div>
                                     </div>
                                     
                                     <div class="row justify-content-end mt-1">
                                         <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Bank Payment:</span>
-                                            <input type="number" step="0.01" class="form-control" id="bank_payment" name="bank_payment" style="width: 100px; margin-left: auto;" min="0">
+                                            <input type="number" step="0.01" class="form-control" id="bank_payment" name="bank_payment" style="width: 100px; margin-left: auto;" min="0" value="{{ $paymentTransactions->where('payment_type', 'Bank')->first()?->amount ?? 0 }}">
                                         </div>
                                     </div>
                                     
@@ -303,14 +360,15 @@
                                     <div class="row justify-content-end mt-1 d-none">
                                         <div class="col-sm-6 d-flex align-items-center">
                                             <span class="">Due Amount:</span>
-                                            <input type="text" class="form-control" id="due_amount" readonly style="width: 100px; margin-left: auto;" min="0">
+                                            <input type="text" class="form-control" id="due_amount" name="due_amount" readonly style="width: 100px; margin-left: auto;" value="{{ number_format($purchase->due_amount, 2) }}">
                                         </div>
                                     </div>
                                 </div>
 
                             </div>
                             <div class="card-footer">
-                                <button type="submit" id="addBtn" class="btn btn-success" value="Create"><i class="fas fa-plus"></i> Create Purchase</button>
+                                <button type="submit" id="addBtn" class="btn btn-primary" value="Update"><i class="fas fa-save"></i> Update Purchase</button>
+                                <a href="{{ route('productPurchaseHistory') }}" class="btn btn-secondary">Cancel</a>
                                 <div id="loader" style="display: none;">
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                     Loading...
@@ -381,8 +439,8 @@
 </script>
 <script>
     var expensesList = @json($expenses);
+    var purchaseId = {{ $purchase->id }};
 </script>
-
 
 <script>
     $(document).ready(function() {
@@ -395,7 +453,6 @@
             const expenseId = $(this).find('.expense-type').val();
             const amount = parseFloat($(this).find('.expense-amount').val()) || 0;
             
-            // Only count rows that have both expense_id and amount
             if (expenseId && amount > 0) {
                 total += amount;
             }
@@ -421,8 +478,8 @@
                         <option value="Cash">Cash</option>
                     </select>
                     <input type="number" class="form-control expense-amount" style="width: 100px; margin-left: 10px;" min="0" placeholder="Amount">
-                    <input type="text" class="form-control expense-description" style="width: 150px; margin-left: 10px;" min="0" placeholder="Description">
-                    <input type="text" class="form-control expense-note" style="width: 150px; margin-left: 10px;" min="0" placeholder="Note">
+                    <input type="text" class="form-control expense-description" style="width: 150px; margin-left: 10px;" placeholder="Description">
+                    <input type="text" class="form-control expense-note" style="width: 150px; margin-left: 10px;" placeholder="Note">
                     <button type="button" class="btn btn-danger remove-expense btn-sm" style="margin-left: 10px;"><i class="fas fa-trash"></i></button>
                 </div>
             </div>
@@ -462,12 +519,6 @@
 
     $(document).on('click', '.remove-expense', function () {
         const rowElement = $(this).closest('.expense-row');
-        const expenseId = rowElement.attr('data-expense-id');
-
-        if (expenseId) {
-            addedExpenses.delete(expenseId);
-        }
-
         rowElement.remove();
         calculateTotalAdditionalCost();
     });
@@ -515,21 +566,14 @@
             var sampleQty = parseFloat($row.find('.sample_quantity').val()) || 0;
             var saleableQty = Math.max(0, quantity - missingQty - sampleQty);
 
-            // Update table display values
             $row.find('td:eq(7)').text(parseFloat(vatAmount).toFixed(2));
             $row.find('td:eq(8)').text(parseFloat(totalPrice).toFixed(2));
             $row.find('td:eq(9)').text(parseFloat(totalPriceWithVat).toFixed(2));
 
-            // Update saleable quantity
             $row.find('input.saleable_quantity').val(saleableQty);
 
-            // Calculate cost per item
-            var costPerItem = saleableQty > 0 ? (parseFloat(totalPriceWithVat) / saleableQty).toFixed(2) : 0;
-            
-            // Calculate ground cost (unit price + additional cost per item)
             var groundCostPerItem = parseFloat(unitPrice) + parseFloat(additionalCostPerItem);
             
-            // Calculate selling price based on profit margin
             var newSellingPrice = groundCostPerItem + (groundCostPerItem * profit_margin / 100);
 
             $row.find('td.ground_cost_per_item').text(groundCostPerItem.toFixed(2));
@@ -551,23 +595,10 @@
         var bankPayment = parseFloat($('#bank_payment').val()) || 0;
         totalPayment = cashPayment + bankPayment;
 
-        if (totalPayment > netAmount) {
-            swal({
-                title: "Error!",
-                text: "The total payment (cash + bank) cannot exceed the net amount.",
-                icon: "error",
-                button: "OK",
-            }).then(() => {
-                $('#cash_payment').val('0.00');
-                $('#bank_payment').val('0.00');
-            });
-        }
-
         var dueAmount = netAmount - totalPayment;
         $('#due_amount').val(dueAmount.toFixed(2) || '0.00');
     }
 
-    // Auto update selling_price_per_unit and profit_margin
     $(document).on('input', '.profit_margin, .selling_price_per_unit', function () {
         var row = $(this).closest('tr');
         var groundCost = parseFloat(row.find('td.ground_cost_per_item').text()) || 0;
@@ -578,13 +609,11 @@
         var profitMargin = parseFloat(profitMarginInput.val()) || 0;
         var sellingPrice = parseFloat(sellingPriceInput.val()) || 0;
 
-        // If user changes profit_margin → update selling price
         if ($(this).hasClass('profit_margin')) {
             var newSellingPrice = groundCost + (groundCost * profitMargin / 100);
             sellingPriceInput.val(newSellingPrice.toFixed(2));
         }
 
-        // If user changes selling_price_per_unit → update margin
         if ($(this).hasClass('selling_price_per_unit')) {
             if (groundCost > 0) {
                 var newMargin = ((sellingPrice - groundCost) / groundCost) * 100;
@@ -674,7 +703,7 @@
                             <td>${totalPriceWithVat}</td>         
                             <td><input type="number" value="0" max="${quantity}" min="0" class="form-control missing_quantity"/></td>
                             <td><input type="number" value="0" max="${quantity}" min="0" class="form-control sample_quantity"/></td>
-                            <td class="saleable_quantity_td"><input type="number" value="0" max="${quantity}" min="0" class="form-control saleable_quantity" readonly/></td>
+                            <td class="saleable_quantity_td"><input type="number" value="${quantity}" max="${quantity}" min="0" class="form-control saleable_quantity" readonly/></td>
                             <td class="ground_cost_per_item">${unitPrice}</td>
                             <td><input type="number" value="30" min="1" class="form-control profit_margin" /></td>
                             <td class="selling_price_per_unit_td"><input type="number" min="0" step="0.01" class="form-control selling_price_per_unit" value="${selling_price_per_unit}" /></td>
@@ -699,11 +728,9 @@
         $('#product_id').val(null).trigger('change');
     });
 
-    //  data store 
     $('#addBtn').on('click', function(e) {
         e.preventDefault();
 
-        // Validate expenses - at least one expense row must have expense_id selected
         let hasValidExpense = false;
         let expenseRowCount = $('#expense-container .expense-row').length;
         
@@ -722,24 +749,17 @@
                 title: "Error",
                 text: "Please select an expense type for each expense row.",
                 icon: "error",
-                button: {
-                    text: "OK",
-                    className: "swal-button--confirm"
-                }
+                button: { text: "OK", className: "swal-button--confirm" }
             });
             return;
         }
 
-        // Validate products
         if ($('#productTable tbody tr').length === 0) {
             swal({
                 title: "Error",
                 text: "Please add at least one product.",
                 icon: "error",
-                button: {
-                    text: "OK",
-                    className: "swal-button--confirm"
-                }
+                button: { text: "OK", className: "swal-button--confirm" }
             });
             return;
         }
@@ -747,13 +767,9 @@
         $(this).attr('disabled', true);
         $('#loader').show();
 
-        // helper to safely get value if element exists
         function getValIfExists(selector) {
             var $el = $(selector);
-            if ($el.length) {
-                return $el.val();
-            }
-            return null;
+            return $el.length ? $el.val() : null;
         }
 
         var formData = {};
@@ -788,9 +804,9 @@
             var productColor = $row.find('td:eq(3)').text().trim() || '';
 
             var vatPercent = $row.find('input.vat_percent').val();
-            var vatAmount = $row.find('td:eq(7)').text().trim() || 0;
-            var totalPrice = $row.find('td:eq(8)').text().trim() || 0;
-            var totalPriceWithVat = $row.find('td:eq(9)').text().trim() || 0;
+            var vatAmount = parseFloat($row.find('td:eq(7)').text().trim()) || 0;
+            var totalPrice = parseFloat($row.find('td:eq(8)').text().trim()) || 0;
+            var totalPriceWithVat = parseFloat($row.find('td:eq(9)').text().trim()) || 0;
 
             var typeId = null;
             var $typeInput = $row.find('input[name="product_type_id[]"]');
@@ -810,17 +826,12 @@
                 product_color: productColor,
                 unit_price: parseFloat(unitPrice) || 0,
                 profit_margin: parseFloat(profit_margin) || 0,
-                vat_percent: vatPercent !== undefined ? vatPercent : null,
-                vat_amount: parseFloat(vatAmount) || 0,
-                total_price: parseFloat(totalPrice) || 0,
-                total_price_with_vat: parseFloat(totalPriceWithVat) || 0,
-                type_id: typeId,
-                ground_cost_per_item: groundCostPerItem,
-                selling_price_per_unit: sellingPricePerUnit
+                vat_percent: vatPercent !== undefined ? parseFloat(vatPercent) : null,
+                selling_price_per_unit: sellingPricePerUnit,
+                zip: ''
             });
         });
 
-        // Collect additional expenses
         var expenses = [];
         $('#expense-container .expense-row').each(function() {
             var $r = $(this);
@@ -849,8 +860,8 @@
         };
 
         $.ajax({
-            url: '/admin/add-direct-stock',
-            method: 'POST',
+            url: '/admin/direct-purchase/' + purchaseId,
+            method: 'PUT',
             data: finalData,
             dataType: 'json',
             headers: {
@@ -858,12 +869,9 @@
             },
             success: function(response) {
                 swal({
-                    text: "Purchased successfully",
+                    text: "Purchase updated successfully",
                     icon: "success",
-                    button: {
-                        text: "OK",
-                        className: "swal-button--confirm"
-                    }
+                    button: { text: "OK", className: "swal-button--confirm" }
                 }).then(() => {
                     window.location.href = "{{ route('productPurchaseHistory') }}";
                 });
@@ -881,20 +889,14 @@
                         title: "Error",
                         text: errorMessage,
                         icon: "error",
-                        button: {
-                            text: "OK",
-                            className: "swal-button--confirm"
-                        }
+                        button: { text: "OK", className: "swal-button--confirm" }
                     });
                 } else {
                     swal({
                         title: "Error",
                         text: xhr.responseJSON?.message || "Something went wrong!",
                         icon: "error",
-                        button: {
-                            text: "OK",
-                            className: "swal-button--confirm"
-                        }
+                        button: { text: "OK", className: "swal-button--confirm" }
                     });
                 }
             },
@@ -906,6 +908,7 @@
 
     });
 
+    updateSummary();
 
     });
 </script>
@@ -937,6 +940,5 @@
         });
     });
 </script>
-
 
 @endsection

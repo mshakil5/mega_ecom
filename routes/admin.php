@@ -375,6 +375,9 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     // direct stock
     Route::get('/direct-purchase-stock', [DirectPurchaseController::class, 'purchase'])->name('directPurchase');
     Route::post('/add-direct-stock', [DirectPurchaseController::class, 'stockStore']);
+
+    Route::get('/direct-purchase/edit/{id}', [DirectPurchaseController::class, 'edit'])->name('directPurchase.edit');
+    Route::put('/direct-purchase/{id}', [DirectPurchaseController::class, 'update'])->name('directPurchase.update');
     
     Route::get('/missing-purchase-product/{id}', [StockController::class, 'missingProduct'])->name('missingProduct');
     Route::get('/transfer-to-warehouse/{id}', [WarehouseController::class, 'transfer'])->name('transferToWarehouse');

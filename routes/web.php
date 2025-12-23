@@ -61,9 +61,9 @@ Route::get('register', function () {
     return view('auth.register');
 })->name('register');
 
-Route::fallback(function () {
-    return redirect('/');
-});
+// Route::fallback(function () {
+//     return redirect('/');
+// });
 
 
 // Frontend
